@@ -24,8 +24,8 @@ class spline():
 
 
     def __init__(self,x,y,z,f):
-        self._f = SP.zeros(SP.array(f.shape)+(2,2,2)) #nan pad a larger array for indexing later
-        self._f[1:-1,1:-1,1:-1] = SP.array(f) # place f in center, so that it is  repad in reference
+        self._f = SP.zeros(SP.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
+        self._f[1:-1,1:-1,1:-1] = SP.array(f) # place f in center, so that it is padded by unfilled values on all sides
         # faces
         self._f[(0,-1),1:-1,1:-1] = f[(0,-1),:,:] 
         self._f[1:-1,(0,-1),1:-1] = f[:,(0,-1),:]
@@ -36,8 +36,6 @@ class spline():
         self._f[1:-1,(0,0,-1,-1),(0,-1,0,-1)] = f[:,(0,0,-1,-1),(0,-1,0,-1)]
         #corners
         self._f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] = f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)]
-
-
 
         self._x = SP.array(x)
         self._y = SP.array(y)
@@ -65,7 +63,7 @@ class spline():
             iy = SP.digitize(y[inp],self._y) - 1
             iz = SP.digitize(z[inp],self._z) - 1
             pos = ix + self._f.shape[1]*(iy + self._f.shape[2]*iz)
-            indx = SP.argsort(pos)
+            indx = SP.argsort(pos) #each voxel is described uniquely, and this is passed to speed evaluation.
             dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
             dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
             dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
