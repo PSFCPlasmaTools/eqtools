@@ -144,10 +144,13 @@ void ev(double val[],double dx1[], double dx2[], double dx3[], double f[], int p
 	  findx = 0;
 	  iter = pos[loc];
 	    /* iter provides a unique identifier to the voxel of
-	       interest, this will be expanded on later so that multiple
-	       calculations of the same coefficients are avoided */
-	    /* the padding of f allows for a lot of simplifcation,
-	       as its starts 1 off on every dimension */
+		interest, and the code generates the interpolating
+		coefficients once per voxel (at max). The evaluated points
+		are sorted such that all values of a voxel are calculated
+		in direct sequence. */
+		
+	    /* the padding of f (from python) allows for a lot of
+	    	simplifcation, as its starts 1 off on every dimension */
 	  for(l = 0;l < 4; l++)
 	    {
 	      for(k = 0;k < 4; k++)
