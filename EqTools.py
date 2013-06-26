@@ -925,7 +925,7 @@ class Equilibrium(object):
                 t = scipy.ones(R.shape) * t[0]
                 time_idxs = scipy.ones(R.shape, dtype=int) * time_idxs[0]
         else:
-            time_idxs = SP.array([None])
+            time_idxs = scipy.array([None])
 
         return (R, Z, t, time_idxs, original_shape, single_val, single_time)
 
