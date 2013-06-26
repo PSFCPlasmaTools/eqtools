@@ -25,6 +25,7 @@ import re
 
 try:
     import trispline
+    _has_trispline = True
 except ImportError:
     print("WARNING: trispline module could not be loaded -- tricubic spline interpolation will not be available.")
     _has_trispline = False
