@@ -257,8 +257,8 @@ class Equilibrium(object):
             else:
                 #variables that are purely time dependent require splines rather
                 #than indexes for interpolation.
-                self._psiOfLCFSSpline = {}
                 self._psiOfPsi0Spline = {}
+                self._psiOfLCFSSpline = {}
                 self._MagRSpline = {}
             
         # These are indexes of splines, and become higher dimensional splines
@@ -348,7 +348,7 @@ class Equilibrium(object):
                 for k in xrange(0, len(t)):
                     out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k]) # IS THIS WORKING PROPERLY?
         else:
-            out_vals = self._getFluxTriSpline().ev(Z,R,t)
+            out_vals = self._getFluxTriSpline().ev(t,R,Z)
         # Correct for current sign:
         out_vals = -1 * out_vals * self.getCurrentSign()
 
@@ -401,7 +401,10 @@ class Equilibrium(object):
 
         else:
             # use spline to generate the psi at the core and at boundary.
-
+            try:
+                psi_boundary = 
+                psi_0 = 
+           except:
             psi_boundary = scipy.interpolate.interp1d(self.getFluxLCFS(),self.getTimeBase()).ev(t)
             psi_0 = scipy.interpolate.interp1d(self.getFluxAxis(),self.getTimeBase()).ev(t)
 
@@ -1010,6 +1013,18 @@ class Equilibrium(object):
                 self._phiNormSpline[idx] = {kind: spline}
             return self._phiNormSpline[idx][kind]
 
+    def _getPhiNormBiSpline(self):
+        try:
+            return self._phiNormSpline
+        except KeyError:
+            phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.GetQProfile(),axis=0), 0, 0, axis=1)
+            phi_norm_meas = phi_norm_meas / phi_norm_meas[:,-1]
+            self._phiNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas)),
+                                                                        self.getTimeBase(),
+                                                                        phi_norm_meas)
+            return self._phiNormSpline
+                                                                        
+
     def _getVolNormSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
         index idx, generating it if it does not already exist."""
@@ -1028,6 +1043,19 @@ class Equilibrium(object):
             except KeyError:
                 self._volNormSpline[idx] = {kind: spline}
             return self._volNormSpline[idx][kind]
+
+    def _getVolNormBiSpline(self):
+        try:
+            return self._volNormSpline
+        except KeyError:
+            vol_norm_meas = self.getFluxVol()
+            vol_norm_meas = vol_norm_meas / vol_norm_meas[:,-1]
+            
+            self._volNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(vol_norm_meas)),
+                                                                        self.getTimeBase(),
+                                                                        vol_norm_meas)
+            return self._volNormSpline
+                                                                        
 
     def _getRmidSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
@@ -1069,6 +1097,49 @@ class Equilibrium(object):
             except KeyError:
                 self._RmidSpline[idx] = {kind: spline}
             return self._RmidSpline[idx][kind]
+
+    def _getRmidBiSpline(self):
+        """THIS FUNCTION NEEDS HEAVY WORK AS THE PREVIOUS METHOD CONFLICTS HEAVILY"""
+        try:
+            return self._RmidSpline
+        except KeyError:
+            resample_factor = 3
+            self._RmidSpline = scipy.interpolate.RectBiVariateSpline(self.getTimeBase(),
+                                                                     psi_norm_on_grid)
+            
+            return self._RmidSpline
+           # R_grid = scipy.
+
+    def _getPsi0Spline(self, kind='cubic'):
+        try:
+            return self._psiOfPsi0Spline
+        except KeyError:
+            self._psiOfPsi0Spline = scipy.interpolate.interp1d(self.getFluxAxis(),
+                                                self.getTimeBase(),
+                                                kind=kind,
+                                                bounds_error=False)
+            return self._psiOfPsi0Spline
+
+    def _getLCFSPsiSpline(self, kind='cubic'):
+        try:
+            return self._psiOfLCFSSpline
+        except KeyError:
+            self._psiOfLCFSSpline = scipy.interpolate.interp1d(self.getFluxLCFS(),
+                                                self.getTimeBase(),
+                                                kind=kind,
+                                                bounds_error=False)
+            return self._psiOfLCFSSpline
+
+    def _getMagRSpline(self,length_unit=1, kind='cubic'):
+        try:
+            return self._MagRSpline
+        except KeyError:
+            self._MagRSpline = scipy.interpolate.interp1d(self.getMagR(length_unit=length_unit),
+                                                          self.getTimeBase(),
+                                                          kind=kind,
+                                                          bounds_error=False)
+
+            return self._MagRSpline
 
     def getTreeInfo(self):
         #returns AttrDict of instance parameters (shot, EFIT tree, size and timebase info)
