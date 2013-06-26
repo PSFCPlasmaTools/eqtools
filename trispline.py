@@ -46,7 +46,6 @@ class spline():
         y = SP.array((y1,))
         z = SP.array((z1,)) # This will not modify x1,y1,z1.
         val = SP.nan*SP.zeros(x.shape)
-        print(z)
         if SP.any(x < self._x[0]) or SP.any(x > self._x[-1]):
             raise ValueError('x value exceeds bounds of interpolation grid ')
         if SP.any(y < self._y[0]) or SP.any(y > self._y[-1]):

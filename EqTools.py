@@ -985,7 +985,7 @@ class Equilibrium(object):
         try:
             return self._psiOfRZSpline
         except KeyError:
-            self_psiOfRZSpline = trispline.spline(self.getTimeBase(),
+            self._psiOfRZSpline = trispline.spline(self.getTimeBase(),
                                                   self.getRGrid(length_unit='m'),
                                                   self.getZGrid(length_unit='m'),
                                                   self.getFluxGrid())
