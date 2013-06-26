@@ -1397,7 +1397,7 @@ class EFITTree(Equilibrium):
             print("ERROR: MDSplus module did not load properly. Exception is below:")
             raise _e_MDS
 
-        super(EFITTree, self).__init__(length_unit=length_unit, tspline=False)
+        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline)
         
         self._shot = shot
         self._tree = tree
