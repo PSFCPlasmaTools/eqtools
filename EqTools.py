@@ -22,7 +22,12 @@ import scipy
 import scipy.interpolate
 import scipy.integrate
 import re
-import trispline
+
+try:
+    import trispline
+except ImportError:
+    print("WARNING: trispline module could not be loaded -- tricubic spline interpolation will not be available.")
+    _has_trispline = False
 
 try:
     import MDSplus
@@ -246,11 +251,14 @@ class Equilibrium(object):
         
         self._tricubic = bool(tspline) # forces this parameter to be a boolean regardless of input
         if self._tricubic:
-            #variables that are purely time dependent require splines rather
-            #than indexes for interpolation.
-            self._psiOfLCFSSpline = {}
-            self._psiOfPsi0Spline = {}
-            self._MagRSpline = {}
+            if not _has_trispline:
+                raise ValueError("trispline module did NOT load, so argument tspline=True is invalid!")
+            else:
+                #variables that are purely time dependent require splines rather
+                #than indexes for interpolation.
+                self._psiOfLCFSSpline = {}
+                self._psiOfPsi0Spline = {}
+                self._MagRSpline = {}
             
         # These are indexes of splines, and become higher dimensional splines
         # with the setting of the tspline keyword
