@@ -259,7 +259,9 @@ class Equilibrium(object):
                 #than indexes for interpolation.
                 self._psiOfPsi0Spline = {}
                 self._psiOfLCFSSpline = {}
+                # MagR and RmidOut only used for rho (r/a) calculations
                 self._MagRSpline = {}
+                self._RmidOutSpline = {}
             
         # These are indexes of splines, and become higher dimensional splines
         # with the setting of the tspline keyword
@@ -1020,7 +1022,6 @@ class Equilibrium(object):
                                                                         phi_norm_meas)
             return self._phiNormSpline
                                                                         
-
     def _getVolNormSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
         index idx, generating it if it does not already exist."""
@@ -1052,7 +1053,6 @@ class Equilibrium(object):
                                                                         vol_norm_meas)
             return self._volNormSpline
                                                                         
-
     def _getRmidSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
         index idx, generating it if it does not already exist.
@@ -1101,15 +1101,29 @@ class Equilibrium(object):
         try:
             return self._RmidSpline
         except KeyError:
-            resample_factor = 3
+            resample_factor = 3 * len(self.getRGrid(length_unit='m'))
 
-            #R_grid = 5
+            self.getTimeBase()
+
+            #generate timebase and R_grid through a meshgrid
+            t,R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
+
+            for idx in scipy.arange(self.getTimeBase().size):
+                R_grid[idx,:] = scipy.linspace(self.getMagR(length_unit='m')[idx],
+                                             self.getRGrid(length_unit='m')[-1],
+                                             resample_factor)
+                Z_grid[idx,:] = self.getMagZ(length_unit='m')[idx]*scipy.ones((1,resample_factor))
+                
+
+            psi_norm_on_grid = self.rz2psinorm(Rgrid,
+                                               self.getMagZ(length_unit='m') * scipy.ones(R_grid.shape),
+                                               t)
+            
             self._RmidSpline = scipy.interpolate.BiVariateSpline(t.flatten(),
                                                                  psi_norm_on_grid.flatten(),
                                                                  R_grid.flatten())
             
             return self._RmidSpline
-           # R_grid = scipy.
 
     def _getPsi0Spline(self, kind='cubic'):
         try:
@@ -1141,6 +1155,16 @@ class Equilibrium(object):
                                                           bounds_error=False)
 
             return self._MagRSpline
+
+    def _getRmidOutSpline(self, length_unit=1, kind='cubic'):
+        try:
+            return self._RmidOutSpline
+        except KeyError:
+            self._RmidOutSpline = scipy.interpolate.interp1d(self.getRmidOut(length_unit=length_unit),
+                                                             self.getTimeBase(),
+                                                             kind=kind,
+                                                             bounds_error=False)
+            return self._RmidOutSpline
 
     def getTreeInfo(self):
         #returns AttrDict of instance parameters (shot, EFIT tree, size and timebase info)
