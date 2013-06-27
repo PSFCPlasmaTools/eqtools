@@ -1105,7 +1105,7 @@ class Equilibrium(object):
 
             #R_grid = 5
             self._RmidSpline = scipy.interpolate.BiVariateSpline(t.flatten(),
-                                                                 psi_norm_on_grid.flatten()),
+                                                                 psi_norm_on_grid.flatten(),
                                                                  R_grid.flatten())
             
             return self._RmidSpline
