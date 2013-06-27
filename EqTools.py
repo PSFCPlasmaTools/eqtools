@@ -1103,7 +1103,7 @@ class Equilibrium(object):
         except KeyError:
             resample_factor = 3
 
-            R_grid = 
+            #R_grid = 5
             self._RmidSpline = scipy.interpolate.BiVariateSpline(t.flatten(),
                                                                  psi_norm_on_grid.flatten()),
                                                                  R_grid.flatten())
