@@ -998,6 +998,8 @@ class Equilibrium(object):
         try:
             return self._phiNormSpline[idx][kind]
         except KeyError:
+            # Insert zero at beginning because older versions of cumtrapz don't
+            # support the initial keyword to make the initial value zero:
             phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile()[:, idx]), 0, 0)
             phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
 
@@ -1015,6 +1017,8 @@ class Equilibrium(object):
         try:
             return self._phiNormSpline
         except KeyError:
+            # Insert zero at beginning because older versions of cumtrapz don't
+            # support the initial keyword to make the initial value zero:
             phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.GetQProfile(),axis=0), 0, 0, axis=1)
             phi_norm_meas = phi_norm_meas / phi_norm_meas[:,-1]
             self._phiNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas)),
