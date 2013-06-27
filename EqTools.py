@@ -400,13 +400,9 @@ class Equilibrium(object):
             psi_0 = self.getFluxAxis()[time_idxs]
 
         else:
-            # use spline to generate the psi at the core and at boundary.
-            try:
-                psi_boundary = 
-                psi_0 = 
-           except:
-            psi_boundary = scipy.interpolate.interp1d(self.getFluxLCFS(),self.getTimeBase()).ev(t)
-            psi_0 = scipy.interpolate.interp1d(self.getFluxAxis(),self.getTimeBase()).ev(t)
+            # use 1d spline to generate the psi at the core and at boundary.
+            psi_boundary = self.getLCFSPsiSpline().ev(t)
+            psi_0 = self.getPsi0Spline.ev(t)
 
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
 
@@ -656,7 +652,7 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(time_idxs)(psi_norm)
+            quan_norm = spline_func(t,psi_norm)
             if rho:
                 #quan_norm((quan_norm - 
                 print('no')
@@ -1099,13 +1095,18 @@ class Equilibrium(object):
             return self._RmidSpline[idx][kind]
 
     def _getRmidBiSpline(self):
-        """THIS FUNCTION NEEDS HEAVY WORK AS THE PREVIOUS METHOD CONFLICTS HEAVILY"""
+        """Due to the forced variation in R_grid and psi_norm_on_grid, this cannot be
+        solved using RectBivariateSpline. Must use BivariateSpline, which is slower, I believe
+        the core problems can be solved by forcing the inner boundary condition to the psi_0"""
         try:
             return self._RmidSpline
         except KeyError:
             resample_factor = 3
-            self._RmidSpline = scipy.interpolate.RectBiVariateSpline(self.getTimeBase(),
-                                                                     psi_norm_on_grid)
+
+            R_grid = 
+            self._RmidSpline = scipy.interpolate.BiVariateSpline(t.flatten(),
+                                                                 psi_norm_on_grid.flatten()),
+                                                                 R_grid.flatten())
             
             return self._RmidSpline
            # R_grid = scipy.
