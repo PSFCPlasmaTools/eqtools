@@ -341,12 +341,12 @@ class Equilibrium(object):
         # Optimized form for single t value case:
         if not self._tricubic:
             if single_time:
-                out_vals = self._getFluxBiSpline(time_idxs[0]).ev(Z, R)
+                out_vals = self._getFluxBiSpline(time_idxs[0]).ev(R, Z)
             else:
                 out_vals = scipy.zeros(t.shape)
             # Need to loop over time_idxs
                 for k in xrange(0, len(t)):
-                    out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k]) # IS THIS WORKING PROPERLY?
+                    out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(R[k], Z[k])
         else:
             out_vals = self._getFluxTriSpline().ev(t,R,Z)
         # Correct for current sign:
@@ -401,8 +401,8 @@ class Equilibrium(object):
 
         else:
             # use 1d spline to generate the psi at the core and at boundary.
-            psi_boundary = self.getLCFSPsiSpline().ev(t)
-            psi_0 = self.getPsi0Spline.ev(t)
+            psi_boundary = self.getLCFSPsiSpline()(t)
+            psi_0 = self.getPsi0Spline()(t)
 
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
 
@@ -652,10 +652,10 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(t,psi_norm)
+            quan_norm = spline_func.ev(t,psi_norm)
             if rho:
-                #quan_norm((quan_norm - 
-                print('no')
+                magR = self._getMagRSpline(length_unit='m')(t)
+                quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(t) - magR)
 
         # Restore original shape:
         quan_norm = scipy.reshape(quan_norm, original_shape)
@@ -974,8 +974,8 @@ class Equilibrium(object):
         try:
             return self._psiOfRZSpline[idx]
         except KeyError:
-            self._psiOfRZSpline[idx] = scipy.interpolate.RectBivariateSpline(self.getZGrid(length_unit='m'),
-                                                                             self.getRGrid(length_unit='m'),
+            self._psiOfRZSpline[idx] = scipy.interpolate.RectBivariateSpline(self.getRGrid(length_unit='m'),
+                                                                             self.getZGrid(length_unit='m'),
                                                                              self.getFluxGrid()[idx, :, :])
             return self._psiOfRZSpline[idx]
 
@@ -996,6 +996,8 @@ class Equilibrium(object):
         try:
             return self._phiNormSpline[idx][kind]
         except KeyError:
+            # Insert zero at beginning because older versions of cumtrapz don't
+            # support the initial keyword to make the initial value zero:
             phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile()[:, idx]), 0, 0)
             phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
 
@@ -1013,6 +1015,8 @@ class Equilibrium(object):
         try:
             return self._phiNormSpline
         except KeyError:
+            # Insert zero at beginning because older versions of cumtrapz don't
+            # support the initial keyword to make the initial value zero:
             phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.GetQProfile(),axis=0), 0, 0, axis=1)
             phi_norm_meas = phi_norm_meas / phi_norm_meas[:,-1]
             self._phiNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas)),
