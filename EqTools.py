@@ -25,6 +25,7 @@ import re
 
 try:
     import trispline
+    _has_trispline = True
 except ImportError:
     print("WARNING: trispline module could not be loaded -- tricubic spline interpolation will not be available.")
     _has_trispline = False
@@ -256,8 +257,8 @@ class Equilibrium(object):
             else:
                 #variables that are purely time dependent require splines rather
                 #than indexes for interpolation.
-                self._psiOfLCFSSpline = {}
                 self._psiOfPsi0Spline = {}
+                self._psiOfLCFSSpline = {}
                 self._MagRSpline = {}
             
         # These are indexes of splines, and become higher dimensional splines
@@ -347,7 +348,7 @@ class Equilibrium(object):
                 for k in xrange(0, len(t)):
                     out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k]) # IS THIS WORKING PROPERLY?
         else:
-            out_vals = self._getFluxTriSpline().ev(Z,R,t)
+            out_vals = self._getFluxTriSpline().ev(t,R,Z)
         # Correct for current sign:
         out_vals = -1 * out_vals * self.getCurrentSign()
 
@@ -399,10 +400,9 @@ class Equilibrium(object):
             psi_0 = self.getFluxAxis()[time_idxs]
 
         else:
-            # use spline to generate the psi at the core and at boundary.
-
-            psi_boundary = scipy.interpolate.interp1d(self.getFluxLCFS(),self.getTimeBase()).ev(t)
-            psi_0 = scipy.interpolate.interp1d(self.getFluxAxis(),self.getTimeBase()).ev(t)
+            # use 1d spline to generate the psi at the core and at boundary.
+            psi_boundary = self.getLCFSPsiSpline().ev(t)
+            psi_0 = self.getPsi0Spline.ev(t)
 
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
 
@@ -652,7 +652,7 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(time_idxs)(psi_norm)
+            quan_norm = spline_func(t,psi_norm)
             if rho:
                 #quan_norm((quan_norm - 
                 print('no')
@@ -924,7 +924,7 @@ class Equilibrium(object):
                 t = scipy.ones(R.shape) * t[0]
                 time_idxs = scipy.ones(R.shape, dtype=int) * time_idxs[0]
         else:
-            time_idxs = SP.array([None])
+            time_idxs = scipy.array([None])
 
         return (R, Z, t, time_idxs, original_shape, single_val, single_time)
 
@@ -984,7 +984,7 @@ class Equilibrium(object):
         try:
             return self._psiOfRZSpline
         except KeyError:
-            self_psiOfRZSpline = trispline.spline(self.getTimeBase(),
+            self._psiOfRZSpline = trispline.spline(self.getTimeBase(),
                                                   self.getRGrid(length_unit='m'),
                                                   self.getZGrid(length_unit='m'),
                                                   self.getFluxGrid())
@@ -1009,6 +1009,18 @@ class Equilibrium(object):
                 self._phiNormSpline[idx] = {kind: spline}
             return self._phiNormSpline[idx][kind]
 
+    def _getPhiNormBiSpline(self):
+        try:
+            return self._phiNormSpline
+        except KeyError:
+            phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.GetQProfile(),axis=0), 0, 0, axis=1)
+            phi_norm_meas = phi_norm_meas / phi_norm_meas[:,-1]
+            self._phiNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas)),
+                                                                        self.getTimeBase(),
+                                                                        phi_norm_meas)
+            return self._phiNormSpline
+                                                                        
+
     def _getVolNormSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
         index idx, generating it if it does not already exist."""
@@ -1027,6 +1039,19 @@ class Equilibrium(object):
             except KeyError:
                 self._volNormSpline[idx] = {kind: spline}
             return self._volNormSpline[idx][kind]
+
+    def _getVolNormBiSpline(self):
+        try:
+            return self._volNormSpline
+        except KeyError:
+            vol_norm_meas = self.getFluxVol()
+            vol_norm_meas = vol_norm_meas / vol_norm_meas[:,-1]
+            
+            self._volNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(vol_norm_meas)),
+                                                                        self.getTimeBase(),
+                                                                        vol_norm_meas)
+            return self._volNormSpline
+                                                                        
 
     def _getRmidSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
@@ -1068,6 +1093,54 @@ class Equilibrium(object):
             except KeyError:
                 self._RmidSpline[idx] = {kind: spline}
             return self._RmidSpline[idx][kind]
+
+    def _getRmidBiSpline(self):
+        """Due to the forced variation in R_grid and psi_norm_on_grid, this cannot be
+        solved using RectBivariateSpline. Must use BivariateSpline, which is slower, I believe
+        the core problems can be solved by forcing the inner boundary condition to the psi_0"""
+        try:
+            return self._RmidSpline
+        except KeyError:
+            resample_factor = 3
+
+            #R_grid = 5
+            self._RmidSpline = scipy.interpolate.BiVariateSpline(t.flatten(),
+                                                                 psi_norm_on_grid.flatten(),
+                                                                 R_grid.flatten())
+            
+            return self._RmidSpline
+           # R_grid = scipy.
+
+    def _getPsi0Spline(self, kind='cubic'):
+        try:
+            return self._psiOfPsi0Spline
+        except KeyError:
+            self._psiOfPsi0Spline = scipy.interpolate.interp1d(self.getFluxAxis(),
+                                                self.getTimeBase(),
+                                                kind=kind,
+                                                bounds_error=False)
+            return self._psiOfPsi0Spline
+
+    def _getLCFSPsiSpline(self, kind='cubic'):
+        try:
+            return self._psiOfLCFSSpline
+        except KeyError:
+            self._psiOfLCFSSpline = scipy.interpolate.interp1d(self.getFluxLCFS(),
+                                                self.getTimeBase(),
+                                                kind=kind,
+                                                bounds_error=False)
+            return self._psiOfLCFSSpline
+
+    def _getMagRSpline(self,length_unit=1, kind='cubic'):
+        try:
+            return self._MagRSpline
+        except KeyError:
+            self._MagRSpline = scipy.interpolate.interp1d(self.getMagR(length_unit=length_unit),
+                                                          self.getTimeBase(),
+                                                          kind=kind,
+                                                          bounds_error=False)
+
+            return self._MagRSpline
 
     def getTreeInfo(self):
         #returns AttrDict of instance parameters (shot, EFIT tree, size and timebase info)
@@ -1380,7 +1453,7 @@ class EFITTree(Equilibrium):
     Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
     Additional data are pulled at the first request and stored for subsequent usage.
     """
-    def __init__(self, shot, tree, root, length_unit='m'):
+    def __init__(self, shot, tree, root, length_unit='m', tspline=False):
         """
         Intializes EFITTree object. Pulls data from MDS tree for storage in
         instance attributes. Core attributes are populated from the MDS tree
@@ -1397,7 +1470,7 @@ class EFITTree(Equilibrium):
             print("ERROR: MDSplus module did not load properly. Exception is below:")
             raise _e_MDS
 
-        super(EFITTree, self).__init__(length_unit=length_unit)
+        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline)
         
         self._shot = shot
         self._tree = tree
@@ -2289,7 +2362,7 @@ class CModEFITTree(EFITTree):
     Additional data are pulled at the first request and stored for subsequent usage.
     """
 
-    def __init__(self, shot, tree='ANALYSIS', length_unit='m'):
+    def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False):
         """
         Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
         in instance attributes.  Core attributes are populated from the MDS tree on initialization.
@@ -2307,7 +2380,7 @@ class CModEFITTree(EFITTree):
         else:
             root = '\\'+tree+'::top.results.'
 
-        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit)
+        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline)
     
     def getMachineCrossSection(self):
         """
