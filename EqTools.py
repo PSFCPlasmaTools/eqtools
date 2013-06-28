@@ -976,8 +976,12 @@ class Equilibrium(object):
         try:
             return self._psiOfRZSpline[idx]
         except KeyError:
-            self._psiOfRZSpline[idx] = scipy.interpolate.RectBivariateSpline(self.getRGrid(length_unit='m'),
-                                                                             self.getZGrid(length_unit='m'),
+            # Note the order of the arguments -- psiRZ is stored with t along
+            # the first dimension, Z along the second and R along the third.
+            # This leads to intuitive behavior when contour plotting, but
+            # mandates the syntax here.
+            self._psiOfRZSpline[idx] = scipy.interpolate.RectBivariateSpline(self.getZGrid(length_unit='m'),
+                                                                             self.getRGrid(length_unit='m'),
                                                                              self.getFluxGrid()[idx, :, :])
             return self._psiOfRZSpline[idx]
 
