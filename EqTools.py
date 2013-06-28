@@ -654,7 +654,7 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func.ev(t,psi_norm)
+            quan_norm = spline_func.ev(t, psi_norm)
             if rho:
                 magR = self._getMagRSpline(length_unit='m')(t)
                 quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(t) - magR)
@@ -1111,19 +1111,19 @@ class Equilibrium(object):
 
             #generate timebase and R_grid through a meshgrid
             t,R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
+            Z_grid = scipy.dot(scipy.ones((resample_factor,1)),
+                               scipy.atleast_2d(self.getZgrid(length_unit='m')))
 
             for idx in scipy.arange(self.getTimeBase().size):
-                R_grid[idx,:] = scipy.linspace(self.getMagR(length_unit='m')[idx],
+                R_grid[:,idx] = scipy.linspace(self.getMagR(length_unit='m')[idx],
                                              self.getRGrid(length_unit='m')[-1],
                                              resample_factor)
-                Z_grid[idx,:] = self.getMagZ(length_unit='m')[idx]*scipy.ones((1,resample_factor))
+
                 
 
-            psi_norm_on_grid = self.rz2psinorm(Rgrid,
-                                               self.getMagZ(length_unit='m') * scipy.ones(R_grid.shape),
-                                               t)
+            psi_norm_on_grid = self.rz2psinorm(Rgrid, Zgrid, t)
             
-            self._RmidSpline = scipy.interpolate.BiVariateSpline(t.flatten(),
+            self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(t.flatten(),
                                                                  psi_norm_on_grid.flatten(),
                                                                  R_grid.flatten())
             
