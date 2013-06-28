@@ -654,7 +654,7 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func.ev(t, psi_norm)
+            quan_norm = spline_func(time_idxs)(t, psi_norm) #time_idxs is set to None
             if rho:
                 magR = self._getMagRSpline(length_unit='m')(t)
                 quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(t) - magR)
