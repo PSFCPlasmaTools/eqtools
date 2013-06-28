@@ -343,12 +343,12 @@ class Equilibrium(object):
         # Optimized form for single t value case:
         if not self._tricubic:
             if single_time:
-                out_vals = self._getFluxBiSpline(time_idxs[0]).ev(R, Z)
+                out_vals = self._getFluxBiSpline(time_idxs[0]).ev(Z, R)
             else:
                 out_vals = scipy.zeros(t.shape)
             # Need to loop over time_idxs
                 for k in xrange(0, len(t)):
-                    out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(R[k], Z[k])
+                    out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k])
         else:
             out_vals = self._getFluxTriSpline().ev(t,R,Z)
         # Correct for current sign:
