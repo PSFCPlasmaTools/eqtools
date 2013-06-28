@@ -1184,6 +1184,10 @@ class Equilibrium(object):
 
     def getFluxGrid(self):
         #returns 3D grid of psi(r,z,t)
+        # The array returned should have the following dimensions:
+        #   First dimension: time
+        #   Second dimension: Z
+        #   Third dimension: R
         raise NotImplementedError()
 
     def getRGrid(self):
