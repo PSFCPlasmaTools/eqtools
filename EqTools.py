@@ -350,7 +350,7 @@ class Equilibrium(object):
                 for k in xrange(0, len(t)):
                     out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k])
         else:
-            out_vals = self._getFluxTriSpline().ev(t,R,Z)
+            out_vals = self._getFluxTriSpline().ev(t,Z,R)
         # Correct for current sign:
         out_vals = -1 * out_vals * self.getCurrentSign()
 
@@ -403,8 +403,8 @@ class Equilibrium(object):
 
         else:
             # use 1d spline to generate the psi at the core and at boundary.
-            psi_boundary = self.getLCFSPsiSpline()(t)
-            psi_0 = self.getPsi0Spline()(t)
+            psi_boundary = self._getLCFSPsiSpline()(t)
+            psi_0 = self._getPsi0Spline()(t)
 
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
 
@@ -448,7 +448,7 @@ class Equilibrium(object):
 
         Behavior over various shapes of inputs is the same as for rz2psi, refer
         to rz2psi's docstring for more information and example calling patterns."""
-        self._RZ2Quan(self._getPhiNormSpline, *args, **kwargs)
+        return self._RZ2Quan(self._getPhiNormSpline, *args, **kwargs)
 
     def rz2volnorm(self, *args, **kwargs):
         """Calculates the normalized flux surface volume, based on the IDL
@@ -654,13 +654,14 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(time_idxs)(t, psi_norm) #time_idxs is set to None
+            quan_norm = spline_func(time_idxs).ev(psi_norm, t) #time_idxs is set to None
             if rho:
                 magR = self._getMagRSpline(length_unit='m')(t)
                 quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(t) - magR)
 
         # Restore original shape:
         quan_norm = scipy.reshape(quan_norm, original_shape)
+ 
         if sqrt:
             scipy.place(quan_norm, quan_norm < 0, 0)
             out = scipy.sqrt(quan_norm)
@@ -670,7 +671,7 @@ class Equilibrium(object):
         if single_value:
             out = out[0]
             time_idxs = time_idxs[0]
-
+ 
         if return_t:
             return (out, time_idxs)
         else:
@@ -987,79 +988,79 @@ class Equilibrium(object):
 
     def _getFluxTriSpline(self):
         """Gets the tricubic interpolating spline for the flux"""
-        try:
+        if self._psiOfRZSpline:
             return self._psiOfRZSpline
-        except KeyError:
+        else:
             self._psiOfRZSpline = trispline.spline(self.getTimeBase(),
-                                                  self.getRGrid(length_unit='m'),
                                                   self.getZGrid(length_unit='m'),
+                                                  self.getRGrid(length_unit='m'),
                                                   self.getFluxGrid())
             return self._psiOfRZSpline
 
     def _getPhiNormSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
         index idx, generating it if it does not already exist."""
-        try:
-            return self._phiNormSpline[idx][kind]
-        except KeyError:
-            # Insert zero at beginning because older versions of cumtrapz don't
-            # support the initial keyword to make the initial value zero:
-            phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile()[:, idx]), 0, 0)
-            phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
-
-            spline = scipy.interpolate.interp1d(scipy.linspace(0, 1, len(phi_norm_meas)),
-                                                phi_norm_meas,
-                                                kind=kind,
-                                                bounds_error=False)
+        if not self._tricubic:
             try:
-                self._phiNormSpline[idx][kind] = spline
+                return self._phiNormSpline[idx][kind]
             except KeyError:
-                self._phiNormSpline[idx] = {kind: spline}
-            return self._phiNormSpline[idx][kind]
+                # Insert zero at beginning because older versions of cumtrapz don't
+                # support the initial keyword to make the initial value zero:
+                phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile()[:, idx]), 0, 0)
+                phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
 
-    def _getPhiNormBiSpline(self):
-        try:
-            return self._phiNormSpline
-        except KeyError:
-            # Insert zero at beginning because older versions of cumtrapz don't
-            # support the initial keyword to make the initial value zero:
-            phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.GetQProfile(),axis=0), 0, 0, axis=1)
-            phi_norm_meas = phi_norm_meas / phi_norm_meas[:,-1]
-            self._phiNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas)),
-                                                                        self.getTimeBase(),
-                                                                        phi_norm_meas)
-            return self._phiNormSpline
+                spline = scipy.interpolate.interp1d(scipy.linspace(0, 1, len(phi_norm_meas)),
+                                                    phi_norm_meas,
+                                                    kind=kind,
+                                                    bounds_error=False)
+                try:
+                    self._phiNormSpline[idx][kind] = spline
+                except KeyError:
+                    self._phiNormSpline[idx] = {kind: spline}
+                return self._phiNormSpline[idx][kind]
+        else:
+            if self._phiNormSpline:
+                return self._phiNormSpline
+            else:
+                # Insert zero at beginning because older versions of cumtrapz don't
+                # support the initial keyword to make the initial value zero:
+                phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile(),axis=0), 0, 0, axis=0)
+                phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
+                self._phiNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas[:,0])),
+                                                                            self.getTimeBase(),
+                                                                            phi_norm_meas)
+                return self._phiNormSpline
                                                                         
     def _getVolNormSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
         index idx, generating it if it does not already exist."""
-        try:
-            return self._volNormSpline[idx][kind]
-        except KeyError:
-            vol_norm_meas = self.getFluxVol()[:, idx]
-            vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
-
-            spline = scipy.interpolate.interp1d(scipy.linspace(0, 1, len(vol_norm_meas)),
-                                                vol_norm_meas,
-                                                kind=kind,
-                                                bounds_error=False)
+        if not self._tricubic:
             try:
-                self._volNormSpline[idx][kind] = spline
+                return self._volNormSpline[idx][kind]
             except KeyError:
-                self._volNormSpline[idx] = {kind: spline}
-            return self._volNormSpline[idx][kind]
+                vol_norm_meas = self.getFluxVol()[:, idx]
+                vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
 
-    def _getVolNormBiSpline(self):
-        try:
-            return self._volNormSpline
-        except KeyError:
-            vol_norm_meas = self.getFluxVol()
-            vol_norm_meas = vol_norm_meas / vol_norm_meas[:,-1]
-            
-            self._volNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(vol_norm_meas)),
-                                                                        self.getTimeBase(),
-                                                                        vol_norm_meas)
-            return self._volNormSpline
+                spline = scipy.interpolate.interp1d(scipy.linspace(0, 1, len(vol_norm_meas)),
+                                                    vol_norm_meas,
+                                                    kind=kind,
+                                                    bounds_error=False)
+                try:
+                    self._volNormSpline[idx][kind] = spline
+                except KeyError:
+                    self._volNormSpline[idx] = {kind: spline}
+                return self._volNormSpline[idx][kind]
+        else:
+            #BiSpline for time variant interpolation
+            if self._volNormSpline:
+                return self._volNormSpline
+            else:
+                vol_norm_meas = self.getFluxVol()
+                vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
+                self._volNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(vol_norm_meas[:,0])),
+                                                                            self.getTimeBase(),
+                                                                            vol_norm_meas)
+                return self._volNormSpline
                                                                         
     def _getRmidSpline(self, idx, kind='cubic'):
         """Returns the 1d cubic spline object corresponding to the passed time
@@ -1077,99 +1078,92 @@ class Equilibrium(object):
         
         The units of R_mid are always meters, and are converted by the wrapper
         functions to whatever the user wants."""
-        try:
-            return self._RmidSpline[idx][kind]
-        except KeyError:
-            # New approach: create a fairly dense radial grid from the global
-            # flux grid to avoid 1d interpolation problems in the core. The
-            # bivariate spline seems to be a little more robust in this respect.
-            resample_factor = 3
-            R_grid = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                    self.getRGrid(length_unit='m')[-1],
-                                    resample_factor * len(self.getRGrid(length_unit='m')))
-
-            psi_norm_on_grid = self.rz2psinorm(R_grid,
-                                               self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
-                                               self.getTimeBase()[idx])
-
-            spline = scipy.interpolate.interp1d(psi_norm_on_grid,
-                                                R_grid,
-                                                kind=kind,
-                                                bounds_error=False)
+        if not self._tricubic:
             try:
-                self._RmidSpline[idx][kind] = spline
+                return self._RmidSpline[idx][kind]
             except KeyError:
-                self._RmidSpline[idx] = {kind: spline}
-            return self._RmidSpline[idx][kind]
+                # New approach: create a fairly dense radial grid from the global
+                # flux grid to avoid 1d interpolation problems in the core. The
+                # bivariate spline seems to be a little more robust in this respect.
+                resample_factor = 3
+                R_grid = scipy.linspace(self.getMagR(length_unit='m')[idx],
+                                        self.getRGrid(length_unit='m')[-1],
+                                        resample_factor * len(self.getRGrid(length_unit='m')))
 
-    def _getRmidBiSpline(self):
-        """Due to the forced variation in R_grid and psi_norm_on_grid, this cannot be
-        solved using RectBivariateSpline. Must use BivariateSpline, which is slower, I believe
-        the core problems can be solved by forcing the inner boundary condition to the psi_0"""
-        try:
-            return self._RmidSpline
-        except KeyError:
-            resample_factor = 3 * len(self.getRGrid(length_unit='m'))
+                psi_norm_on_grid = self.rz2psinorm(R_grid,
+                                                   self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
+                                                   self.getTimeBase()[idx])
 
-            self.getTimeBase()
+                spline = scipy.interpolate.interp1d(psi_norm_on_grid,
+                                                    R_grid,
+                                                    kind=kind,
+                                                    bounds_error=False)
+                try:
+                    self._RmidSpline[idx][kind] = spline
+                except KeyError:
+                    self._RmidSpline[idx] = {kind: spline}
+                return self._RmidSpline[idx][kind]
+        else:
+            if self._RmidSpline:
+                return self._RmidSpline
+            else:
+                resample_factor = 3 * len(self.getRGrid(length_unit='m'))
 
             #generate timebase and R_grid through a meshgrid
-            t,R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
-            Z_grid = scipy.dot(scipy.ones((resample_factor,1)),
-                               scipy.atleast_2d(self.getZgrid(length_unit='m')))
+                t,R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
+                Z_grid = scipy.dot(scipy.ones((resample_factor,1)),
+                                   scipy.atleast_2d(self.getMagZ(length_unit='m')))
 
-            for idx in scipy.arange(self.getTimeBase().size):
-                R_grid[:,idx] = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                             self.getRGrid(length_unit='m')[-1],
-                                             resample_factor)
+                for idx in scipy.arange(self.getTimeBase().size):
+                    R_grid[:,idx] = scipy.linspace(self.getMagR(length_unit='m')[idx],
+                                                   self.getRGrid(length_unit='m')[-1],
+                                                   resample_factor)
 
-                
-
-            psi_norm_on_grid = self.rz2psinorm(Rgrid, Zgrid, t)
+                psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t)
+                    
+                self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(psi_norm_on_grid.flatten(),
+                                                                           t.flatten(),
+                                                                           R_grid.flatten())
             
-            self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(t.flatten(),
-                                                                 psi_norm_on_grid.flatten(),
-                                                                 R_grid.flatten())
-            
-            return self._RmidSpline
+                return self._RmidSpline
 
     def _getPsi0Spline(self, kind='cubic'):
-        try:
+        if self._psiOfPsi0Spline:
             return self._psiOfPsi0Spline
-        except KeyError:
-            self._psiOfPsi0Spline = scipy.interpolate.interp1d(self.getFluxAxis(),
-                                                self.getTimeBase(),
-                                                kind=kind,
-                                                bounds_error=False)
+        else:
+            self._psiOfPsi0Spline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                               self.getFluxAxis(),
+                                                               kind=kind,
+                                                               bounds_error=False)
             return self._psiOfPsi0Spline
 
     def _getLCFSPsiSpline(self, kind='cubic'):
-        try:
+        if self._psiOfLCFSSpline:
             return self._psiOfLCFSSpline
-        except KeyError:
-            self._psiOfLCFSSpline = scipy.interpolate.interp1d(self.getFluxLCFS(),
-                                                self.getTimeBase(),
-                                                kind=kind,
-                                                bounds_error=False)
+        else:
+            self._psiOfLCFSSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                               self.getFluxLCFS(),
+                                                               kind=kind,
+                                                               bounds_error=False)
             return self._psiOfLCFSSpline
 
     def _getMagRSpline(self,length_unit=1, kind='cubic'):
-        try:
+        if self._MagRSpline:
             return self._MagRSpline
-        except KeyError:
-            self._MagRSpline = scipy.interpolate.interp1d(self.getMagR(length_unit=length_unit),
-                                                          self.getTimeBase(),
+        else:
+            self._MagRSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                          self.getMagR(length_unit=length_unit),
                                                           kind=kind,
                                                           bounds_error=False)
 
             return self._MagRSpline
 
     def _getRmidOutSpline(self, length_unit=1, kind='cubic'):
-        try:
+        if self._RmidOutSpline:
             return self._RmidOutSpline
-        except KeyError:
-            self._RmidOutSpline = scipy.interpolate.interp1d(self.getRmidOut(length_unit=length_unit),
-                                                             self.getTimeBase(),
+        else:
+            self._RmidOutSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                             self.getRmidOut(length_unit=length_unit),
                                                              kind=kind,
                                                              bounds_error=False)
             return self._RmidOutSpline
