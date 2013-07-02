@@ -128,8 +128,8 @@ void ev(double val[],double dx1[], double dx2[], double dx3[], double f[], int p
 {
   int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
   double fin[64],a[64];
-  gap1 = fx1 - 4;
-  gap2 = fx1*(fx2 - 4);
+  gap1 = fx2 - 4;
+  gap2 = fx3*(fx2 - 4);
 
  
   for(i=0;i < ix; i++)
