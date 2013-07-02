@@ -23,7 +23,7 @@ import _tricubic
 class spline():
 
 
-    def __init__(self,x,y,z,f):
+    def __init__(self,z,y,x,f):
         self._f = SP.zeros(SP.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
         self._f[1:-1,1:-1,1:-1] = SP.array(f) # place f in center, so that it is padded by unfilled values on all sides
         # faces
@@ -41,10 +41,10 @@ class spline():
         self._y = SP.array(y)
         self._z = SP.array(z)
 
-    def ev(self,x1,y1,z1):
-        x = SP.array((x1,))
-        y = SP.array((y1,))
-        z = SP.array((z1,)) # This will not modify x1,y1,z1.
+    def ev(self,z1,y1,x1):
+        x = SP.atleast_1d(x1)
+        y = SP.atleast_1d(y1)
+        z = SP.atleast_1d(z1) # This will not modify x1,y1,z1.
         val = SP.nan*SP.zeros(x.shape)
         if SP.any(x < self._x[0]) or SP.any(x > self._x[-1]):
             raise ValueError('x value exceeds bounds of interpolation grid ')
@@ -58,9 +58,12 @@ class spline():
         inp = SP.intersect1d(SP.intersect1d(xinp,yinp),zinp)
 
         if inp.size != 0:
-            ix = SP.digitize(x[inp],self._x) - 1
-            iy = SP.digitize(y[inp],self._y) - 1
-            iz = SP.digitize(z[inp],self._z) - 1
+            ix = SP.digitize(x[inp],self._x)
+            ix = ix.clip(0,self._x.size - 1) - 1
+            iy = SP.digitize(y[inp],self._y)
+            iy = iy.clip(0,self._y.size - 1) - 1
+            iz = SP.digitize(z[inp],self._z)
+            iz = iz.clip(0,self._z.size - 1) - 1
             pos = ix + self._f.shape[1]*(iy + self._f.shape[2]*iz)
             indx = SP.argsort(pos) #each voxel is described uniquely, and this is passed to speed evaluation.
             dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
