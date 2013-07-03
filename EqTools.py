@@ -224,7 +224,7 @@ class Equilibrium(object):
     specific subclasses are set up to account for inter-device/-code differences in
     data storage.
     """
-    def __init__(self, length_unit='m', tspline=False):
+    def __init__(self, length_unit='m', tspline=False, fast=False):
         """
         Optional keyword length_unit[='m'] sets the base unit used for any
         quantity whose dimensions are length to any power. Valid options are:
@@ -251,6 +251,8 @@ class Equilibrium(object):
             self._length_unit = length_unit
         
         self._tricubic = bool(tspline) # forces this parameter to be a boolean regardless of input
+        self._fast = bool(fast) #assumes timebase is monotonically increases
+        
         if self._tricubic:
             if not _has_trispline:
                 raise ValueError("trispline module did NOT load, so argument tspline=True is invalid!")
@@ -966,10 +968,18 @@ class Equilibrium(object):
         each value in v."""
         # Gracefully handle single-value versus array inputs, returning in the
         # corresponding type.
-        try:
-            return scipy.array([(scipy.absolute(a - val)).argmin() for val in v])
-        except TypeError:
-            return (scipy.absolute(a - v)).argmin()
+        if not self._fast:
+            try:
+                return scipy.array([(scipy.absolute(a - val)).argmin() for val in v])
+            except TypeError:
+                return (scipy.absolute(a - v)).argmin()
+        else:
+            try:
+                return scipy.digitize(v,(a[1:]+a[:-1])/2.0)
+            except ValueError:
+                return scipy.digitize(SP.atleast_1d(v),(a[1:]+a[:-1])/2.0).reshape(())
+
+            
 
     def _getFluxBiSpline(self, idx):
         """Gets the spline corresponding to the given time index, generating
@@ -1483,7 +1493,7 @@ class EFITTree(Equilibrium):
     Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
     Additional data are pulled at the first request and stored for subsequent usage.
     """
-    def __init__(self, shot, tree, root, length_unit='m', tspline=False):
+    def __init__(self, shot, tree, root, length_unit='m', tspline=False, fast=False):
         """
         Intializes EFITTree object. Pulls data from MDS tree for storage in
         instance attributes. Core attributes are populated from the MDS tree
@@ -1500,7 +1510,7 @@ class EFITTree(Equilibrium):
             print("ERROR: MDSplus module did not load properly. Exception is below:")
             raise _e_MDS
 
-        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline)
+        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline, fast=fast)
         
         self._shot = shot
         self._tree = tree
@@ -2392,7 +2402,7 @@ class CModEFITTree(EFITTree):
     Additional data are pulled at the first request and stored for subsequent usage.
     """
 
-    def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False):
+    def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False, fast=False):
         """
         Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
         in instance attributes.  Core attributes are populated from the MDS tree on initialization.
@@ -2410,7 +2420,7 @@ class CModEFITTree(EFITTree):
         else:
             root = '\\'+tree+'::top.results.'
 
-        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline)
+        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, fast=fast)
     
     def getMachineCrossSection(self):
         """
