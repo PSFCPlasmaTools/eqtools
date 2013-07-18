@@ -656,7 +656,7 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(time_idxs).ev(psi_norm, t) #time_idxs is set to None
+            quan_norm = spline_func(time_idxs).ev(psi_norm.flatten(), t.flatten()) #time_idxs is set to None
             if rho:
                 magR = self._getMagRSpline(length_unit='m')(t)
                 quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(t) - magR)
@@ -1036,9 +1036,10 @@ class Equilibrium(object):
                 # support the initial keyword to make the initial value zero:
                 phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile(),axis=0), 0, 0, axis=0)
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
-                self._phiNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas[:,0])),
-                                                                            self.getTimeBase(),
-                                                                            phi_norm_meas)
+                self._phiNormSpline = trispline.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas[:,0])),
+                                                                    self.getTimeBase(),
+                                                                    phi_norm_meas,
+                                                                    bounds_error = False)
                 return self._phiNormSpline
                                                                         
     def _getVolNormSpline(self, idx, kind='cubic'):
@@ -1067,9 +1068,10 @@ class Equilibrium(object):
             else:
                 vol_norm_meas = self.getFluxVol()
                 vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
-                self._volNormSpline = scipy.interpolate.RectBivariateSpline(scipy.linspace(0, 1, len(vol_norm_meas[:,0])),
-                                                                            self.getTimeBase(),
-                                                                            vol_norm_meas)
+                self._volNormSpline = trispline.RectBivariateSpline(scipy.linspace(0, 1, len(vol_norm_meas[:,0])),
+                                                                    self.getTimeBase(),
+                                                                    vol_norm_meas,
+                                                                    bounds_error = False)
                 return self._volNormSpline
                                                                         
     def _getRmidSpline(self, idx, kind='cubic'):
