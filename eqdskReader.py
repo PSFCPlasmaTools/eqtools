@@ -12,7 +12,7 @@ class EQDSKReader(Equilibrium):
     and time window, stores as object attributes.  Each EFIT variable or set of variables
     is recovered with a corresponding getter method.
     """
-    def __init__(self,shot,time,filename=None,length_unit='m'):
+    def __init__(self,shot,time,gfilename=None,afilename=None,length_unit='m'):
         """
         Initializes EQDSKReader object.  Pulls data from g- and a-files for given
         shot, time slice.  By default, attempts to parse shot, time inputs into file
@@ -22,22 +22,51 @@ class EQDSKReader(Equilibrium):
         INPUTS:
         shot:       shot index
         time:       time slice in ms
-        filename:   (optional, default None) if set, ignores shot,time inputs
+        gfilename:  (optional, default None) if set, ignores shot,time inputs and pulls g-file by name
+        afilename:  (optional, default None) if set, ignores shot,time inputs and pulls a-file by name
         """
         #instantiate superclass, forcing time splining to false (eqdsk only contains single time slice)
         super(EQDSKReader,self).__init__(length_unit=length_unit,tspline=False)
 
-        #if filename input is not set, attempt to parse shot, time inputs into file path
-        if filename is None:
-            self._shot = shot
+        #parse shot and time inputs into standard naming convention
+        if len(str(time)) < 5:
+            timestring = '0'*(5-len(str(time))) + str(time)
+        elif len(str(time)) > 5:
+            timestring = str(time)[-5:]
+            print('Time window string greater than 5 digits.  Masking to last 5 digits.  If this violates the selected EQ files, \
+                  please use explicit filename inputs.')
+        else:   #exactly five digits
+            timestring = str(time)
 
-            #parse time slice (ms) to five digits to conform with filename conventions
-            if len(str(time)) < 5:
-                timestring = '0'*(5-len(str(time))) + str(time)
-            elif len(str(time)) == 5:
-                timestring = str(time)
-            
-            name = str(shot)+'.'+timestring
+        name = str(shot)+'.'+timestring
 
-            #check current directory for filenames containing putative eqdsk name
-            currfiles = glob.glob('*'+name+'*')
+        #if explicit filename for g-file is not set, check current directory for files matching name
+        if gfilename is None:
+            gcurrfiles = glob.glob('g'+name+'*')
+            if len(gcurrfiles) == 1:
+                gfilename = gcurrfiles[0]
+            elif len(gcurrfiles) > 1:
+                raise ValueError('multiple valid g-files detected in directory.  Please select a file with explicit \
+                                  input or clean directory.')
+            else:   #no files found
+                raise ValueError('no valid g-files detected in directory.  Please select a file with explicit input or \
+                                  ensure file is in directory.')
+
+        #and likewise for a-file name
+        if afilename is None:
+            acurrfiles = glob.glob('a'+name+'*')
+            if len(acurrfiles) == 1:
+                afilename = acurrfiles[0]
+            elif len(acurrfiles) > 1:
+                raise ValueError('multiple valid a-files detected in directory.  Please select a file with explicit \
+                                  input or clean directory.')
+            else:   #no files found
+                raise ValueError('no valid a-files detected in directory.  Please select a file with explicit input or \
+                                  ensure file in in directory.')
+        
+
+
+
+
+
+
