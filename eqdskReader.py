@@ -4,6 +4,7 @@ from EqTools import *
 import scipy
 import glob
 import csv
+import re
 
 class EQDSKReader(Equilibrium):
     """
@@ -107,19 +108,40 @@ class EQDSKReader(Equilibrium):
             # read the header line, containing grid size, mfit size, and type data
             line = next(reader)
             self._date = line[1]          # (str) date of g-file generation, MM/DD/YYYY
-            self._shot = line[2]          # (int) shot index
-            self._timestring = line[3]    # (str) time index, with units (e.g. '875ms')
-            self._imfit = int(line[4])    # not sure what this is supposed to be...
-            self._nw = int(line[5])       # width of flux grid (dim(R))
-            self._nh = int(line[6])       # height of flux grid (dim(Z))
+            self._shot = int(line[2])     # (int) shot index
+            timestring = line[3]          # (str) time index, with units (e.g. '875ms')
+            imfit = int(line[4])          # not sure what this is supposed to be...
+            nw = int(line[5])             # width of flux grid (dim(R))
+            nh = int(line[6])             # height of flux grid (dim(Z))
 
+            #extract time, units from timestring
+            time = re.findall('\d+',timestring)[0]
+            self._tunits = timestring.split(time)[1]
+            self._time = np.array(int(time))
+            
             # next line - construction values for RZ grid
             line = next(reader)
-            self._xdim = float(line[0])
-            self._zdim = float(line[1])
-            self._rzero = float(line[2])
-            self._rgrid1 = float(line[3])
-            self._zmid = float(line[4])
+            self._xdim = float(line[0])     # width of R-axis in grid
+            self._zdim = float(line[1])     # height of Z-axis in grid
+            self._rzero = float(line[2])    # zero point of R grid
+            self._rgrid0 = float(line[3])   # start point of R grid
+            self._zmid = float(line[4])     # midpoint of Z grid
+
+            # construct EFIT grid
+            self._rGrid = np.linspace(self._rgrid0,self._rgrid0 + self._xdim,nw)
+            self._zGrid = np.linspace(self._zmid - self._zdim/2.0,self._zmid + self._zdim/2.0,nh)
+            self._drefit = (self._rGrid[-1] - self._rGrid[0])/(nw-1)
+            self._dzefit = (self._zGrid[-1] - self._zGrid[0])/(nh-1)
+
+            # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
+            line = next(reader)
+            self._rmag = float(line[0])
+            self._zmag = float(line[1])
+            self._psiAxis = float(line[2])
+            self._psiLCFS = float(line[3])
+            bzero = float(line[4])
+
+            # read 
             
 
 
