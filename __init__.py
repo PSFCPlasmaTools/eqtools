@@ -16,4 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-from EqTools import *
+from .core import *
+from .EFIT import *
+from .CModEFIT import *
