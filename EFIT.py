@@ -23,7 +23,7 @@ from .core import AttrDict, Equilibrium, ModuleWarning
 import warnings
 
 try:
-    import MDSpluss
+    import MDSplus
     from MDSplus._treeshr import TreeException
     _has_MDS = True
 except Exception as _e_MDS:
