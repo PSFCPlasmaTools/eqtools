@@ -1,9 +1,8 @@
 # inherited class of Equilibrium to handle eqdsk files
 
-from EqTools import *
+from core import *
 import scipy
 import glob
-import csv
 import re
 
 class EQDSKReader(Equilibrium):
@@ -101,12 +100,8 @@ class EQDSKReader(Equilibrium):
 
         # now we start reading the g-file
         with open(gfilename,'r') as gfile:
-            dia = csv.excel()
-            dia.skipinitialspace = True
-            reader = csv.reader(gfile,dia,delimiter=' ')
-
             # read the header line, containing grid size, mfit size, and type data
-            line = next(reader)
+            line = gfile.readline().split()
             self._date = line[1]          # (str) date of g-file generation, MM/DD/YYYY
             self._shot = int(line[2])     # (int) shot index
             timestring = line[3]          # (str) time index, with units (e.g. '875ms')
@@ -117,10 +112,11 @@ class EQDSKReader(Equilibrium):
             #extract time, units from timestring
             time = re.findall('\d+',timestring)[0]
             self._tunits = timestring.split(time)[1]
-            self._time = np.array(int(time))
+            self._time = scipy.array(int(time))
             
             # next line - construction values for RZ grid
-            line = next(reader)
+            line = gfile.readline()
+            line = re.findall('-?\d\.\d*E[-+]\d*',line)     # regex magic!
             self._xdim = float(line[0])     # width of R-axis in grid
             self._zdim = float(line[1])     # height of Z-axis in grid
             self._rzero = float(line[2])    # zero point of R grid
@@ -128,20 +124,69 @@ class EQDSKReader(Equilibrium):
             self._zmid = float(line[4])     # midpoint of Z grid
 
             # construct EFIT grid
-            self._rGrid = np.linspace(self._rgrid0,self._rgrid0 + self._xdim,nw)
-            self._zGrid = np.linspace(self._zmid - self._zdim/2.0,self._zmid + self._zdim/2.0,nh)
+            self._rGrid = scipy.linspace(self._rgrid0,self._rgrid0 + self._xdim,nw)
+            self._zGrid = scipy.linspace(self._zmid - self._zdim/2.0,self._zmid + self._zdim/2.0,nh)
             self._drefit = (self._rGrid[-1] - self._rGrid[0])/(nw-1)
             self._dzefit = (self._zGrid[-1] - self._zGrid[0])/(nh-1)
 
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
-            line = next(reader)
+            line = gfile.readline()
+            line = re.findall('-?\d\.\d*E[-+]\d*',line)
             self._rmag = float(line[0])
             self._zmag = float(line[1])
             self._psiAxis = float(line[2])
             self._psiLCFS = float(line[3])
             bzero = float(line[4])
 
-            # read 
+            # read EFIT-calculated plasma current, psi at magnetic axis (duplicate), 
+            # dummy, R of magnetic axis (duplicate), dummy
+            line = gfile.readline()
+            line = re.findall('-?\d\.\d*E[-+]\d*',line)
+            self._IpCalc = float(line[0])
+
+            # read Z of magnetic axis (duplicate), dummy, psi at LCFS (duplicate), dummy, dummy
+            line = gfile.readline()
+            # don't actually need anything from this line
+
+            # start reading fpol, next nw inputs
+            nrows = nw/5
+            if nw % 5 != 0:     # catch truncated rows
+                nrows += 1
+
+            self._fpol = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    self._fpol.append(float(val))
+            self._fpol = scipy.array(self._fpol)
+
+            # and likewise for pressure
+            self._pres = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    self._pres.append(float(val))
+            self._pres = scipy.array(self._pres)
+
+            # geqdsk written as negative for positive plasma current
+            # ffprim, pprime input with correct EFIT sign
+            self._ffprim = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    self._ffprim.append(float(val))
+            self._ffprim = scipy.array(self._ffprim)
+
+            self._pprime = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    self._pprime.append(float(val))
+            self._pprime = scipy.array(self._pprime)
             
 
 
