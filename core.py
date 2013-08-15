@@ -1011,9 +1011,11 @@ class Equilibrium(object):
             # the first dimension, Z along the second and R along the third.
             # This leads to intuitive behavior when contour plotting, but
             # mandates the syntax here.
-            self._psiOfRZSpline[idx] = scipy.interpolate.RectBivariateSpline(self.getZGrid(length_unit='m'),
-                                                                             self.getRGrid(length_unit='m'),
-                                                                             self.getFluxGrid()[idx, :, :])
+            self._psiOfRZSpline[idx] = scipy.interpolate.RectBivariateSpline(
+                self.getZGrid(length_unit='m'),
+                self.getRGrid(length_unit='m'),
+                self.getFluxGrid()[idx, :, :]
+            )
             return self._psiOfRZSpline[idx]
 
     def _getFluxTriSpline(self):
@@ -1022,9 +1024,9 @@ class Equilibrium(object):
             return self._psiOfRZSpline
         else:
             self._psiOfRZSpline = trispline.spline(self.getTimeBase(),
-                                                  self.getZGrid(length_unit='m'),
-                                                  self.getRGrid(length_unit='m'),
-                                                  self.getFluxGrid())
+                                                   self.getZGrid(length_unit='m'),
+                                                   self.getRGrid(length_unit='m'),
+                                                   self.getFluxGrid())
             return self._psiOfRZSpline
 
     def _getPhiNormSpline(self, idx, kind='cubic'):
@@ -1036,13 +1038,19 @@ class Equilibrium(object):
             except KeyError:
                 # Insert zero at beginning because older versions of cumtrapz don't
                 # support the initial keyword to make the initial value zero:
-                phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile()[:, idx]), 0, 0)
+                phi_norm_meas = scipy.insert(
+                    scipy.integrate.cumtrapz(self.getQProfile()[:, idx]),
+                    0,
+                    0
+                )
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
 
-                spline = scipy.interpolate.interp1d(scipy.linspace(0, 1, len(phi_norm_meas)),
-                                                    phi_norm_meas,
-                                                    kind=kind,
-                                                    bounds_error=False)
+                spline = scipy.interpolate.interp1d(
+                    scipy.linspace(0, 1, len(phi_norm_meas)),
+                    phi_norm_meas,
+                    kind=kind,
+                    bounds_error=False
+                )
                 try:
                     self._phiNormSpline[idx][kind] = spline
                 except KeyError:

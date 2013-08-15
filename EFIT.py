@@ -209,7 +209,7 @@ class EFITTree(Equilibrium):
 
     def getFluxGrid(self):
         """
-        returns EFIT flux grid, [t,r,z]
+        returns EFIT flux grid, [t,z,r]
         """
         if self._psiRZ is None:
             try:
@@ -232,7 +232,8 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
         
         # Default units should be 'm'
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'], length_unit)
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],
+                                                      length_unit)
         return unit_factor * self._rGrid.copy()
 
     def getZGrid(self, length_unit=1):
@@ -243,7 +244,8 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
         
         # Default units should be 'm'
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'], length_unit)
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],
+                                                      length_unit)
         return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
