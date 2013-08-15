@@ -1,6 +1,6 @@
 # inherited class of Equilibrium to handle eqdsk files
 
-from core import *
+from core import Equilibrium
 import scipy
 import glob
 import re
@@ -54,8 +54,8 @@ class EQDSKReader(Equilibrium):
                                   Please select a file with explicit \
                                   input or clean directory.')
             else:   # no files found
-                raise ValueError('No valid g-files detected in directory.  \
-                                  Please select a file with explicit input or \
+                raise ValueError('No valid g-files detected in directory.  \n\
+                                  Please select a file with explicit input or \n\
                                   ensure file is in directory.')
         else:   # check that given file is in directory
             gcurrfiles = glob.glob(gfilename)
@@ -187,6 +187,25 @@ class EQDSKReader(Equilibrium):
                 for val in line:
                     self._pprime.append(float(val))
             self._pprime = scipy.array(self._pprime)
+
+            # read the 2d [nw,nh] array for psiRZ
+            # start by reading nw x nh points into 1D array,
+            # then repack in column order into final array
+            npts = nw*nh
+            nrows = npts/5
+            if npts % 5 != 0:
+                nrows += 1
+
+            psis = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    psis.append(float(val))
+            self._psiRZ = scipy.array(psis).reshape((nw,nh),order='C')
+
+            # 
+                
             
 
 
