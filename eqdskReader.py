@@ -204,13 +204,60 @@ class EQDSKReader(Equilibrium):
                     psis.append(float(val))
             self._psiRZ = scipy.array(psis).reshape((nw,nh),order='C')
 
-            # 
-                
-            
+            # read q(psi) profile, nw points (same basis as fpol, pres, etc.)
+            nrows = nw/5
+            if nw % 5 != 0:
+                nrows += 1
+
+            self._qpsi = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    self._qpsi.append(float(val))
+            self._qpsi = scipy.array(self._qpsi)
+
+            # read nbbbs, limitr
+            line = gfile.readline().split()
+            nbbbs = int(line[0])
+            limitr = int(line[1])
+
+            # next data reads as 2 x nbbbs array, then broken into
+            # rbbbs, zbbbs (R,Z locations of LCFS)
+            npts = 2*nbbbs
+            nrows = npts/5
+            if npts % 5 != 0:
+                nrows += 1
+            bbbs = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    bbbs.append(float(val))
+            bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='C')
+            self._rbbbs = bbbs[0,:]
+            self._zbbbs = bbbs[1,:]
+
+            # next data reads as 2 x limitr array, then broken into
+            # xlim, ylim (locations of limiter)(?)
+            npts = 2*limitr
+            nrows = npts/5
+            if npts % 5 != 0:
+                npts += 1
+            lim = []
+            for i in range(nrows):
+                line = gfile.readline()
+                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                for val in line:
+                    lim.append(float(val))
+            lim = scipy.array(lim).reshape((2,limitr),order='C')
+            self._xlim = lim[0,:]
+            self._ylim = lim[1,:]
 
 
+
                 
-        
+
 
 
 
