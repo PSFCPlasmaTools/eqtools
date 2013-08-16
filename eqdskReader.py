@@ -102,12 +102,12 @@ class EQDSKReader(Equilibrium):
         with open(gfilename,'r') as gfile:
             # read the header line, containing grid size, mfit size, and type data
             line = gfile.readline().split()
-            self._date = line[1]          # (str) date of g-file generation, MM/DD/YYYY
-            self._shot = int(line[2])     # (int) shot index
-            timestring = line[3]          # (str) time index, with units (e.g. '875ms')
-            imfit = int(line[4])          # not sure what this is supposed to be...
-            nw = int(line[5])             # width of flux grid (dim(R))
-            nh = int(line[6])             # height of flux grid (dim(Z))
+            self._date = line[1]                         # (str) date of g-file generation, MM/DD/YYYY
+            self._shot = int(re.split('\D',line[2])[-1]) # (int) shot index
+            timestring = line[3]                         # (str) time index, with units (e.g. '875ms')
+            imfit = int(line[4])                         # not sure what this is supposed to be...
+            nw = int(line[5])                            # width of flux grid (dim(R))
+            nh = int(line[6])                            # height of flux grid (dim(Z))
 
             #extract time, units from timestring
             time = re.findall('\d+',timestring)[0]
@@ -243,7 +243,7 @@ class EQDSKReader(Equilibrium):
             npts = 2*limitr
             nrows = npts/5
             if npts % 5 != 0:
-                npts += 1
+                nrows += 1
             lim = []
             for i in range(nrows):
                 line = gfile.readline()
