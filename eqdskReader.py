@@ -254,6 +254,21 @@ class EQDSKReader(Equilibrium):
             self._xlim = lim[0,:]
             self._ylim = lim[1,:]
 
+            # this is the extent of the original g-file read.
+            # attempt to continue read for newer g-files; exception
+            # handler sets relevant parameters to None for older g-files
+            try:
+                # read kvtor, rvtor, nmass
+                line = gfile.readline().split()
+                kvtor = int(line[0])
+                rvtor = float(line[1])
+                nmass = int(line[2])
+
+                # read kvtor data if present
+                if kvtor > 0:
+                    
+                
+
 
 
                 
