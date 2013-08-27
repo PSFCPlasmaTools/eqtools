@@ -441,10 +441,10 @@ class AFileReader(object):
         copy-safe version of each data attribute.
         """
         try:
-            return super(PFileReader,self).__getattribute__(name)
+            return super(AFileReader,self).__getattribute__(name)
         except AttributeError:
             try:
-                attr = super(PFileReader,self).__getattribute__('_'+name)
+                attr = super(AFileReader,self).__getattribute__('_'+name)
                 if type(attr) is namedtuple:
                     return attr.copy()
                 elif type(attr) is list:
@@ -466,7 +466,7 @@ class AFileReader(object):
                                  " conflict with automatic property generation."
                                  % {'n': name})
         else:
-            super(PFileReader, self).__setattr__(name, value)
+            super(AFileReader, self).__setattr__(name, value)
 
 
 
