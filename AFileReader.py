@@ -243,7 +243,7 @@ class AFileReader(object):
                 for val in line:
                     dat.append(float(val))
             self._csilop = np.array(dat[0:nsilop+1])
-            self._cmpr2 = np.array(dat[nsilop+1,:])
+            self._cmpr2 = np.array(dat[nsilop+1:])
 
             # read ccbrsp
             nrows = nfcoil/4
