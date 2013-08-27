@@ -223,7 +223,6 @@ class AFileReader(object):
 
             # header line: read nsilop, magpri, nfcoil, nesum
             line = next(reader)[0].split()
-            print line
             nsilop = int(line[0])
             magpri = int(line[1])
             nfcoil = int(line[2])
@@ -389,7 +388,8 @@ class AFileReader(object):
                 line = next(reader)[0].split()
                 self._efittype = line[-1]
 
-            except:
+            except Exception as ex:
+                print ex
                 print('Old-style a-file.  Some parameters are depreciated.')
                 print line
                 self._fexpan = None
