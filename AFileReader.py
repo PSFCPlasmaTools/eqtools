@@ -417,6 +417,47 @@ class AFileReader(object):
                 self._dilldom = None
                 self._dilldomm = None
 
+    def __str__(self):
+        """
+        overrides default __str__method with more useful output.
+        """
+        return 'a-file data from '+self._afile
+
+    def __getattribute__(self, name):
+        """
+        Tries to get attribute as written.  If this fails, trys to call the attribute
+        with preceding underscore, marking a pseudo-private variable.  If this exists,
+        returns a copy-safe value.  If this fails, raises AttributeError.  Generates a
+        copy-safe version of each data attribute.
+        """
+        try:
+            return super(PFileReader,self).__getattribute__(name)
+        except AttributeError:
+            try:
+                attr = super(PFileReader,self).__getattribute__('_'+name)
+                if type(attr) is namedtuple:
+                    return attr.copy()
+                elif type(attr) is list:
+                    return attr[:]
+                else:
+                    return attr
+            except AttributeError:
+                raise AttributeError('No attribute "%s" found' % name)
+
+    def __setattr__(self, name, value):
+        """
+        Raises AttributeError if the object already has a method get[name], as
+        creation of such an attribute would interfere with the automatic
+        property generation in __getattribute__.
+        """
+        if hasattr(self, '_'+name):
+            raise AttributeError("AFileReader object already has data attribute "
+                                 "'_%(n)s', creating attribute '%(n)s' will"
+                                 " conflict with automatic property generation."
+                                 % {'n': name})
+        else:
+            super(PFileReader, self).__setattr__(name, value)
+
 
 
 
