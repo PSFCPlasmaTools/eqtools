@@ -399,8 +399,8 @@ class AFileReader(object):
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 print 'dilldom,dilldomm,dum,dum'
                 print line
-                self._dilldom = float([0])
-                self._dilldomm = float([1])
+                self._dilldom = float(line[0])
+                self._dilldomm = float(line[1])
 
                 # read end tag line
                 line = next(reader)[0].split()
@@ -410,7 +410,6 @@ class AFileReader(object):
 
             except:
                 print('Old-style a-file.  Some parameters are depreciated.')
-                print line
                 self._fexpan = None
                 self._qqmin = None
                 self._chigamt = None
