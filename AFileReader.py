@@ -317,6 +317,8 @@ class AFileReader(object):
                 # read fexpan, qqmin, chigamt, ssi01
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'fexpan,qqmin,chigamt,ssi01'
+                print line
                 self._fexpan = float(line[0])
                 self._qqmin = float(line[1])
                 self._chigamt = float(line[2])
@@ -325,6 +327,8 @@ class AFileReader(object):
                 # read fexpvs, sepnose, ssi95, rqqmin
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'fexpvs,sepnose,ssi95,rqqmin'
+                print line
                 self._fexpvs = float(line[0])
                 self._sepnose = float(line[1])
                 self._ssi95 = float(line[2])
@@ -333,6 +337,8 @@ class AFileReader(object):
                 # read cjor99, cj1ave, rmidin, rmidout
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'cjor99,cj1ave,rmidin,rmidout'
+                print line
                 self._cjor99 = float(line[0])
                 self._cj1ave = float(line[1])
                 self._rmidin = float(line[2])
@@ -341,6 +347,8 @@ class AFileReader(object):
                 # read psurfa, peak, dminux, dminlx
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'psurfa,peak,dminux,dminlx'
+                print line
                 self._psurfa = float(line[0])
                 self._peak = float(line[1])
                 self._dminux = float(line[2])
@@ -349,6 +357,8 @@ class AFileReader(object):
                 # read dolubaf, dolubafm, diludom, diludomm
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'dolubaf,dolubafm,diludom,diludomm'
+                print line
                 self._dolubaf = float(line[0])
                 self._dolubafm = float(line[1])
                 self._diludom = float(line[2])
@@ -357,6 +367,8 @@ class AFileReader(object):
                 # read ratsol, rvsiu, zvsiu, rvsid
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'ratsol,rvsiu,zvsiu,rvsid'
+                print line
                 self._ratsol = float(line[0])
                 self._rvsiu = float(line[1])
                 self._zvsiu = float(line[2])
@@ -365,6 +377,8 @@ class AFileReader(object):
                 # read zvsid, rvsou, zvsou, rvsod
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'zvsid,rvsou,zvsou,rvsod'
+                print line
                 self._zvsid = float(line[0])
                 self._rvsou = float(line[1])
                 self._zvsou = float(line[2])
@@ -373,6 +387,8 @@ class AFileReader(object):
                 # read zvsod, condno, dollbaf, dollbafm
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'zvsod,condno,dollbaf,dollbafm'
+                print line
                 self._zvsod = float(line[0])
                 self._condno = float(line[1])
                 self._dollbaf = float(line[2])
@@ -381,15 +397,18 @@ class AFileReader(object):
                 # read dilldom, dilldomm, dummy vars
                 line = next(reader)[0]
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
+                print 'dilldom,dilldomm,dum,dum'
+                print line
                 self._dilldom = float([0])
                 self._dilldomm = float([1])
 
                 # read end tag line
                 line = next(reader)[0].split()
+                print 'footer'
+                print line
                 self._efittype = line[-1]
 
-            except Exception as ex:
-                print ex
+            except:
                 print('Old-style a-file.  Some parameters are depreciated.')
                 print line
                 self._fexpan = None
