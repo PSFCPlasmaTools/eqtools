@@ -171,6 +171,16 @@ class AFileReader(object):
             self._psiref = float(line[2])
             self._xndnt = float(line[3])
 
+            # read rseps[0], zseps[0], rseps[1], zseps[1]
+            self._rseps = [0,0]
+            self._zseps = [0,0]
+            line = next(reader)[0]
+            line = re.findall('-?\d.\d*E[-+]\d*',line)
+            self._rseps[0] = float(line[0])
+            self._zseps[0] = float(line[1])
+            self._rseps[1] = float(line[2])
+            self._zseps[1] = float(line[3])
+
             # read sepexp, obots, btaxp, btaxv
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
