@@ -291,7 +291,7 @@ class AFileReader(object):
             line = re.findall('-?\d.\d*E[-+]\d*',line)
             self._slantu = float(line[0])   # gap to upper outboard limiter
             self._slantl = float(line[1])   # gap to lower outboard limiter
-            self._zuperts = float(line[2])  # top point of Thomson Scattering path?
+            self._zuperts = float(line[2])  # intersection of LCFS and TS laser chord
             self._chipre = float(line[3])   # chi-squared of kinetic pressure data
 
             # read cjor95, pp95, ssep, yyy2
