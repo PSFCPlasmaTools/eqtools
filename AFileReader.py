@@ -1,7 +1,6 @@
 import numpy as np
 import re
 import csv
-from collections import namedtuple
 
 
 class AFileReader(object):
@@ -18,7 +17,7 @@ class AFileReader(object):
         self._afile = afile
 
         with open(afile,'r') as readfile:
-            reader = csv.reader(readfile)   # skip delimiter, return as single string - let regex handle splitting
+            reader = csv.reader(readfile)   # skip delimiter, return as single string - let regex handle splitting.  Use csv.reader for StopIteration error handling.
             # date header line
             line = next(reader)[0].split()
             self._date = line[1]
@@ -26,68 +25,67 @@ class AFileReader(object):
             # shot header line
             line = next(reader)[0].split()
             self._shot = int(line[0])
-            self._ktime = int(line[1])
             
             # time index line
             line = next(reader)[0].split()
-            self._time = float(line[0])     # in ms
+            self._time = np.array(float(line[0]))     # time point in ms
 
             # header line
             line = next(reader)[0].split()
             jflag = int(line[2])
             lflag = int(line[3])
-            limloc = line[4]
+            self._limloc = line[4]  # limiter location (string)
             mco2v = int(line[5])
             mco2r = int(line[6])
             qmflag = line[7]
 
-            # read tsaisq(?), mag-axis R, Bcentr, pasmat
+            # read tsaisq(?), mag-axis R, bcentr, pasmat
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
             self._tsaisq = float(line[0])
             self._rcencm = float(line[1])
-            self._bcentr = float(line[2])
-            self._pasmat = float(line[3])
+            self._bcentr = float(line[2])   # Btor at rcentr
+            self._pasmat = float(line[3])   # measured plasma current
 
             # read cpasma, rout, zout, aout
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._cpasma = float(line[0])
-            self._rout = float(line[1])
-            self._zout = float(line[2])
-            self._aout = float(line[3])
+            self._cpasma = float(line[0])   # calculated plasma current
+            self._rout = float(line[1])     # major radius of geometric center
+            self._zout = float(line[2])     # Z of LCFS (constructed)
+            self._aout = float(line[3])     # minor radius of LCFS
 
             # read eout, doutu, doutl, vout
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._eout = float(line[0])
-            self._doutu = float(line[1])
-            self._doutl = float(line[2])
-            self._vout = float(line[3])
+            self._eout = float(line[0])     # elongation of LCFS
+            self._doutu = float(line[1])    # upper triangularity of LCFS
+            self._doutl = float(line[2])    # lower triangularity of LCFS
+            self._vout = float(line[3])     # volume of LCFS
 
             # read rcurrt, zcurrt, qsta, betat
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._rcurrt = float(line[0])
-            self._zcurrt = float(line[1])
-            self._qsta = float(line[2])
-            self._betat = float(line[3])
+            self._rcurrt = float(line[0])   # current-averaged major radius
+            self._zcurrt = float(line[1])   # current-averaged Z
+            self._qsta = float(line[2])     # q* (GA definition)
+            self._betat = float(line[3])    # toroidal beta (calculated)
 
             # read betap, ali, oleft, oright
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._betap = float(line[0])
-            self._ali = float(line[1])
-            self._oleft = float(line[2])
-            self._oright = float(line[3])
+            self._betap = float(line[0])    # poloidal beta (calculated)
+            self._ali = float(line[1])      # internal inductance
+            self._oleft = float(line[2])    # inner gap
+            self._oright = float(line[3])   # outer gaps
 
             # read otop, obott, qpsib, vertn
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._otop = float(line[0])
-            self._obott = float(line[1])
-            self._qpsib = float(line[2])
-            self._vertn = float(line[3])
+            self._otop = float(line[0])     # top gap
+            self._obott = float(line[1])    # bottom gap
+            self._qpsib = float(line[2])    # q(psi) at 95% flux
+            self._vertn = float(line[3])    # decay index at current centroid
 
             # read next mco2v values for rco2v, dco2v
             nrows = mco2v/4
@@ -134,16 +132,16 @@ class AFileReader(object):
             # read shearb, bpolav, s1, s2
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._shearb = float(line[0])
-            self._bpolav = float(line[1])
-            self._s1 = float(line[2])
-            self._s2 = float(line[3])
+            self._shearb = float(line[0])   # shear parameter at boundary
+            self._bpolav = float(line[1])   # average poloidal field
+            self._s1 = float(line[2])       # first Shafranov integral
+            self._s2 = float(line[3])       # second Shafranov integral
 
             # read s3, qout, olefs, orighs
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._s3 = float(line[0])
-            self._qout = float(line[1])
+            self._s3 = float(line[0])       # third Shafranov integral
+            self._qout = float(line[1])     # q(psi) at LCFS
             self._olefs = float(line[2])
             self._orighs = float(line[3])
 
@@ -151,16 +149,16 @@ class AFileReader(object):
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
             self._otops = float(line[0])
-            self._sibdry = float(line[1])
-            self._areao = float(line[2])
-            self._wplasm = float(line[3])
+            self._sibdry = float(line[1])   # psi at boundary
+            self._areao = float(line[2])    # area of LCFS
+            self._wplasm = float(line[3])   # EFIT-calculated stored energy
 
             # read terror, elongm, qqmagx, cdflux
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
             self._terror = float(line[0])
-            self._elongm = float(line[1])
-            self._qqmagx = float(line[2])
+            self._elongm = float(line[1])   # elongation at magnetic axis
+            self._qqmagx = float(line[2])   # q(psi) at psi=0 (q0)
             self._cdflux = float(line[3])
 
             # read alpha, rttt, psiref, xndnt
@@ -172,8 +170,8 @@ class AFileReader(object):
             self._xndnt = float(line[3])
 
             # read rseps[0], zseps[0], rseps[1], zseps[1]
-            self._rseps = [0,0]
-            self._zseps = [0,0]
+            self._rseps = [0,0]     # radial positions of upper,lower x-points
+            self._zseps = [0,0]     # Z positions of upper,lower x-points
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
             self._rseps[0] = float(line[0])
@@ -186,38 +184,38 @@ class AFileReader(object):
             line = re.findall('-?\d.\d*E[-+]\d*',line)
             self._sepexp = float(line[0])
             self._obots = float(line[1])
-            self._btaxp = float(line[2])
-            self._btaxv = float(line[3])
+            self._btaxp = float(line[2])    # Btor on-axis = F(0)/rmaxis
+            self._btaxv = float(line[3])    # vacuum Btor on-axis = F(1)/rmaxis
 
             # read aaq1, aaq2, aaq3, seplim
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._aaq1 = float(line[0])
-            self._aaq2 = float(line[1])
-            self._aaq3 = float(line[2])
-            self._seplim = float(line[3])
+            self._aaq1 = float(line[0])     # radius of q=1 surface
+            self._aaq2 = float(line[1])     # radius of q=2 surface
+            self._aaq3 = float(line[2])     # radius of q=3 surface
+            self._seplim = float(line[3])   # minimum gap to limiter
 
             # read rmagx, zmagx, simagx, taumhd
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._rmagx = float(line[0])
-            self._zmagx = float(line[1])
-            self._simagx = float(line[2])
-            self._taumhd = float(line[3])
+            self._rmagx = float(line[0])    # major radius of magnetic axis
+            self._zmagx = float(line[1])    # Z of magnetic axis
+            self._simagx = float(line[2])   # flux at magnetic axis
+            self._taumhd = float(line[3])   # EFIT-calculated energy confinement time
 
             # read betapd, betatd, wplasmd, fluxx
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._betapd = float(line[0])
-            self._betatd = float(line[1])
-            self._wplasmd = float(line[2])
-            self._diamag = float(line[3])/1.e3
+            self._betapd = float(line[0])           # diamagnetic-loop poloidal beta
+            self._betatd = float(line[1])           # diamagnetic-loop toroidal beta
+            self._wplasmd = float(line[2])          # diamagnetic-loop stored energy
+            self._diamag = float(line[3])/1.e3      # diamagnetic flux
 
             # read vloopt, taudia, cmerci, tavem
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._vloopt = float(line[0])
-            self._taudia = float(line[1])
+            self._vloopt = float(line[0])   # loop voltage
+            self._taudia = float(line[1])   # energy confinement time from diamagnetic measurements
             self._cmerci = float(line[2])
             self._tavem = float(line[3])
 
@@ -273,18 +271,18 @@ class AFileReader(object):
             # read pbinj, rvsin, zvsin, rvsout
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._pbinj = float(line[0])
-            self._rvsin = float(line[1])
-            self._zvsin = float(line[2])
-            self._rvsout = float(line[3])
+            self._pbinj = float(line[0])    # injected power
+            self._rvsin = float(line[1])    # R of inner strike point
+            self._zvsin = float(line[2])    # Z of inner strike point
+            self._rvsout = float(line[3])   # R of outer strike point
 
             # read zvsout, vsurfa, wpdot, wbdot
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._zvsout = float(line[0])
-            self._vsurfa = float(line[1])
-            self._wpdot = float(line[2])
-            self._wbdot = float(line[3])
+            self._zvsout = float(line[0])   # Z of outer strike point
+            self._vsurfa = float(line[1])   # surface voltage
+            self._wpdot = float(line[2])    # time-derivative of plasma energy
+            self._wbdot = float(line[3])    # time-derivative of magnetic energy
 
             # read slantu, slantl, zuperts, chipre
             line = next(reader)[0]
@@ -297,9 +295,9 @@ class AFileReader(object):
             # read cjor95, pp95, ssep, yyy2
             line = next(reader)[0]
             line = re.findall('-?\d.\d*E[-+]\d*',line)
-            self._cjor95 = float(line[0])
+            self._cjor95 = float(line[0])   # flux-surface-averaged current density normalized to I/A at 95% flux
             self._pp95 = float(line[1])
-            self._ssep = float(line[2])
+            self._ssep = float(line[2])     # null position measurements (~1 are USN ,~-1 are LSN, ~0 are DN.  Defaults to 40 for limited shapes)
             self._yyy2 = float(line[3])
 
             # read xnnc, cprof, oring, cjor0
@@ -308,7 +306,7 @@ class AFileReader(object):
             self._xnnc = float(line[0])
             self._cprof = float(line[1])
             self._oring = float(line[2])
-            self._cjor0 = float(line[3])
+            self._cjor0 = float(line[3])    # flux-surface-averaged current density normalized to I/A at axis
 
             # this completes the old-style (pre-1997) a-file write.
             # further values written within error handler for legacy
@@ -316,6 +314,7 @@ class AFileReader(object):
             try:
                 # read fexpan, qqmin, chigamt, ssi01
                 line = next(reader)[0]
+                lastline = line     # store previous line for next read - error handler will catch at empty read, last line retains footer
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._fexpan = float(line[0])
                 self._qqmin = float(line[1])
@@ -324,6 +323,7 @@ class AFileReader(object):
 
                 # read fexpvs, sepnose, ssi95, rqqmin
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._fexpvs = float(line[0])
                 self._sepnose = float(line[1])
@@ -332,14 +332,16 @@ class AFileReader(object):
 
                 # read cjor99, cj1ave, rmidin, rmidout
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._cjor99 = float(line[0])
                 self._cj1ave = float(line[1])
                 self._rmidin = float(line[2])
-                self._rmidout = float(line[3])
+                self._rmidout = float(line[3])  # out major radius at Z=0.0 (LCFS position)
 
                 # read psurfa, peak, dminux, dminlx
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._psurfa = float(line[0])
                 self._peak = float(line[1])
@@ -348,6 +350,7 @@ class AFileReader(object):
 
                 # read dolubaf, dolubafm, diludom, diludomm
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._dolubaf = float(line[0])
                 self._dolubafm = float(line[1])
@@ -356,6 +359,7 @@ class AFileReader(object):
 
                 # read ratsol, rvsiu, zvsiu, rvsid
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._ratsol = float(line[0])
                 self._rvsiu = float(line[1])
@@ -364,6 +368,7 @@ class AFileReader(object):
 
                 # read zvsid, rvsou, zvsou, rvsod
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._zvsid = float(line[0])
                 self._rvsou = float(line[1])
@@ -372,6 +377,7 @@ class AFileReader(object):
 
                 # read zvsod, condno, dollbaf, dollbafm
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._zvsod = float(line[0])
                 self._condno = float(line[1])
@@ -380,6 +386,7 @@ class AFileReader(object):
 
                 # read dilldom, dilldomm, dummy vars
                 line = next(reader)[0]
+                lastline = line
                 line = re.findall('-?\d.\d*E[-+]\d*',line)
                 self._dilldom = float(line[0])
                 self._dilldomm = float(line[1])
@@ -390,7 +397,6 @@ class AFileReader(object):
 
             except:
                 print('Old-style a-file.  Some parameters are depreciated.')
-                print line
                 self._fexpan = None
                 self._qqmin = None
                 self._chigamt = None
@@ -425,6 +431,7 @@ class AFileReader(object):
                 self._dollbafm = None
                 self._dilldom = None
                 self._dilldomm = None
+                self._efittype = lastline.split()[-1]
 
     def __str__(self):
         """
