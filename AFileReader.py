@@ -390,6 +390,7 @@ class AFileReader(object):
 
             except:
                 print('Old-style a-file.  Some parameters are depreciated.')
+                print line
                 self._fexpan = None
                 self._qqmin = None
                 self._chigamt = None
@@ -443,12 +444,7 @@ class AFileReader(object):
         except AttributeError:
             try:
                 attr = super(AFileReader,self).__getattribute__('_'+name)
-                if type(attr) is namedtuple:
-                    return attr.copy()
-                elif type(attr) is list:
-                    return attr[:]
-                else:
-                    return attr
+                return attr
             except AttributeError:
                 raise AttributeError('No attribute "%s" found' % name)
 
