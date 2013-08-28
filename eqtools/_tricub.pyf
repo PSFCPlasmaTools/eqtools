@@ -1,0 +1,45 @@
+! File _tricub.pyf
+python module _tricubic
+interface
+    
+C    This file is part of the EqTools package.
+C
+C    EqTools is free software: you can redistribute it and/or modify
+C    it under the terms of the GNU General Public License as published by
+C    the Free Software Foundation, either version 3 of the License, or
+C    (at your option) any later version.
+C
+C    EqTools is distributed in the hope that it will be useful,
+C    but WITHOUT ANY WARRANTY; without even the implied warranty of
+C    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+C    GNU General Public License for more details.
+C
+C    You should have received a copy of the GNU General Public License
+C    along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
+C
+C    Copyright 2013 Ian C. Faust
+
+  subroutine ev(val,dx1,dx2,dx3,f,pos,indx,fx1,fx2,fx3,ix)
+		   intent(c) ev
+		   intent(c)
+
+		   integer intent(hide),depend(dx1) :: ix = len(dx1)
+		   integer intent(hide),depend(f) :: fx1 = shape(f,0)
+		   integer intent(hide),depend(f) :: fx2 = shape(f,1)
+		   integer intent(hide),depend(f) :: fx3 = shape(f,2)
+		   double precision intent(in) :: dx1(ix)
+		   double precision intent(in) :: dx2(ix)
+		   double precision intent(in) :: dx3(ix)
+		   integer intent(in) :: pos(ix)
+		   integer intent(in) :: indx(ix)
+		   integer intent(in) :: ix1(ix)
+		   integer intent(in) :: ix2(ix)
+		   integer intent(in) :: ix3(ix)
+		   double precision intent(in) :: f(fx1,fx2,fx3)
+		   double precision intent(out) :: val(ix)
+
+	end subroutine ev
+
+end interface
+end python module _tricubic
+		   
