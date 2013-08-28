@@ -108,6 +108,9 @@ class PFileReader(object):
                 print(str(par).ljust(8)+str(xun).ljust(12)+str(un))
 
     def __str__(self):
+        """
+        overrides default string method for useful output.
+        """
         mes = 'P-file data from '+self._pfile+' containing parameters:\n'
         for par in self._params:
             un = vars(self)['_'+par].units
