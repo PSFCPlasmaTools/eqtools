@@ -21,8 +21,6 @@ Equilibrium class.
 
 Classes:
     ModuleWarning: Warning class for unavailable modules.
-    AttrDict: Dictionary subclass that supports access via item, attribute and
-        call syntax.
     Equilibrium: Base class for all other equilibrium access objects. Includes
         the main mapping routines and method stubs for all suggested methods
         that should be implemented in subclasses.
