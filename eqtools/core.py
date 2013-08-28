@@ -1548,54 +1548,69 @@ class Equilibrium(object):
     def _getLengthConversionFactor(self, start, end, default=None):
         """Gets the conversion factor to convert from units start to units end.
         
-        If start is None, the starting unit is taken to be the unit specified
-        when the instance was created.
-        
-        If start is an int, the starting unit is taken to be the unit specified
-        when the instance was created raised to that power.
-        
-        If start is 'default', either explicitly or because of reverting to the
-        instance-level unit, then the value passed in the keyword default is
-        used. In this case, default must be a complete unit string (i.e., not
-        None, not an int and not 'default').
-        
-        If default is None, an int, or 'default', then the value given for start
-        is used. (A circular definition is prevented for cases in which start
-        is default by checking for this case during the handling of the case
-        start=='default'.)
-        
-        If end is None, the target (ending) unit is taken to be the unit
-        specified when the instance was created.
-        
-        If end is an int, the target unit is taken to be the unit specified
-        when the instance was created raised to that power.
-        
-        If end is 'default', either explicitly or because of reverting to the
-        instance-level unit, then the value passed in the keyword default is
-        used.
-        
-        If end does not specify an exponent, it uses whatever the exponent on
-        start is. This allows a user to ask for an area in units of m^2 by
-        specifying length_unit='m', for instance. An error will still be
-        raised if the user puts in a completely inconsistent specification
-        such as length_unit='m^3' or length_unit='m^1'.
-        
         Uses a regex to parse units of the form:
         'm'
         'm^2'
         'm2'
         Leading and trailing spaces are NOT allowed.
         
+        Valid unit specifiers are:
+            'm'         meters
+            'cm'        centimeters
+            'mm'        millimeters
+            'in'        inches
+            'ft'        feet
+            'yd'        yards
+            'smoot'     smoots
+            'cubit'     cubits
+            'hand'      hands
+        
         Args:
-            start: String, int or None. Starting unit for the conversion. If
-                None, uses the unit specified when the instance was created. If
-                start is an int, the starting unit is taken to be the unit
-                specified when the instance was created raised to that power.
-                If start is 'default', either explicitly or because of reverting
-                to the instance-level unit, then the value passed in the kwarg
-                default is used. In this case, default must be a complete unit
-                string (i.e., not None, not an int and not 'default').
-                Otherwise, start must be a 
+            start: String, int or None. Starting unit for the conversion.
+                - If None, uses the unit specified when the instance was created.
+                - If start is an int, the starting unit is taken to be the unit
+                    specified when the instance was created raised to that power.
+                - If start is 'default', either explicitly or because of
+                    reverting to the instance-level unit, then the value passed
+                    in the kwarg default is used. In this case, default must be
+                    a complete unit string (i.e., not None, not an int and not
+                    'default').
+                - Otherwise, start must be a valid unit specifier as given above.
+            end: String, int or None. Target (ending) unit for the conversion.
+                - If None, uses the unit specified when the instance was created.
+                - If end is an int, the target unit is taken to be the unit
+                    specified when the instance was created raised to that power.
+                - If end is 'default', either explicitly or because of
+                    reverting to the instance-level unit, then the value passed
+                    in the kwarg default is used. In this case, default must be
+                    a complete unit string (i.e., not None, not an int and not
+                    'default').
+                - Otherwise, end must be a valid unit specifier as given above.
+                    In this case, if end does not specify an exponent, it uses
+                    whatever the exponent on start is. This allows a user to
+                    ask for an area in units of m^2 by specifying
+                    length_unit='m', for instance. An error will still be
+                    raised if the user puts in a completely inconsistent
+                    specification such as length_unit='m^3' or length_unit='m^1'.
+        
+        Kwargs:
+            default: String, int or None. The default unit to use in cases
+                where start or end is 'default'. If default is None, an int, or 
+                'default', then the value given for start is used. (A circular
+                definition is prevented for cases in which start is default by
+                checking for this case during the handling of the case
+                start=='default'.)
+        
+        Returns:
+            Conversion factor: Scalar float. The conversion factor to get from
+                the start unit to the end unit.
+        
+        Raises:
+            ValueError: If start is 'default' and default is None, an int, or
+                'default'.
+            ValueError: If the (processed) exponents of start and end or start
+                and default are incompatible.
+            ValueError: If the processed units for start and end are not valid.
         """
         # Input handling:
         # Starting unit:
@@ -1666,34 +1681,73 @@ class Equilibrium(object):
             raise ValueError("Unit '%s' is not a recognized length unit!" % end)
 
     def _processRZt(self, R, Z, t, make_grid=False, check_space=True, length_unit=1):
-        """Input checker/processor. Takes R, Z and t. Appropriately packages
-        into scipy arrays. Checks the validity of the R, Z ranges. If there is
-        a single time value but multiple R, Z values, creates matching time
-        vector. If there is a single R value but multiple t values, creates
-        matching R and Z vectors. Finds list of nearest-neighbor time indices.
+        """Input checker/processor.
         
-        Assumes R and Z are in meters!
-
-        The make_grid keyword causes R and Z to be expanded with scipy.meshgrid.
+        Takes R, Z and t. Appropriately packages them into scipy arrays. Checks
+        the validity of the R, Z ranges. If there is a single time value but
+        multiple R, Z values, creates matching time vector. If there is a single
+        R, Z value but multiple t values, creates matching R and Z vectors.
+        Finds list of nearest-neighbor time indices.
         
-        The check space keyword causes R and Z to be converted to meters then
-        checked against the valid spatial grid.
-
-        Returns a tuple in the following order:
-        R               Flattened R array with out-of-range values replaced
-                            with NaN.
-        Z               Flattened Z array with out-of-range values replaced
-                            with NaN.
-        t               Flattened t array with out-of-range values replaced
-                            with NaN.
-        time_idxs       Flattened array of nearest-neighbor time indices.
-        original_shape  Original shape tuple, used to return the arrays to
-                            their starting form.
-        single_val      Boolean indicating whether a single point is used. If
-                            True, then the final step of the calling code
-                            should unpack the result from the array.
-        single_time     Boolean indicating whether a single time value is used.
-                            If True, then certain simplifying steps can be made."""
+        Args:
+            R: Array-like or scalar float. Values of the radial coordinate. If
+                R and Z are both scalar values, they are used as the coordinate
+                pair for all of the values in t. Must have the same shape as Z
+                unless the make_grid keyword is set. If the make_grid keyword
+                is True, R must have shape (len_R,).
+            Z: Array-like or scalar float. Values of the vertical coordinate.
+                If R and Z are both scalar values, they are used as the
+                coordinate pair for all of the values in t. Must have the same
+                shape as R unless the make_grid keyword is set. If the
+                make_grid keyword is True, Z must have shape (len_Z,).
+            t: Array-like or single value. If t is a single value, it is used
+                for all of the elements of R, Z. If t is array-like and the
+                make_grid keyword is False, t must have the same dimensions as
+                R and Z. If t is array-like and the make_grid keyword is True,
+                t must have shape (len(Z), len(R)).
+        
+        Kwargs:
+            make_grid: Boolean. Set to True to pass R and Z through meshgrid
+                before evaluating. If this is set to True, R and Z must each
+                only have a single dimension, but can have different lengths.
+                When using this option, it is highly recommended to only pass
+                a scalar value for t (such that each point in the flux grid is
+                evaluated at this same value t). Otherwise, t must have the
+                same shape as the resulting meshgrid, and each element in the
+                returned psi array will be at the corresponding time in the t
+                array. Default is False (do not form meshgrid).
+            check_space: Boolean. If True, R and Z are converted to meters and
+                checked against the extents of the spatial grid.
+            length_unit: String or 1. Length unit that R and Z are being given
+                in. If a string is given, it must be a valid unit specifier:
+                    'm'         meters
+                    'cm'        centimeters
+                    'mm'        millimeters
+                    'in'        inches
+                    'ft'        feet
+                    'yd'        yards
+                    'smoot'     smoots
+                    'cubit'     cubits
+                    'hand'      hands
+                    'default'   meters
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R and Z given in meters). Note that this factor is
+                ONLY applied to the inputs in this function -- if Quan needs to
+                be corrected, it must be done in the calling function.
+        
+        Returns:
+            R: Flattened R array with out-of-range values replaced with NaN.
+            Z: Flattened Z array with out-of-range values replaced with NaN.
+            t: Flattened t array with out-of-range values replaced with NaN.
+            time_idxs: Flattened array of nearest-neighbor time indices.
+            original_shape: Original shape tuple, used to return the arrays to
+                their starting form.
+            single_val: Boolean indicating whether a single point is used. If
+                True, then the final step of the calling code should unpack the
+                result from the array.
+            single_time: Boolean indicating whether a single time value is used.
+                If True, then certain simplifying steps can be made.
+        """
 
         # Handle single-value form of R and Z:
         try:
@@ -1795,12 +1849,24 @@ class Equilibrium(object):
         return (R, Z, t, time_idxs, original_shape, single_val, single_time)
 
     def _checkRZ(self, R, Z):
-        """Checks whether or not the passed arrays of (R, Z) are within the bounds
-        of the reconstruction data. Returns the mask array of booleans indicating
-        the goodness of each point at the corresponding index. Raises warnings if
-        there are no good_points and if there are some values out of bounds.
+        """Checks whether or not the passed arrays of (R, Z) are within the bounds of the reconstruction data.
         
-        Assumes R and Z are in units of meters."""
+        Returns the mask array of booleans indicating the goodness of each point
+        at the corresponding index. Raises warnings if there are no good_points
+        and if there are some values out of bounds.
+        
+        Assumes R and Z are in meters and that the R and Z arrays returned by
+        this instance's getRGrid() and getZGrid() are monotonically increasing.
+        
+        Args:
+            R: Array. Radial coordinate to check. Must have the same size as Z.
+            Z: Array. Vertical coordinate to check. Must have the same size as R.
+        
+        Returns:
+            good_points: Boolean array. True where points are within the bounds
+                defined by self.getRGrid and self.getZGrid.
+            num_good: The number of good points.
+        """
         good_points = ((R <= self.getRGrid(length_unit='m')[-1]) &
                        (R >= self.getRGrid(length_unit='m')[0]) &
                        (Z <= self.getZGrid(length_unit='m')[-1]) &
@@ -1815,18 +1881,32 @@ class Equilibrium(object):
             num_good = good_points
             num_pts = 1
         if num_good == 0:
-            print("Warning: _checkRZ: No valid (R, Z) points!")
+            warnings.warn("Warning: _checkRZ: No valid (R, Z) points!",
+                          RuntimeWarning)
         elif num_good != num_pts:
-            print("Warning: _checkRZ: Some (R, Z) values out of bounds. "
-                  "(%(bad)d bad out of %(tot)d)"
-                    % {'bad': num_pts - num_good,
-                       'tot': num_pts})
-
+            warnings.warn("Warning: _checkRZ: Some (R, Z) values out of bounds. "
+                          "(%(bad)d bad out of %(tot)d)"
+                          % {'bad': num_pts - num_good, 'tot': num_pts},
+                          RuntimeWarning)
+        
         return (good_points, num_good)
 
     def _getNearestIdx(self, v, a):
-        """Returns the array of indices of the nearest value in a corresponding to
-        each value in v."""
+        """Returns the array of indices of the nearest value in a corresponding to each value in v.
+        
+        If the fast keyword in the instance is True, then this is done using
+        scipy.digitize under the assumption that a is monotonic. Otherwise,
+        this is done in a general manner by looking for the minimum distance
+        between the points in v and a.
+        
+        Args:
+            v: Array. Input values to match to nearest neighbors in a.
+            a: Array. Given values to match against.
+        
+        Returns:
+            Indices in a of the nearest values to each value in v. Has the same
+                shape as v.
+        """
         # Gracefully handle single-value versus array inputs, returning in the
         # corresponding type.
         if not self._fast:
@@ -1843,8 +1923,20 @@ class Equilibrium(object):
             
 
     def _getFluxBiSpline(self, idx):
-        """Gets the spline corresponding to the given time index, generating
-        as needed."""
+        """Gets the spline corresponding to the given time index, generating as needed.
+        
+        This returns a bivariate spline for when the instance is created with
+        keyword tspline=False.
+        
+        Args:
+            idx: Scalar int. The time index to retrieve the flux spline for.
+                This is ASSUMED to be a valid index for the first dimension of
+                self.getFluxGrid(), otherwise an IndexError will be raised.
+        
+        Returns:
+            An instance of scipy.interpolate.RectBivariateSpline corresponding
+                to the given time index idx.
+        """
         try:
             return self._psiOfRZSpline[idx]
         except KeyError:
@@ -1860,7 +1952,13 @@ class Equilibrium(object):
             return self._psiOfRZSpline[idx]
 
     def _getFluxTriSpline(self):
-        """Gets the tricubic interpolating spline for the flux"""
+        """Gets the tricubic interpolating spline for the flux.
+        
+        This is for use when the instance is created with keyword tspline=True.
+        
+        Returns:
+            trispline.spline to give the flux as a function of R, Z and t.
+        """
         if self._psiOfRZSpline:
             return self._psiOfRZSpline
         else:
@@ -1871,8 +1969,32 @@ class Equilibrium(object):
             return self._psiOfRZSpline
 
     def _getPhiNormSpline(self, idx, kind='cubic'):
-        """Returns the 1d cubic spline object corresponding to the passed time
-        index idx, generating it if it does not already exist."""
+        """Get spline to convert psinorm to phinorm.
+        
+        Returns the spline object corresponding to the passed time index idx,
+        generating it if it does not already exist.
+        
+        Args:
+            idx: Scalar int. The time index to retrieve the flux spline for.
+                This is ASSUMED to be a valid index for the first dimension of
+                self.getFluxGrid(), otherwise an IndexError will be raised.
+        
+        Kwargs:
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from psinorm to phinorm. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
+                on whether or not the instance was created with the tspline
+                keyword.
+        """
         if not self._tricubic:
             try:
                 return self._phiNormSpline[idx][kind]
@@ -1912,8 +2034,32 @@ class Equilibrium(object):
                 return self._phiNormSpline
                                                                         
     def _getVolNormSpline(self, idx, kind='cubic'):
-        """Returns the 1d cubic spline object corresponding to the passed time
-        index idx, generating it if it does not already exist."""
+        """Get spline to convert psinorm to volnorm.
+        
+        Returns the spline object corresponding to the passed time index idx,
+        generating it if it does not already exist.
+        
+        Args:
+            idx: Scalar int. The time index to retrieve the flux spline for.
+                This is ASSUMED to be a valid index for the first dimension of
+                self.getFluxGrid(), otherwise an IndexError will be raised.
+        
+        Kwargs:
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from psinorm to volnorm. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
+                on whether or not the instance was created with the tspline
+                keyword.
+        """
         if not self._tricubic:
             try:
                 return self._volNormSpline[idx][kind]
@@ -1944,8 +2090,8 @@ class Equilibrium(object):
                 return self._volNormSpline
                                                                         
     def _getRmidSpline(self, idx, kind='cubic'):
-        """Returns the 1d cubic spline object corresponding to the passed time
-        index idx, generating it if it does not already exist.
+        """Returns the spline object corresponding to the passed time index idx,
+        generating it if it does not already exist.
 
         There are two approaches that come to mind:
             -- In Steve Wolfe's implementation of efit_rz2mid and efit_psi2rmid,
@@ -1958,7 +2104,29 @@ class Equilibrium(object):
         The latter approach is selected for simplicity.
         
         The units of R_mid are always meters, and are converted by the wrapper
-        functions to whatever the user wants."""
+        functions to whatever the user wants.
+        
+        Args:
+            idx: Scalar int. The time index to retrieve the flux spline for.
+                This is ASSUMED to be a valid index for the first dimension of
+                self.getFluxGrid(), otherwise an IndexError will be raised.
+        
+        Kwargs:
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from psinorm to R_mid. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
+                on whether or not the instance was created with the tspline
+                keyword.
+        """
         if not self._tricubic:
             try:
                 return self._RmidSpline[idx][kind]
@@ -2009,6 +2177,24 @@ class Equilibrium(object):
                 return self._RmidSpline
 
     def _getPsi0Spline(self, kind='cubic'):
+        """Gets the univariate spline to interpolate psi0 as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Kwargs:
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from t to psi0. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to psi0.
+        """
         if self._psiOfPsi0Spline:
             return self._psiOfPsi0Spline
         else:
@@ -2019,6 +2205,24 @@ class Equilibrium(object):
             return self._psiOfPsi0Spline
 
     def _getLCFSPsiSpline(self, kind='cubic'):
+        """Gets the univariate spline to interpolate psi_a as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Kwargs:
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from t to psi_a. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to psi_a.
+        """
         if self._psiOfLCFSSpline:
             return self._psiOfLCFSSpline
         else:
@@ -2028,7 +2232,39 @@ class Equilibrium(object):
                                                                bounds_error=False)
             return self._psiOfLCFSSpline
 
-    def _getMagRSpline(self,length_unit=1, kind='cubic'):
+    def _getMagRSpline(self, length_unit=1, kind='cubic'):
+        """Gets the univariate spline to interpolate R_mag as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Kwargs:
+            length_unit: String or 1. Length unit that R_mag is returned in. If
+                a string is given, it must be a valid unit specifier:
+                    'm'         meters
+                    'cm'        centimeters
+                    'mm'        millimeters
+                    'in'        inches
+                    'ft'        feet
+                    'yd'        yards
+                    'smoot'     smoots
+                    'cubit'     cubits
+                    'hand'      hands
+                    'default'   meters
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R_out returned in meters).
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from t to R_mag. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to R_mid.
+        """
         if self._MagRSpline:
             return self._MagRSpline
         else:
@@ -2040,6 +2276,38 @@ class Equilibrium(object):
             return self._MagRSpline
 
     def _getRmidOutSpline(self, length_unit=1, kind='cubic'):
+        """Gets the univariate spline to interpolate R_out as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Kwargs:
+            length_unit: String or 1. Length unit that R_out is returned in. If
+                a string is given, it must be a valid unit specifier:
+                    'm'         meters
+                    'cm'        centimeters
+                    'mm'        millimeters
+                    'in'        inches
+                    'ft'        feet
+                    'yd'        yards
+                    'smoot'     smoots
+                    'cubit'     cubits
+                    'hand'      hands
+                    'default'   meters
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R_out returned in meters).
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from t to R_out. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to R_out.
+        """
         if self._RmidOutSpline:
             return self._RmidOutSpline
         else:
@@ -2285,8 +2553,7 @@ class Equilibrium(object):
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
 
     def plotFlux(self):
-        """
-        streamlined plotting of flux contours directly from psi grid.
+        """Plots flux contours directly from psi grid.
         """
         
         plt.ion()
