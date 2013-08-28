@@ -1306,22 +1306,46 @@ class Equilibrium(object):
     ###########################
 
     def _psinorm2Quan(self, spline_func, psi_norm, time_idxs, x, t, return_t=False, sqrt=False, rho=False, kind='cubic'):
-        """Utility function for computing a variety of quantities given psi_norm
-        and the relevant time indices.
-
-        Arguments:
-        spline_func     Function which returns a 1d spline given a time index.
-        psi_norm        Array of psi_norm values to evaluate at.
-        time_idxs       Time indices array for each of the psi_norm values.
-        x, t            Spatial and temporal arrays. (Needed for determining
-                            output shape.)
-        return_t=False  Boolean keyword to cause the function to return a tuple
-                            of (Quan, time_idxs).
-        sqrt=False      Boolean keyword to cause the square root of Quan to be
-                            returned. Values with a negative Quan are set to
-                            zero in this case.
-        rho=False       Boolean keyword to cause the output of a routine that
-                            returns R_mid to be converted to r/a."""
+        """Utility function for computing a variety of quantities given psi_norm and the relevant time indices.
+        
+        Args:
+            spline_func: Function which returns a 1d spline for the quantity
+                you want to convert into as a function of psi_norm given a
+                time index.
+            psi_norm: Array or scalar float. psi_norm values to evaluate at.
+            time_idxs: Array or scalar float. Time indices for each of the
+                psi_norm values. Shape must match that of psi_norm.
+            x: Array or scalar float. Representative spatial array that
+                psi_norm and time_idxs was formed from (used to determine
+                output shape).
+            t: Array or scalar float. Representative time array that psi_norm
+                and time_idxs was formed from (used to determine output shape).
+        
+        Kwargs:
+            return_t: Boolean. Set to True to return a tuple of (Quan,
+                time_idxs), where time_idxs is the array of time indices
+                actually used in evaluating Quan with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return Quan).
+            sqrt: Boolean. Set to True to return the square root of the quantity
+                obtained from spline_func. Only the square root of positive
+                values is taken. Negative values are replaced with zeros,
+                consistent with Steve Wolfe's IDL implementation efit_rz2rho.pro.
+                Default is False (return Quan itself).
+            rho: Boolean. Set to True to return r/a (normalized minor radius)
+                instead of R_mid. Default is False (return major radius, R_mid).
+                Note that this will have unexpected results if spline_func
+                returns anything other than R_mid.
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from psinorm to Quan. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        """
 
         # Handle single value case properly:
         try:
