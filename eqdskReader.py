@@ -4,6 +4,7 @@ from core import Equilibrium
 import scipy
 import glob
 import re
+import matplotlib.pyplot as plt
 
 class EQDSKReader(Equilibrium):
     """
@@ -117,17 +118,17 @@ class EQDSKReader(Equilibrium):
             # next line - construction values for RZ grid
             line = gfile.readline()
             line = re.findall('-?\d\.\d*E[-+]\d*',line)     # regex magic!
-            self._xdim = float(line[0])     # width of R-axis in grid
-            self._zdim = float(line[1])     # height of Z-axis in grid
-            self._rzero = float(line[2])    # zero point of R grid
-            self._rgrid0 = float(line[3])   # start point of R grid
-            self._zmid = float(line[4])     # midpoint of Z grid
+            xdim = float(line[0])     # width of R-axis in grid
+            zdim = float(line[1])     # height of Z-axis in grid
+            rzero = float(line[2])    # zero point of R grid
+            rgrid0 = float(line[3])   # start point of R grid
+            zmid = float(line[4])     # midpoint of Z grid
 
             # construct EFIT grid
-            self._rGrid = scipy.linspace(self._rgrid0,self._rgrid0 + self._xdim,nw)
-            self._zGrid = scipy.linspace(self._zmid - self._zdim/2.0,self._zmid + self._zdim/2.0,nh)
-            self._drefit = (self._rGrid[-1] - self._rGrid[0])/(nw-1)
-            self._dzefit = (self._zGrid[-1] - self._zGrid[0])/(nh-1)
+            self._rGrid = scipy.linspace(rgrid0,rgrid0 + xdim,nw)
+            self._zGrid = scipy.linspace(zmid - zdim/2.0,zmid + zdim/2.0,nh)
+            drefit = (rGrid[-1] - rGrid[0])/(nw-1)
+            dzefit = (zGrid[-1] - zGrid[0])/(nh-1)
 
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
             line = gfile.readline()
@@ -235,8 +236,8 @@ class EQDSKReader(Equilibrium):
                 for val in line:
                     bbbs.append(float(val))
             bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='C')
-            self._rbbbs = bbbs[0,:]
-            self._zbbbs = bbbs[1,:]
+            self._RLCFS = bbbs[0,:]
+            self._ZLCFS = bbbs[1,:]
 
             # next data reads as 2 x limitr array, then broken into
             # xlim, ylim (locations of limiter)(?)
@@ -275,14 +276,14 @@ class EQDSKReader(Equilibrium):
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._presw.append(float(val))
-                    self._presw = np.array(self._presw)
+                    self._presw = scipy.array(self._presw)
                     self._preswp = []
                     for i in range(nrows):
                         line = gfile.readline()
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._preswp.append(float(val))
-                    self._preswp = np.array(self._preswp)
+                    self._preswp = scipy.array(self._preswp)
 
                 # read ion mass density if present
                 if nmass > 0:
@@ -295,7 +296,7 @@ class EQDSKReader(Equilibrium):
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._dmion.append(float(val))
-                    self._dmion = np.array(self._dmion)
+                    self._dmion = scipy.array(self._dmion)
 
                 # read rhovn
                 nrows = nw/5
@@ -307,7 +308,7 @@ class EQDSKReader(Equilibrium):
                     line = re.findall('-?\d.\d*E[-+]\d*',line)
                     for val in line:
                         self._rhovn.append(float(val))
-                self._rhovn = np.array(self._rhovn)
+                self._rhovn = scipy.array(self._rhovn)
 
                 # read keecur; if >0 read workk
                 line = gfile.readline.split()
@@ -319,8 +320,294 @@ class EQDSKReader(Equilibrium):
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._workk.append(float(val))
-                    self._workk = np.array(self._workk)
+                    self._workk = scipy.array(self._workk)
+            except:
+                pass
                     
+    def __str__(self):
+        return 'G-file equilibrium from '+str(self._gfile)
+        
+    def getInfo(self):
+        """
+        returns namedtuple of equilibrium information
+        outputs:
+        namedtuple containing
+            shot:   shot index
+            time:   time point of g-file
+            nr:     size of R-axis of spatial grid
+            nz:     size of Z-axis of spatial grid
+        """
+        data = namedtuple('Info',['shot','time','nr','nz'])
+        try:
+            nr = len(self._rGrid)
+            nz = len(self._zGrid)
+            shot = self._shot
+            time = self._time
+        except TypeError:
+            nr,nz,shot,time=0
+            print 'failed to load data from g-file.'
+        return data(shot=shot,time=time,nr=nr,nz=nz)
+
+    def getTimeBase(self):
+        #returns EFIT time base array (t)
+        raise NotImplementedError()
+
+    def getFluxGrid(self):
+        """
+        returns EFIT flux grid, [r,z]
+        """
+        return self._psiRZ.copy()
+
+    def getRGrid(self):
+        """
+        returns EFIT R-axis [r]
+        """
+        return self._rGrid.copy()
+
+    def getZGrid(self):
+        """
+        returns EFIT Z-axis [z]
+        """
+        return self._zGrid.copy()
+
+    def getFluxAxis(self):
+        """
+        returns psi on magnetic axis
+        """
+        return scipy.array(self._psiAxis)
+
+    def getFluxLCFS(self):
+        """
+        returns psi at separatrix
+        """
+        return scipy.array(self._psiLCFS)
+
+    def getRLCFS(self):
+        #returns R-positions mapping LCFS, rbbbs(t,n)
+        raise NotImplementedError()
+
+    def getZLCFS(self):
+        #returns Z-positions mapping LCFS, zbbbs(t,n)
+        raise NotImplementedError()
+
+    def getFluxVol(self):
+        #returns volume contained within a flux surface as function of psi, volp(psi,t)
+        raise NotImplementedError()
+
+    def getVolLCFS(self):
+        #returns plasma volume in LCFS, vout(t)
+        raise NotImplementedError()
+
+    def getRmidPsi(self):
+        #returns max major radius of flux surface, rpres(t,psi)
+        raise NotImplementedError()
+
+    def getFluxPres(self):
+        #returns EFIT-calculated pressure p(psi,t)
+        raise NotImplementedError()
+
+    def getElongation(self):
+        #returns LCFS elongation, kappa(t)
+        raise NotImplementedError()
+
+    def getUpperTriangularity(self):
+        #returns LCFS upper triangularity, delta_u(t)
+        raise NotImplementedError()
+
+    def getLowerTriangularity(self):
+        #returns LCFS lower triangularity, delta_l(t)
+        raise NotImplementedError()
+
+    def getShaping(self):
+        #returns dimensionless shaping parameters for plasma
+        #namedtuple containing {LCFS elongation, LCFS upper/lower triangularity)
+        raise NotImplementedError()
+
+    def getMagR(self):
+        #returns magnetic-axis major radius, rmagx(t)
+        raise NotImplementedError()
+
+    def getMagZ(self):
+        #returns magnetic-axis Z, zmagx(t)
+        raise NotImplementedError()
+
+    def getAreaLCFS(self):
+        #returns LCFS surface area, areao(t)
+        raise NotImplementedError()
+
+    def getAOut(self):
+        #returns outboard-midplane minor radius
+        raise NotImplementedError()
+
+    def getRmidOut(self):
+        #returns outboard-midplane major radius
+        raise NotImplementedError()
+
+    def getGeometry(self):
+        #returns dimensional geometry parameters for plasma
+        #namedtuple containing {mag axis r,z, LCFS area, volume, outboard midplane major radius}
+        raise NotImplementedError()
+
+    def getQProfile(self):
+        #returns safety factor profile q(psi,t):
+        raise NotImplementedError()
+
+    def getQ0(self):
+        #returns q-value on magnetic axis, q0(t)
+        raise NotImplementedError()
+
+    def getQ95(self):
+        #returns q at 95% flux, psib(t)
+        raise NotImplementedError()
+
+    def getQLCFS(self):
+        #returns q on LCFS, qout(t)
+        raise NotImplementedError()
+
+    def getQ1Surf(self):
+        #returns outboard-midplane minor radius of q=1 surface, aaq1(t)
+        raise NotImplementedError()
+    
+    def getQ2Surf(self):
+        #returns outboard-midplane minor radius of q=2 surface, aaq2(t)
+        raise NotImplementedError()
+
+    def getQ3Surf(self):
+        #returns outboard-midplane minor radius of q=3 surface, aaq3(t)
+        raise NotImplementedError()
+
+    def getQs(self):
+        #returns specific q-profile values
+        #namedtuple containing {q0, q95, q(LCFS), minor radius of q=1,2,3 surfaces}
+        raise NotImplementedError()
+
+    def getBtVac(self):
+        #returns vacuum on-axis toroidal field btaxv(t)
+        raise NotImplementedError()
+
+    def getBtPla(self):
+        #returns plasma on-axis toroidal field btaxp(t)
+        raise NotImplementedError()
+
+    def getBpAvg(self):
+        #returns avg poloidal field, bpolav(t)
+        raise NotImplementedError() 
+
+    def getFields(self):
+        #returns magnetic-field measurements from EFIT
+        #dict containing {Btor on magnetic axis (plasma and vacuum), avg Bpol)
+        raise NotImplementedError()
+
+    def getIpCalc(self):
+        #returns EFIT-calculated plasma current
+        raise NotImplementedError()
+
+    def getIpMeas(self):
+        #returns measured plasma current
+        raise NotImplementedError()
+
+    def getJp(self):
+        #returns (r,z,t) grid of EFIT-calculated current density
+        raise NotImplementedError()
+
+    def getBetaT(self):
+        #returns calculated toroidal beta, betat(t)
+        raise NotImplementedError()
+
+    def getBetaP(self):
+        #returns calculated avg poloidal beta, betap(t)
+        raise NotImplementedError()
+
+    def getLi(self):
+        #returns calculated internal inductance of plasma, ali(t)
+        raise NotImplementedError()
+
+    def getBetas(self):
+        #returns calculated beta and inductive values
+        #namedtuple of {betat,betap,li}
+        raise NotImplementedError()
+
+    def getDiamagFlux(self):
+        #returns diamagnetic flux, diamag(t)
+        raise NotImplementedError()
+
+    def getDiamagBetaT(self):
+        #returns diamagnetic-loop toroidal beta, betatd(t)
+        raise NotImplementedError()
+
+    def getDiamagBetaP(self):
+        #returns diamagnetic-loop poloidal beta, betapd(t)
+        raise NotImplementedError()
+
+    def getDiamagTauE(self):
+        #returns diamagnetic-loop energy confinement time, taudia(t)
+        raise NotImplementedError()
+
+    def getDiamagWp(self):
+        #returns diamagnetic-loop plasma stored energy, wplasmd(t)
+        raise NotImplementedError()
+
+    def getDiamag(self):
+        #returns diamagnetic measurements of plasma parameters
+        #namedtuple of {diamag flux, betat,betap from diamag coils, tau_E from diamag, diamag stored energy)
+        raise NotImplementedError()
+
+    def getWMHD(self):
+        #returns EFIT-calculated MHD stored energy wplasm(t)
+        raise NotImplementedError()
+
+    def getTauMHD(self):
+        #returns EFIT-calculated MHD energy confinement time taumhd(s)
+        raise NotImplementedError()
+
+    def getPinj(self):
+        #returns EFIT-calculated injected power, pbinj(t)
+        raise NotImplementedError()
+
+    def getWbdot(self):
+        #returns EFIT-calculated d/dt of magnetic stored energy, wbdot(t)
+        raise NotImplementedError()
+
+    def getWpdot(self):
+        #returns EFIT-calculated d/dt of plasma stored energy, wpdot(t)
+        raise NotImplementedError()
+
+    def getEnergy(self):
+        #returns stored-energy parameters
+        #dict of {stored energy, MHD tau_E, injected power, d/dt of magnetic, plasma stored energy)
+        raise NotImplementedError()
+
+    def getParam(self,path):
+        #backup function - takes parameter name for EFIT variable, returns that variable
+        #acts as wrapper for EFIT tree access from within object
+        raise NotImplementedError()
+        
+    def getMachineCrossSection(self):
+        raise NotImplementedError('no machine cross section stored in g-files.')
+        
+    def plotFLux(self):
+        """
+        streamlined plotting of flux contours directly from psi grid
+        """
+        plt.ion()
+
+        try:
+            psiRZ = self.getFluxGrid()
+            rGrid = self.getRGrid()
+            zGrid = self.getZGrid()
+
+            RLCFS = self.getRLCFS()
+            ZLCFS = self.getZLCFS()
+        except ValueError:
+            raise AttributeError('cannot plot EFIT flux map.')
+
+        fluxPlot = plt.figure(figsize=(6,11))
+        fluxPlot.set_xlabel('$R$ (m)')
+        fluxPlot.set_ylabel('$Z$ (m)')
+        fillcont = plt.contourf(rGrid,zGrid,psiRZ,50)
+        cont = plt.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid')
+        LCFS = plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
+        plt.show()
                 
 
 
