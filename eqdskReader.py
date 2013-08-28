@@ -266,6 +266,60 @@ class EQDSKReader(Equilibrium):
 
                 # read kvtor data if present
                 if kvtor > 0:
+                    nrows = nw/5
+                    if nw % 5 != 0:
+                        nrows += 1
+                    self._presw = []
+                    for i in range(nrows):
+                        line = gfile.readline()
+                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        for val in line:
+                            self._presw.append(float(val))
+                    self._presw = np.array(self._presw)
+                    self._preswp = []
+                    for i in range(nrows):
+                        line = gfile.readline()
+                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        for val in line:
+                            self._preswp.append(float(val))
+                    self._preswp = np.array(self._preswp)
+
+                # read ion mass density if present
+                if nmass > 0:
+                    nrows = nw/5
+                    if nw % 5 != 0:
+                        nrows += 1
+                    self._dmion = []
+                    for i in range(nrows):
+                        line = gfile.readline()
+                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        for val in line:
+                            self._dmion.append(float(val))
+                    self._dmion = np.array(self._dmion)
+
+                # read rhovn
+                nrows = nw/5
+                if nw % 5 != 0:
+                    nrows += 1
+                self._rhovn = []
+                for i in range(nrows):
+                    line = gfile.readline()
+                    line = re.findall('-?\d.\d*E[-+]\d*',line)
+                    for val in line:
+                        self._rhovn.append(float(val))
+                self._rhovn = np.array(self._rhovn)
+
+                # read keecur; if >0 read workk
+                line = gfile.readline.split()
+                keecur = int(line[0])
+                if keecur > 0:
+                    self._workk = []
+                    for i in range(nrows):
+                        line = gfile.readline()
+                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        for val in line:
+                            self._workk.append(float(val))
+                    self._workk = np.array(self._workk)
                     
                 
 
