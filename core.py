@@ -67,33 +67,6 @@ except Exception:
                   "will not be available.",
                   ModuleWarning)
 
-
-class AttrDict(dict):
-    """
-    A dictionary with access via item, attribute, and call notations:
-        >>> d = AttrDict()
-        >>> d['Variable'] = 123
-        >>> d['Variable']
-        123
-        >>> d.Variable
-        123
-        >>> d('Variable')
-        123
-    """
-    def __init__(self, init={}):
-        dict.__init__(self, init)
-
-    def __getitem__(self, name):
-        return super(AttrDict, self).__getitem__(name)
-
-    def __setitem__(self, key, value):
-        return super(AttrDict, self).__setitem__(key, value)
-
-    __getattr__ = __getitem__
-    __setattr__ = __setitem__
-    __call__ = __getitem__
-
-
 class PropertyAccessMixin(object):
     """
     Mixin to implement access of getter methods through a property-type
@@ -1208,8 +1181,8 @@ class Equilibrium(object):
                                                              bounds_error=False)
             return self._RmidOutSpline
 
-    def getTreeInfo(self):
-        #returns AttrDict of instance parameters (shot, EFIT tree, size and timebase info)
+    def getInfo(self):
+        #returns namedtuple of instance parameters (shot, EFIT tree, size and timebase info)
         raise NotImplementedError()
 
     def getTimeBase(self):
@@ -1278,7 +1251,7 @@ class Equilibrium(object):
 
     def getShaping(self):
         #returns dimensionless shaping parameters for plasma
-        #AttrDict containing {LCFS elongation, LCFS upper/lower triangularity)
+        #namedtuple containing {LCFS elongation, LCFS upper/lower triangularity)
         raise NotImplementedError()
 
     def getMagR(self):
@@ -1303,7 +1276,7 @@ class Equilibrium(object):
 
     def getGeometry(self):
         #returns dimensional geometry parameters for plasma
-        #AttrDict containing {mag axis r,z, LCFS area, volume, outboard midplane major radius}
+        #namedtuple containing {mag axis r,z, LCFS area, volume, outboard midplane major radius}
         raise NotImplementedError()
 
     def getQProfile(self):
@@ -1336,7 +1309,7 @@ class Equilibrium(object):
 
     def getQs(self):
         #returns specific q-profile values
-        #AttrDict containing {q0, q95, q(LCFS), minor radius of q=1,2,3 surfaces}
+        #namedtuple containing {q0, q95, q(LCFS), minor radius of q=1,2,3 surfaces}
         raise NotImplementedError()
 
     def getBtVac(self):
@@ -1382,7 +1355,7 @@ class Equilibrium(object):
 
     def getBetas(self):
         #returns calculated beta and inductive values
-        #AttrDict of {betat,betap,li}
+        #namedtuple of {betat,betap,li}
         raise NotImplementedError()
 
     def getDiamagFlux(self):
@@ -1407,7 +1380,7 @@ class Equilibrium(object):
 
     def getDiamag(self):
         #returns diamagnetic measurements of plasma parameters
-        #AttrDict of {diamag flux, betat,betap from diamag coils, tau_E from diamag, diamag stored energy)
+        #namedtuple of {diamag flux, betat,betap from diamag coils, tau_E from diamag, diamag stored energy)
         raise NotImplementedError()
 
     def getWMHD(self):

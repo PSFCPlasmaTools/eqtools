@@ -18,7 +18,7 @@
 
 import scipy
 
-from .core import AttrDict, Equilibrium, ModuleWarning
+from .core import Equilibrium, ModuleWarning
 
 import warnings
 
@@ -173,11 +173,11 @@ class EFITTree(Equilibrium):
         except TypeError:
             return 'tree has failed data load.'
 
-    def getTreeInfo(self):
+    def getInfo(self):
         """
-        returns AttrDict of shot information
+        returns namedtuple of shot information
         outputs:
-        AttrDict containing
+        namedtuple containing
             shot:   C-Mod shot index (long)
             tree:   EFIT tree (string)
             nr:     size of R-axis for spatial grid
@@ -192,7 +192,8 @@ class EFITTree(Equilibrium):
             nt, nr, nz = 0, 0, 0
             print 'tree has failed data load.'
 
-        return AttrDict({'shot': self._shot, 'tree': self._tree, 'nr': nr, 'nz': nz, 'nt': nt})
+        data = namedtuple('Info',['shot','tree','nr','nz','nt'])
+        return data(shot=self._shot,tree=self._tree,nr=nr,nz=nz,nt=nt)
 
     def getTimeBase(self):
         """
@@ -409,13 +410,14 @@ class EFITTree(Equilibrium):
     def getShaping(self):
         """
         pulls LCFS elongation and upper/lower triangularity
-        returns AttrDict containing {kappa, delta_u, delta_l}
+        returns namedtuple containing {kappa, delta_u, delta_l}
         """
         try:
             kap = self.getElongation()
             du = self.getUpperTriangularity()
             dl = self.getLowerTriangularity()
-            return AttrDict({'kappa': kap, 'delta_u': du, 'delta_l': dl})
+            data = namedtuple('Shaping',['kappa','delta_u','delta_l'])
+            return data(kappa=kap,delta_u=du,delta_l=dl)
         except ValueError:
             raise ValueError('data retrieval failed.')
 
@@ -498,7 +500,7 @@ class EFITTree(Equilibrium):
     def getGeometry(self, length_unit=None):
         """
         pulls dimensional geometry parameters
-        returns AttrDict containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}
+        returns namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}
         """
         try:
             Rmag = self.getMagR(length_unit=(length_unit if length_unit is not None else 1))
@@ -506,7 +508,8 @@ class EFITTree(Equilibrium):
             AreaLCFS = self.getAreaLCFS(length_unit=(length_unit if length_unit is not None else 2))
             aOut = self.getAOut(length_unit=(length_unit if length_unit is not None else 1))
             RmidOut = self.getRmidOut(length_unit=(length_unit if length_unit is not None else 1))
-            return AttrDict({'Rmag': Rmag, 'Zmag': Zmag, 'AreaLCFS': AreaLCFS, 'aOut': aOut, 'RmidOut': RmidOut})
+            data = namedtuple('Geometry',['Rmag','Zmag','AreaLCFS','aOut','RmidOut'])
+            return data(Rmag=Rmag,Zmag=Zmag,AreaLCFS=AreaLCFS,aOut=aOut,RmidOut=RmidOut)
         except ValueError:
             raise ValueError('data retrieval failed.')
 
@@ -607,7 +610,7 @@ class EFITTree(Equilibrium):
     def getQs(self, length_unit=1):
         """
         pulls q values
-        returns AttrDict containing {q0,q95,qLCFS,rq1,rq2,rq3}
+        returns namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}
         """
         try:
             q0 = self.getQ0()
@@ -616,7 +619,8 @@ class EFITTree(Equilibrium):
             rq1 = self.getQ1Surf(length_unit=length_unit)
             rq2 = self.getQ2Surf(length_unit=length_unit)
             rq3 = self.getQ3Surf(length_unit=length_unit)
-            return AttrDict({'q0': q0, 'q95': q95, 'qLCFS': qLCFS, 'rq1': rq1, 'rq2': rq2, 'rq3': rq3})
+            data = namedtuple('Qs',['q0','q95','qLCFS','rq1','rq2','rq3'])
+            return data(q0=q0,q95=q95,qLCFS=qLCFS,rq1=rq1,rq2=rq2,rq3=rq3)
         except ValueError:
             raise ValueError('data retrieval failed.')
 
@@ -662,13 +666,14 @@ class EFITTree(Equilibrium):
     def getFields(self):
         """
         pulls vacuum and plasma toroidal field, avg poloidal field
-        returns AttrDict containing {btaxv,btaxp,bpolav}
+        returns namedtuple containing {btaxv,btaxp,bpolav}
         """
         try:
             btaxv = self.getBtVac()
             btaxp = self.getBtPla()
             bpolav = self.getBpAvg()
-            return AttrDict({'BtVac': btaxv, 'BtPla': btaxp, 'BpAvg': bpolav})
+            data = namedtuple('Fields',['BtVac','BtPla','BpAvg'])
+            return data(BtVac=btaxv,BtPla=btaxp,BpAvg=bpolav)
         except ValueError:
             raise ValueError('data retrieval failed.')
 
@@ -755,13 +760,14 @@ class EFITTree(Equilibrium):
     def getBetas(self):
         """
         pulls calculated betap, betat, internal inductance
-        returns AttrDict containing {betat,betap,Li}
+        returns namedtuple containing {betat,betap,Li}
         """
         try:
             betat = self.getBetaT()
             betap = self.getBetaP()
             Li = self.getLi()
-            return AttrDict({'betat': betat, 'betap': betap, 'Li': Li})
+            data = namedtuple('Betas',['betat','betap','Li'])
+            return data(betat=betat,betap=betap,Li=Li)
         except ValueError:
                 raise ValueError('data retrieval failed.')
 
@@ -833,7 +839,7 @@ class EFITTree(Equilibrium):
     def getDiamag(self):
         """
         pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
-        returns AttrDict containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}
+        returns namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}
         """
         try:
             dFlux = self.getDiamagFlux()
@@ -841,7 +847,8 @@ class EFITTree(Equilibrium):
             betapd = self.getDiamagBetaP()
             dTau = self.getDiamagTauE()
             dWp = self.getDiamagWp()
-            return AttrDict({'diaFlux': dFlux, 'diaBetat': betatd, 'diaBetap': betapd, 'diaTauE': dTau, 'diaWp': dWp})
+            data = namedtuple('Diamag',['diaFlux','diaBetat','diaBetap','diaTauE','diaWp'])
+            return data(diaFlux=dFLux,diaBetat=betatd,diaBetap=betapd,diaTauE=dTau,diaWp=dWp)
         except ValueError:
                 raise ValueError('data retrieval failed.')
 
@@ -913,7 +920,7 @@ class EFITTree(Equilibrium):
     def getEnergy(self):
         """
         pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy
-        returns AttrDict containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}
+        returns namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}
         """
         try:
             WMHD = self.getWMHD()
@@ -921,7 +928,8 @@ class EFITTree(Equilibrium):
             Pinj = self.getPinj()
             Wbdot = self.getWbdot()
             Wpdot = self.getWpdot()
-            return AttrDict({'WMHD': WMHD, 'tauMHD': tauMHD, 'Pinj': Pinj, 'Wbdot': Wbdot, 'Wpdot': Wpdot})
+            data = namedtuple('Energy',['WMHD','tauMHD','Pinj','Wbdot','Wpdot'])
+            return data(WMHD=WMHD,tauMHD=tauMHD,Pinj=Pinj,Wbdot=Wbdot,Wpdot=Wpdot)
         except ValueError:
             raise ValueError('data retrieval failed.')
 
