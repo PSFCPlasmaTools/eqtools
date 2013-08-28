@@ -1,3 +1,31 @@
+# This program is distributed under the terms of the GNU General Purpose License (GPL).
+# Refer to http://www.gnu.org/licenses/gpl.txt
+#
+# This file is part of EqTools.
+#
+# EqTools is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# EqTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+This module contains the AFileReader class, a lightweight data
+handler for a-file (time-history) datasets.
+
+Classes:
+    AFileReader: Data-storage class for a-file data.  Reads
+        data from ASCII a-file, storing as copy-safe object
+        attributes.
+"""
+
 import numpy as np
 import re
 import csv
@@ -6,6 +34,13 @@ import csv
 class AFileReader(object):
     """
     class to read a-file (EFIT time-history data storage).
+    """
+    """
+    Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.
+
+    A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is 
+    read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
+    EFIT variable names.
     """
     def __init__(self,afile):
         """
@@ -443,10 +478,17 @@ class AFileReader(object):
 
     def __getattribute__(self, name):
         """
-        Tries to get attribute as written.  If this fails, trys to call the attribute
-        with preceding underscore, marking a pseudo-private variable.  If this exists,
-        returns a copy-safe value.  If this fails, raises AttributeError.  Generates a
-        copy-safe version of each data attribute.
+        Copy-safe attribute retrieval method overriding default object.__getattribute__.
+
+        Tries to retrieve attribute as-written (first check for default object attributes).
+        If that fails, looks for pseudo-private attributes, marked by preceding underscore,
+        to retrieve data values.  If this fails, raise AttributeError.
+
+        Args:
+            name: String.  Name (without leading underscore for data variables) of attribute.
+
+        Raises:
+            AttributeError: if no attribute can be found.
         """
         try:
             return super(AFileReader,self).__getattribute__(name)
@@ -459,9 +501,18 @@ class AFileReader(object):
 
     def __setattr__(self, name, value):
         """
-        Raises AttributeError if the object already has a method get[name], as
-        creation of such an attribute would interfere with the automatic
-        property generation in __getattribute__.
+        Copy-safe attribute setting method overriding default object.__setattr__.
+
+        Raises error if object already has attribute _{name} for input name,
+        as such an attribute would interfere with automatic property generation in
+        __getattribute__.
+
+        Args:
+            name: String.  Attribute name.
+
+        Raises:
+            AttributeError: if attempting to create attribute with protected
+                pseudo-private name.
         """
         if hasattr(self, '_'+name):
             raise AttributeError("AFileReader object already has data attribute "
