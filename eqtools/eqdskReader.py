@@ -1,4 +1,29 @@
-# inherited class of Equilibrium to handle eqdsk files
+# This program is distributed under the terms of the GNU General Purpose License (GPL).
+# Refer to http://www.gnu.org/licenses/gpl.txt
+#
+# This file is part of EqTools.
+#
+# EqTools is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# EqTools is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+This module contains the EQDSKReader class, which creates Equilibrium class
+functionality for equilibria stored in eqdsk files from EFIT(a- and g-files).
+
+Classes:
+    EQDSKReader: class inheriting Equilibrium reading g- and a-files for
+        equilibrium data.
+"""
 
 from core import Equilibrium
 import scipy
@@ -8,10 +33,10 @@ import matplotlib.pyplot as plt
 
 class EQDSKReader(Equilibrium):
     """
-    Inherits Equilibrium class.  EQDSK-specific data handling class using standard
-    EFIT tag names.  Pulls EFIT data from a- and g-files associated with the given shot
-    and time window, stores as object attributes.  Each EFIT variable or set of variables
-    is recovered with a corresponding getter method.
+    Equilibrium subclass working from eqdsk ASCII-file equilibria.
+
+    Inherits mapping and structural data from Equilibrium, populates equilibrium
+    and profile data from g- and a-files for a selected shot and time window.
     """
     def __init__(self,shot,time,gfilename=None,afilename=None,length_unit='m'):
         """
@@ -25,6 +50,23 @@ class EQDSKReader(Equilibrium):
         time:       time slice in ms
         gfilename:  (optional, default None) if set, ignores shot,time inputs and pulls g-file by name
         afilename:  (optional, default None) if set, ignores shot,time inputs and pulls a-file by name
+        """
+        """
+        Create instance of EQDSKReader.
+
+        Generates object and reads data from selected g-file (either manually set or
+        autodetected based on user shot and time selection), storing as object
+        attributes for usage in Equilibrium mapping methods.
+
+        Args:
+            shot: Int.  Shot index.
+            time: Int.  Time index (typically ms).  Shot and Time used to autogenerate filenames.
+
+        Kwargs:
+            gfilename: String.  Manually selects ASCII file for equilibrium read.
+            afilename: String.  Manually selects ASCII file for time-history read.
+            length_unit: String.  Flag setting length unit for equilibrium scales.
+                Defaults to 'm' for lengths in meters.
         """
         # instantiate superclass, forcing time splining to false (eqdsk only contains single time slice)
         super(EQDSKReader,self).__init__(length_unit=length_unit,tspline=False)
@@ -100,7 +142,7 @@ class EQDSKReader(Equilibrium):
                 self._afilename = afilename
 
         # now we start reading the g-file
-        with open(gfilename,'r') as gfile:
+        with open(self._gfilename,'r') as gfile:
             # read the header line, containing grid size, mfit size, and type data
             line = gfile.readline().split()
             self._date = line[1]                         # (str) date of g-file generation, MM/DD/YYYY
@@ -113,7 +155,8 @@ class EQDSKReader(Equilibrium):
             #extract time, units from timestring
             time = re.findall('\d+',timestring)[0]
             self._tunits = timestring.split(time)[1]
-            self._time = scipy.array(int(time))
+            timeConvertDict = {'ms':1000.,'s':1}
+            self._time = scipy.array(float(time)*timeConvertDict[self._tunits])
             
             # next line - construction values for RZ grid
             line = gfile.readline()
@@ -127,23 +170,23 @@ class EQDSKReader(Equilibrium):
             # construct EFIT grid
             self._rGrid = scipy.linspace(rgrid0,rgrid0 + xdim,nw)
             self._zGrid = scipy.linspace(zmid - zdim/2.0,zmid + zdim/2.0,nh)
-            drefit = (rGrid[-1] - rGrid[0])/(nw-1)
-            dzefit = (zGrid[-1] - zGrid[0])/(nh-1)
+            drefit = (self._rGrid[-1] - self._rGrid[0])/(nw-1)
+            dzefit = (self._zGrid[-1] - self._zGrid[0])/(nh-1)
 
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
             line = gfile.readline()
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
-            self._rmag = float(line[0])
-            self._zmag = float(line[1])
-            self._psiAxis = float(line[2])
-            self._psiLCFS = float(line[3])
-            bzero = float(line[4])
+            self._rmaxis = scipy.array(float(line[0]))
+            self._zmaxis = scipy.array(float(line[1]))
+            self._psiAxis = scipy.array(float(line[2]))
+            self._psiLCFS = scipy.array(float(line[3]))
+            self._bcentr = scipy.array(float(line[4]))
 
             # read EFIT-calculated plasma current, psi at magnetic axis (duplicate), 
             # dummy, R of magnetic axis (duplicate), dummy
             line = gfile.readline()
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
-            self._IpCalc = float(line[0])
+            self._cpasma = scipy.array(float(line[0]))
 
             # read Z of magnetic axis (duplicate), dummy, psi at LCFS (duplicate), dummy, dummy
             line = gfile.readline()
@@ -284,6 +327,9 @@ class EQDSKReader(Equilibrium):
                         for val in line:
                             self._preswp.append(float(val))
                     self._preswp = scipy.array(self._preswp)
+                else:
+                    self._presw = scipy.array([0])
+                    self._preswp = scipy.array([0])
 
                 # read ion mass density if present
                 if nmass > 0:
@@ -297,6 +343,8 @@ class EQDSKReader(Equilibrium):
                         for val in line:
                             self._dmion.append(float(val))
                     self._dmion = scipy.array(self._dmion)
+                else:
+                    self._dmion = scipy.array([0])
 
                 # read rhovn
                 nrows = nw/5
@@ -321,8 +369,14 @@ class EQDSKReader(Equilibrium):
                         for val in line:
                             self._workk.append(float(val))
                     self._workk = scipy.array(self._workk)
+                else:
+                    self._workk = scipy.array([0])
             except:
-                pass
+                self._presw = scipy.array([0])
+                self._preswp = scipy.array([0])
+                self._rhovn = scipy.array([0])
+                self._dmion = scipy.array([0])
+                self._workk = scipy.array([0])
                     
     def __str__(self):
         return 'G-file equilibrium from '+str(self._gfile)
@@ -384,11 +438,11 @@ class EQDSKReader(Equilibrium):
 
     def getRLCFS(self):
         #returns R-positions mapping LCFS, rbbbs(t,n)
-        raise NotImplementedError()
+        return self._RLCFS.copy()
 
     def getZLCFS(self):
         #returns Z-positions mapping LCFS, zbbbs(t,n)
-        raise NotImplementedError()
+        return self._ZLCFS.copy()
 
     def getFluxVol(self):
         #returns volume contained within a flux surface as function of psi, volp(psi,t)
@@ -404,7 +458,7 @@ class EQDSKReader(Equilibrium):
 
     def getFluxPres(self):
         #returns EFIT-calculated pressure p(psi,t)
-        raise NotImplementedError()
+        return self._pres.copy()
 
     def getElongation(self):
         #returns LCFS elongation, kappa(t)
@@ -450,7 +504,7 @@ class EQDSKReader(Equilibrium):
 
     def getQProfile(self):
         #returns safety factor profile q(psi,t):
-        raise NotImplementedError()
+        return self._qpsi.copy()
 
     def getQ0(self):
         #returns q-value on magnetic axis, q0(t)
@@ -500,7 +554,7 @@ class EQDSKReader(Equilibrium):
 
     def getIpCalc(self):
         #returns EFIT-calculated plasma current
-        raise NotImplementedError()
+        return self._cpasma.copy()
 
     def getIpMeas(self):
         #returns measured plasma current
