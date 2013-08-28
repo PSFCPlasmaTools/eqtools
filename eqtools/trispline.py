@@ -1,6 +1,6 @@
 import scipy 
 import scipy.interpolate
-import _tricubic
+import _tricub
 
 
 """
@@ -71,7 +71,7 @@ class spline():
             dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
             dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
             dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
-            val[inp] = _tricubic.ev(dx,dy,dz,self._f,pos,indx)  
+            val[inp] = _tricub.ev(dx,dy,dz,self._f,pos,indx)  
 
  
         return(val)

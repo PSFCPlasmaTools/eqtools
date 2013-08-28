@@ -22,7 +22,8 @@ handler for p-file (radial profile) datasets.
 
 Classes:
     PFileReader: Data-storage class for p-file data.  Reads 
-    data from ASCII p-file, storing as copy-safe object attributes.
+        data from ASCII p-file, storing as copy-safe object 
+        attributes.
 """
 
 import numpy as np
@@ -45,14 +46,14 @@ class PFileReader(object):
     """
     def __init__(self,pfile,verbose=True):
         """
-        initialize data-storage object and read data from supplied p-file.
+        Creates instance of PFileReader.
 
-        INPUTS:
-        pfile:      (str) path to p-file
-        verbose:    (bool, def True) print available parameters on load
-        """
-        """
-        Creates 
+        Args:
+            pfile: String.  Path to ASCII p-file to be loaded.
+
+        Kwargs:
+            verbose: Boolean.  Option to print message on object creation
+                listing available data parameters.  Defaults to True. 
         """
         self._pfile = pfile
         self._params = []
@@ -98,8 +99,8 @@ class PFileReader(object):
                 vars(self)['_'+param] = data(name=param,npts=npts,units=units,xunits=abscis,x=x,y=val,dydx=gradval)
                 self._params.append(param)
 
-        print('P-file data loaded.')
         if verbose:
+            print('P-file data loaded from '+self._pfile)
             print('Available parameters:')
             for par in self._params:
                 un = vars(self)['_'+par].units
@@ -116,19 +117,24 @@ class PFileReader(object):
 
     def __getattribute__(self, name):
         """
-        Tries to get attribute as written.  If this fails, trys to call the attribute
-        with preceding underscore, marking a pseudo-private variable.  If this exists,
-        returns a copy-safe value.  If this fails, raises AttributeError.  Generates a
-        copy-safe version of each data attribute.
+        Copy-safe attribute retrieval method overriding default object.__getattribute__.
+
+        Tries to retrieve attribute as-written (first check for default object attributes).
+        If that fails, looks for pseudo-private attributes, marked by preceding underscore,
+        to retrieve data blocks.  If this fails, raise AttributeError.
+
+        Args:
+            name: String.  Name (without leading underscore for data variables) of attribute.
+
+        Raises:
+            AttributeError: if no attribute can be found.
         """
         try:
             return super(PFileReader,self).__getattribute__(name)
         except AttributeError:
             try:
                 attr = super(PFileReader,self).__getattribute__('_'+name)
-                if type(attr) is namedtuple:
-                    return attr.copy()
-                elif type(attr) is list:
+                if type(attr) is list:
                     return attr[:]
                 else:
                     return attr
@@ -137,9 +143,18 @@ class PFileReader(object):
 
     def __setattr__(self, name, value):
         """
-        Raises AttributeError if the object already has a method get[name], as
-        creation of such an attribute would interfere with the automatic
-        property generation in __getattribute__.
+        Copy-safe attribute setting method overriding default object.__setattr__.
+
+        Raises error if object already has attribute _{name} for input name,
+        as such an attribute would interfere with automatic property generation in
+        __getattribute__.
+
+        Args:
+            name: String.  Attribute name.
+
+        Raises:
+            AttributeError: if attempting to create attribute with protected
+                pseudo-private name.
         """
         if hasattr(self, '_'+name):
             raise AttributeError("PFileReader object already has data attribute "
