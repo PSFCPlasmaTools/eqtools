@@ -6,7 +6,7 @@ tricub = Extension('_tricub',['_tricub.pyf','_tricub.c'])
 setup(ext_modules = [tricub,])
 
 
-pysetup(name='EqTools',
+pysetup(name='eqtools',
         version='1.0',
         description='Tokamak Flux mapping utility',
         author=['Mark Chilenski','Ian Faust','John Walk']
