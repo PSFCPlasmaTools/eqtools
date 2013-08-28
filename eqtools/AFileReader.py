@@ -33,9 +33,6 @@ import csv
 
 class AFileReader(object):
     """
-    class to read a-file (EFIT time-history data storage).
-    """
-    """
     Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.
 
     A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is 
