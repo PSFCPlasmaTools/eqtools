@@ -275,14 +275,14 @@ class EQDSKReader(Equilibrium):
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._presw.append(float(val))
-                    self._presw = np.array(self._presw)
+                    self._presw = scipy.array(self._presw)
                     self._preswp = []
                     for i in range(nrows):
                         line = gfile.readline()
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._preswp.append(float(val))
-                    self._preswp = np.array(self._preswp)
+                    self._preswp = scipy.array(self._preswp)
 
                 # read ion mass density if present
                 if nmass > 0:
@@ -295,7 +295,7 @@ class EQDSKReader(Equilibrium):
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._dmion.append(float(val))
-                    self._dmion = np.array(self._dmion)
+                    self._dmion = scipy.array(self._dmion)
 
                 # read rhovn
                 nrows = nw/5
@@ -307,7 +307,7 @@ class EQDSKReader(Equilibrium):
                     line = re.findall('-?\d.\d*E[-+]\d*',line)
                     for val in line:
                         self._rhovn.append(float(val))
-                self._rhovn = np.array(self._rhovn)
+                self._rhovn = scipy.array(self._rhovn)
 
                 # read keecur; if >0 read workk
                 line = gfile.readline.split()
@@ -319,7 +319,7 @@ class EQDSKReader(Equilibrium):
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._workk.append(float(val))
-                    self._workk = np.array(self._workk)
+                    self._workk = scipy.array(self._workk)
                     
                 
 
