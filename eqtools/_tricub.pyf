@@ -1,5 +1,5 @@
 ! File _tricub.pyf
-python module _tricubic
+python module _tricub
 interface
     
 C    This file is part of the EqTools package.
@@ -41,5 +41,5 @@ C    Copyright 2013 Ian C. Faust
 	end subroutine ev
 
 end interface
-end python module _tricubic
+end python module _tricub
 		   
