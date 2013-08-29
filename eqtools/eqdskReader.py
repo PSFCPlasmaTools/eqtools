@@ -284,7 +284,7 @@ class EQDSKReader(Equilibrium):
             self._RLCFS = bbbs[0,:]
             self._ZLCFS = bbbs[1,:]
             self._defaultUnits['_RLCFS'] = 'm'
-            self._defaultUNits['_ZLCFS'] = 'm'
+            self._defaultUnits['_ZLCFS'] = 'm'
 
             # next data reads as 2 x limitr array, then broken into
             # xlim, ylim (locations of limiter)(?)
