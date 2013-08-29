@@ -42,18 +42,6 @@ class EQDSKReader(Equilibrium):
     """
     def __init__(self,shot,time,gfilename=None,afilename=None,length_unit='m'):
         """
-        Initializes EQDSKReader object.  Pulls data from g- and a-files for given
-        shot, time slice.  By default, attempts to parse shot, time inputs into file
-        name, and searches directory for appropriate files.  Optionally, the user may
-        instead directly input a file path for a-file, g-file.
-
-        INPUTS:
-        shot:       shot index
-        time:       time slice in ms
-        gfilename:  (optional, default None) if set, ignores shot,time inputs and pulls g-file by name
-        afilename:  (optional, default None) if set, ignores shot,time inputs and pulls a-file by name
-        """
-        """
         Create instance of EQDSKReader.
 
         Generates object and reads data from selected g-file (either manually set or
@@ -158,7 +146,7 @@ class EQDSKReader(Equilibrium):
             time = re.findall('\d+',timestring)[0]
             self._tunits = timestring.split(time)[1]
             timeConvertDict = {'ms':1000.,'s':1}
-            self._time = scipy.array(float(time)*timeConvertDict[self._tunits])
+            self._time = scipy.array(float(time)*timeConvertDict[self._tunits]) # returns time in seconds as array
             
             # next line - construction values for RZ grid
             line = gfile.readline()
@@ -380,6 +368,11 @@ class EQDSKReader(Equilibrium):
                 self._dmion = scipy.array([0])
                 self._workk = scipy.array([0])
 
+        # toroidal current density on (r,z,t) grid typically not
+        # written to g-files.  Override getter method and initialize
+        # to none.
+        self._Jp = None
+
         # initialize data stored in a-file
         # fields
         self._btaxp = None
@@ -432,6 +425,12 @@ class EQDSKReader(Equilibrium):
         self._volLCFS = None
         self._fluxVol = None
         self._RmidPsi = None
+
+        # attempt to populate these parameters from a-file
+        try:
+            self.readAFile(self._afilename)
+        except IOError:
+            print('a-file data not loaded.')
                     
     def __str__(self):
         return 'G-file equilibrium from '+str(self._gfile)
@@ -521,7 +520,7 @@ class EQDSKReader(Equilibrium):
             # fitting parameters
             self._volLCFS = scipy.array(afr.vout)
             self._fluxVol = None
-            self._RmidPsi = None
+            self._RmidPsi = None    # not written in g- or a-file, not used by fitting parameters
 
         except IOError:
             raise IOError('no file "%s" found.' % afile)
@@ -600,8 +599,14 @@ class EQDSKReader(Equilibrium):
             return self._volLCFS.copy()
 
     def getRmidPsi(self):
-        #returns max major radius of flux surface, rpres(t,psi)
-        raise NotImplementedError()
+        """
+        Returns outboard-midplane major radius of flux surfaces.
+        Data not read from a/g-files, not implemented for eqdskReader.
+
+        Raises:
+            NotImplementedError: RmidPsi not read from a/g-files.
+        """
+        raise NotImplementedError('RmidPsi not read from a/g-files.')
 
     def getFluxPres(self):
         """
@@ -914,8 +919,14 @@ class EQDSKReader(Equilibrium):
             return self._IpMeas.copy()
 
     def getJp(self):
-        #returns (r,z,t) grid of EFIT-calculated current density
-        raise NotImplementedError()
+        """
+        Returns (r,z) grid of toroidal plasma current density.
+        Data not read from g-file, not implemented for eqdskReader.
+
+        Raises:
+            NotImplementedError: Jp not read from g-file.
+        """
+        raise NotImplementedError('Jp not read from g-file.')
 
     def getBetaT(self):
         """
@@ -1128,13 +1139,29 @@ class EQDSKReader(Equilibrium):
         except ValueError:
             raise ValueError('must read a-file for this data.')
 
-    def getParam(self,path):
+    def getParam(self,name):
         """
         Backup function, applying a direct path input for tree-like data storage access
-        for parameters not typically found in Equilbrium object.  Not implemented for
-        g-file equilibria.
+        for parameters not typically found in Equilbrium object.  Directly calls attributes
+        read from g/a-files in copy-safe manner.
+
+        Args:
+            name: String.  Parameter name for value stored in EQDSKReader instance.
+
+        Raises:
+            AttributeError: raised if no attribute is found.
         """
-        raise NotImplementedError('extra parameter calls not permitted with g-files.')
+        try:
+            return super(EQDSKReader,self).__getattribute__(name)
+        except AttributeError:
+            try:
+                attr = super(EQDSKReader,self)._getattribute__('_'+name)
+                if type(attr) is scipy.array:
+                    return attr.copy()
+                else:
+                    return attr
+            except AttributeError:
+                raise AttributeError('No attribute "_%s" found' % name)
         
     def getMachineCrossSection(self):
         """
