@@ -25,11 +25,13 @@ Classes:
         equilibrium data.
 """
 
-from core import Equilibrium
 import scipy
 import glob
 import re
 import matplotlib.pyplot as plt
+from core import Equilibrium
+from AFileReader import AFileReader
+
 
 class EQDSKReader(Equilibrium):
     """
@@ -180,13 +182,13 @@ class EQDSKReader(Equilibrium):
             self._zmaxis = scipy.array(float(line[1]))
             self._psiAxis = scipy.array(float(line[2]))
             self._psiLCFS = scipy.array(float(line[3]))
-            self._bcentr = scipy.array(float(line[4]))
+            self._bzero = scipy.array(float(line[4]))
 
             # read EFIT-calculated plasma current, psi at magnetic axis (duplicate), 
             # dummy, R of magnetic axis (duplicate), dummy
             line = gfile.readline()
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
-            self._cpasma = scipy.array(float(line[0]))
+            self._IpCalc = scipy.array(float(line[0]))
 
             # read Z of magnetic axis (duplicate), dummy, psi at LCFS (duplicate), dummy, dummy
             line = gfile.readline()
@@ -206,13 +208,13 @@ class EQDSKReader(Equilibrium):
             self._fpol = scipy.array(self._fpol)
 
             # and likewise for pressure
-            self._pres = []
+            self._fluxPres = []
             for i in range(nrows):
                 line = gfile.readline()
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
-                    self._pres.append(float(val))
-            self._pres = scipy.array(self._pres)
+                    self._fluxPres.append(float(val))
+            self._fluxPres = scipy.array(self._fluxPres)
 
             # geqdsk written as negative for positive plasma current
             # ffprim, pprime input with correct EFIT sign
@@ -377,6 +379,59 @@ class EQDSKReader(Equilibrium):
                 self._rhovn = scipy.array([0])
                 self._dmion = scipy.array([0])
                 self._workk = scipy.array([0])
+
+        # initialize data stored in a-file
+        # fields
+        self._btaxp = None
+        self._btaxv = None
+        self._bpolav = None
+
+        # currents
+        self._IpMeas = None
+
+        # safety factor parameters
+        self._q0 = None
+        self._q95 = None
+        self._qLCFS = None
+        self._rq1 = None
+        self._rq2 = None
+        self._rq3 = None
+
+        # shaping parameters
+        self._kappa = None
+        self._dupper = None
+        self._dlower = None
+
+        # dimensional geometry parameters
+        self._rmag = None
+        self._zmag = None
+        self._aLCFS = None
+        self._areaLCFS = None
+        self._RmidLCFS = None
+
+        # calc. normalized pressure values
+        self._betat = None
+        self._betap = None
+        self._Li = None
+
+        # diamagnetic measurements
+        self._diamag = None
+        self._betatd = None
+        self._betapd = None
+        self._WDiamag = None
+        self._tauDiamag = None
+
+        # calculated energy
+        self._WMHD = None
+        self._tauMHD = None
+        self._Pinj = None
+        self._Wbdot = None
+        self._Wpdot = None
+
+        # fitting parameters
+        self._volLCFS = None
+        self._fluxVol = None
+        self._RmidPsi = None
                     
     def __str__(self):
         return 'G-file equilibrium from '+str(self._gfile)
@@ -402,46 +457,130 @@ class EQDSKReader(Equilibrium):
             print 'failed to load data from g-file.'
         return data(shot=shot,time=time,nr=nr,nz=nz)
 
+    def readAFile(self,afile):
+        """
+        Reads a-file (scalar time-history data) to pull additional equilibrium data
+        not found in g-file, populates remaining data (initialized as None) in object.
+
+        Args:
+            afile: String.  Path to ASCII a-file.
+
+        Raises:
+            IOError: If afile is not found.
+        """
+        try:
+            afr = AFileReader(afile)
+
+            # fields
+            self._btaxp = scipy.array(afr.btaxp)
+            self._btaxv = scipy.array(afr.btaxv)
+            self._bpolav = scipy.array(afr.bpolav)
+
+            # currents
+            self._IpMeas = scipy.array(afr.pasmat)
+
+            # safety factor parameters
+            self._q0 = scipy.array(afr.qqmin)
+            self._q95 = scipy.array(afr.qpsib)
+            self._qLCFS = scipy.array(afr.qout)
+            self._rq1 = scipy.array(afr.aaq1)
+            self._rq2 = scipy.array(afr.aaq2)
+            self._rq3 = scipy.array(afr.aaq3)
+
+            # shaping parameters
+            self._kappa = scipy.array(afr.eout)
+            self._dupper = scipy.array(afr.doutu)
+            self._dlower = scipy.array(afr.doutl)
+
+            # dimensional geometry parameters
+            self._rmag = scipy.array(afr.rmagx)
+            self._zmag = scipy.array(afr.zmagx)
+            self._aLCFS = scipy.array(afr.aout)
+            self._areaLCFS = scipy.array(afr.areao)
+            self._RmidLCFS = scipy.array(afr.rmidout)
+
+            # calc. normalized pressure values
+            self._betat = scipy.array(afr.betat)
+            self._betap = scipy.array(afr.betap)
+            self._Li = scipy.array(afr.ali)
+
+            # diamagnetic measurements
+            self._diamag = scipy.array(afr.diamag)
+            self._betatd = scipy.array(afr.betatd)
+            self._betapd = scipy.array(afr.betapd)
+            self._WDiamag = scipy.array(afr.wplasmd)
+            self._tauDiamag = scipy.array(afr.taudia)
+
+            # calculated energy
+            self._WMHD = scipy.array(afr.wplasm)
+            self._tauMHD = scipy.array(afr.taumhd)
+            self._Pinj = scipy.array(afr.pbinj)
+            self._Wbdot = scipy.array(afr.wbdot)
+            self._Wpdot = scipy.array(afr.wpdot)
+
+            # fitting parameters
+            self._volLCFS = scipy.array(afr.vout)
+            self._fluxVol = None
+            self._RmidPsi = None
+
+        except IOError:
+            raise IOError('no file "%s" found.' % afile)
+
     def getTimeBase(self):
-        #returns EFIT time base array (t)
-        raise NotImplementedError()
+        """
+        Returns EFIT time point
+        """
+        return self._time.copy()
+
+    def getCurrentSign(self):
+        """
+        Returns the sign of the current, based on the check in Steve Wolfe's
+        IDL implementation efit_rz2psi.pro.
+        """
+        if self._currentSign is None:
+            self._currentSign = 1 if scipy.mean(self.getIpMeas()) > 1e5 else -1
+        return self._currentSign
 
     def getFluxGrid(self):
         """
-        returns EFIT flux grid, [r,z]
+        Returns EFIT flux grid, [r,z]
         """
         return self._psiRZ.copy()
 
     def getRGrid(self):
         """
-        returns EFIT R-axis [r]
+        Returns EFIT R-axis [r]
         """
         return self._rGrid.copy()
 
     def getZGrid(self):
         """
-        returns EFIT Z-axis [z]
+        Returns EFIT Z-axis [z]
         """
         return self._zGrid.copy()
 
     def getFluxAxis(self):
         """
-        returns psi on magnetic axis
+        Returns psi on magnetic axis
         """
         return scipy.array(self._psiAxis)
 
     def getFluxLCFS(self):
         """
-        returns psi at separatrix
+        Returns psi at separatrix
         """
         return scipy.array(self._psiLCFS)
 
     def getRLCFS(self):
-        #returns R-positions mapping LCFS, rbbbs(t,n)
+        """
+        Returns array of R-values of LCFS
+        """
         return self._RLCFS.copy()
 
     def getZLCFS(self):
-        #returns Z-positions mapping LCFS, zbbbs(t,n)
+        """
+        Returns array of Z-values of LCFS
+        """
         return self._ZLCFS.copy()
 
     def getFluxVol(self):
@@ -449,194 +588,559 @@ class EQDSKReader(Equilibrium):
         raise NotImplementedError()
 
     def getVolLCFS(self):
-        #returns plasma volume in LCFS, vout(t)
-        raise NotImplementedError()
+        """
+        Returns volume with LCFS.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._volLCFS is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._volLCFS.copy()
 
     def getRmidPsi(self):
         #returns max major radius of flux surface, rpres(t,psi)
         raise NotImplementedError()
 
     def getFluxPres(self):
-        #returns EFIT-calculated pressure p(psi,t)
-        return self._pres.copy()
+        """
+        Returns pressure on flux surface p(psi)
+        """
+        return self._fluxPres.copy()
 
     def getElongation(self):
-        #returns LCFS elongation, kappa(t)
-        raise NotImplementedError()
+        """
+        Returns elongation of LCFS.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._kappa is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._kappa.copy()
 
     def getUpperTriangularity(self):
-        #returns LCFS upper triangularity, delta_u(t)
-        raise NotImplementedError()
+        """
+        Returns upper triangularity of LCFS.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._dupper is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._dupper.copy()
 
     def getLowerTriangularity(self):
-        #returns LCFS lower triangularity, delta_l(t)
-        raise NotImplementedError()
+        """
+        Returns lower triangularity of LCFS.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._dlower is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._dlower.copy()
 
     def getShaping(self):
-        #returns dimensionless shaping parameters for plasma
-        #namedtuple containing {LCFS elongation, LCFS upper/lower triangularity)
-        raise NotImplementedError()
+        """
+        Pulls LCFS elongation, upper/lower triangularity.
+        Returns namedtuple containing [kappa,delta_u,delta_l].
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        try:
+            kap = self.getElongation()
+            du = self.getUpperTriangularity()
+            dl = self.getLowerTriangularity()
+            data = namedtuple('Shaping',['kappa','delta_u','delta_l'])
+            return data(kappa=kap,delta_u=du,delta_l=dl)
+        except ValueError:
+            raise ValueError('must read a-file for this data.') 
 
     def getMagR(self):
-        #returns magnetic-axis major radius, rmagx(t)
-        raise NotImplementedError()
+        """
+        Returns major radius of magnetic axis.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._rmag is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._rmag.copy()
 
     def getMagZ(self):
-        #returns magnetic-axis Z, zmagx(t)
-        raise NotImplementedError()
+        """
+        Returns Z of magnetic axis.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._zmag is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._zmag.copy()
 
     def getAreaLCFS(self):
-        #returns LCFS surface area, areao(t)
-        raise NotImplementedError()
+        """
+        Returns surface area of LCFS.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._areaLCFS is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._areaLCFS.copy()
 
     def getAOut(self):
-        #returns outboard-midplane minor radius
-        raise NotImplementedError()
+        """
+        Returns outboard-midplane minor radius of LCFS.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._aLCFS is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._aLCFS.copy()
 
     def getRmidOut(self):
-        #returns outboard-midplane major radius
-        raise NotImplementedError()
+        """
+        Returns outboard-midplane major radius of LCFS.
 
-    def getGeometry(self):
-        #returns dimensional geometry parameters for plasma
-        #namedtuple containing {mag axis r,z, LCFS area, volume, outboard midplane major radius}
-        raise NotImplementedError()
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._RmidLCFS is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._RmidLCFS.copy()
+
+    def getGeometry(self,length_unit=None):
+        """
+        Pulls dimensional geometry parameters.
+        Returns namedtuple containing [Rmag,Zmag,AreaLCFS,aOut,RmidOut]
+
+        Kwargs:
+            length_unit: TODO
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        try:
+            Rmag = self.getMagR(length_unit=(length_unit if length_unit is not None else 1))
+            Zmag = self.getMagZ(length_unit=(length_unit if length_unit is not None else 1))
+            AreaLCFS = self.getAreaLCFS(length_unit=(length_unit if length_unit is not None else 2))
+            aOut = self.getAOut(length_unit=(length_unit if length_unit is not None else 1))
+            RmidOut = self.getRmidOut(length_unit=(length_unit if length_unit is not None else 1))
+            data = namedtuple('Geometry',['Rmag','Zmag','AreaLCFS','aOut','RmidOut'])
+            return data(Rmag=Rmag,Zmag=Zmag,AreaLCFS=AreaLCFS,aOut=aOut,RmidOut=RmidOut)
+        except ValueError:
+            raise ValueError('must read a-file for this data.')
 
     def getQProfile(self):
-        #returns safety factor profile q(psi,t):
+        """
+        Returns safety factor q(psi).
+        """
         return self._qpsi.copy()
 
     def getQ0(self):
-        #returns q-value on magnetic axis, q0(t)
-        raise NotImplementedError()
+        """
+        Returns safety factor q on-axis, q0.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._q0 is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._q0.copy()
 
     def getQ95(self):
-        #returns q at 95% flux, psib(t)
-        raise NotImplementedError()
+        """
+        Returns safety factor q at 95% flux surface.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._q95 is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._q95.copy()
 
     def getQLCFS(self):
-        #returns q on LCFS, qout(t)
-        raise NotImplementedError()
+        """
+        Returns safety factor q at LCFS (interpolated).
+
+        Raises:
+            ValueError: if a-file data is not loaded.
+        """
+        if self._qLCFS is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._qLCFS.copy()
 
     def getQ1Surf(self):
-        #returns outboard-midplane minor radius of q=1 surface, aaq1(t)
-        raise NotImplementedError()
+        """
+        Returns outboard-midplane minor radius of q=1 surface.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._rq1 is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._rq1.copy()
     
     def getQ2Surf(self):
-        #returns outboard-midplane minor radius of q=2 surface, aaq2(t)
-        raise NotImplementedError()
+        """
+        Returns outboard-midplane minor radius of q=2 surface.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._rq2 is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._rq2.copy()
 
     def getQ3Surf(self):
-        #returns outboard-midplane minor radius of q=3 surface, aaq3(t)
-        raise NotImplementedError()
+        """
+        Returns outboard-midplane minor radius of q=3 surface.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._rq3 is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._rq3.copy()
 
     def getQs(self):
-        #returns specific q-profile values
-        #namedtuple containing {q0, q95, q(LCFS), minor radius of q=1,2,3 surfaces}
-        raise NotImplementedError()
+        """
+        Pulls q-profile data.
+        Returns namedtuple containing [q0,q95,qLCFS,rq1,rq2,rq3]
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        try:
+            q0 = self.getQ0()
+            q95 = self.getQ95()
+            qLCFS = self.getQLCFS()
+            rq1 = self.getQ1Surf(length_unit=length_unit)
+            rq2 = self.getQ2Surf(length_unit=length_unit)
+            rq3 = self.getQ3Surf(length_unit=length_unit)
+            data = namedtuple('Qs',['q0','q95','qLCFS','rq1','rq2','rq3'])
+            return data(q0=q0,q95=q95,qLCFS=qLCFS,rq1=rq1,rq2=rq2,rq3=rq3)
+        except ValueError:
+            raise ValueError('must read a-file for this data.')
 
     def getBtVac(self):
-        #returns vacuum on-axis toroidal field btaxv(t)
-        raise NotImplementedError()
+        """
+        Returns vacuum toroidal field on-axis.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._btaxv is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._btaxv.copy()
 
     def getBtPla(self):
-        #returns plasma on-axis toroidal field btaxp(t)
-        raise NotImplementedError()
+        """
+        Returns plasma toroidal field on-axis.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._btaxp is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._btaxp.copy()
 
     def getBpAvg(self):
-        #returns avg poloidal field, bpolav(t)
-        raise NotImplementedError() 
+        """
+        Returns average poloidal field.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._bpolav is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._bpolav.copy()
 
     def getFields(self):
-        #returns magnetic-field measurements from EFIT
-        #dict containing {Btor on magnetic axis (plasma and vacuum), avg Bpol)
-        raise NotImplementedError()
+        """
+        Pulls vacuum and plasma toroidal field, poloidal field data.
+        Returns namedtuple containing [BtVac,BtPla,BpAvg]
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        try:
+            btaxv = self.getBtVac()
+            btaxp = self.getBtPla()
+            bpolav = self.getBpAvg()
+            data = namedtuple('Fields',['BtVac','BtPla','BpAvg'])
+            return data(BtVac=btaxv,BtPla=btaxp,BpAvg=bpolav)
+        except ValueError:
+            raise ValueError('must read a-file for this data.')
 
     def getIpCalc(self):
-        #returns EFIT-calculated plasma current
-        return self._cpasma.copy()
+        """
+        Returns EFIT-calculated plasma current.
+        """
+        return self._IpCalc.copy()
 
     def getIpMeas(self):
-        #returns measured plasma current
-        raise NotImplementedError()
+        """
+        Returns measured plasma current.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._IpMeas is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._IpMeas.copy()
 
     def getJp(self):
         #returns (r,z,t) grid of EFIT-calculated current density
         raise NotImplementedError()
 
     def getBetaT(self):
-        #returns calculated toroidal beta, betat(t)
-        raise NotImplementedError()
+        """
+        Returns EFIT-calculated toroidal beta.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._betat is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._betat.copy()
 
     def getBetaP(self):
-        #returns calculated avg poloidal beta, betap(t)
-        raise NotImplementedError()
+        """
+        Returns EFIT-calculated poloidal beta.
+
+        Raises:
+            ValueError: if a-file data is not read
+        """
+        if self._betap is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._betap.copy()
 
     def getLi(self):
-        #returns calculated internal inductance of plasma, ali(t)
-        raise NotImplementedError()
+        """
+        Returns internal inductance of plasma.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._Li is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._Li.copy()
 
     def getBetas(self):
-        #returns calculated beta and inductive values
-        #namedtuple of {betat,betap,li}
-        raise NotImplementedError()
+        """
+        Pulls EFIT-calculated betas and internal inductance.
+        Returns a namedtuple containing [betat,betap,Li]
 
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        try:
+            betat = self.getBetaT()
+            betap = self.getBetaP()
+            Li = self.getLi()
+            data = namedtuple('Betas',['betat','betap','Li'])
+            return data(betat=betat,betap=betap,Li=Li)
+        except ValueError:
+                raise ValueError('must read a-file for this data.')
+            
     def getDiamagFlux(self):
-        #returns diamagnetic flux, diamag(t)
-        raise NotImplementedError()
+        """
+        Returns diamagnetic flux.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._diamag is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._diamag.copy()
 
     def getDiamagBetaT(self):
-        #returns diamagnetic-loop toroidal beta, betatd(t)
-        raise NotImplementedError()
+        """
+        Returns diamagnetic-loop measured toroidal beta.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._betatd is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._betatd.copy()
 
     def getDiamagBetaP(self):
-        #returns diamagnetic-loop poloidal beta, betapd(t)
-        raise NotImplementedError()
+        """
+        Returns diamagnetic-loop measured poloidal beta.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._betapd is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._betapd.copy()
 
     def getDiamagTauE(self):
-        #returns diamagnetic-loop energy confinement time, taudia(t)
-        raise NotImplementedError()
+        """
+        Returns diamagnetic-loop energy confinement time.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._tauDiamag is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._tauDiamag.copy()
 
     def getDiamagWp(self):
-        #returns diamagnetic-loop plasma stored energy, wplasmd(t)
-        raise NotImplementedError()
+        """
+        Returns diamagnetic-loop measured stored energy.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._WDiamag is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._WDiamag.copy()
 
     def getDiamag(self):
-        #returns diamagnetic measurements of plasma parameters
-        #namedtuple of {diamag flux, betat,betap from diamag coils, tau_E from diamag, diamag stored energy)
-        raise NotImplementedError()
+        """
+        Pulls diamagnetic flux, diamag. measured toroidal and poloidal beta, stored energy, and energy confinement time.
+        Returns a namedtuple containing [diaFlux,diaBetat,diaBetap,diaTauE,diaWp]
+
+        Raises:
+            ValueError: if a-file data is not read
+        """
+        try:
+            dFlux = self.getDiamagFlux()
+            betatd = self.getDiamagBetaT()
+            betapd = self.getDiamagBetaP()
+            dTau = self.getDiamagTauE()
+            dWp = self.getDiamagWp()
+            data = namedtuple('Diamag',['diaFlux','diaBetat','diaBetap','diaTauE','diaWp'])
+            return data(diaFlux=dFLux,diaBetat=betatd,diaBetap=betapd,diaTauE=dTau,diaWp=dWp)
+        except ValueError:
+                raise ValueError('must read a-file for this data.')
 
     def getWMHD(self):
-        #returns EFIT-calculated MHD stored energy wplasm(t)
-        raise NotImplementedError()
+        """
+        Returns EFIT-calculated stored energy.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._WMHD is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._WMHD.copy()
 
     def getTauMHD(self):
-        #returns EFIT-calculated MHD energy confinement time taumhd(s)
-        raise NotImplementedError()
+        """
+        Returns EFIT-calculated energy confinement time.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._tauMHD is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._tauMHD.copy()
 
     def getPinj(self):
-        #returns EFIT-calculated injected power, pbinj(t)
-        raise NotImplementedError()
+        """
+        Returns EFIT injected power.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._Pinj is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._Pinj.copy()
 
     def getWbdot(self):
-        #returns EFIT-calculated d/dt of magnetic stored energy, wbdot(t)
-        raise NotImplementedError()
+        """
+        Returns EFIT d/dt of magnetic stored energy
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._Wbdot is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._Wbdot.copy()
 
     def getWpdot(self):
-        #returns EFIT-calculated d/dt of plasma stored energy, wpdot(t)
-        raise NotImplementedError()
+        """
+        Returns EFIT d/dt of plasma stored energy.
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        if self._Wpdot is None:
+            raise ValueError('must read a-file for this data.')
+        else:
+            return self._Wpdot.copy()
 
     def getEnergy(self):
-        #returns stored-energy parameters
-        #dict of {stored energy, MHD tau_E, injected power, d/dt of magnetic, plasma stored energy)
-        raise NotImplementedError()
+        """
+        Pulls EFIT stored energy, energy confinement time, injected power, and d/dt of magnetic and plasma stored energy.
+        Returns namedtuple containing [WMHD,tauMHD,Pinj,Wbdot,Wpdot]
+
+        Raises:
+            ValueError: if a-file data is not read.
+        """
+        try:
+            WMHD = self.getWMHD()
+            tauMHD = self.getTauMHD()
+            Pinj = self.getPinj()
+            Wbdot = self.getWbdot()
+            Wpdot = self.getWpdot()
+            data = namedtuple('Energy',['WMHD','tauMHD','Pinj','Wbdot','Wpdot'])
+            return data(WMHD=WMHD,tauMHD=tauMHD,Pinj=Pinj,Wbdot=Wbdot,Wpdot=Wpdot)
+        except ValueError:
+            raise ValueError('must read a-file for this data.')
 
     def getParam(self,path):
-        #backup function - takes parameter name for EFIT variable, returns that variable
-        #acts as wrapper for EFIT tree access from within object
-        raise NotImplementedError()
+        """
+        Backup function, applying a direct path input for tree-like data storage access
+        for parameters not typically found in Equilbrium object.  Not implemented for
+        g-file equilibria.
+        """
+        raise NotImplementedError('extra parameter calls not permitted with g-files.')
         
     def getMachineCrossSection(self):
+        """
+        Method to pull machine cross-section from data storage, convert to standard format for plotting routine.
+        Not implemented for eqdsk class.
+        """
         raise NotImplementedError('no machine cross section stored in g-files.')
         
     def plotFLux(self):

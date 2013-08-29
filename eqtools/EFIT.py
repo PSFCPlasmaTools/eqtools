@@ -149,13 +149,13 @@ class EFITTree(Equilibrium):
         # Call the get functions to preload the data. Add any other calls you
         # want to preload here.
         self.getTimeBase()
-        self.getFluxGrid()
+        self.getFluxGrid() # loads _psiRZ, _rGrid and _zGrid at once.
         self.getFluxLCFS()
         self.getFluxAxis()
         self.getFluxVol()
         self.getVolLCFS()
         self.getQProfile()
-        self.getRmidPsi()  # loads _psiRZ, _rGrid and _zGrid at once.
+        self.getRmidPsi()
         
     def __str__(self):
         """
