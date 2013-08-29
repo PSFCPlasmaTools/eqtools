@@ -137,15 +137,16 @@ class EQDSKReader(Equilibrium):
 
         # now we start reading the g-file
         with open(self._gfilename,'r') as gfile:
-            reader = csv.reader(gfile)
+            reader = csv.reader(gfile)  # skip the CSV delimiter, let split or regexs handle parsing.
+                                        # use csv package for error handling.
             # read the header line, containing grid size, mfit size, and type data
             line = next(reader)[0].split()
-            self._date = line[1]                         # (str) date of g-file generation, MM/DD/YYYY
-            self._shot = int(re.split('\D',line[2])[-1]) # (int) shot index
-            timestring = line[3]                         # (str) time index, with units (e.g. '875ms')
-            imfit = int(line[4])                         # not sure what this is supposed to be...
-            nw = int(line[5])                            # width of flux grid (dim(R))
-            nh = int(line[6])                            # height of flux grid (dim(Z))
+            self._date = line[1]                            # (str) date of g-file generation, MM/DD/YYYY
+            self._shot = int(re.split('\D',line[-5])[-1])   # (int) shot index
+            timestring = line[-4]                           # (str) time index, with units (e.g. '875ms')
+            imfit = int(line[-3])                           # not sure what this is supposed to be...
+            nw = int(line[-2])                              # width of flux grid (dim(R))
+            nh = int(line[-1])                              # height of flux grid (dim(Z))
 
             #extract time, units from timestring
             time = re.findall('\d+',timestring)[0]
@@ -466,7 +467,7 @@ class EQDSKReader(Equilibrium):
         self._defaultUnits['_RmidPsi'] = 'm'
 
         # attempt to populate these parameters from a-file
-        if afilename is not None:
+        if self._afilename is not None:
             try:
                 self.readAFile(self._afilename)
             except IOError:
@@ -475,7 +476,7 @@ class EQDSKReader(Equilibrium):
             print('a-file data not loaded.')
                     
     def __str__(self):
-        return 'G-file equilibrium from '+str(self._gfile)
+        return 'G-file equilibrium from '+str(self._gfilename)
         
     def getInfo(self):
         """
