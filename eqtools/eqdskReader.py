@@ -1222,7 +1222,7 @@ class EQDSKReader(Equilibrium):
         """
         raise NotImplementedError('no machine cross section stored in g-files.')
         
-    def plotFLux(self):
+    def plotFlux(self):
         """
         streamlined plotting of flux contours directly from psi grid
         """
