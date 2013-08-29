@@ -122,8 +122,8 @@ class AFileReader(object):
             self._vertn = float(line[3])    # decay index at current centroid
 
             # read next mco2v values for rco2v, dco2v
-            nrows = mco2v/4
-            if mco2v % 4 != 0:
+            nrows = self._mco2v/4
+            if self._mco2v % 4 != 0:
                 nrows += 1
 
             self._rco2v = []
@@ -143,8 +143,8 @@ class AFileReader(object):
             self._dco2v = np.array(self._dco2v)     # line-averaged density along vertical CO2 chords
 
             # read next mco2r values for rco2r, dco2r
-            nrows = mco2r/4
-            if mco2r % 4 != 0:
+            nrows = self._mco2r/4
+            if self._mco2r % 4 != 0:
                 nrows += 1
 
             self._rco2r = []
