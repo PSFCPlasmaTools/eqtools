@@ -1239,8 +1239,8 @@ class EQDSKReader(Equilibrium):
             raise AttributeError('cannot plot EFIT flux map.')
 
         fluxPlot = plt.figure(figsize=(6,11))
-        fluxPlot.set_xlabel('$R$ (m)')
-        fluxPlot.set_ylabel('$Z$ (m)')
+        plt.set_xlabel('$R$ (m)')
+        plt.set_ylabel('$Z$ (m)')
         fillcont = plt.contourf(rGrid,zGrid,psiRZ,50)
         cont = plt.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid')
         LCFS = plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
