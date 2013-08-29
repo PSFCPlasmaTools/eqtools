@@ -280,7 +280,7 @@ class EQDSKReader(Equilibrium):
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     bbbs.append(float(val))
-            bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='C')
+            bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='F')
             self._RLCFS = bbbs[0,:]
             self._ZLCFS = bbbs[1,:]
             self._defaultUnits['_RLCFS'] = 'm'
@@ -466,9 +466,12 @@ class EQDSKReader(Equilibrium):
         self._defaultUnits['_RmidPsi'] = 'm'
 
         # attempt to populate these parameters from a-file
-        try:
-            self.readAFile(self._afilename)
-        except IOError:
+        if afilename is not None:
+            try:
+                self.readAFile(self._afilename)
+            except IOError:
+                print('a-file data not loaded.')
+        else:
             print('a-file data not loaded.')
                     
     def __str__(self):
@@ -1239,8 +1242,8 @@ class EQDSKReader(Equilibrium):
             raise AttributeError('cannot plot EFIT flux map.')
 
         fluxPlot = plt.figure(figsize=(6,11))
-        plt.set_xlabel('$R$ (m)')
-        plt.set_ylabel('$Z$ (m)')
+        plt.xlabel('$R$ (m)')
+        plt.ylabel('$Z$ (m)')
         fillcont = plt.contourf(rGrid,zGrid,psiRZ,50)
         cont = plt.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid')
         LCFS = plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
