@@ -1,9 +1,9 @@
 from distutils.core import setup as pysetup
 from numpy.distutils.core import setup,Extention
 
-tricub = Extension('_tricub',['_tricub.pyf','_tricub.c'])
+#tricub = Extension('_tricub',['_tricub.pyf','_tricub.c'])
 
-setup(ext_modules = [tricub,])
+#setup(ext_modules = [tricub,])
 
 
 pysetup(name='eqtools',
