@@ -28,6 +28,7 @@ Classes:
 import scipy
 import glob
 import re
+import csv
 import matplotlib.pyplot as plt
 from core import Equilibrium
 from AFileReader import AFileReader
@@ -60,6 +61,9 @@ class EQDSKReader(Equilibrium):
         """
         # instantiate superclass, forcing time splining to false (eqdsk only contains single time slice)
         super(EQDSKReader,self).__init__(length_unit=length_unit,tspline=False)
+
+        # dict to store default units of length-scale parameters, used by core._getLengthConversionFactor
+        self._defaultUnits = {}
 
         # parse shot and time inputs into standard naming convention
         if len(str(time)) < 5:
@@ -133,8 +137,9 @@ class EQDSKReader(Equilibrium):
 
         # now we start reading the g-file
         with open(self._gfilename,'r') as gfile:
+            reader = csv.reader(gfile)
             # read the header line, containing grid size, mfit size, and type data
-            line = gfile.readline().split()
+            line = next(reader)[0].split()
             self._date = line[1]                         # (str) date of g-file generation, MM/DD/YYYY
             self._shot = int(re.split('\D',line[2])[-1]) # (int) shot index
             timestring = line[3]                         # (str) time index, with units (e.g. '875ms')
@@ -149,7 +154,7 @@ class EQDSKReader(Equilibrium):
             self._time = scipy.array(float(time)*timeConvertDict[self._tunits]) # returns time in seconds as array
             
             # next line - construction values for RZ grid
-            line = gfile.readline()
+            line = next(reader)[0]
             line = re.findall('-?\d\.\d*E[-+]\d*',line)     # regex magic!
             xdim = float(line[0])     # width of R-axis in grid
             zdim = float(line[1])     # height of Z-axis in grid
@@ -162,24 +167,29 @@ class EQDSKReader(Equilibrium):
             self._zGrid = scipy.linspace(zmid - zdim/2.0,zmid + zdim/2.0,nh)
             drefit = (self._rGrid[-1] - self._rGrid[0])/(nw-1)
             dzefit = (self._zGrid[-1] - self._zGrid[0])/(nh-1)
+            self._defaultUnits['_rGrid'] = 'm'
+            self._defaultUnits['_zGrid'] = 'm'
 
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
-            line = gfile.readline()
+            line = next(reader)[0]
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
             self._rmaxis = scipy.array(float(line[0]))
             self._zmaxis = scipy.array(float(line[1]))
             self._psiAxis = scipy.array(float(line[2]))
             self._psiLCFS = scipy.array(float(line[3]))
             self._bzero = scipy.array(float(line[4]))
+            self._defaultUnits['_psiAxis'] = 'Wb/rad'
+            self._defaultUnits['_psiLCFS'] = 'Wb/rad'
 
             # read EFIT-calculated plasma current, psi at magnetic axis (duplicate), 
             # dummy, R of magnetic axis (duplicate), dummy
-            line = gfile.readline()
+            line = next(reader)[0]
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
             self._IpCalc = scipy.array(float(line[0]))
+            self._defaultUnits['_IpCalc'] = 'A'
 
             # read Z of magnetic axis (duplicate), dummy, psi at LCFS (duplicate), dummy, dummy
-            line = gfile.readline()
+            line = next(reader)[0]
             # don't actually need anything from this line
 
             # start reading fpol, next nw inputs
@@ -189,7 +199,7 @@ class EQDSKReader(Equilibrium):
 
             self._fpol = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     self._fpol.append(float(val))
@@ -198,17 +208,18 @@ class EQDSKReader(Equilibrium):
             # and likewise for pressure
             self._fluxPres = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     self._fluxPres.append(float(val))
             self._fluxPres = scipy.array(self._fluxPres)
+            self._defaultUnits['_fluxPres'] = 'Pa'
 
             # geqdsk written as negative for positive plasma current
             # ffprim, pprime input with correct EFIT sign
             self._ffprim = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     self._ffprim.append(float(val))
@@ -216,7 +227,7 @@ class EQDSKReader(Equilibrium):
 
             self._pprime = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     self._pprime.append(float(val))
@@ -232,11 +243,12 @@ class EQDSKReader(Equilibrium):
 
             psis = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     psis.append(float(val))
             self._psiRZ = scipy.array(psis).reshape((nw,nh),order='C')
+            self._defaultUnits['_psiRZ'] = 'Wb/rad'
 
             # read q(psi) profile, nw points (same basis as fpol, pres, etc.)
             nrows = nw/5
@@ -245,14 +257,14 @@ class EQDSKReader(Equilibrium):
 
             self._qpsi = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     self._qpsi.append(float(val))
             self._qpsi = scipy.array(self._qpsi)
 
             # read nbbbs, limitr
-            line = gfile.readline().split()
+            line = next(reader)[0].split()
             nbbbs = int(line[0])
             limitr = int(line[1])
 
@@ -264,13 +276,15 @@ class EQDSKReader(Equilibrium):
                 nrows += 1
             bbbs = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     bbbs.append(float(val))
             bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='C')
             self._RLCFS = bbbs[0,:]
             self._ZLCFS = bbbs[1,:]
+            self._defaultUnits['_RLCFS'] = 'm'
+            self._defaultUNits['_ZLCFS'] = 'm'
 
             # next data reads as 2 x limitr array, then broken into
             # xlim, ylim (locations of limiter)(?)
@@ -280,7 +294,7 @@ class EQDSKReader(Equilibrium):
                 nrows += 1
             lim = []
             for i in range(nrows):
-                line = gfile.readline()
+                line = next(reader)[0]
                 line = re.findall('-?\d\.\d*E[-+]\d*',line)
                 for val in line:
                     lim.append(float(val))
@@ -293,7 +307,7 @@ class EQDSKReader(Equilibrium):
             # handler sets relevant parameters to None for older g-files
             try:
                 # read kvtor, rvtor, nmass
-                line = gfile.readline().split()
+                line = next(reader)[0].split()
                 kvtor = int(line[0])
                 rvtor = float(line[1])
                 nmass = int(line[2])
@@ -305,14 +319,14 @@ class EQDSKReader(Equilibrium):
                         nrows += 1
                     self._presw = []
                     for i in range(nrows):
-                        line = gfile.readline()
+                        line = next(reader)[0]
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._presw.append(float(val))
                     self._presw = scipy.array(self._presw)
                     self._preswp = []
                     for i in range(nrows):
-                        line = gfile.readline()
+                        line = next(reader)[0]
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._preswp.append(float(val))
@@ -328,7 +342,7 @@ class EQDSKReader(Equilibrium):
                         nrows += 1
                     self._dmion = []
                     for i in range(nrows):
-                        line = gfile.readline()
+                        line = next(reader)[0]
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._dmion.append(float(val))
@@ -342,7 +356,7 @@ class EQDSKReader(Equilibrium):
                     nrows += 1
                 self._rhovn = []
                 for i in range(nrows):
-                    line = gfile.readline()
+                    line = next(reader)[0]
                     line = re.findall('-?\d.\d*E[-+]\d*',line)
                     for val in line:
                         self._rhovn.append(float(val))
@@ -354,7 +368,7 @@ class EQDSKReader(Equilibrium):
                 if keecur > 0:
                     self._workk = []
                     for i in range(nrows):
-                        line = gfile.readline()
+                        line = next(reader)[0]
                         line = re.findall('-?\d.\d*E[-+]\d*',line)
                         for val in line:
                             self._workk.append(float(val))
@@ -368,6 +382,8 @@ class EQDSKReader(Equilibrium):
                 self._dmion = scipy.array([0])
                 self._workk = scipy.array([0])
 
+            
+
         # toroidal current density on (r,z,t) grid typically not
         # written to g-files.  Override getter method and initialize
         # to none.
@@ -378,9 +394,13 @@ class EQDSKReader(Equilibrium):
         self._btaxp = None
         self._btaxv = None
         self._bpolav = None
+        self._defaultUnits['_btaxp'] = 'T'
+        self._defaultUnits['_btaxv'] = 'T'
+        self._defaultUnits['_bpolav'] = 'T'
 
         # currents
         self._IpMeas = None
+        self._defaultUnits['_IpMeas'] = 'A'
 
         # safety factor parameters
         self._q0 = None
@@ -389,6 +409,9 @@ class EQDSKReader(Equilibrium):
         self._rq1 = None
         self._rq2 = None
         self._rq3 = None
+        self._defaultUnits['_rq1'] = 'cm'
+        self._defaultUnits['_rq2'] = 'cm'
+        self._defaultUnits['_rq3'] = 'cm'
 
         # shaping parameters
         self._kappa = None
@@ -401,6 +424,11 @@ class EQDSKReader(Equilibrium):
         self._aLCFS = None
         self._areaLCFS = None
         self._RmidLCFS = None
+        self._defaultUnits['_rmag'] = 'cm'
+        self._defaultUnits['_zmag'] = 'cm'
+        self._defaultUnits['_aLCFS'] = 'cm'
+        self._defaultUnits['_areaLCFS'] = 'cm^2'
+        self._defaultUnits['_RmidLCFS'] = 'm'
 
         # calc. normalized pressure values
         self._betat = None
@@ -413,6 +441,9 @@ class EQDSKReader(Equilibrium):
         self._betapd = None
         self._WDiamag = None
         self._tauDiamag = None
+        self._defaultUnits['_diamag'] = 'Vs'
+        self._defaultUnits['WDiamag'] = 'J'
+        self._defaultUnits['_tauDiamag'] = 'ms'
 
         # calculated energy
         self._WMHD = None
@@ -420,11 +451,19 @@ class EQDSKReader(Equilibrium):
         self._Pinj = None
         self._Wbdot = None
         self._Wpdot = None
+        self._defaultUnits['_WMHD'] = 'J'
+        self._defaultUnits['_tauMHD'] = 'ms'
+        self._defaultUnits['_Pinj'] = 'W'
+        self._defaultUnits['_Wbdot'] = 'W'
+        self._defaultUnits['_Wpdot'] = 'W'
 
         # fitting parameters
         self._volLCFS = None
         self._fluxVol = None
         self._RmidPsi = None
+        self._defaultUnits['_volLCFS'] = 'cm^3'
+        self._defaultUnits['_fluxVol'] = 'm^3'
+        self._defaultUnits['_RmidPsi'] = 'm'
 
         # attempt to populate these parameters from a-file
         try:
@@ -546,17 +585,19 @@ class EQDSKReader(Equilibrium):
         """
         return self._psiRZ.copy()
 
-    def getRGrid(self):
+    def getRGrid(self,length_unit=1):
         """
         Returns EFIT R-axis [r]
         """
-        return self._rGrid.copy()
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],length_unit)
+        return unit_factor * self._rGrid.copy()
 
-    def getZGrid(self):
+    def getZGrid(self,length_unit=1):
         """
         Returns EFIT Z-axis [z]
         """
-        return self._zGrid.copy()
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],length_unit)
+        return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
         """
@@ -570,23 +611,25 @@ class EQDSKReader(Equilibrium):
         """
         return scipy.array(self._psiLCFS)
 
-    def getRLCFS(self):
+    def getRLCFS(self,length_unit=1):
         """
         Returns array of R-values of LCFS
         """
-        return self._RLCFS.copy()
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'],length_unit)
+        return unit_factor * self._RLCFS.copy()
 
-    def getZLCFS(self):
+    def getZLCFS(self,length_unit=1):
         """
         Returns array of Z-values of LCFS
         """
-        return self._ZLCFS.copy()
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'],length_unit)
+        return unit_factor * self._ZLCFS.copy()
 
     def getFluxVol(self):
         #returns volume contained within a flux surface as function of psi, volp(psi,t)
         raise NotImplementedError()
 
-    def getVolLCFS(self):
+    def getVolLCFS(self,length_unit=3):
         """
         Returns volume with LCFS.
 
@@ -596,7 +639,8 @@ class EQDSKReader(Equilibrium):
         if self._volLCFS is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._volLCFS.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'],length_unit)
+            return unit_factor * self._volLCFS.copy()
 
     def getRmidPsi(self):
         """
@@ -667,7 +711,7 @@ class EQDSKReader(Equilibrium):
         except ValueError:
             raise ValueError('must read a-file for this data.') 
 
-    def getMagR(self):
+    def getMagR(self,length_unit=1):
         """
         Returns major radius of magnetic axis.
 
@@ -677,9 +721,10 @@ class EQDSKReader(Equilibrium):
         if self._rmag is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._rmag.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rmag'],length_unit)
+            return unit_factor * self._rmag.copy()
 
-    def getMagZ(self):
+    def getMagZ(self,length_unit=1):
         """
         Returns Z of magnetic axis.
 
@@ -689,9 +734,10 @@ class EQDSKReader(Equilibrium):
         if self._zmag is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._zmag.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zmag'],length_unit)
+            return unit_factor * self._zmag.copy()
 
-    def getAreaLCFS(self):
+    def getAreaLCFS(self,length_unit=2):
         """
         Returns surface area of LCFS.
 
@@ -701,9 +747,10 @@ class EQDSKReader(Equilibrium):
         if self._areaLCFS is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._areaLCFS.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_areaLCFS'],length_unit)
+            return unit_factor * self._areaLCFS.copy()
 
-    def getAOut(self):
+    def getAOut(self,length_unit=1):
         """
         Returns outboard-midplane minor radius of LCFS.
 
@@ -713,9 +760,10 @@ class EQDSKReader(Equilibrium):
         if self._aLCFS is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._aLCFS.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_aLCFS'],length_unit)
+            return unit_factor * self._aLCFS.copy()
 
-    def getRmidOut(self):
+    def getRmidOut(self,length_unit=1):
         """
         Returns outboard-midplane major radius of LCFS.
 
@@ -725,7 +773,8 @@ class EQDSKReader(Equilibrium):
         if self._RmidLCFS is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._RmidLCFS.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidLCFS'],length_unit)
+            return unit_factor * self._RmidLCFS.copy()
 
     def getGeometry(self,length_unit=None):
         """
@@ -791,7 +840,7 @@ class EQDSKReader(Equilibrium):
         else:
             return self._qLCFS.copy()
 
-    def getQ1Surf(self):
+    def getQ1Surf(self,length_unit=1):
         """
         Returns outboard-midplane minor radius of q=1 surface.
 
@@ -801,9 +850,10 @@ class EQDSKReader(Equilibrium):
         if self._rq1 is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._rq1.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rq1'],length_unit)
+            return unit_factor * self._rq1.copy()
     
-    def getQ2Surf(self):
+    def getQ2Surf(self,length_unit=1):
         """
         Returns outboard-midplane minor radius of q=2 surface.
 
@@ -813,9 +863,10 @@ class EQDSKReader(Equilibrium):
         if self._rq2 is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._rq2.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rq2'],length_unit)
+            return unit_factor * self._rq2.copy()
 
-    def getQ3Surf(self):
+    def getQ3Surf(self,length_unit=1):
         """
         Returns outboard-midplane minor radius of q=3 surface.
 
@@ -825,7 +876,8 @@ class EQDSKReader(Equilibrium):
         if self._rq3 is None:
             raise ValueError('must read a-file for this data.')
         else:
-            return self._rq3.copy()
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rq3'],length_unit)
+            return unit_factor * self._rq3.copy()
 
     def getQs(self):
         """
