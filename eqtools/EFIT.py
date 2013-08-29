@@ -17,6 +17,7 @@
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
 import scipy
+from collections import namedtuple
 
 from .core import Equilibrium, ModuleWarning
 
