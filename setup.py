@@ -9,8 +9,8 @@ from numpy.distutils.core import setup,Extention
 pysetup(name='eqtools',
         version='1.0',
         description='Tokamak Flux mapping utility',
-        author=['Mark Chilenski','Ian Faust','John Walk']
-        author_email='tbd@psfc.mit.edu'
-        url='https://github.com/PSFCPlasmaTools/EqTools/'
+        author=['Mark Chilenski','Ian Faust','John Walk'],
+        author_email='tbd@psfc.mit.edu',
+        url='https://github.com/PSFCPlasmaTools/EqTools/',
         packages='eqtools'
         )  
