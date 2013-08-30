@@ -551,7 +551,7 @@ class Equilibrium(object):
         psi_mat = Eq_instance.rz2psinorm(R, Z, 0.2, make_grid=True)
         """
 
-        psi, time_idxs = self.rz2psi(R, Z, t, return_t=True,
+        psi, time_idxs = Equilibrium.rz2psi(self, R, Z, t, return_t=True,
                                      make_grid=make_grid, length_unit=length_unit)
 
         if not self._tricubic:
