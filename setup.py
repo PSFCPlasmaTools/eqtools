@@ -1,10 +1,6 @@
-from distutils.core import setup as pysetup
 from numpy.distutils.core import setup,Extension
 
-#tricub = Extension('_tricub',['_tricub.pyf','_tricub.c'])
-
-#setup(ext_modules = [tricub,])
-
+tricub = Extension('_tricub',['_tricub.pyf','_tricub.c'])
 
 pysetup(name='eqtools',
         version='1.0',
@@ -12,5 +8,6 @@ pysetup(name='eqtools',
         author=['Mark Chilenski','Ian Faust','John Walk'],
         author_email='tbd@psfc.mit.edu',
         url='https://github.com/PSFCPlasmaTools/EqTools/',
-        packages='eqtools'
+        packages=['eqtools',]
+        ext_modules = [tricub,]
         )  
