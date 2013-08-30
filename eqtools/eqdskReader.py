@@ -395,6 +395,8 @@ class EQDSKReader(Equilibrium):
         # written to g-files.  Override getter method and initialize
         # to none.
         self._Jp = None
+        # current direction, used by mapping routines.
+        self._currentSign = None
 
         # initialize data stored in a-file
         # fields
@@ -585,7 +587,7 @@ class EQDSKReader(Equilibrium):
     # wrappers for mapping routines handling time call #
     ####################################################
 
-    def rz2psi(self,R,Z,make_grid=False,length_unit=1):
+    def rz2psi(self,R,Z,t=None,return_t=False,make_grid=False,length_unit=1):
         """
         Converts passed, R,Z arrays to psi values.
         Wrapper for Equilibrium.rz2psi masking out timebase dependence.
@@ -600,6 +602,11 @@ class EQDSKReader(Equilibrium):
                 must have shape (len_Z,).
 
         Kwargs:
+            t: syntactic fix for consistency in calls to rz2psi between subclasses
+                of Equilibrium.  Will show a dummy value if called in EQDSKReader.
+            return_t: Boolean. Syntactic fix for consistency in calls to rz2psi between
+                subclasses of Equilibrium.  Will cause the return of a dummy value
+                if called in EQDSKReader.
             make_grid: Boolean. Set to True to pass R and Z through meshgrid
                 before evaluating. If this is set to True, R and Z must each
                 only have a single dimension, but can have different lengths.
@@ -1073,7 +1080,7 @@ class EQDSKReader(Equilibrium):
         IDL implementation efit_rz2psi.pro.
         """
         if self._currentSign is None:
-            self._currentSign = 1 if scipy.mean(self.getIpMeas()) > 1e5 else -1
+            self._currentSign = 1 if scipy.mean(self.getIpCalc()) > 1e5 else -1
         return self._currentSign
 
     def getFluxGrid(self):
