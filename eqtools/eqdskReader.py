@@ -705,7 +705,7 @@ class EQDSKReader(Equilibrium):
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
         return super(EQDSKReader,self).rz2psinorm(self,R,Z,t,**kwargs)
 
-    def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1)
+    def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
         """
         Calculates normalized toroidal flux at a given (R,Z).
         Wrapper for Equilibrium.rz2phinorm masking out timebase dependence.
