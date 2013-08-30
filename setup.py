@@ -7,7 +7,7 @@ pysetup(name='eqtools',
         description='Tokamak Flux mapping utility',
         author=['Mark Chilenski','Ian Faust','John Walk'],
         author_email='tbd@psfc.mit.edu',
-        url='https://github.com/PSFCPlasmaTools/EqTools/',
+        url='https://github.com/PSFCPlasmaTools/eqtools/',
         packages=['eqtools',],
         )
 setup(ext_modules = [tricub,])
