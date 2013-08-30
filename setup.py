@@ -4,7 +4,7 @@ tricub = Extension('eqtools._tricub',['eqtools/_tricub.pyf','eqtools/_tricub.c']
 
 pysetup(name='eqtools',
         version='1.0',
-        description='Tokamak Flux mapping utility',
+        description='Python tools for magnetic equilibria in tokamak plasmas',
         author=['Mark Chilenski','Ian Faust','John Walk'],
         author_email='tbd@psfc.mit.edu',
         url='https://github.com/PSFCPlasmaTools/eqtools/',
