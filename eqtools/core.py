@@ -550,13 +550,8 @@ class Equilibrium(object):
         and 1D vector of vertical positions Z at time t=0.2s:
         psi_mat = Eq_instance.rz2psinorm(R, Z, 0.2, make_grid=True)
         """
-        
-        # Call the rz2psi method on Equlibrium explicitly because implementations
-        # for single time values (such as EQDSK files) may wish to override
-        # rz2psi in a way that eleminates the t argument. This allows rz2psinorm
-        # to remain general-purpose when wrapped in such an implementation.
-        psi, time_idxs = Equilibrium.rz2psi(self, R, Z, t, return_t=True,
-                                            make_grid=make_grid, length_unit=length_unit)
+        psi, time_idxs = self.rz2psi(R, Z, t, return_t=True,
+                                     make_grid=make_grid, length_unit=length_unit)
 
         if not self._tricubic:
             psi_boundary = self.getFluxLCFS()[time_idxs]
