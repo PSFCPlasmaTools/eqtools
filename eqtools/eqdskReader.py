@@ -634,10 +634,10 @@ class EQDSKReader(Equilibrium):
                 shape (len(Z), len(R)).
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':False,'make_grid':make_grid,'length_unit':length_unit}
+        kwargs = {'return_t':return_t,'make_grid':make_grid,'length_unit':length_unit}
         return super(EQDSKReader,self).rz2psi(R,Z,t,**kwargs)
 
-    def rz2psinorm(self,R,Z,sqrt=False,make_grid=False,length_unit=1):
+    def rz2psinorm(self,R,Z,t=None,return_t=False,sqrt=False,make_grid=False,length_unit=1):
         """
         Calculates the normalized poloidal flux at the given (R,Z).
         Wrapper for Equilibrium.rz2psinorm masking out timebase dependence.
@@ -707,7 +707,7 @@ class EQDSKReader(Equilibrium):
         psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
+        kwargs = {'return_t':return_t,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
         return super(EQDSKReader,self).rz2psinorm(R,Z,t,**kwargs)
 
     def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
