@@ -1,8 +1,8 @@
 from numpy.distutils.core import setup,Extension
-
+from distutils.core import setup as pysetup
 tricub = Extension('eqtools._tricub',['eqtools/_tricub.pyf','eqtools/_tricub.c'])
 
-setup(name='eqtools',
+pysetup(name='eqtools',
         version='1.0',
         description='Tokamak Flux mapping utility',
         author=['Mark Chilenski','Ian Faust','John Walk'],
