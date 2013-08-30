@@ -9,5 +9,5 @@ pysetup(name='eqtools',
         author_email='tbd@psfc.mit.edu',
         url='https://github.com/PSFCPlasmaTools/EqTools/',
         packages=['eqtools',],
-        ext_modules = [tricub,]
-        )  
+        )
+setup(ext_modules = [tricub,])
