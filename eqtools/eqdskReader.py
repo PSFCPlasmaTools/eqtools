@@ -30,6 +30,7 @@ import glob
 import re
 import csv
 import matplotlib.pyplot as plt
+from collections import namedtuple
 from core import Equilibrium
 from AFileReader import AFileReader
 
@@ -87,8 +88,8 @@ class EQDSKReader(Equilibrium):
                 self._gfilename = gcurrfiles[0]
                 print('File found: '+self._gfilename)
             elif len(gcurrfiles) > 1:
-                raise ValueError('Multiple valid g-files detected in directory.  \
-                                  Please select a file with explicit \
+                raise ValueError('Multiple valid g-files detected in directory.  \n\
+                                  Please select a file with explicit \n\
                                   input or clean directory.')
             else:   # no files found
                 raise ValueError('No valid g-files detected in directory.  \n\
@@ -97,8 +98,8 @@ class EQDSKReader(Equilibrium):
         else:   # check that given file is in directory
             gcurrfiles = glob.glob(gfilename)
             if len(gcurrfiles) < 1:
-                raise ValueError('No g-file with the given name detected in directory.  \
-                                  Please ensure the file is in the active directory or \
+                raise ValueError('No g-file with the given name detected in directory.  \n\
+                                  Please ensure the file is in the active directory or \n\
                                   that you have supplied the correct name.')
             else:
                 self._gfilename = gfilename
@@ -383,6 +384,14 @@ class EQDSKReader(Equilibrium):
                 self._dmion = scipy.array([0])
                 self._workk = scipy.array([0])
 
+            # read through to end of file to get footer line
+            try:
+                r = ''
+                for row in reader:
+                    r = row
+                self._efittype = r.split()[-1]
+            except:
+                self._efittype = None
             
 
         # toroidal current density on (r,z,t) grid typically not
@@ -476,28 +485,35 @@ class EQDSKReader(Equilibrium):
             print('a-file data not loaded.')
                     
     def __str__(self):
-        return 'G-file equilibrium from '+str(self._gfilename)
+        if self._efittype is None:
+            eq = 'equilibrium'
+        else:
+            eq = self._efittype+' equilibrium'
+        return 'G-file '+eq+' from '+str(self._gfilename)
         
     def getInfo(self):
         """
         returns namedtuple of equilibrium information
         outputs:
         namedtuple containing
-            shot:   shot index
-            time:   time point of g-file
-            nr:     size of R-axis of spatial grid
-            nz:     size of Z-axis of spatial grid
+            shot:       shot index
+            time:       time point of g-file
+            nr:         size of R-axis of spatial grid
+            nz:         size of Z-axis of spatial grid
+            efittype:   EFIT calculation type (magnetic, kinetic, MSE)
         """
-        data = namedtuple('Info',['shot','time','nr','nz'])
+        data = namedtuple('Info',['shot','time','nr','nz','efittype'])
         try:
             nr = len(self._rGrid)
             nz = len(self._zGrid)
             shot = self._shot
             time = self._time
+            efittype = self._efittype
         except TypeError:
             nr,nz,shot,time=0
+            efittype=None
             print 'failed to load data from g-file.'
-        return data(shot=shot,time=time,nr=nr,nz=nz)
+        return data(shot=shot,time=time,nr=nr,nz=nz,efittype=efittype)
 
     def readAFile(self,afile):
         """
