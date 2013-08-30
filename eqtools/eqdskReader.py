@@ -152,8 +152,8 @@ class EQDSKReader(Equilibrium):
             #extract time, units from timestring
             time = re.findall('\d+',timestring)[0]
             self._tunits = timestring.split(time)[1]
-            timeConvertDict = {'ms':1000.,'s':1}
-            self._time = scipy.array(float(time)*timeConvertDict[self._tunits]) # returns time in seconds as array
+            timeConvertDict = {'ms':1./1000.,'s':1}
+            self._time = scipy.array([float(time)*timeConvertDict[self._tunits]]) # returns time in seconds as array
             
             # next line - construction values for RZ grid
             line = next(reader)[0]
@@ -175,11 +175,11 @@ class EQDSKReader(Equilibrium):
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
             line = next(reader)[0]
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
-            self._rmaxis = scipy.array(float(line[0]))
-            self._zmaxis = scipy.array(float(line[1]))
-            self._psiAxis = scipy.array(float(line[2]))
-            self._psiLCFS = scipy.array(float(line[3]))
-            self._bzero = scipy.array(float(line[4]))
+            self._rmaxis = scipy.array([float(line[0])])
+            self._zmaxis = scipy.array([float(line[1])])
+            self._psiAxis = scipy.array([float(line[2])])
+            self._psiLCFS = scipy.array([float(line[3])])
+            self._bzero = scipy.array([float(line[4])])
             self._defaultUnits['_psiAxis'] = 'Wb/rad'
             self._defaultUnits['_psiLCFS'] = 'Wb/rad'
 
@@ -187,7 +187,7 @@ class EQDSKReader(Equilibrium):
             # dummy, R of magnetic axis (duplicate), dummy
             line = next(reader)[0]
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
-            self._IpCalc = scipy.array(float(line[0]))
+            self._IpCalc = scipy.array([float(line[0])])
             self._defaultUnits['_IpCalc'] = 'A'
 
             # read Z of magnetic axis (duplicate), dummy, psi at LCFS (duplicate), dummy, dummy
@@ -529,54 +529,54 @@ class EQDSKReader(Equilibrium):
             afr = AFileReader(afile)
 
             # fields
-            self._btaxp = scipy.array(afr.btaxp)
-            self._btaxv = scipy.array(afr.btaxv)
-            self._bpolav = scipy.array(afr.bpolav)
+            self._btaxp = scipy.array([afr.btaxp])
+            self._btaxv = scipy.array([afr.btaxv])
+            self._bpolav = scipy.array([afr.bpolav])
 
             # currents
-            self._IpMeas = scipy.array(afr.pasmat)
+            self._IpMeas = scipy.array([afr.pasmat])
 
             # safety factor parameters
-            self._q0 = scipy.array(afr.qqmin)
-            self._q95 = scipy.array(afr.qpsib)
-            self._qLCFS = scipy.array(afr.qout)
-            self._rq1 = scipy.array(afr.aaq1)
-            self._rq2 = scipy.array(afr.aaq2)
-            self._rq3 = scipy.array(afr.aaq3)
+            self._q0 = scipy.array([afr.qqmin])
+            self._q95 = scipy.array([afr.qpsib])
+            self._qLCFS = scipy.array([afr.qout])
+            self._rq1 = scipy.array([afr.aaq1])
+            self._rq2 = scipy.array([afr.aaq2])
+            self._rq3 = scipy.array([afr.aaq3])
 
             # shaping parameters
-            self._kappa = scipy.array(afr.eout)
-            self._dupper = scipy.array(afr.doutu)
-            self._dlower = scipy.array(afr.doutl)
+            self._kappa = scipy.array([afr.eout])
+            self._dupper = scipy.array([afr.doutu])
+            self._dlower = scipy.array([afr.doutl])
 
             # dimensional geometry parameters
-            self._rmag = scipy.array(afr.rmagx)
-            self._zmag = scipy.array(afr.zmagx)
-            self._aLCFS = scipy.array(afr.aout)
-            self._areaLCFS = scipy.array(afr.areao)
-            self._RmidLCFS = scipy.array(afr.rmidout)
+            self._rmag = scipy.array([afr.rmagx])
+            self._zmag = scipy.array([afr.zmagx])
+            self._aLCFS = scipy.array([afr.aout])
+            self._areaLCFS = scipy.array([afr.areao])
+            self._RmidLCFS = scipy.array([afr.rmidout])
 
             # calc. normalized pressure values
-            self._betat = scipy.array(afr.betat)
-            self._betap = scipy.array(afr.betap)
-            self._Li = scipy.array(afr.ali)
+            self._betat = scipy.array([afr.betat])
+            self._betap = scipy.array([afr.betap])
+            self._Li = scipy.array([afr.ali])
 
             # diamagnetic measurements
-            self._diamag = scipy.array(afr.diamag)
-            self._betatd = scipy.array(afr.betatd)
-            self._betapd = scipy.array(afr.betapd)
-            self._WDiamag = scipy.array(afr.wplasmd)
-            self._tauDiamag = scipy.array(afr.taudia)
+            self._diamag = scipy.array([afr.diamag])
+            self._betatd = scipy.array([afr.betatd])
+            self._betapd = scipy.array([afr.betapd])
+            self._WDiamag = scipy.array([afr.wplasmd])
+            self._tauDiamag = scipy.array([afr.taudia])
 
             # calculated energy
-            self._WMHD = scipy.array(afr.wplasm)
-            self._tauMHD = scipy.array(afr.taumhd)
-            self._Pinj = scipy.array(afr.pbinj)
-            self._Wbdot = scipy.array(afr.wbdot)
-            self._Wpdot = scipy.array(afr.wpdot)
+            self._WMHD = scipy.array([afr.wplasm])
+            self._tauMHD = scipy.array([afr.taumhd])
+            self._Pinj = scipy.array([afr.pbinj])
+            self._Wbdot = scipy.array([afr.wbdot])
+            self._Wpdot = scipy.array([afr.wpdot])
 
             # fitting parameters
-            self._volLCFS = scipy.array(afr.vout)
+            self._volLCFS = scipy.array([afr.vout])
             self._fluxVol = None    # not written in g- or a-file; disable volnorm mapping routine
             self._RmidPsi = None    # not written in g- or a-file, not used by fitting parameters
 
@@ -1706,7 +1706,7 @@ class EQDSKReader(Equilibrium):
             return super(EQDSKReader,self).__getattribute__(name)
         except AttributeError:
             try:
-                attr = super(EQDSKReader,self)._getattribute__('_'+name)
+                attr = self._getattribute__('_'+name)
                 if type(attr) is scipy.array:
                     return attr.copy()
                 else:
