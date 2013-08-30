@@ -869,7 +869,7 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':False,'kind':kind,'length_unit':length_unit}
-        return super(EQDSKReader,self).rz2rho(self,method,R,Z,t,**kwargs)
+        return super(EQDSKReader,self).rz2rho(method,R,Z,t,**kwargs)
 
     def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
         """
@@ -951,7 +951,7 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':rho,'kind':kind,'length_unit':length_unit}
-        return super(EQDSKReader,self).rz2rmid(self,R,Z,t,**kwargs)
+        return super(EQDSKReader,self).rz2rmid(R,Z,t,**kwargs)
 
     def psinorm2rmid(self,psi_norm,rho=False,kind='cubic',length_unit=1):
         """
@@ -1007,7 +1007,7 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'rho':rho,'kind':kind,'length_unit':length_unit}
-        return super(EQDSKReader,self).psinorm2rmid(self,psi_norm,t,**kwargs)
+        return super(EQDSKReader,self).psinorm2rmid(psi_norm,t,**kwargs)
 
     def psinorm2volnorm(self,*args,**kwargs):
         """
@@ -1055,7 +1055,7 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'kind':kind}
-        return super(EQDSKReader,self).psinorm2phinorm(self,psi_norm,t,**kwargs)
+        return super(EQDSKReader,self).psinorm2phinorm(psi_norm,t,**kwargs)
 
     #################
     # data handlers #
