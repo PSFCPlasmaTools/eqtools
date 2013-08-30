@@ -701,7 +701,7 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
-        return super(EQDSKReader,self).rz2psinorm(self,R,Z,t,**kwargs)
+        return super(EQDSKReader,self).rz2psinorm(R,Z,t,**kwargs)
 
     def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
         """
