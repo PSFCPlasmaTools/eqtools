@@ -1,5 +1,5 @@
 from distutils.core import setup as pysetup
-from numpy.distutils.core import setup,Extention
+from numpy.distutils.core import setup,Extension
 
 #tricub = Extension('_tricub',['_tricub.pyf','_tricub.c'])
 
