@@ -385,12 +385,10 @@ class EQDSKReader(Equilibrium):
                 self._workk = scipy.array([0])
 
             # read through to end of file to get footer line
-            try:
-                r = ''
-                for row in reader:
-                    r = row
-            except:
-                self._efittype = r.split()[-1]
+            r = ''
+            for row in reader:
+                r = row[0]
+            self._efittype = r.split()[-1]
             
 
         # toroidal current density on (r,z,t) grid typically not
@@ -1706,7 +1704,7 @@ class EQDSKReader(Equilibrium):
             return super(EQDSKReader,self).__getattribute__(name)
         except AttributeError:
             try:
-                attr = self._getattribute__('_'+name)
+                attr = self.__getattribute__('_'+name)
                 if type(attr) is scipy.array:
                     return attr.copy()
                 else:
