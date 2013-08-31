@@ -2530,6 +2530,10 @@ class Equilibrium(object):
         #returns EFIT-calculated injected power, pbinj(t)
         raise NotImplementedError()
 
+    def getCurrentSign(self):
+        #returns EFIT-calculated current direction, where counterclockwise = +
+        raise NotImplementedError()
+
     def getWbdot(self):
         #returns EFIT-calculated d/dt of magnetic stored energy, wbdot(t)
         raise NotImplementedError()
