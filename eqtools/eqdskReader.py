@@ -587,7 +587,7 @@ class EQDSKReader(Equilibrium):
     # wrappers for mapping routines handling time call #
     ####################################################
 
-    def rz2psi(self,R,Z,t=None,return_t=False,make_grid=False,length_unit=1):
+    def rz2psi(self,R,Z,*args,**kwargs):
         """
         Converts passed, R,Z arrays to psi values.
         Wrapper for Equilibrium.rz2psi masking out timebase dependence.
@@ -600,13 +600,10 @@ class EQDSKReader(Equilibrium):
                 map to poloidal flux. Must have the same shape as R unless the 
                 make_grid keyword is set. If the make_grid keyword is True, Z 
                 must have shape (len_Z,).
+            *args: slot for time input for consistent syntax with Equilibrium.rz2psi.
+                will return dummy value for time if input in EQDSKReader.
 
         Kwargs:
-            t: syntactic fix for consistency in calls to rz2psi between subclasses
-                of Equilibrium.  Will show a dummy value if called in EQDSKReader.
-            return_t: Boolean. Syntactic fix for consistency in calls to rz2psi between
-                subclasses of Equilibrium.  Will cause the return of a dummy value
-                if called in EQDSKReader.
             make_grid: Boolean. Set to True to pass R and Z through meshgrid
                 before evaluating. If this is set to True, R and Z must each
                 only have a single dimension, but can have different lengths.
@@ -634,10 +631,10 @@ class EQDSKReader(Equilibrium):
                 shape (len(Z), len(R)).
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':return_t,'make_grid':make_grid,'length_unit':length_unit}
+        kwargs['return_t'] = False
         return super(EQDSKReader,self).rz2psi(R,Z,t,**kwargs)
 
-    def rz2psinorm(self,R,Z,t=None,return_t=False,sqrt=False,make_grid=False,length_unit=1):
+    def rz2psinorm(self,R,Z,*args,**kwargs):
         """
         Calculates the normalized poloidal flux at the given (R,Z).
         Wrapper for Equilibrium.rz2psinorm masking out timebase dependence.
@@ -658,6 +655,8 @@ class EQDSKReader(Equilibrium):
                 values in t. Must have the same shape as R unless the make_grid
                 keyword is set. If the make_grid keyword is True, Z must have
                 shape (len_Z,).
+            *args: slot for time input for consistent syntax with Equilibrium.rz2psi.
+                will return dummy value for time if input in EQDSKReader.
 
         Kwargs:
             sqrt: Boolean. Set to True to return the square root of normalized
@@ -707,7 +706,7 @@ class EQDSKReader(Equilibrium):
         psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':return_t,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
+        kwargs['return_t'] = False
         return super(EQDSKReader,self).rz2psinorm(R,Z,t,**kwargs)
 
     def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
