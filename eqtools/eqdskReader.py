@@ -631,7 +631,6 @@ class EQDSKReader(Equilibrium):
                 shape (len(Z), len(R)).
         """
         t = self.getTimeBase()[0]
-        kwargs['return_t'] = False
         return super(EQDSKReader,self).rz2psi(R,Z,t,**kwargs)
 
     def rz2psinorm(self,R,Z,*args,**kwargs):
@@ -706,7 +705,6 @@ class EQDSKReader(Equilibrium):
         psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
-        kwargs['return_t'] = False
         return super(EQDSKReader,self).rz2psinorm(R,Z,t,**kwargs)
 
     def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
