@@ -1742,6 +1742,7 @@ class EQDSKReader(Equilibrium):
         fluxPlot = plt.figure(figsize=(6,11))
         plt.xlabel('$R$ (m)')
         plt.ylabel('$Z$ (m)')
+        plt.title(self._gfilename)
         fillcont = plt.contourf(rGrid,zGrid,psiRZ[0],50)
         cont = plt.contour(rGrid,zGrid,psiRZ[0],50,colors='k',linestyles='solid')
         LCFS = plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
