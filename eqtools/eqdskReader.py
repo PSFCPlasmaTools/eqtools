@@ -17,11 +17,11 @@
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This module contains the EQDSKReader class, which creates Equilibrium class
+This module contains the EqdskReader class, which creates Equilibrium class
 functionality for equilibria stored in eqdsk files from EFIT(a- and g-files).
 
 Classes:
-    EQDSKReader: class inheriting Equilibrium reading g- and a-files for
+    EqdskReader: class inheriting Equilibrium reading g- and a-files for
         equilibrium data.
 """
 
@@ -35,53 +35,68 @@ from core import Equilibrium
 from AFileReader import AFileReader
 
 
-class EQDSKReader(Equilibrium):
+class EqdskReader(Equilibrium):
     """
     Equilibrium subclass working from eqdsk ASCII-file equilibria.
 
     Inherits mapping and structural data from Equilibrium, populates equilibrium
     and profile data from g- and a-files for a selected shot and time window.
     """
-    def __init__(self,shot,time,gfilename=None,afilename=None,length_unit='m'):
+    def __init__(self,shot=None,time=None,gfile=None,afile=None,length_unit='m'):
         """
-        Create instance of EQDSKReader.
+        Create instance of EqdskReader.
 
         Generates object and reads data from selected g-file (either manually set or
         autodetected based on user shot and time selection), storing as object
         attributes for usage in Equilibrium mapping methods.
 
-        Args:
-            shot: Int.  Shot index.
-            time: Int.  Time index (typically ms).  Shot and Time used to autogenerate filenames.
+        Calling structure - user may call class with shot and time (ms) values, set by keywords
+        (or positional placement allows calling without explicit keyword syntax).  EqdskReader
+        then attempts to construct filenames from the shot/time, of the form 'g[shot].[time]' and
+        'a[shot].[time]'.  Alternately, the user may skip this input and explicitly set paths to
+        the g- and/or a-files, using the gfile and afile keyword arguments.  If both types of calls
+        are set, the explicit g-file and a-file paths override the auto-generated filenames from
+        the shot and time.
 
         Kwargs:
-            gfilename: String.  Manually selects ASCII file for equilibrium read.
-            afilename: String.  Manually selects ASCII file for time-history read.
+            shot: Int.  Shot index.
+            time: Int.  Time index (typically ms).  Shot and Time used to autogenerate filenames.
+            gfile: String.  Manually selects ASCII file for equilibrium read.
+            afile: String.  Manually selects ASCII file for time-history read.
             length_unit: String.  Flag setting length unit for equilibrium scales.
                 Defaults to 'm' for lengths in meters.
+
+        Raises:
+            IOError: if both name/shot and explicit filenames are not set.
+            ValueError: if the g-file cannot be found, or if multiple valid g/a-files are found.
         """
         # instantiate superclass, forcing time splining to false (eqdsk only contains single time slice)
-        super(EQDSKReader,self).__init__(length_unit=length_unit,tspline=False)
+        super(EqdskReader,self).__init__(length_unit=length_unit,tspline=False)
 
         # dict to store default units of length-scale parameters, used by core._getLengthConversionFactor
         self._defaultUnits = {}
 
         # parse shot and time inputs into standard naming convention
-        if len(str(time)) < 5:
-            timestring = '0'*(5-len(str(time))) + str(time)
-        elif len(str(time)) > 5:
-            timestring = str(time)[-5:]
-            print('Time window string greater than 5 digits.  Masking to last 5 digits.  \
-                  If this does not match the selected EQ files, \
-                  please use explicit filename inputs.')
-        else:   #exactly five digits
-            timestring = str(time)
+        if shot is not None and time is not None:
+            if len(str(time)) < 5:
+                timestring = '0'*(5-len(str(time))) + str(time)
+            elif len(str(time)) > 5:
+                timestring = str(time)[-5:]
+                print('Time window string greater than 5 digits.  Masking to last 5 digits.  \
+                       If this does not match the selected EQ files, \
+                       please use explicit filename inputs.')
+            else:   #exactly five digits
+                timestring = str(time)
+            name = str(shot)+'.'+timestring
+        else:
+            name = None
 
-        name = str(shot)+'.'+timestring
+        if name is None and gfile is None:
+            raise IOError('must specify shot/time or filenames')
 
         # if explicit filename for g-file is not set, check current directory for files matching name
         # if multiple valid files or no files are found, trigger ValueError
-        if gfilename is None:   #attempt to generate filename
+        if gfile is None:   #attempt to generate filename
             print('Searching directory for file g'+name+'.')
             gcurrfiles = glob.glob('g'+name+'*')
             if len(gcurrfiles) == 1:
@@ -96,26 +111,25 @@ class EQDSKReader(Equilibrium):
                                   Please select a file with explicit input or \n\
                                   ensure file is in directory.')
         else:   # check that given file is in directory
-            gcurrfiles = glob.glob(gfilename)
+            gcurrfiles = glob.glob(gfile)
             if len(gcurrfiles) < 1:
                 raise ValueError('No g-file with the given name detected in directory.  \n\
                                   Please ensure the file is in the active directory or \n\
                                   that you have supplied the correct name.')
             else:
-                self._gfilename = gfilename
+                self._gfilename = gfile
 
         # and likewise for a-file name.  However, we can operate at reduced capacity
         # without the a-file.  If no file with explicitly-input name is found, or 
         # multiple valid files (with no explicit input) are found, raise ValueError.
         # otherwise (no autogenerated files found) set hasafile flag false and 
         # nonfatally warn user.
-        if afilename is None:
+        if afile is None:
             print('Searching directory for file a'+name+'.')
             acurrfiles = glob.glob('a'+name+'*')
             if len(acurrfiles) == 1:
                 self._afilename = acurrfiles[0]
                 print('File found: '+self._afilename)
-                self._hasafile = True
             elif len(acurrfiles) > 1:
                 raise ValueError('Multiple valid a-files detected in directory.  \
                                   Please select a file with explicit \
@@ -123,18 +137,16 @@ class EQDSKReader(Equilibrium):
             else:   # no files found
                 print('No valid a-files detected in directory.  \
                       Please select a file with explicit input or \
-                      ensure file in in directory.  Disabling a-file \
-                      read functions.')
+                      ensure file in in directory.')
                 self._afilename = None
-                self._hasafile = False
         else:   # check that given file is in directory
-            acurrfiles = glob.glob(afilename)
+            acurrfiles = glob.glob(afile)
             if len(acurrfiles) < 1:
                 raise ValueError('No a-file with the given name detected in directory.  \
                                   Please ensure the file is in the active directory or \
                                   that you have supplied the correct name.')
             else:
-                self._afilename = afilename
+                self._afilename = afile
 
         # now we start reading the g-file
         with open(self._gfilename,'r') as gfile:
@@ -152,7 +164,7 @@ class EQDSKReader(Equilibrium):
             #extract time, units from timestring
             time = re.findall('\d+',timestring)[0]
             self._tunits = timestring.split(time)[1]
-            timeConvertDict = {'ms':1./1000.,'s':1}
+            timeConvertDict = {'ms':1./1000.,'s':1.}
             self._time = scipy.array([float(time)*timeConvertDict[self._tunits]]) # returns time in seconds as array
             
             # next line - construction values for RZ grid
@@ -601,7 +613,7 @@ class EQDSKReader(Equilibrium):
                 make_grid keyword is set. If the make_grid keyword is True, Z 
                 must have shape (len_Z,).
             *args: slot for time input for consistent syntax with Equilibrium.rz2psi.
-                will return dummy value for time if input in EQDSKReader.
+                will return dummy value for time if input in EqdskReader.
 
         Kwargs:
             make_grid: Boolean. Set to True to pass R and Z through meshgrid
@@ -622,6 +634,9 @@ class EQDSKReader(Equilibrium):
                     'default'   meters
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters).
+            **kwargs: other keywords (i.e., return_t) to rz2psi are valid
+                (necessary for proper inheritance and usage in other mapping routines)
+                but will return dummy values.
 
         Returns:
             psi: Array or scalar float. If all of the input arguments are scalar,
@@ -631,7 +646,7 @@ class EQDSKReader(Equilibrium):
                 shape (len(Z), len(R)).
         """
         t = self.getTimeBase()[0]
-        return super(EQDSKReader,self).rz2psi(R,Z,t,**kwargs)
+        return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
 
     def rz2psinorm(self,R,Z,*args,**kwargs):
         """
@@ -655,7 +670,7 @@ class EQDSKReader(Equilibrium):
                 keyword is set. If the make_grid keyword is True, Z must have
                 shape (len_Z,).
             *args: slot for time input for consistent syntax with Equilibrium.rz2psi.
-                will return dummy value for time if input in EQDSKReader.
+                will return dummy value for time if input in EqdskReader.
 
         Kwargs:
             sqrt: Boolean. Set to True to return the square root of normalized
@@ -681,6 +696,8 @@ class EQDSKReader(Equilibrium):
                     'default'   meters
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters).
+            **kwargs: other keywords passed to Equilibrium.rz2psinorm are valid,
+                but will return dummy values (i.e. for timebase keywords)
 
         Returns:
             psinorm: Array or scalar float. If all of the input arguments are
@@ -690,7 +707,7 @@ class EQDSKReader(Equilibrium):
                 True then psinorm has shape (len(Z), len(R)).
 
         Examples:
-        All assume that Eq_instance is a valid instance EQDSKReader:
+        All assume that Eq_instance is a valid instance EqdskReader:
 
         Find single psinorm value at R=0.6m, Z=0.0m:
         psi_val = Eq_instance.rz2psinorm(0.6, 0)
@@ -705,7 +722,7 @@ class EQDSKReader(Equilibrium):
         psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
-        return super(EQDSKReader,self).rz2psinorm(R,Z,t,**kwargs)
+        return super(EqdskReader,self).rz2psinorm(R,Z,t,**kwargs)
 
     def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
         """
@@ -764,7 +781,7 @@ class EQDSKReader(Equilibrium):
                 True then phinorm has shape (len(Z), len(R)).
 
         Examples:
-        All assume that Eq_instance is a valid instance of EQDSKReader.
+        All assume that Eq_instance is a valid instance of EqdskReader.
 
         Find single phinorm value at R=0.6m, Z=0.0m:
         phi_val = Eq_instance.rz2phinorm(0.6, 0)
@@ -780,13 +797,16 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit,'kind':kind,'rho':False}
-        return super(EQDSKReader,self).rz2phinorm(R,Z,t,**kwargs)
+        return super(EqdskReader,self).rz2phinorm(R,Z,t,**kwargs)
 
     def rz2volnorm(self,*args,**kwargs):
         """
         Calculates the normalized flux surface volume.
-        Not implemented for EQDSKReader, as necessary parameter
+        Not implemented for EqdskReader, as necessary parameter
         is not read from a/g-files.
+
+        Raises:
+            NotImplementedError: in all cases.
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
@@ -872,8 +892,11 @@ class EQDSKReader(Equilibrium):
         psi_mat = Eq_instance.rz2rho('psinorm', R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':False,'kind':kind,'length_unit':length_unit}
-        return super(EQDSKReader,self).rz2rho(method,R,Z,t,**kwargs)
+        if method == 'psinorm':
+            kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
+        else:
+            kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':False,'kind':kind,'length_unit':length_unit}
+        return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
     def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
         """
@@ -955,7 +978,7 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':rho,'kind':kind,'length_unit':length_unit}
-        return super(EQDSKReader,self).rz2rmid(R,Z,t,**kwargs)
+        return super(EqdskReader,self).rz2rmid(R,Z,t,**kwargs)
 
     def psinorm2rmid(self,psi_norm,rho=False,kind='cubic',length_unit=1):
         """
@@ -1011,12 +1034,12 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'rho':rho,'kind':kind,'length_unit':length_unit}
-        return super(EQDSKReader,self).psinorm2rmid(psi_norm,t,**kwargs)
+        return super(EqdskReader,self).psinorm2rmid(psi_norm,t,**kwargs)
 
     def psinorm2volnorm(self,*args,**kwargs):
         """
         Calculates the outboard R_mid location corresponding to psi_norm (normalized poloidal flux) values.
-        Not implemented for EQDSKReader, as necessary parameter
+        Not implemented for EqdskReader, as necessary parameter
         is not read from a/g-files.
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
@@ -1032,8 +1055,8 @@ class EQDSKReader(Equilibrium):
         Kwargs:
             kind: String or non-negative int. Specifies the type of interpolation
                 to be performed in getting from psinorm to phinorm. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                passed to scipy.interpolate.interp1d. Valid options are:
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
                 Default value is 'cubic' (3rd order spline interpolation). On
@@ -1059,7 +1082,7 @@ class EQDSKReader(Equilibrium):
         """
         t = self.getTimeBase()[0]
         kwargs = {'return_t':False,'kind':kind}
-        return super(EQDSKReader,self).psinorm2phinorm(psi_norm,t,**kwargs)
+        return super(EqdskReader,self).psinorm2phinorm(psi_norm,t,**kwargs)
 
     #################
     # data handlers #
@@ -1104,13 +1127,15 @@ class EQDSKReader(Equilibrium):
         """
         Returns psi on magnetic axis
         """
-        return scipy.array(self._psiAxis)
+        # scale by current sign for consistency with sign of psiRZ.
+        return -1. * self.getCurrentSign() * scipy.array(self._psiAxis)
 
     def getFluxLCFS(self):
         """
         Returns psi at separatrix
         """
-        return scipy.array(self._psiLCFS)
+        # scale by current sign for consistency with sign of psiRZ.
+        return -1 * self.getCurrentSign() * scipy.array(self._psiLCFS)
 
     def getRLCFS(self,length_unit=1):
         """
@@ -1146,7 +1171,7 @@ class EQDSKReader(Equilibrium):
     def getRmidPsi(self):
         """
         Returns outboard-midplane major radius of flux surfaces.
-        Data not read from a/g-files, not implemented for eqdskReader.
+        Data not read from a/g-files, not implemented for EqdskReader.
 
         Raises:
             NotImplementedError: RmidPsi not read from a/g-files.
@@ -1474,7 +1499,7 @@ class EQDSKReader(Equilibrium):
     def getJp(self):
         """
         Returns (r,z) grid of toroidal plasma current density.
-        Data not read from g-file, not implemented for eqdskReader.
+        Data not read from g-file, not implemented for EqdskReader.
 
         Raises:
             NotImplementedError: Jp not read from g-file.
@@ -1699,13 +1724,13 @@ class EQDSKReader(Equilibrium):
         read from g/a-files in copy-safe manner.
 
         Args:
-            name: String.  Parameter name for value stored in EQDSKReader instance.
+            name: String.  Parameter name for value stored in EqdskReader instance.
 
         Raises:
             AttributeError: raised if no attribute is found.
         """
         try:
-            return super(EQDSKReader,self).__getattribute__(name)
+            return super(EqdskReader,self).__getattribute__(name)
         except AttributeError:
             try:
                 attr = self.__getattribute__('_'+name)
