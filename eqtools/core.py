@@ -1826,16 +1826,17 @@ class Equilibrium(object):
 
         # takes keyword to bypass for tricubic interpolation
         if not self._tricubic:
-
+            timebase = self.getTimeBase()
             # Set up times to use -- essentially use nearest-neighbor interpolation
-            time_idxs = self._getNearestIdx(t, self.getTimeBase())
+            time_idxs = self._getNearestIdx(t, timebase)
             # Check errors and warn if needed:
-            t_errs = scipy.absolute(t - self.getTimeBase()[time_idxs])
-            if (t_errs > scipy.mean(scipy.diff(self.getTimeBase())) / 3.0).any():
-                print("Warning: _processRZt: Some time points are off by more than 1/3 "
-                      "the EFIT point spacing. Using nearest-neighbor interpolation "
-                      "between time points. You may want to run EFIT on the timebase "
-                      "you need. Max error: %.3fs" % max(t_errs))
+            t_errs = scipy.absolute(t - timebase[time_idxs])
+            if len(timebase > 1) and (t_errs > scipy.mean(scipy.diff(timebase)) / 3.0).any():
+                warnings.warn("Some time points are off by more than 1/3 "
+                              "the EFIT point spacing. Using nearest-neighbor interpolation "
+                              "between time points. You may want to run EFIT on the timebase "
+                              "you need. Max error: %.3fs" % max(t_errs),
+                              RuntimeWarning)
 
                 # If a single time value is passed with multiple R, Z points, evaluate
                 # them all at that time point:
