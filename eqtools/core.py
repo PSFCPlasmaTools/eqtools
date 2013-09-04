@@ -1831,7 +1831,7 @@ class Equilibrium(object):
             time_idxs = self._getNearestIdx(t, timebase)
             # Check errors and warn if needed:
             t_errs = scipy.absolute(t - timebase[time_idxs])
-            if len(timebase > 1) and (t_errs > scipy.mean(scipy.diff(timebase)) / 3.0).any():
+            if len(timebase) > 1 and (t_errs > scipy.mean(scipy.diff(timebase)) / 3.0).any():
                 warnings.warn("Some time points are off by more than 1/3 "
                               "the EFIT point spacing. Using nearest-neighbor interpolation "
                               "between time points. You may want to run EFIT on the timebase "
