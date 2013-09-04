@@ -2879,7 +2879,7 @@ shape (len\_Z,).
 
 \item {} 
 \textbf{*args} --
-slot for time input for consistent syntax with Equilibrium.rz2psi.
+slot for time input for consistent syntax with Equilibrium.rz2psinorm.
 will return dummy value for time if input in EqdskReader.
 
 \end{itemize}
@@ -2984,6 +2984,11 @@ Array-like or scalar float. Values of the vertical coordinate to
 map to normalized toroidal flux. Must have the same shape as R
 unless the make\_grid keyword is set. If the make\_grid keyword
 is True, Z must have shape (len\_Z,).
+
+\item {} 
+\textbf{*args} --
+slot for time input for consistent syntax with Equilibrium.rz2phinorm.
+will return dummy value for time if input in EqdskReader.
 
 \end{itemize}
 

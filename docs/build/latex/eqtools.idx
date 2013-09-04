@@ -168,7 +168,7 @@
 \indexentry{getFluxAxis() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{30}
 \indexentry{getFluxLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{30}
 \indexentry{getRLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{30}
-\indexentry{getZLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{30}
+\indexentry{getZLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{31}
 \indexentry{getFluxVol() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{31}
 \indexentry{getVolLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{31}
 \indexentry{getRmidPsi() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{31}
