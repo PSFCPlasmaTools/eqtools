@@ -6,7 +6,10 @@
 Welcome to eqtools's documentation!
 ===================================
 
-Contents:
+Useful description and details go here.
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 4
