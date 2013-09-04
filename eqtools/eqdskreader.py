@@ -484,7 +484,7 @@ class EqdskReader(Equilibrium):
         self._WDiamag = None
         self._tauDiamag = None
         self._defaultUnits['_diamag'] = 'Vs'
-        self._defaultUnits['WDiamag'] = 'J'
+        self._defaultUnits['_WDiamag'] = 'J'
         self._defaultUnits['_tauDiamag'] = 'ms'
 
         # calculated energy
@@ -692,7 +692,7 @@ class EqdskReader(Equilibrium):
                 values in t. Must have the same shape as R unless the make_grid
                 keyword is set. If the make_grid keyword is True, Z must have
                 shape (len_Z,).
-            *args: slot for time input for consistent syntax with Equilibrium.rz2psi.
+            *args: slot for time input for consistent syntax with Equilibrium.rz2psinorm.
                 will return dummy value for time if input in EqdskReader.
 
         Kwargs:
@@ -761,6 +761,8 @@ class EqdskReader(Equilibrium):
                 map to normalized toroidal flux. Must have the same shape as R 
                 unless the make_grid keyword is set. If the make_grid keyword 
                 is True, Z must have shape (len_Z,).
+            *args: slot for time input for consistent syntax with Equilibrium.rz2phinorm.
+                will return dummy value for time if input in EqdskReader.
 
         Kwargs:
             sqrt: Boolean. Set to True to return the square root of normalized
