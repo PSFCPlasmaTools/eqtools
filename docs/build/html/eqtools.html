@@ -2194,7 +2194,7 @@ functionality for equilibria stored in eqdsk files from EFIT(a- and g-files).</p
 </dl>
 <dl class="class">
 <dt id="eqtools.eqdskreader.EqdskReader">
-<em class="property">class </em><tt class="descclassname">eqtools.eqdskreader.</tt><tt class="descname">EqdskReader</tt><big>(</big><em>shot=None</em>, <em>time=None</em>, <em>gfile=None</em>, <em>afile=None</em>, <em>length_unit='m'</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">eqtools.eqdskreader.</tt><tt class="descname">EqdskReader</tt><big>(</big><em>shot=None</em>, <em>time=None</em>, <em>gfile=None</em>, <em>afile=None</em>, <em>length_unit='m'</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.Equilibrium</span></tt></a></p>
 <p>Equilibrium subclass working from eqdsk ASCII-file equilibria.</p>
 <p>Inherits mapping and structural data from Equilibrium, populates equilibrium
@@ -2227,6 +2227,9 @@ String.  Manually selects ASCII file for time-history read.</li>
 <li><strong>length_unit</strong> &#8211;
 String.  Flag setting length unit for equilibrium scales.
 Defaults to &#8216;m&#8217; for lengths in meters.</li>
+<li><strong>verbose</strong> &#8211;
+Boolean.  When set to false, suppresses terminal outputs during CSV read.
+Defaults to True (prints terminal output).</li>
 </ul>
 </td>
 </tr>
@@ -2449,7 +2452,7 @@ psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)</p>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.rz2phinorm">
-<tt class="descname">rz2phinorm</tt><big>(</big><em>R</em>, <em>Z</em>, <em>sqrt=False</em>, <em>make_grid=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.rz2phinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.rz2phinorm" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">rz2phinorm</tt><big>(</big><em>R</em>, <em>Z</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.rz2phinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.rz2phinorm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates normalized toroidal flux at a given (R,Z).
 Wrapper for Equilibrium.rz2phinorm masking out timebase dependence.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -2513,6 +2516,10 @@ in. If a string is given, it must be a valid unit specifier:</p>
 </div></blockquote>
 <p>If length_unit is 1 or None, meters are assumed. The default
 value is 1 (R and Z given in meters).</p>
+</li>
+<li><p class="first"><strong>**kwargs</strong> &#8211;
+other keywords passed to Equilibrium.rz2phinorm are valid,
+but will return dummy values (i.e. for timebase keywords)</p>
 </li>
 </ul>
 </td>

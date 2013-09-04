@@ -120,37 +120,4188 @@
 \phantomsection\label{index::doc}
 
 
-Contents:
+Useful description and details go here.
 
 
-\chapter{eqtools Package}
-\label{eqtools::doc}\label{eqtools:welcome-to-eqtools-s-documentation}\label{eqtools:eqtools-package}
+\chapter{Contents}
+\label{index:welcome-to-eqtools-s-documentation}\label{index:contents}
 
-\section{\texttt{eqtools} Package}
-\label{eqtools:id1}
+\section{eqtools Package}
+\label{eqtools::doc}\label{eqtools:eqtools-package}
 
-\section{\texttt{CModEFIT} Module}
-\label{eqtools:cmodefit-module}
+\subsection{\texttt{eqtools} Package}
+\label{eqtools:id1}\phantomsection\label{eqtools:module-eqtools.__init__}\index{eqtools.\_\_init\_\_ (module)}
 
-\section{\texttt{EFIT} Module}
-\label{eqtools:efit-module}
+\subsection{\texttt{CModEFIT} Module}
+\label{eqtools:module-eqtools.CModEFIT}\label{eqtools:cmodefit-module}\index{eqtools.CModEFIT (module)}\index{CModEFITTree (class in eqtools.CModEFIT)}
 
-\section{\texttt{FromArrays} Module}
-\label{eqtools:fromarrays-module}
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTree}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.EFIT.EFITTree]{\code{eqtools.EFIT.EFITTree}}}
 
-\section{\texttt{afilereader} Module}
-\label{eqtools:afilereader-module}
+Inherits EFITTree class. machine-specific data handling class for Alcator C-Mod.
+Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
+Each EFIT variable or set of variables is recovered with a corresponding getter method.
+Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
+Additional data are pulled at the first request and stored for subsequent usage.
 
-\section{\texttt{core} Module}
-\label{eqtools:core-module}
+Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.
 
-\section{\texttt{eqdskreader} Module}
-\label{eqtools:eqdskreader-module}
+INPUTS:
+shot:   C-Mod shot index (long)
+tree:   optional input for EFIT tree, defaults to `ANALYSIS' (i.e.,
+\begin{quote}
 
-\section{\texttt{pfilereader} Module}
-\label{eqtools:pfilereader-module}
+EFIT data are under analysis::top.efit.results).
+For any string TREE (such as `EFIT20') other than `ANALYSIS',
+data are taken from TREE::top.results.
+\end{quote}
+\index{getMachineCrossSection() (eqtools.CModEFIT.CModEFITTree method)}
 
-\section{\texttt{trispline} Module}
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
+Pulls C-Mod cross-section data from tree, converts to plottable
+vector format for use in other plotting routines
+
+INPUTS:
+shot:   C-Mod shot index (used for tree access) (long)
+
+OUTPUTS:
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{CModEFITTreeProp (class in eqtools.CModEFIT)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTreeProp}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTreeProp}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.CModEFIT.CModEFITTree]{\code{eqtools.CModEFIT.CModEFITTree}}}, {\hyperref[eqtools:eqtools.core.PropertyAccessMixin]{\code{eqtools.core.PropertyAccessMixin}}}
+
+CModEFITTree with the PropertyAccessMixin added to enable property-style
+access. This is good for interactive use, but may drag the performance down.
+
+Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.
+
+INPUTS:
+shot:   C-Mod shot index (long)
+tree:   optional input for EFIT tree, defaults to `ANALYSIS' (i.e.,
+\begin{quote}
+
+EFIT data are under analysis::top.efit.results).
+For any string TREE (such as `EFIT20') other than `ANALYSIS',
+data are taken from TREE::top.results.
+\end{quote}
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{EFIT} Module}
+\label{eqtools:efit-module}\label{eqtools:module-eqtools.EFIT}\index{eqtools.EFIT (module)}\index{EFITTree (class in eqtools.EFIT)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.EFIT.}\bfcode{EFITTree}}{\emph{shot}, \emph{tree}, \emph{root}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
+
+Inherits Equilibrium class. EFIT-specific data handling class for machines using
+standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
+need overriding in a machine-specific implementation.
+Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
+Each EFIT variable or set of variables is recovered with a corresponding getter method.
+Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
+Additional data are pulled at the first request and stored for subsequent usage.
+
+Intializes EFITTree object. Pulls data from MDS tree for storage in
+instance attributes. Core attributes are populated from the MDS tree
+on initialization. Additional attributes are initialized as None,
+filled on the first request to the object.
+
+INPUTS:
+shot:   shot index
+tree:   MDSplus tree to open to fetch EFIT data.
+root:   Root path for EFIT data in MDSplus tree.
+\index{\_\_str\_\_() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
+string formatting for EFITTree class.
+
+\end{fulllineitems}
+
+\index{getInfo() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getInfo}\pysiglinewithargsret{\bfcode{getInfo}}{}{}
+returns namedtuple of shot information
+outputs:
+namedtuple containing
+\begin{quote}
+
+shot:   C-Mod shot index (long)
+tree:   EFIT tree (string)
+nr:     size of R-axis for spatial grid
+nz:     size of Z-axis for spatial grid
+nt:     size of timebase for flux grid
+\end{quote}
+
+\end{fulllineitems}
+
+\index{getTimeBase() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
+returns EFIT time base vector
+
+\end{fulllineitems}
+
+\index{getFluxGrid() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+returns EFIT flux grid, {[}t,z,r{]}
+
+\end{fulllineitems}
+
+\index{getRGrid() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{\emph{length\_unit=1}}{}
+returns EFIT R-axis {[}r{]}
+
+\end{fulllineitems}
+
+\index{getZGrid() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{\emph{length\_unit=1}}{}
+returns EFIT Z-axis {[}z{]}
+
+\end{fulllineitems}
+
+\index{getFluxAxis() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxAxis}\pysiglinewithargsret{\bfcode{getFluxAxis}}{}{}
+returns psi on magnetic axis {[}t{]}
+
+\end{fulllineitems}
+
+\index{getFluxLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxLCFS}\pysiglinewithargsret{\bfcode{getFluxLCFS}}{}{}
+returns psi at separatrix {[}t{]}
+
+\end{fulllineitems}
+
+\index{getFluxVol() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxVol}\pysiglinewithargsret{\bfcode{getFluxVol}}{\emph{length\_unit=3}}{}
+returns volume within flux surface {[}psi,t{]}
+
+\end{fulllineitems}
+
+\index{getVolLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getVolLCFS}\pysiglinewithargsret{\bfcode{getVolLCFS}}{\emph{length\_unit=3}}{}
+returns volume within LCFS {[}t{]}
+
+\end{fulllineitems}
+
+\index{getRmidPsi() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRmidPsi}\pysiglinewithargsret{\bfcode{getRmidPsi}}{\emph{length\_unit=1}}{}
+returns maximum major radius of each flux surface {[}t,psi{]}
+
+\end{fulllineitems}
+
+\index{getRLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRLCFS}\pysiglinewithargsret{\bfcode{getRLCFS}}{\emph{length\_unit=1}}{}
+returns R-values of LCFS position {[}t,n{]}
+
+\end{fulllineitems}
+
+\index{getZLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{\emph{length\_unit=1}}{}
+returns Z-values of LCFS position {[}t,n{]}
+
+\end{fulllineitems}
+
+\index{getFluxPres() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxPres}\pysiglinewithargsret{\bfcode{getFluxPres}}{}{}
+returns pressure at flux surface {[}psi,t{]}
+
+\end{fulllineitems}
+
+\index{getElongation() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getElongation}\pysiglinewithargsret{\bfcode{getElongation}}{}{}
+returns LCFS elongation {[}t{]}
+
+\end{fulllineitems}
+
+\index{getUpperTriangularity() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getUpperTriangularity}\pysiglinewithargsret{\bfcode{getUpperTriangularity}}{}{}
+returns LCFS upper triangularity {[}t{]}
+
+\end{fulllineitems}
+
+\index{getLowerTriangularity() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getLowerTriangularity}\pysiglinewithargsret{\bfcode{getLowerTriangularity}}{}{}
+returns LCFS lower triangularity {[}t{]}
+
+\end{fulllineitems}
+
+\index{getShaping() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getShaping}\pysiglinewithargsret{\bfcode{getShaping}}{}{}
+pulls LCFS elongation and upper/lower triangularity
+returns namedtuple containing \{kappa, delta\_u, delta\_l\}
+
+\end{fulllineitems}
+
+\index{getMagR() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMagR}\pysiglinewithargsret{\bfcode{getMagR}}{\emph{length\_unit=1}}{}
+returns magnetic-axis major radius {[}t{]}
+
+\end{fulllineitems}
+
+\index{getMagZ() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMagZ}\pysiglinewithargsret{\bfcode{getMagZ}}{\emph{length\_unit=1}}{}
+returns magnetic-axis Z {[}t{]}
+
+\end{fulllineitems}
+
+\index{getAreaLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getAreaLCFS}\pysiglinewithargsret{\bfcode{getAreaLCFS}}{\emph{length\_unit=2}}{}
+returns LCFS cross-sectional area {[}t{]}
+
+\end{fulllineitems}
+
+\index{getAOut() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getAOut}\pysiglinewithargsret{\bfcode{getAOut}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius at LCFS {[}t{]}
+
+\end{fulllineitems}
+
+\index{getRmidOut() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRmidOut}\pysiglinewithargsret{\bfcode{getRmidOut}}{\emph{length\_unit=1}}{}
+returns outboard-midplane major radius {[}t{]}
+
+\end{fulllineitems}
+
+\index{getGeometry() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getGeometry}\pysiglinewithargsret{\bfcode{getGeometry}}{\emph{length\_unit=None}}{}
+pulls dimensional geometry parameters
+returns namedtuple containing \{magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R\}
+
+\end{fulllineitems}
+
+\index{getQProfile() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQProfile}\pysiglinewithargsret{\bfcode{getQProfile}}{}{}
+returns safety factor q {[}psi,t{]}
+
+\end{fulllineitems}
+
+\index{getQ0() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ0}\pysiglinewithargsret{\bfcode{getQ0}}{}{}
+returns q on magnetic axis {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ95() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ95}\pysiglinewithargsret{\bfcode{getQ95}}{}{}
+returns q at 95\% flux surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQLCFS}\pysiglinewithargsret{\bfcode{getQLCFS}}{}{}
+returns q on LCFS {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ1Surf() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ1Surf}\pysiglinewithargsret{\bfcode{getQ1Surf}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius of q=1 surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ2Surf() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ2Surf}\pysiglinewithargsret{\bfcode{getQ2Surf}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius of q=2 surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ3Surf() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ3Surf}\pysiglinewithargsret{\bfcode{getQ3Surf}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius of q=3 surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQs() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQs}\pysiglinewithargsret{\bfcode{getQs}}{\emph{length\_unit=1}}{}
+pulls q values
+returns namedtuple containing \{q0,q95,qLCFS,rq1,rq2,rq3\}
+
+\end{fulllineitems}
+
+\index{getBtVac() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBtVac}\pysiglinewithargsret{\bfcode{getBtVac}}{}{}
+returns on-axis vacuum toroidal field {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBtPla() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBtPla}\pysiglinewithargsret{\bfcode{getBtPla}}{}{}
+returns on-axis plasma toroidal field {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBpAvg() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBpAvg}\pysiglinewithargsret{\bfcode{getBpAvg}}{}{}
+returns average poloidal field {[}t{]}
+
+\end{fulllineitems}
+
+\index{getFields() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFields}\pysiglinewithargsret{\bfcode{getFields}}{}{}
+pulls vacuum and plasma toroidal field, avg poloidal field
+returns namedtuple containing \{btaxv,btaxp,bpolav\}
+
+\end{fulllineitems}
+
+\index{getIpCalc() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getIpCalc}\pysiglinewithargsret{\bfcode{getIpCalc}}{}{}
+returns EFIT-calculated plasma current {[}t{]}
+
+\end{fulllineitems}
+
+\index{getIpMeas() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getIpMeas}\pysiglinewithargsret{\bfcode{getIpMeas}}{}{}
+returns magnetics-measured plasma current {[}t{]}
+
+\end{fulllineitems}
+
+\index{getJp() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getJp}\pysiglinewithargsret{\bfcode{getJp}}{}{}
+returns EFIT-calculated plasma current density Jp on flux grid {[}t,r,z{]}
+
+\end{fulllineitems}
+
+\index{getBetaT() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetaT}\pysiglinewithargsret{\bfcode{getBetaT}}{}{}
+returns EFIT-calculated toroidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBetaP() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetaP}\pysiglinewithargsret{\bfcode{getBetaP}}{}{}
+returns EFIT-calculated poloidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getLi() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getLi}\pysiglinewithargsret{\bfcode{getLi}}{}{}
+returns EFIT-calculated internal inductance {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBetas() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetas}\pysiglinewithargsret{\bfcode{getBetas}}{}{}
+pulls calculated betap, betat, internal inductance
+returns namedtuple containing \{betat,betap,Li\}
+
+\end{fulllineitems}
+
+\index{getDiamagFlux() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagFlux}\pysiglinewithargsret{\bfcode{getDiamagFlux}}{}{}
+returns measured diamagnetic-loop flux {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagBetaT() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagBetaT}\pysiglinewithargsret{\bfcode{getDiamagBetaT}}{}{}
+returns diamagnetic-loop toroidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagBetaP() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagBetaP}\pysiglinewithargsret{\bfcode{getDiamagBetaP}}{}{}
+returns diamagnetic-loop avg poloidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagTauE() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagTauE}\pysiglinewithargsret{\bfcode{getDiamagTauE}}{}{}
+returns diamagnetic-loop energy confinement time {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagWp() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagWp}\pysiglinewithargsret{\bfcode{getDiamagWp}}{}{}
+returns diamagnetic-loop plasma stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamag() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamag}\pysiglinewithargsret{\bfcode{getDiamag}}{}{}
+pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
+returns namedtuple containing \{diamag. flux, betatd, betapd, tauDiamag, WDiamag\}
+
+\end{fulllineitems}
+
+\index{getWMHD() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWMHD}\pysiglinewithargsret{\bfcode{getWMHD}}{}{}
+returns EFIT-calculated MHD stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getTauMHD() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getTauMHD}\pysiglinewithargsret{\bfcode{getTauMHD}}{}{}
+returns EFIT-calculated MHD energy confinement time {[}t{]}
+
+\end{fulllineitems}
+
+\index{getPinj() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getPinj}\pysiglinewithargsret{\bfcode{getPinj}}{}{}
+returns EFIT-calculated injected power {[}t{]}
+
+\end{fulllineitems}
+
+\index{getWbdot() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWbdot}\pysiglinewithargsret{\bfcode{getWbdot}}{}{}
+returns EFIT-calculated d/dt of magnetic stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getWpdot() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWpdot}\pysiglinewithargsret{\bfcode{getWpdot}}{}{}
+returns EFIT-calculated d/dt of plasma stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getEnergy() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getEnergy}\pysiglinewithargsret{\bfcode{getEnergy}}{}{}
+pulls EFIT-calculated energy parameters - stored energy, tau\_E, injected power, d/dt of magnetic and plasma stored energy
+returns namedtuple containing \{WMHD,tauMHD,Pinj,Wbdot,Wpdot\}
+
+\end{fulllineitems}
+
+\index{getCurrentSign() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getCurrentSign}\pysiglinewithargsret{\bfcode{getCurrentSign}}{}{}
+Returns the sign of the current, based on the check in Steve Wolfe's
+IDL implementation efit\_rz2psi.pro.
+
+\end{fulllineitems}
+
+\index{getParam() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getParam}\pysiglinewithargsret{\bfcode{getParam}}{\emph{path}}{}
+backup function - path to parameter as input, returns desired variable
+acts as wrapper for MDS call
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{FromArrays} Module}
+\label{eqtools:module-eqtools.FromArrays}\label{eqtools:fromarrays-module}\index{eqtools.FromArrays (module)}\index{ArrayEquilibrium (class in eqtools.FromArrays)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.FromArrays.}\bfcode{ArrayEquilibrium}}{\emph{psiRZ}, \emph{rGrid}, \emph{zGrid}, \emph{time}, \emph{q}, \emph{fluxVol}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
+
+Class to represent an equilibrium specified as arrays of data.
+
+Create ArrayEquilibrium instance from arrays of data.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{psiRZ} --
+Array-like, (M, N, P). Flux values at M times, N Z locations
+and P R locations.
+
+\item {} 
+\textbf{rGrid} --
+Array-like, (P,). R coordinates that psiRZ is given at.
+
+\item {} 
+\textbf{zGrid} --
+Array-like, (N,). Z coordinates that psiRZ is given at.
+
+\item {} 
+\textbf{time} --
+Array-like, (M,). Times that psiRZ is given at.
+
+\item {} 
+\textbf{q} --
+Array-like, (Q, M). q profile evaluated at Q values of psinorm
+from 0 to 1, given at M times.
+
+\item {} 
+\textbf{fluxVol} --
+Array-like, (S, M). Flux surface volumes evaluated at S
+values of psinorm from 0 to 1, given at M times.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode
+\textbf{length\_unit} --
+String. Base unit for any quantity whose dimensions
+are length to any power. Default is `m'. Valid options are:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`default'   whatever the default in the tree is (no
+\begin{quote}
+
+conversion is performed, units may be
+inconsistent)
+\end{quote}
+\end{quote}
+
+\item[{Returns}] \leavevmode
+The ArrayEquilibrium instance created.
+
+\end{description}\end{quote}
+\index{getTimeBase() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
+Returns a copy of the time base vector, array dimensions are (M,).
+
+\end{fulllineitems}
+
+\index{getFluxGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+Returns a copy of the flux array, dimensions are (M, N, P), corresponding to (time, Z, R).
+
+\end{fulllineitems}
+
+\index{getRGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{\emph{length\_unit=1}}{}
+Returns a copy of the radial grid, dimensions are (P,).
+
+\end{fulllineitems}
+
+\index{getZGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{\emph{length\_unit=1}}{}
+Returns a copy of the vertical grid, dimensions are (N,).
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{afilereader} Module}
+\label{eqtools:afilereader-module}\label{eqtools:module-eqtools.afilereader}\index{eqtools.afilereader (module)}
+This module contains the AFileReader class, a lightweight data
+handler for a-file (time-history) datasets.
+\begin{description}
+\item[{Classes:}] \leavevmode\begin{description}
+\item[{AFileReader: Data-storage class for a-file data.  Reads}] \leavevmode
+data from ASCII a-file, storing as copy-safe object
+attributes.
+
+\end{description}
+
+\end{description}
+\index{AFileReader (class in eqtools.afilereader)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader}\pysiglinewithargsret{\strong{class }\code{eqtools.afilereader.}\bfcode{AFileReader}}{\emph{afile}}{}
+Bases: \code{object}
+
+Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.
+
+A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is
+read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
+EFIT variable names.
+
+initialize object, reading from file.
+
+INPUTS:
+afile: (str) path to a-file
+\index{\_\_str\_\_() (eqtools.afilereader.AFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
+overrides default \_\_str\_\_method with more useful output.
+
+\end{fulllineitems}
+
+\index{\_\_getattribute\_\_() (eqtools.afilereader.AFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__getattribute__}\pysiglinewithargsret{\bfcode{\_\_getattribute\_\_}}{\emph{name}}{}
+Copy-safe attribute retrieval method overriding default object.\_\_getattribute\_\_.
+
+Tries to retrieve attribute as-written (first check for default object attributes).
+If that fails, looks for pseudo-private attributes, marked by preceding underscore,
+to retrieve data values.  If this fails, raise AttributeError.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String.  Name (without leading underscore for data variables) of attribute.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+if no attribute can be found.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_\_setattr\_\_() (eqtools.afilereader.AFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__setattr__}\pysiglinewithargsret{\bfcode{\_\_setattr\_\_}}{\emph{name}, \emph{value}}{}
+Copy-safe attribute setting method overriding default object.\_\_setattr\_\_.
+
+Raises error if object already has attribute \_\{name\} for input name,
+as such an attribute would interfere with automatic property generation in
+\_\_getattribute\_\_.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String.  Attribute name.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+if attempting to create attribute with protected
+pseudo-private name.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{core} Module}
+\label{eqtools:module-eqtools.core}\label{eqtools:core-module}\index{eqtools.core (module)}
+This module contains the core classes for EqTools, including the base
+Equilibrium class.
+\begin{description}
+\item[{Classes:}] \leavevmode
+ModuleWarning: Warning class for unavailable modules.
+Equilibrium: Base class for all other equilibrium access objects. Includes
+\begin{quote}
+
+the main mapping routines and method stubs for all suggested methods
+that should be implemented in subclasses.
+\end{quote}
+
+\end{description}
+\index{ModuleWarning}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.ModuleWarning}\pysigline{\strong{exception }\code{eqtools.core.}\bfcode{ModuleWarning}}
+Bases: \code{exceptions.Warning}
+
+Warning class to notify the user of unavailable modules.
+
+\end{fulllineitems}
+
+\index{PropertyAccessMixin (class in eqtools.core)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.PropertyAccessMixin}\pysigline{\strong{class }\code{eqtools.core.}\bfcode{PropertyAccessMixin}}
+Bases: \code{object}
+
+Mixin to implement access of getter methods through a property-type
+interface without the need to apply a decorator to every property.
+
+For any getter obj.getSomething(), the call obj.Something will work.
+
+This is accomplished by overriding \_\_getattribute\_\_ such that if an
+attribute ATTR does not exist it then attempts to call self.getATTR(). If
+self.getATTR() does not exist, an AttributeError will be raised as usual.
+
+Also overrides \_\_setattr\_\_ such that it will raise an AttributeError when
+attempting to write an attribute ATTR for which there is already a method
+getATTR.
+\index{\_\_getattribute\_\_() (eqtools.core.PropertyAccessMixin method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.PropertyAccessMixin.__getattribute__}\pysiglinewithargsret{\bfcode{\_\_getattribute\_\_}}{\emph{name}}{}
+Get an attribute.
+
+Tries to get attribute as-written. If this fails, tries to call the
+method get{[}name{]} with no arguments. If this fails, raises
+AttributeError. This effectively generates a Python `property' for
+each getter method.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String. Name of the attribute to retrieve. If the instance
+has an attribute with this name, the attribute is returned. If
+the instance does not have an attribute with this name but does
+have a method called `get'+name, this method is called and the
+result is returned.
+
+\item[{Returns}] \leavevmode
+The value of the attribute requested.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+If neither attribute name or method `get'+name exist.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_\_setattr\_\_() (eqtools.core.PropertyAccessMixin method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.PropertyAccessMixin.__setattr__}\pysiglinewithargsret{\bfcode{\_\_setattr\_\_}}{\emph{name}, \emph{value}}{}
+Set an attribute.
+
+Raises AttributeError if the object already has a method get{[}name{]}, as
+creation of such an attribute would interfere with the automatic
+property generation in \_\_getattribute\_\_.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{name} --
+String. Name of the attribute to set.
+
+\item {} 
+\textbf{value} --
+Object. Value to set the attribute to.
+
+\end{itemize}
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+If a method called `get'+name already exists.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{Equilibrium (class in eqtools.core)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.core.}\bfcode{Equilibrium}}{\emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: \code{object}
+
+Abstract class of data handling object for magnetic reconstruction outputs.
+
+Defines the mapping routines and method fingerprints necessary.
+Each variable or set of variables is recovered with a corresponding
+getter method. Essential data for mapping are pulled on initialization
+(psirz grid, for example) to frontload timing overhead. Additional data
+are pulled at the first request and stored for subsequent usage.
+
+NOTE: this abstract class should not be used directly. Device- and code-
+specific subclasses are set up to account for inter-device/-code differences
+in data storage.
+
+Create a new Equilibrium instance.
+\begin{quote}\begin{description}
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{length\_unit} --
+String. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   whatever the default in the tree is (no
+\begin{quote}
+
+conversion is performed, units may be
+inconsistent)
+\end{quote}
+\end{quote}
+
+Default is `m' (all units taken and returned in meters).
+
+\item {} 
+\textbf{tspline} --
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).
+
+\item {} 
+\textbf{fast} --
+Boolean. Sets whether or not the ``fast'' form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).
+
+\end{itemize}
+
+\item[{Raises }] \leavevmode\begin{itemize}
+\item {} 
+\code{ValueError} -- 
+If length\_unit is not a valid unit specifier.
+
+\item {} 
+\code{ValueError} -- 
+If tspline is True by module trispline did not load
+successfully.
+
+\end{itemize}
+
+\end{description}\end{quote}
+\index{\_\_str\_\_() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
+String representation of this instance.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+String describing this object.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{rz2psi() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2psi}\pysiglinewithargsret{\bfcode{rz2psi}}{\emph{R}, \emph{Z}, \emph{t}, \emph{return\_t=False}, \emph{make\_grid=False}, \emph{length\_unit=1}}{}
+Converts the passed R, Z, t arrays to psi values.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to poloidal flux. If R and Z are both scalar values, they
+are used as the coordinate pair for all of the values in t.
+Must have the same shape as Z unless the make\_grid keyword is
+set. If the make\_grid keyword is True, R must have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to poloidal flux. If R and Z are both scalar values, they
+are used as the coordinate pair for all of the values in t.
+Must have the same shape as R unless the make\_grid keyword is
+set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of R, Z. If t is array-like and the
+make\_grid keyword is False, t must have the same dimensions as
+R and Z. If t is array-like and the make\_grid keyword is True,
+t must have shape (len(Z), len(R)).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (psi, time\_idxs),
+where time\_idxs is the array of time indices actually used in
+evaluating psi with nearest-neighbor interpolation. (This is
+mostly present as an internal helper.) Default is False (only
+return psi).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+When using this option, it is highly recommended to only pass
+a scalar value for t (such that each point in the flux grid is
+evaluated at this same value t). Otherwise, t must have the
+same shape as the resulting meshgrid, and each element in the
+returned psi array will be at the corresponding time in the t
+array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{psi} --
+Array or scalar float. If all of the input arguments are scalar,
+\begin{quote}
+
+then a scalar is returned. Otherwise, a scipy Array instance is
+returned. If R and Z both have the same shape then psi has this
+shape as well. If the make\_grid keyword was True then psi has
+shape (len(Z), len(R)).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as psi. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single psi value at R=0.6m, Z=0.0m, t=0.26s:
+psi\_val = Eq\_instance.rz2psi(0.6, 0, 0.26)
+
+Find psi values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the single
+time t=0.26s. Note that the Z vector must be fully specified, even if
+the values are all the same:
+psi\_arr = Eq\_instance.rz2psi({[}0.6, 0.8{]}, {[}0, 0{]}, 0.26)
+
+Find psi values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
+psi\_arr = Eq\_instance.rz2psi(0.6, 0, {[}0.2, 0.3{]})
+
+Find psi values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
+psi\_arr = Eq\_instance.rz2psi({[}0.6, 0.5{]}, {[}0, 0.2{]}, {[}0.2, 0.3{]})
+
+Find psi values on grid defined by 1D vector of radial positions R and
+1D vector of vertical positions Z at time t=0.2s:
+psi\_mat = Eq\_instance.rz2psi(R, Z, 0.2, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2psinorm() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2psinorm}\pysiglinewithargsret{\bfcode{rz2psinorm}}{\emph{R}, \emph{Z}, \emph{t}, \emph{return\_t=False}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{length\_unit=1}}{}
+Calculates the normalized poloidal flux at the given (R, Z, t).
+
+Uses the definition:
+psi\_norm = (psi - psi(0)) / (psi(a) - psi(0))
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to normalized poloidal flux. If R and Z are both scalar
+values, they are used as the coordinate pair for all of the
+values in t. Must have the same shape as Z unless the make\_grid
+keyword is set. If the make\_grid keyword is True, R must have
+shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to normalized poloidal flux. If R and Z are both scalar
+values, they are used as the coordinate pair for all of the
+values in t. Must have the same shape as R unless the make\_grid
+keyword is set. If the make\_grid keyword is True, Z must have
+shape (len\_Z,).
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of R, Z. If t is array-like and the
+make\_grid keyword is False, t must have the same dimensions as
+R and Z. If t is array-like and the make\_grid keyword is True,
+t must have shape (len(Z), len(R)).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (psinorm,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating psi with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return psinorm).
+
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of normalized
+flux. Only the square root of positive psi\_norm values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return psinorm).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+When using this option, it is highly recommended to only pass
+a scalar value for t (such that each point in the flux grid is
+evaluated at this same value t). Otherwise, t must have the
+same shape as the resulting meshgrid, and each element in the
+returned psi array will be at the corresponding time in the t
+array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{psinorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+psinorm has this shape as well. If the make\_grid keyword was
+True then psinorm has shape (len(Z), len(R)).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as psinorm. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single psinorm value at R=0.6m, Z=0.0m, t=0.26s:
+psi\_val = Eq\_instance.rz2psinorm(0.6, 0, 0.26)
+
+Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+single time t=0.26s. Note that the Z vector must be fully specified,
+even if the values are all the same:
+psi\_arr = Eq\_instance.rz2psinorm({[}0.6, 0.8{]}, {[}0, 0{]}, 0.26)
+
+Find psinorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
+psi\_arr = Eq\_instance.rz2psinorm(0.6, 0, {[}0.2, 0.3{]})
+
+Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
+psi\_arr = Eq\_instance.rz2psinorm({[}0.6, 0.5{]}, {[}0, 0.2{]}, {[}0.2, 0.3{]})
+
+Find psinorm values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z at time t=0.2s:
+psi\_mat = Eq\_instance.rz2psinorm(R, Z, 0.2, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2phinorm() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2phinorm}\pysiglinewithargsret{\bfcode{rz2phinorm}}{\emph{*args}, \emph{**kwargs}}{}
+Calculates the normalized toroidal flux.
+
+Uses the definitions:
+phi = integral(q(psi), dpsi)
+phi\_norm = phi / phi(a),
+based on the IDL version efit\_rz2rho.pro by Steve Wolfe.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to normalized toroidal flux. If R and Z are both scalar
+values, they are used as the coordinate pair for all of the
+values in t. Must have the same shape as Z unless the make\_grid
+keyword is set. If the make\_grid keyword is True, R must have
+shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to normalized toroidal flux. If R and Z are both scalar
+values, they are used as the coordinate pair for all of the
+values in t. Must have the same shape as R unless the make\_grid
+keyword is set. If the make\_grid keyword is True, Z must have
+shape (len\_Z,).
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of R, Z. If t is array-like and the
+make\_grid keyword is False, t must have the same dimensions as
+R and Z. If t is array-like and the make\_grid keyword is True,
+t must have shape (len(Z), len(R)).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (phinorm,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating phinorm with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return phinorm).
+
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of normalized
+flux. Only the square root of positive phi\_norm values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return phinorm).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+When using this option, it is highly recommended to only pass
+a scalar value for t (such that each point in the flux grid is
+evaluated at this same value t). Otherwise, t must have the
+same shape as the resulting meshgrid, and each element in the
+returned psi array will be at the corresponding time in the t
+array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{rho} --
+Boolean. For phinorm, this should always be set to False, the
+default value.
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to phinorm. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{phinorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+phinorm has this shape as well. If the make\_grid keyword was
+True then phinorm has shape (len(Z), len(R)).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as phinorm. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single phinorm value at R=0.6m, Z=0.0m, t=0.26s:
+phi\_val = Eq\_instance.rz2phinorm(0.6, 0, 0.26)
+
+Find phinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+single time t=0.26s. Note that the Z vector must be fully specified,
+even if the values are all the same:
+phi\_arr = Eq\_instance.rz2phinorm({[}0.6, 0.8{]}, {[}0, 0{]}, 0.26)
+
+Find phinorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
+phi\_arr = Eq\_instance.rz2phinorm(0.6, 0, {[}0.2, 0.3{]})
+
+Find phinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
+phi\_arr = Eq\_instance.rz2phinorm({[}0.6, 0.5{]}, {[}0, 0.2{]}, {[}0.2, 0.3{]})
+
+Find phinorm values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z at time t=0.2s:
+phi\_mat = Eq\_instance.rz2phinorm(R, Z, 0.2, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2volnorm() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2volnorm}\pysiglinewithargsret{\bfcode{rz2volnorm}}{\emph{*args}, \emph{**kwargs}}{}
+Calculates the normalized flux surface volume.
+
+Based on the IDL version efit\_rz2rho.pro by Steve Wolfe.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to normalized volume. If R and Z are both scalar values,
+they are used as the coordinate pair for all of the values in t.
+Must have the same shape as Z unless the make\_grid keyword is
+set. If the make\_grid keyword is True, R must have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to normalized volume. If R and Z are both scalar values,
+they are used as the coordinate pair for all of the values in t.
+Must have the same shape as R unless the make\_grid keyword is
+set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of R, Z. If t is array-like and the
+make\_grid keyword is False, t must have the same dimensions as
+R and Z. If t is array-like and the make\_grid keyword is True,
+t must have shape (len(Z), len(R)).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (volnorm,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating volnorm with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return volnorm).
+
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of normalized
+volume. Only the square root of positive volnorm values is
+taken. Negative values are replaced with zeros, consistent with
+Steve Wolfe's IDL implementation efit\_rz2rho.pro. Default is
+False (return volnorm).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+When using this option, it is highly recommended to only pass
+a scalar value for t (such that each point in the flux grid is
+evaluated at this same value t). Otherwise, t must have the
+same shape as the resulting meshgrid, and each element in the
+returned psi array will be at the corresponding time in the t
+array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{rho} --
+Boolean. For volnorm, this should always be set to False, the
+default value.
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to volnorm. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{volnorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+volnorm has this shape as well. If the make\_grid keyword was
+True then volnorm has shape (len(Z), len(R)).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as volnorm. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single volnorm value at R=0.6m, Z=0.0m, t=0.26s:
+psi\_val = Eq\_instance.rz2volnorm(0.6, 0, 0.26)
+
+Find volnorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+single time t=0.26s. Note that the Z vector must be fully specified,
+even if the values are all the same:
+vol\_arr = Eq\_instance.rz2volnorm({[}0.6, 0.8{]}, {[}0, 0{]}, 0.26)
+
+Find volnorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
+vol\_arr = Eq\_instance.rz2volnorm(0.6, 0, {[}0.2, 0.3{]})
+
+Find volnorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
+vol\_arr = Eq\_instance.rz2volnorm({[}0.6, 0.5{]}, {[}0, 0.2{]}, {[}0.2, 0.3{]})
+
+Find volnorm values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z at time t=0.2s:
+vol\_mat = Eq\_instance.rz2volnorm(R, Z, 0.2, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2rho() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2rho}\pysiglinewithargsret{\bfcode{rz2rho}}{\emph{method}, \emph{*args}, \emph{**kwargs}}{}
+Convert the passed (R, Z, t) coordinates into one of several normalized coordinates.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{method} --
+String. Indicates which normalized coordinates to use.
+Valid options are:
+\begin{quote}
+
+psinorm     Normalized poloidal flux
+phinorm     Normalized toroidal flux
+volnorm     Normalized volume
+\end{quote}
+
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to normalized coordinate. If R and Z are both scalar values,
+they are used as the coordinate pair for all of the values in t.
+Must have the same shape as Z unless the make\_grid keyword is
+set. If the make\_grid keyword is True, R must have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to normalized coordinate. If R and Z are both scalar values,
+they are used as the coordinate pair for all of the values in t.
+Must have the same shape as R unless the make\_grid keyword is
+set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of R, Z. If t is array-like and the
+make\_grid keyword is False, t must have the same dimensions as
+R and Z. If t is array-like and the make\_grid keyword is True,
+t must have shape (len(Z), len(R)).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (volnorm,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating volnorm with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return volnorm).
+
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of normalized
+coordinate. Only the square root of positive values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return normalized coordinate itself).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+When using this option, it is highly recommended to only pass
+a scalar value for t (such that each point in the flux grid is
+evaluated at this same value t). Otherwise, t must have the
+same shape as the resulting meshgrid, and each element in the
+returned psi array will be at the corresponding time in the t
+array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{rho} (\emph{phinorm and volnorm only}) --
+Boolean. For phinorm and volnorm,
+this should always be set to False, the default value.
+
+\item {} 
+\textbf{kind} (\emph{phinorm and volnorm only}) --
+String or non-negative int.
+Specifies the type of interpolation to be performed in getting
+from psinorm to phinorm or volnorm. This is passed to
+scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{rho} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+rho has this shape as well. If the make\_grid keyword was True
+then rho has shape (len(Z), len(R)).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as rho. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+If method is not one of the supported values.
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single psinorm value at R=0.6m, Z=0.0m, t=0.26s:
+psi\_val = Eq\_instance.rz2rho(`psinorm', 0.6, 0, 0.26)
+
+Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+single time t=0.26s. Note that the Z vector must be fully specified,
+even if the values are all the same:
+psi\_arr = Eq\_instance.rz2rho(`psinorm', {[}0.6, 0.8{]}, {[}0, 0{]}, 0.26)
+
+Find psinorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
+psi\_arr = Eq\_instance.rz2rho(`psinorm', 0.6, 0, {[}0.2, 0.3{]})
+
+Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
+psi\_arr = Eq\_instance.rz2rho(`psinorm', {[}0.6, 0.5{]}, {[}0, 0.2{]}, {[}0.2, 0.3{]})
+
+Find psinorm values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z at time t=0.2s:
+psi\_mat = Eq\_instance.rz2rho(`psinorm', R, Z, 0.2, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2rmid() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2rmid}\pysiglinewithargsret{\bfcode{rz2rmid}}{\emph{*args}, \emph{**kwargs}}{}
+Maps the given points to the outboard midplane major radius, R\_mid.
+
+Based on the IDL version efit\_rz2rmid.pro by Steve Wolfe.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to midplane radius. If R and Z are both scalar values,
+they are used as the coordinate pair for all of the values in t.
+Must have the same shape as Z unless the make\_grid keyword is
+set. If the make\_grid keyword is True, R must have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to midplane radius. If R and Z are both scalar values,
+they are used as the coordinate pair for all of the values in t.
+Must have the same shape as R unless the make\_grid keyword is
+set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of R, Z. If t is array-like and the
+make\_grid keyword is False, t must have the same dimensions as
+R and Z. If t is array-like and the make\_grid keyword is True,
+t must have shape (len(Z), len(R)).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (R\_mid,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating R\_mid with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return R\_mid).
+
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of midplane
+radius. Only the square root of positive values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return R\_mid itself).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+When using this option, it is highly recommended to only pass
+a scalar value for t (such that each point in the flux grid is
+evaluated at this same value t). Otherwise, t must have the
+same shape as the resulting meshgrid, and each element in the
+returned psi array will be at the corresponding time in the t
+array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{rho} --
+Boolean. Set to True to return r/a (normalized minor radius)
+instead of R\_mid. Default is False (return major radius, R\_mid).
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to R\_mid. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in AND that R\_mid is returned in. If a string is given, it
+must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters, R\_mid returned in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{R\_mid} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+R\_mid has this shape as well. If the make\_grid keyword was True
+then R\_mid has shape (len(Z), len(R)).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as R\_mid. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single R\_mid value at R=0.6m, Z=0.0m, t=0.26s:
+R\_mid\_val = Eq\_instance.rz2rmid(0.6, 0, 0.26)
+
+Find R\_mid values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+single time t=0.26s. Note that the Z vector must be fully specified,
+even if the values are all the same:
+R\_mid\_arr = Eq\_instance.rz2rmid({[}0.6, 0.8{]}, {[}0, 0{]}, 0.26)
+
+Find R\_mid values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
+R\_mid\_arr = Eq\_instance.rz2rmid(0.6, 0, {[}0.2, 0.3{]})
+
+Find R\_mid values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
+R\_mid\_arr = Eq\_instance.rz2rmid({[}0.6, 0.5{]}, {[}0, 0.2{]}, {[}0.2, 0.3{]})
+
+Find R\_mid values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z at time t=0.2s:
+R\_mid\_mat = Eq\_instance.rz2rmid(R, Z, 0.2, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{psinorm2rmid() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{t}, \emph{return\_t=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+Calculates the outboard R\_mid location corresponding to the passed psi\_norm (normalized poloidal flux) values.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{psi\_norm} --
+Array-like or scalar float. Values of the normalized
+poloidal flux to map to midplane radius. If psi\_norm is a scalar,
+it is used as the value for all of the values in t.
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of psi\_norm. If neither t nor psi\_norm
+are scalars, t must have the same shape as psi\_norm.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (R\_mid,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating R\_mid with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return R\_mid).
+
+\item {} 
+\textbf{rho} --
+Boolean. Set to True to return r/a (normalized minor radius)
+instead of R\_mid. Default is False (return major radius, R\_mid).
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to R\_mid. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R\_mid is returned in. If
+a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R\_mid returned in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{R\_mid} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. R\_mid will have the same shape as t and
+psi\_norm (or whichever one is Array-like).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as R\_mid. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single R\_mid value for psinorm=0.7, t=0.26s:
+R\_mid\_val = Eq\_instance.psinorm2rmid(0.7, 0.26)
+
+Find R\_mid values at psi\_norm values of 0.5 and 0.7 at the single time
+t=0.26s. Note that the Z vector must be fully specified, even if the
+values are all the same:
+R\_mid\_arr = Eq\_instance.psinorm2rmid({[}0.5, 0.7{]}, 0.26)
+
+Find R\_mid values at psi\_norm=0.5 at times t={[}0.2s, 0.3s{]}:
+R\_mid\_arr = Eq\_instance.psinorm2rmid(0.5, {[}0.2, 0.3{]})
+
+Find R\_mid values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
+R\_mid\_arr = Eq\_instance.psinorm2rmid({[}0.6, 0.5{]}, {[}0.2, 0.3{]})
+
+\end{fulllineitems}
+
+\index{psinorm2volnorm() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2volnorm}\pysiglinewithargsret{\bfcode{psinorm2volnorm}}{\emph{psi\_norm}, \emph{t}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
+Calculates the normalized volume corresponding to the passed psi\_norm (normalized poloidal flux) values.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{psi\_norm} --
+Array-like or scalar float. Values of the normalized
+poloidal flux to map to normalized volume. If psi\_norm is a
+scalar, it is used as the value for all of the values in t.
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of psi\_norm. If neither t nor psi\_norm
+are scalars, t must have the same shape as psi\_norm.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (volnorm,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating volnorm with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return volnorm).
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to volnorm. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{volnorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. volnorm will have the same shape as t and
+psi\_norm (or whichever one is Array-like).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as volnorm. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single volnorm value for psinorm=0.7, t=0.26s:
+volnorm\_val = Eq\_instance.psinorm2volnorm(0.7, 0.26)
+
+Find volnorm values at psi\_norm values of 0.5 and 0.7 at the single time
+t=0.26s. Note that the Z vector must be fully specified, even if the
+values are all the same:
+volnorm\_arr = Eq\_instance.psinorm2volnorm({[}0.5, 0.7{]}, 0.26)
+
+Find volnorm values at psi\_norm=0.5 at times t={[}0.2s, 0.3s{]}:
+volnorm\_arr = Eq\_instance.psinorm2volnorm(0.5, {[}0.2, 0.3{]})
+
+Find volnorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
+volnorm\_arr = Eq\_instance.psinorm2volnorm({[}0.6, 0.5{]}, {[}0.2, 0.3{]})
+
+\end{fulllineitems}
+
+\index{psinorm2phinorm() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{t}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
+Calculates the normalized toroidal flux corresponding to the passed psi\_norm (normalized poloidal flux) values.
+
+If tspline is False for this Equilibrium instance, uses
+scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+Z. Finds the nearest time slices to those given: nearest-neighbor
+interpolation in time. Otherwise, uses the tricubic package to perform
+a trivariate interpolation in space and time.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{psi\_norm} --
+Array-like or scalar float. Values of the normalized
+poloidal flux to map to normalized toroidal flux. If psi\_norm
+is a scalar, it is used as the value for all of the values in t.
+
+\item {} 
+\textbf{t} --
+Array-like or single value. If t is a single value, it is used
+for all of the elements of psi\_norm. If neither t nor psi\_norm
+are scalars, t must have the same shape as psi\_norm.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{return\_t} --
+Boolean. Set to True to return a tuple of (phinorm,
+time\_idxs), where time\_idxs is the array of time indices
+actually used in evaluating phinorm with nearest-neighbor
+interpolation. (This is mostly present as an internal helper.)
+Default is False (only return phinorm).
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to phinorm. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{phinorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. phinorm will have the same shape as t and
+psi\_norm (or whichever one is Array-like).
+\end{quote}
+\begin{description}
+\item[{time\_idxs: Array with same shape as phinorm. The indices (in}] \leavevmode
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return\_t is True.
+
+\end{description}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single phinorm value for psinorm=0.7, t=0.26s:
+phinorm\_val = Eq\_instance.psinorm2phinorm(0.7, 0.26)
+
+Find phinorm values at psi\_norm values of 0.5 and 0.7 at the single time
+t=0.26s. Note that the Z vector must be fully specified, even if the
+values are all the same:
+phinorm\_arr = Eq\_instance.psinorm2phinorm({[}0.5, 0.7{]}, 0.26)
+
+Find phinorm values at psi\_norm=0.5 at times t={[}0.2s, 0.3s{]}:
+phinorm\_arr = Eq\_instance.psinorm2phinorm(0.5, {[}0.2, 0.3{]})
+
+Find phinorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
+phinorm\_arr = Eq\_instance.psinorm2phinorm({[}0.6, 0.5{]}, {[}0.2, 0.3{]})
+
+\end{fulllineitems}
+
+\index{getInfo() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getInfo}\pysiglinewithargsret{\bfcode{getInfo}}{}{}
+\end{fulllineitems}
+
+\index{getTimeBase() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
+\end{fulllineitems}
+
+\index{getFluxGrid() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+\end{fulllineitems}
+
+\index{getRGrid() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{}{}
+\end{fulllineitems}
+
+\index{getZGrid() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{}{}
+\end{fulllineitems}
+
+\index{getFluxAxis() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxAxis}\pysiglinewithargsret{\bfcode{getFluxAxis}}{}{}
+\end{fulllineitems}
+
+\index{getFluxLCFS() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxLCFS}\pysiglinewithargsret{\bfcode{getFluxLCFS}}{}{}
+\end{fulllineitems}
+
+\index{getRLCFS() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getRLCFS}\pysiglinewithargsret{\bfcode{getRLCFS}}{}{}
+\end{fulllineitems}
+
+\index{getZLCFS() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{}{}
+\end{fulllineitems}
+
+\index{getFluxVol() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxVol}\pysiglinewithargsret{\bfcode{getFluxVol}}{}{}
+\end{fulllineitems}
+
+\index{getVolLCFS() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getVolLCFS}\pysiglinewithargsret{\bfcode{getVolLCFS}}{}{}
+\end{fulllineitems}
+
+\index{getRmidPsi() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getRmidPsi}\pysiglinewithargsret{\bfcode{getRmidPsi}}{}{}
+\end{fulllineitems}
+
+\index{getFluxPres() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxPres}\pysiglinewithargsret{\bfcode{getFluxPres}}{}{}
+\end{fulllineitems}
+
+\index{getElongation() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getElongation}\pysiglinewithargsret{\bfcode{getElongation}}{}{}
+\end{fulllineitems}
+
+\index{getUpperTriangularity() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getUpperTriangularity}\pysiglinewithargsret{\bfcode{getUpperTriangularity}}{}{}
+\end{fulllineitems}
+
+\index{getLowerTriangularity() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getLowerTriangularity}\pysiglinewithargsret{\bfcode{getLowerTriangularity}}{}{}
+\end{fulllineitems}
+
+\index{getShaping() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getShaping}\pysiglinewithargsret{\bfcode{getShaping}}{}{}
+\end{fulllineitems}
+
+\index{getMagR() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getMagR}\pysiglinewithargsret{\bfcode{getMagR}}{}{}
+\end{fulllineitems}
+
+\index{getMagZ() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getMagZ}\pysiglinewithargsret{\bfcode{getMagZ}}{}{}
+\end{fulllineitems}
+
+\index{getAreaLCFS() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getAreaLCFS}\pysiglinewithargsret{\bfcode{getAreaLCFS}}{}{}
+\end{fulllineitems}
+
+\index{getAOut() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getAOut}\pysiglinewithargsret{\bfcode{getAOut}}{}{}
+\end{fulllineitems}
+
+\index{getRmidOut() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getRmidOut}\pysiglinewithargsret{\bfcode{getRmidOut}}{}{}
+\end{fulllineitems}
+
+\index{getGeometry() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getGeometry}\pysiglinewithargsret{\bfcode{getGeometry}}{}{}
+\end{fulllineitems}
+
+\index{getQProfile() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQProfile}\pysiglinewithargsret{\bfcode{getQProfile}}{}{}
+\end{fulllineitems}
+
+\index{getQ0() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ0}\pysiglinewithargsret{\bfcode{getQ0}}{}{}
+\end{fulllineitems}
+
+\index{getQ95() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ95}\pysiglinewithargsret{\bfcode{getQ95}}{}{}
+\end{fulllineitems}
+
+\index{getQLCFS() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQLCFS}\pysiglinewithargsret{\bfcode{getQLCFS}}{}{}
+\end{fulllineitems}
+
+\index{getQ1Surf() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ1Surf}\pysiglinewithargsret{\bfcode{getQ1Surf}}{}{}
+\end{fulllineitems}
+
+\index{getQ2Surf() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ2Surf}\pysiglinewithargsret{\bfcode{getQ2Surf}}{}{}
+\end{fulllineitems}
+
+\index{getQ3Surf() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ3Surf}\pysiglinewithargsret{\bfcode{getQ3Surf}}{}{}
+\end{fulllineitems}
+
+\index{getQs() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getQs}\pysiglinewithargsret{\bfcode{getQs}}{}{}
+\end{fulllineitems}
+
+\index{getBtVac() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getBtVac}\pysiglinewithargsret{\bfcode{getBtVac}}{}{}
+\end{fulllineitems}
+
+\index{getBtPla() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getBtPla}\pysiglinewithargsret{\bfcode{getBtPla}}{}{}
+\end{fulllineitems}
+
+\index{getBpAvg() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getBpAvg}\pysiglinewithargsret{\bfcode{getBpAvg}}{}{}
+\end{fulllineitems}
+
+\index{getFields() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getFields}\pysiglinewithargsret{\bfcode{getFields}}{}{}
+\end{fulllineitems}
+
+\index{getIpCalc() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getIpCalc}\pysiglinewithargsret{\bfcode{getIpCalc}}{}{}
+\end{fulllineitems}
+
+\index{getIpMeas() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getIpMeas}\pysiglinewithargsret{\bfcode{getIpMeas}}{}{}
+\end{fulllineitems}
+
+\index{getJp() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getJp}\pysiglinewithargsret{\bfcode{getJp}}{}{}
+\end{fulllineitems}
+
+\index{getBetaT() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getBetaT}\pysiglinewithargsret{\bfcode{getBetaT}}{}{}
+\end{fulllineitems}
+
+\index{getBetaP() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getBetaP}\pysiglinewithargsret{\bfcode{getBetaP}}{}{}
+\end{fulllineitems}
+
+\index{getLi() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getLi}\pysiglinewithargsret{\bfcode{getLi}}{}{}
+\end{fulllineitems}
+
+\index{getBetas() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getBetas}\pysiglinewithargsret{\bfcode{getBetas}}{}{}
+\end{fulllineitems}
+
+\index{getDiamagFlux() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagFlux}\pysiglinewithargsret{\bfcode{getDiamagFlux}}{}{}
+\end{fulllineitems}
+
+\index{getDiamagBetaT() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagBetaT}\pysiglinewithargsret{\bfcode{getDiamagBetaT}}{}{}
+\end{fulllineitems}
+
+\index{getDiamagBetaP() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagBetaP}\pysiglinewithargsret{\bfcode{getDiamagBetaP}}{}{}
+\end{fulllineitems}
+
+\index{getDiamagTauE() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagTauE}\pysiglinewithargsret{\bfcode{getDiamagTauE}}{}{}
+\end{fulllineitems}
+
+\index{getDiamagWp() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagWp}\pysiglinewithargsret{\bfcode{getDiamagWp}}{}{}
+\end{fulllineitems}
+
+\index{getDiamag() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamag}\pysiglinewithargsret{\bfcode{getDiamag}}{}{}
+\end{fulllineitems}
+
+\index{getWMHD() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getWMHD}\pysiglinewithargsret{\bfcode{getWMHD}}{}{}
+\end{fulllineitems}
+
+\index{getTauMHD() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getTauMHD}\pysiglinewithargsret{\bfcode{getTauMHD}}{}{}
+\end{fulllineitems}
+
+\index{getPinj() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getPinj}\pysiglinewithargsret{\bfcode{getPinj}}{}{}
+\end{fulllineitems}
+
+\index{getCurrentSign() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getCurrentSign}\pysiglinewithargsret{\bfcode{getCurrentSign}}{}{}
+\end{fulllineitems}
+
+\index{getWbdot() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getWbdot}\pysiglinewithargsret{\bfcode{getWbdot}}{}{}
+\end{fulllineitems}
+
+\index{getWpdot() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getWpdot}\pysiglinewithargsret{\bfcode{getWpdot}}{}{}
+\end{fulllineitems}
+
+\index{getEnergy() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getEnergy}\pysiglinewithargsret{\bfcode{getEnergy}}{}{}
+\end{fulllineitems}
+
+\index{getParam() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getParam}\pysiglinewithargsret{\bfcode{getParam}}{\emph{path}}{}
+\end{fulllineitems}
+
+\index{getMachineCrossSection() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
+\end{fulllineitems}
+
+\index{plotFlux() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{}{}
+Plots flux contours directly from psi grid.
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{eqdskreader} Module}
+\label{eqtools:eqdskreader-module}\label{eqtools:module-eqtools.eqdskreader}\index{eqtools.eqdskreader (module)}
+This module contains the EqdskReader class, which creates Equilibrium class
+functionality for equilibria stored in eqdsk files from EFIT(a- and g-files).
+\begin{description}
+\item[{Classes:}] \leavevmode\begin{description}
+\item[{EqdskReader: class inheriting Equilibrium reading g- and a-files for}] \leavevmode
+equilibrium data.
+
+\end{description}
+
+\end{description}
+\index{EqdskReader (class in eqtools.eqdskreader)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader}\pysiglinewithargsret{\strong{class }\code{eqtools.eqdskreader.}\bfcode{EqdskReader}}{\emph{shot=None}, \emph{time=None}, \emph{gfile=None}, \emph{afile=None}, \emph{length\_unit='m'}, \emph{verbose=True}}{}
+Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
+
+Equilibrium subclass working from eqdsk ASCII-file equilibria.
+
+Inherits mapping and structural data from Equilibrium, populates equilibrium
+and profile data from g- and a-files for a selected shot and time window.
+
+Create instance of EqdskReader.
+
+Generates object and reads data from selected g-file (either manually set or
+autodetected based on user shot and time selection), storing as object
+attributes for usage in Equilibrium mapping methods.
+
+Calling structure - user may call class with shot and time (ms) values, set by keywords
+(or positional placement allows calling without explicit keyword syntax).  EqdskReader
+then attempts to construct filenames from the shot/time, of the form `g{[}shot{]}.{[}time{]}' and
+`a{[}shot{]}.{[}time{]}'.  Alternately, the user may skip this input and explicitly set paths to
+the g- and/or a-files, using the gfile and afile keyword arguments.  If both types of calls
+are set, the explicit g-file and a-file paths override the auto-generated filenames from
+the shot and time.
+\begin{quote}\begin{description}
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{shot} --
+Int.  Shot index.
+
+\item {} 
+\textbf{time} --
+Int.  Time index (typically ms).  Shot and Time used to autogenerate filenames.
+
+\item {} 
+\textbf{gfile} --
+String.  Manually selects ASCII file for equilibrium read.
+
+\item {} 
+\textbf{afile} --
+String.  Manually selects ASCII file for time-history read.
+
+\item {} 
+\textbf{length\_unit} --
+String.  Flag setting length unit for equilibrium scales.
+Defaults to `m' for lengths in meters.
+
+\item {} 
+\textbf{verbose} --
+Boolean.  When set to false, suppresses terminal outputs during CSV read.
+Defaults to True (prints terminal output).
+
+\end{itemize}
+
+\item[{Raises }] \leavevmode\begin{itemize}
+\item {} 
+\code{IOError} -- 
+if both name/shot and explicit filenames are not set.
+
+\item {} 
+\code{ValueError} -- 
+if the g-file cannot be found, or if multiple valid g/a-files are found.
+
+\end{itemize}
+
+\end{description}\end{quote}
+\index{getInfo() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getInfo}\pysiglinewithargsret{\bfcode{getInfo}}{}{}
+returns namedtuple of equilibrium information
+outputs:
+namedtuple containing
+\begin{quote}
+
+shot:       shot index
+time:       time point of g-file
+nr:         size of R-axis of spatial grid
+nz:         size of Z-axis of spatial grid
+efittype:   EFIT calculation type (magnetic, kinetic, MSE)
+\end{quote}
+
+\end{fulllineitems}
+
+\index{readAFile() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.readAFile}\pysiglinewithargsret{\bfcode{readAFile}}{\emph{afile}}{}
+Reads a-file (scalar time-history data) to pull additional equilibrium data
+not found in g-file, populates remaining data (initialized as None) in object.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{afile} --
+String.  Path to ASCII a-file.
+
+\item[{Raises }] \leavevmode
+\code{IOError} -- 
+If afile is not found.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{rz2psi() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2psi}\pysiglinewithargsret{\bfcode{rz2psi}}{\emph{R}, \emph{Z}, \emph{*args}, \emph{**kwargs}}{}
+Converts passed, R,Z arrays to psi values.
+Wrapper for Equilibrium.rz2psi masking out timebase dependence.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to poloidal flux. If the make\_grid keyword is True, R must
+have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to poloidal flux. Must have the same shape as R unless the
+make\_grid keyword is set. If the make\_grid keyword is True, Z
+must have shape (len\_Z,).
+
+\item {} 
+\textbf{*args} --
+slot for time input for consistent syntax with Equilibrium.rz2psi.
+will return dummy value for time if input in EqdskReader.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\item {} 
+\textbf{**kwargs} --
+other keywords (i.e., return\_t) to rz2psi are valid
+(necessary for proper inheritance and usage in other mapping routines)
+but will return dummy values.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{psi} --
+Array or scalar float. If all of the input arguments are scalar,
+\begin{quote}
+
+then a scalar is returned. Otherwise, a scipy Array instance is
+returned. If R and Z both have the same shape then psi has this
+shape as well. If the make\_grid keyword was True then psi has
+shape (len(Z), len(R)).
+\end{quote}
+
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{rz2psinorm() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2psinorm}\pysiglinewithargsret{\bfcode{rz2psinorm}}{\emph{R}, \emph{Z}, \emph{*args}, \emph{**kwargs}}{}
+Calculates the normalized poloidal flux at the given (R,Z).
+Wrapper for Equilibrium.rz2psinorm masking out timebase dependence.
+
+Uses the definition:
+psi\_norm = (psi - psi(0)) / (psi(a) - psi(0))
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to normalized poloidal flux. If R and Z are both scalar
+values, they are used as the coordinate pair for all of the
+values in t. Must have the same shape as Z unless the make\_grid
+keyword is set. If the make\_grid keyword is True, R must have
+shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to normalized poloidal flux. If R and Z are both scalar
+values, they are used as the coordinate pair for all of the
+values in t. Must have the same shape as R unless the make\_grid
+keyword is set. If the make\_grid keyword is True, Z must have
+shape (len\_Z,).
+
+\item {} 
+\textbf{*args} --
+slot for time input for consistent syntax with Equilibrium.rz2psi.
+will return dummy value for time if input in EqdskReader.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of normalized
+flux. Only the square root of positive psi\_norm values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return psinorm).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\item {} 
+\textbf{**kwargs} --
+other keywords passed to Equilibrium.rz2psinorm are valid,
+but will return dummy values (i.e. for timebase keywords)
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{psinorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+psinorm has this shape as well. If the make\_grid keyword was
+True then psinorm has shape (len(Z), len(R)).
+\end{quote}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance EqdskReader:
+
+Find single psinorm value at R=0.6m, Z=0.0m:
+psi\_val = Eq\_instance.rz2psinorm(0.6, 0)
+\begin{description}
+\item[{Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).}] \leavevmode
+Note that the Z vector must be fully specified,
+
+\end{description}
+
+even if the values are all the same:
+psi\_arr = Eq\_instance.rz2psinorm({[}0.6, 0.8{]}, {[}0, 0{]})
+
+Find psinorm values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z:
+psi\_mat = Eq\_instance.rz2psinorm(R, Z, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2phinorm() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2phinorm}\pysiglinewithargsret{\bfcode{rz2phinorm}}{\emph{R}, \emph{Z}, \emph{*args}, \emph{**kwargs}}{}
+Calculates normalized toroidal flux at a given (R,Z).
+Wrapper for Equilibrium.rz2phinorm masking out timebase dependence.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to normalized toroidal flux. Must have the same shape as Z
+unless the make\_grid keyword is set. If the make\_grid keyword
+is True, R must have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to normalized toroidal flux. Must have the same shape as R
+unless the make\_grid keyword is set. If the make\_grid keyword
+is True, Z must have shape (len\_Z,).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of normalized
+flux. Only the square root of positive phi\_norm values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return phinorm).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to phinorm. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\item {} 
+\textbf{**kwargs} --
+other keywords passed to Equilibrium.rz2phinorm are valid,
+but will return dummy values (i.e. for timebase keywords)
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{phinorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+phinorm has this shape as well. If the make\_grid keyword was
+True then phinorm has shape (len(Z), len(R)).
+\end{quote}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of EqdskReader.
+
+Find single phinorm value at R=0.6m, Z=0.0m:
+phi\_val = Eq\_instance.rz2phinorm(0.6, 0)
+
+Find phinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).
+Note that the Z vector must be fully specified,
+even if the values are all the same:
+phi\_arr = Eq\_instance.rz2phinorm({[}0.6, 0.8{]}, {[}0, 0{]})
+
+Find phinorm values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z:
+phi\_mat = Eq\_instance.rz2phinorm(R, Z, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2volnorm() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2volnorm}\pysiglinewithargsret{\bfcode{rz2volnorm}}{\emph{*args}, \emph{**kwargs}}{}
+Calculates the normalized flux surface volume.
+Not implemented for EqdskReader, as necessary parameter
+is not read from a/g-files.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{NotImplementedError} -- 
+in all cases.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{rz2rho() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2rho}\pysiglinewithargsret{\bfcode{rz2rho}}{\emph{method}, \emph{R}, \emph{Z}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+Convert the passed (R, Z) coordinates into one of several normalized coordinates.
+Wrapper for Equilibrium.rz2rho masking timebase dependence.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{method} --
+String. Indicates which normalized coordinates to use.
+Valid options are:
+\begin{quote}
+
+psinorm     Normalized poloidal flux
+phinorm     Normalized toroidal flux
+volnorm     Normalized volume
+\end{quote}
+
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to normalized coordinate. Must have the same shape as Z
+unless the make\_grid keyword is set. If the make\_grid keyword
+is True, R must have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to normalized coordinate. Must have the same shape as R
+unless the make\_grid keyword is set. If the make\_grid keyword
+is True, Z must have shape (len\_Z,).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of normalized
+coordinate. Only the square root of positive values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return normalized coordinate itself).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{kind} (\emph{phinorm and volnorm only}) --
+String or non-negative int.
+Specifies the type of interpolation to be performed in getting
+from psinorm to phinorm or volnorm. This is passed to
+scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in. If a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{rho} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+rho has this shape as well. If the make\_grid keyword was True
+then rho has shape (len(Z), len(R)).
+\end{quote}
+
+
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+If method is not one of the supported values.
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single psinorm value at R=0.6m, Z=0.0m:
+psi\_val = Eq\_instance.rz2rho(`psinorm', 0.6, 0)
+
+Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).
+Note that the Z vector must be fully specified,
+even if the values are all the same:
+psi\_arr = Eq\_instance.rz2rho(`psinorm', {[}0.6, 0.8{]}, {[}0, 0{]})
+
+Find psinorm values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z:
+psi\_mat = Eq\_instance.rz2rho(`psinorm', R, Z, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{rz2rmid() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2rmid}\pysiglinewithargsret{\bfcode{rz2rmid}}{\emph{R}, \emph{Z}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+Maps the given points to the outboard midplane major radius, R\_mid.
+Wrapper for Equilibrium.rz2rmid masking timebase dependence.
+
+Based on the IDL version efit\_rz2rmid.pro by Steve Wolfe.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{R} --
+Array-like or scalar float. Values of the radial coordinate to
+map to midplane radius. Must have the same shape as Z unless
+the make\_grid keyword is set. If the make\_grid keyword is True,
+R must have shape (len\_R,).
+
+\item {} 
+\textbf{Z} --
+Array-like or scalar float. Values of the vertical coordinate to
+map to midplane radius. Must have the same shape as R unless the
+make\_grid keyword is set. If the make\_grid keyword is True, Z
+must have shape (len\_Z,).
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of midplane
+radius. Only the square root of positive values is taken.
+Negative values are replaced with zeros, consistent with Steve
+Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
+(return R\_mid itself).
+
+\item {} 
+\textbf{make\_grid} --
+Boolean. Set to True to pass R and Z through meshgrid
+before evaluating. If this is set to True, R and Z must each
+only have a single dimension, but can have different lengths.
+Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{rho} --
+Boolean. Set to True to return r/a (normalized minor radius)
+instead of R\_mid. Default is False (return major radius, R\_mid).
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to R\_mid. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R and Z are being given
+in AND that R\_mid is returned in. If a string is given, it
+must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R and Z given in meters, R\_mid returned in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{R\_mid} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned. If R and Z both have the same shape then
+R\_mid has this shape as well. If the make\_grid keyword was True
+then R\_mid has shape (len(Z), len(R)).
+\end{quote}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single R\_mid value at R=0.6m, Z=0.0m:
+R\_mid\_val = Eq\_instance.rz2rmid(0.6, 0)
+
+Find R\_mid values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).
+Note that the Z vector must be fully specified,
+even if the values are all the same:
+R\_mid\_arr = Eq\_instance.rz2rmid({[}0.6, 0.8{]}, {[}0, 0{]})
+
+Find R\_mid values on grid defined by 1D vector of radial positions R
+and 1D vector of vertical positions Z:
+R\_mid\_mat = Eq\_instance.rz2rmid(R, Z, make\_grid=True)
+
+\end{fulllineitems}
+
+\index{psinorm2rmid() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+Calculates the outboard R\_mid location corresponding to the passed psi\_norm (normalized poloidal flux) values.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{psi\_norm} --
+Array-like or scalar float. Values of the normalized
+poloidal flux to map to midplane radius.
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{rho} --
+Boolean. Set to True to return r/a (normalized minor radius)
+instead of R\_mid. Default is False (return major radius, R\_mid).
+
+\item {} 
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to R\_mid. This is
+passed to scipy.interpolate.interp1d. Valid options are:
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item {} 
+\textbf{length\_unit} --
+String or 1. Length unit that R\_mid is returned in. If
+a string is given, it must be a valid unit specifier:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`cubit'     cubits
+`hand'      hands
+`default'   meters
+\end{quote}
+
+If length\_unit is 1 or None, meters are assumed. The default
+value is 1 (R\_mid returned in meters).
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{R\_mid} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned.
+\end{quote}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single R\_mid value for psinorm=0.7:
+R\_mid\_val = Eq\_instance.psinorm2rmid(0.7)
+
+Find R\_mid values at psi\_norm values of 0.5 and 0.7.
+Note that the Z vector must be fully specified, even if the
+values are all the same:
+R\_mid\_arr = Eq\_instance.psinorm2rmid({[}0.5, 0.7{]})
+
+\end{fulllineitems}
+
+\index{psinorm2volnorm() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.psinorm2volnorm}\pysiglinewithargsret{\bfcode{psinorm2volnorm}}{\emph{*args}, \emph{**kwargs}}{}
+Calculates the outboard R\_mid location corresponding to psi\_norm (normalized poloidal flux) values.
+Not implemented for EqdskReader, as necessary parameter
+is not read from a/g-files.
+
+\end{fulllineitems}
+
+\index{psinorm2phinorm() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{kind='cubic'}}{}
+Calculates the normalized toroidal flux corresponding to the passed psi\_norm (normalized poloidal flux) values.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{psi\_norm} --
+Array-like or scalar float. Values of the normalized
+poloidal flux to map to normalized toroidal flux.
+
+\item[{Keyword Arguments}] \leavevmode
+\textbf{kind} --
+String or non-negative int. Specifies the type of interpolation
+to be performed in getting from psinorm to phinorm. This is
+`linear', `nearest', `zero', `slinear', `quadratic', `cubic'
+passed to scipy.interpolate.interp1d. Valid options are:
+If this keyword is an integer, it specifies the order of spline
+to use. See the documentation for interp1d for more details.
+Default value is `cubic' (3rd order spline interpolation). On
+some builds of scipy, this can cause problems, in which case
+you should try `linear' until you can rebuild your scipy install.
+
+\item[{Returns}] \leavevmode
+
+\emph{phinorm} --
+Array or scalar float. If all of the input arguments are
+\begin{quote}
+
+scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned.
+\end{quote}
+
+
+\end{description}\end{quote}
+
+Examples:
+All assume that Eq\_instance is a valid instance of the appropriate
+extension of the Equilibrium abstract class.
+
+Find single phinorm value for psinorm=0.7:
+phinorm\_val = Eq\_instance.psinorm2phinorm(0.7)
+
+Find phinorm values at psi\_norm values of 0.5 and 0.7.
+Note that the Z vector must be fully specified, even if the
+values are all the same:
+phinorm\_arr = Eq\_instance.psinorm2phinorm({[}0.5, 0.7{]})
+
+\end{fulllineitems}
+
+\index{getTimeBase() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
+Returns EFIT time point
+
+\end{fulllineitems}
+
+\index{getCurrentSign() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getCurrentSign}\pysiglinewithargsret{\bfcode{getCurrentSign}}{}{}
+Returns the sign of the current, based on the check in Steve Wolfe's
+IDL implementation efit\_rz2psi.pro.
+
+\end{fulllineitems}
+
+\index{getFluxGrid() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+Returns EFIT flux grid, {[}r,z{]}
+
+\end{fulllineitems}
+
+\index{getRGrid() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{\emph{length\_unit=1}}{}
+Returns EFIT R-axis {[}r{]}
+
+\end{fulllineitems}
+
+\index{getZGrid() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{\emph{length\_unit=1}}{}
+Returns EFIT Z-axis {[}z{]}
+
+\end{fulllineitems}
+
+\index{getFluxAxis() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getFluxAxis}\pysiglinewithargsret{\bfcode{getFluxAxis}}{}{}
+Returns psi on magnetic axis
+
+\end{fulllineitems}
+
+\index{getFluxLCFS() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getFluxLCFS}\pysiglinewithargsret{\bfcode{getFluxLCFS}}{}{}
+Returns psi at separatrix
+
+\end{fulllineitems}
+
+\index{getRLCFS() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getRLCFS}\pysiglinewithargsret{\bfcode{getRLCFS}}{\emph{length\_unit=1}}{}
+Returns array of R-values of LCFS
+
+\end{fulllineitems}
+
+\index{getZLCFS() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{\emph{length\_unit=1}}{}
+Returns array of Z-values of LCFS
+
+\end{fulllineitems}
+
+\index{getFluxVol() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getFluxVol}\pysiglinewithargsret{\bfcode{getFluxVol}}{}{}
+\end{fulllineitems}
+
+\index{getVolLCFS() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getVolLCFS}\pysiglinewithargsret{\bfcode{getVolLCFS}}{\emph{length\_unit=3}}{}
+Returns volume with LCFS.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getRmidPsi() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getRmidPsi}\pysiglinewithargsret{\bfcode{getRmidPsi}}{}{}
+Returns outboard-midplane major radius of flux surfaces.
+Data not read from a/g-files, not implemented for EqdskReader.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{NotImplementedError} -- 
+RmidPsi not read from a/g-files.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getFluxPres() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getFluxPres}\pysiglinewithargsret{\bfcode{getFluxPres}}{}{}
+Returns pressure on flux surface p(psi)
+
+\end{fulllineitems}
+
+\index{getElongation() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getElongation}\pysiglinewithargsret{\bfcode{getElongation}}{}{}
+Returns elongation of LCFS.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getUpperTriangularity() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getUpperTriangularity}\pysiglinewithargsret{\bfcode{getUpperTriangularity}}{}{}
+Returns upper triangularity of LCFS.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getLowerTriangularity() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getLowerTriangularity}\pysiglinewithargsret{\bfcode{getLowerTriangularity}}{}{}
+Returns lower triangularity of LCFS.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getShaping() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getShaping}\pysiglinewithargsret{\bfcode{getShaping}}{}{}
+Pulls LCFS elongation, upper/lower triangularity.
+Returns namedtuple containing {[}kappa,delta\_u,delta\_l{]}.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getMagR() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getMagR}\pysiglinewithargsret{\bfcode{getMagR}}{\emph{length\_unit=1}}{}
+Returns major radius of magnetic axis.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getMagZ() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getMagZ}\pysiglinewithargsret{\bfcode{getMagZ}}{\emph{length\_unit=1}}{}
+Returns Z of magnetic axis.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getAreaLCFS() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getAreaLCFS}\pysiglinewithargsret{\bfcode{getAreaLCFS}}{\emph{length\_unit=2}}{}
+Returns surface area of LCFS.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getAOut() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getAOut}\pysiglinewithargsret{\bfcode{getAOut}}{\emph{length\_unit=1}}{}
+Returns outboard-midplane minor radius of LCFS.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getRmidOut() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getRmidOut}\pysiglinewithargsret{\bfcode{getRmidOut}}{\emph{length\_unit=1}}{}
+Returns outboard-midplane major radius of LCFS.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getGeometry() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getGeometry}\pysiglinewithargsret{\bfcode{getGeometry}}{\emph{length\_unit=None}}{}
+Pulls dimensional geometry parameters.
+Returns namedtuple containing {[}Rmag,Zmag,AreaLCFS,aOut,RmidOut{]}
+\begin{quote}\begin{description}
+\item[{Keyword Arguments}] \leavevmode
+\textbf{length\_unit} --
+TODO
+
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getQProfile() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQProfile}\pysiglinewithargsret{\bfcode{getQProfile}}{}{}
+Returns safety factor q(psi).
+
+\end{fulllineitems}
+
+\index{getQ0() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQ0}\pysiglinewithargsret{\bfcode{getQ0}}{}{}
+Returns safety factor q on-axis, q0.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getQ95() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQ95}\pysiglinewithargsret{\bfcode{getQ95}}{}{}
+Returns safety factor q at 95\% flux surface.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getQLCFS() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQLCFS}\pysiglinewithargsret{\bfcode{getQLCFS}}{}{}
+Returns safety factor q at LCFS (interpolated).
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not loaded.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getQ1Surf() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQ1Surf}\pysiglinewithargsret{\bfcode{getQ1Surf}}{\emph{length\_unit=1}}{}
+Returns outboard-midplane minor radius of q=1 surface.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getQ2Surf() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQ2Surf}\pysiglinewithargsret{\bfcode{getQ2Surf}}{\emph{length\_unit=1}}{}
+Returns outboard-midplane minor radius of q=2 surface.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getQ3Surf() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQ3Surf}\pysiglinewithargsret{\bfcode{getQ3Surf}}{\emph{length\_unit=1}}{}
+Returns outboard-midplane minor radius of q=3 surface.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getQs() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getQs}\pysiglinewithargsret{\bfcode{getQs}}{\emph{length\_unit=1}}{}
+Pulls q-profile data.
+Returns namedtuple containing {[}q0,q95,qLCFS,rq1,rq2,rq3{]}
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBtVac() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getBtVac}\pysiglinewithargsret{\bfcode{getBtVac}}{}{}
+Returns vacuum toroidal field on-axis.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBtPla() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getBtPla}\pysiglinewithargsret{\bfcode{getBtPla}}{}{}
+Returns plasma toroidal field on-axis.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBpAvg() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getBpAvg}\pysiglinewithargsret{\bfcode{getBpAvg}}{}{}
+Returns average poloidal field.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getFields() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getFields}\pysiglinewithargsret{\bfcode{getFields}}{}{}
+Pulls vacuum and plasma toroidal field, poloidal field data.
+Returns namedtuple containing {[}BtVac,BtPla,BpAvg{]}
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getIpCalc() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getIpCalc}\pysiglinewithargsret{\bfcode{getIpCalc}}{}{}
+Returns EFIT-calculated plasma current.
+
+\end{fulllineitems}
+
+\index{getIpMeas() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getIpMeas}\pysiglinewithargsret{\bfcode{getIpMeas}}{}{}
+Returns measured plasma current.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getJp() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getJp}\pysiglinewithargsret{\bfcode{getJp}}{}{}
+Returns (r,z) grid of toroidal plasma current density.
+Data not read from g-file, not implemented for EqdskReader.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{NotImplementedError} -- 
+Jp not read from g-file.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBetaT() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getBetaT}\pysiglinewithargsret{\bfcode{getBetaT}}{}{}
+Returns EFIT-calculated toroidal beta.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBetaP() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getBetaP}\pysiglinewithargsret{\bfcode{getBetaP}}{}{}
+Returns EFIT-calculated poloidal beta.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getLi() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getLi}\pysiglinewithargsret{\bfcode{getLi}}{}{}
+Returns internal inductance of plasma.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getBetas() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getBetas}\pysiglinewithargsret{\bfcode{getBetas}}{}{}
+Pulls EFIT-calculated betas and internal inductance.
+Returns a namedtuple containing {[}betat,betap,Li{]}
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getDiamagFlux() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getDiamagFlux}\pysiglinewithargsret{\bfcode{getDiamagFlux}}{}{}
+Returns diamagnetic flux.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getDiamagBetaT() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getDiamagBetaT}\pysiglinewithargsret{\bfcode{getDiamagBetaT}}{}{}
+Returns diamagnetic-loop measured toroidal beta.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getDiamagBetaP() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getDiamagBetaP}\pysiglinewithargsret{\bfcode{getDiamagBetaP}}{}{}
+Returns diamagnetic-loop measured poloidal beta.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getDiamagTauE() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getDiamagTauE}\pysiglinewithargsret{\bfcode{getDiamagTauE}}{}{}
+Returns diamagnetic-loop energy confinement time.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getDiamagWp() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getDiamagWp}\pysiglinewithargsret{\bfcode{getDiamagWp}}{}{}
+Returns diamagnetic-loop measured stored energy.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getDiamag() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getDiamag}\pysiglinewithargsret{\bfcode{getDiamag}}{}{}
+Pulls diamagnetic flux, diamag. measured toroidal and poloidal beta, stored energy, and energy confinement time.
+Returns a namedtuple containing {[}diaFlux,diaBetat,diaBetap,diaTauE,diaWp{]}
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getWMHD() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getWMHD}\pysiglinewithargsret{\bfcode{getWMHD}}{}{}
+Returns EFIT-calculated stored energy.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getTauMHD() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getTauMHD}\pysiglinewithargsret{\bfcode{getTauMHD}}{}{}
+Returns EFIT-calculated energy confinement time.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getPinj() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getPinj}\pysiglinewithargsret{\bfcode{getPinj}}{}{}
+Returns EFIT injected power.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getWbdot() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getWbdot}\pysiglinewithargsret{\bfcode{getWbdot}}{}{}
+Returns EFIT d/dt of magnetic stored energy
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getWpdot() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getWpdot}\pysiglinewithargsret{\bfcode{getWpdot}}{}{}
+Returns EFIT d/dt of plasma stored energy.
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getEnergy() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getEnergy}\pysiglinewithargsret{\bfcode{getEnergy}}{}{}
+Pulls EFIT stored energy, energy confinement time, injected power, and d/dt of magnetic and plasma stored energy.
+Returns namedtuple containing {[}WMHD,tauMHD,Pinj,Wbdot,Wpdot{]}
+\begin{quote}\begin{description}
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+if a-file data is not read.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getParam() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getParam}\pysiglinewithargsret{\bfcode{getParam}}{\emph{name}}{}
+Backup function, applying a direct path input for tree-like data storage access
+for parameters not typically found in Equilbrium object.  Directly calls attributes
+read from g/a-files in copy-safe manner.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String.  Parameter name for value stored in EqdskReader instance.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+raised if no attribute is found.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getMachineCrossSection() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
+Method to pull machine cross-section from data storage, convert to standard format for plotting routine.
+Not implemented for eqdsk class.
+
+\end{fulllineitems}
+
+\index{plotFlux() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{}{}
+streamlined plotting of flux contours directly from psi grid
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{pfilereader} Module}
+\label{eqtools:pfilereader-module}\label{eqtools:module-eqtools.pfilereader}\index{eqtools.pfilereader (module)}
+This module contains the PFileReader class, a lightweight data
+handler for p-file (radial profile) datasets.
+\begin{description}
+\item[{Classes:}] \leavevmode\begin{description}
+\item[{PFileReader: Data-storage class for p-file data.  Reads}] \leavevmode
+data from ASCII p-file, storing as copy-safe object
+attributes.
+
+\end{description}
+
+\end{description}
+\index{PFileReader (class in eqtools.pfilereader)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.pfilereader.PFileReader}\pysiglinewithargsret{\strong{class }\code{eqtools.pfilereader.}\bfcode{PFileReader}}{\emph{pfile}, \emph{verbose=True}}{}
+Bases: \code{object}
+
+Class to read ASCII p-file (profile data storage) into lightweight, user-friendly data structure.
+
+P-files store data blocks containing the following: a header with parameter
+name, parameter units, x-axis units, and number of data points, followed by values of
+axis x, parameter y, and derivative dy/dx.  Each parameter block is read into a
+namedtuple storing {[}'name','npts','units','xunits','x','y','dydx'{]}, with each namedtuple
+stored as an attribute of the PFileReader instance.  This gracefully handles variable
+formats of p-files (differing versions of p-files will have different parameters stored).
+Data blocks are accessed as attributes in a copy-safe manner.
+
+Creates instance of PFileReader.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{pfile} --
+String.  Path to ASCII p-file to be loaded.
+
+\item[{Keyword Arguments}] \leavevmode
+\textbf{verbose} --
+Boolean.  Option to print message on object creation
+listing available data parameters.  Defaults to True.
+
+\end{description}\end{quote}
+\index{\_\_str\_\_() (eqtools.pfilereader.PFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.pfilereader.PFileReader.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
+overrides default string method for useful output.
+
+\end{fulllineitems}
+
+\index{\_\_getattribute\_\_() (eqtools.pfilereader.PFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.pfilereader.PFileReader.__getattribute__}\pysiglinewithargsret{\bfcode{\_\_getattribute\_\_}}{\emph{name}}{}
+Copy-safe attribute retrieval method overriding default object.\_\_getattribute\_\_.
+
+Tries to retrieve attribute as-written (first check for default object attributes).
+If that fails, looks for pseudo-private attributes, marked by preceding underscore,
+to retrieve data blocks.  If this fails, raise AttributeError.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String.  Name (without leading underscore for data variables) of attribute.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+if no attribute can be found.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_\_setattr\_\_() (eqtools.pfilereader.PFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.pfilereader.PFileReader.__setattr__}\pysiglinewithargsret{\bfcode{\_\_setattr\_\_}}{\emph{name}, \emph{value}}{}
+Copy-safe attribute setting method overriding default object.\_\_setattr\_\_.
+
+Raises error if object already has attribute \_\{name\} for input name,
+as such an attribute would interfere with automatic property generation in
+\_\_getattribute\_\_.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String.  Attribute name.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+if attempting to create attribute with protected
+pseudo-private name.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{trispline} Module}
 \label{eqtools:trispline-module}
 
 \chapter{Indices and tables}
@@ -167,6 +4318,19 @@ Contents:
 \end{itemize}
 
 
+\renewcommand{\indexname}{Python Module Index}
+\begin{theindex}
+\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+\bigletter{e}
+\item {\texttt{eqtools.\_\_init\_\_}}, \pageref{eqtools:module-eqtools.__init__}
+\item {\texttt{eqtools.afilereader}}, \pageref{eqtools:module-eqtools.afilereader}
+\item {\texttt{eqtools.CModEFIT}}, \pageref{eqtools:module-eqtools.CModEFIT}
+\item {\texttt{eqtools.core}}, \pageref{eqtools:module-eqtools.core}
+\item {\texttt{eqtools.EFIT}}, \pageref{eqtools:module-eqtools.EFIT}
+\item {\texttt{eqtools.eqdskreader}}, \pageref{eqtools:module-eqtools.eqdskreader}
+\item {\texttt{eqtools.FromArrays}}, \pageref{eqtools:module-eqtools.FromArrays}
+\item {\texttt{eqtools.pfilereader}}, \pageref{eqtools:module-eqtools.pfilereader}
+\end{theindex}
 
 \renewcommand{\indexname}{Index}
 \printindex

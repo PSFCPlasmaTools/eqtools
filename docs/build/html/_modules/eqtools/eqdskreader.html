@@ -81,10 +81,16 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">core</span> <span class="kn">import</span> <span class="n">Equilibrium</span>
-<span class="kn">from</span> <span class="nn">afilereader</span> <span class="kn">import</span> <span class="n">AFileReader</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Equilibrium</span><span class="p">,</span><span class="n">ModuleWarning</span>
+<span class="kn">from</span> <span class="nn">.afilereader</span> <span class="kn">import</span> <span class="n">AFileReader</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;WARNING: matplotlib modules could not be loaded -- plotting &quot;</span>
+                  <span class="s">&quot;will not be available.&quot;</span><span class="p">,</span>
+                  <span class="n">ModuleWarning</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="EqdskReader"><a class="viewcode-back" href="../../eqtools.html#eqtools.eqdskreader.EqdskReader">[docs]</a><span class="k">class</span> <span class="nc">EqdskReader</span><span class="p">(</span><span class="n">Equilibrium</span><span class="p">):</span>
@@ -94,7 +100,7 @@
 <span class="sd">    Inherits mapping and structural data from Equilibrium, populates equilibrium</span>
 <span class="sd">    and profile data from g- and a-files for a selected shot and time window.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shot</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">gfile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">afile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;m&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shot</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">gfile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">afile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;m&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create instance of EqdskReader.</span>
 
@@ -117,6 +123,8 @@
 <span class="sd">            afile: String.  Manually selects ASCII file for time-history read.</span>
 <span class="sd">            length_unit: String.  Flag setting length unit for equilibrium scales.</span>
 <span class="sd">                Defaults to &#39;m&#39; for lengths in meters.</span>
+<span class="sd">            verbose: Boolean.  When set to false, suppresses terminal outputs during CSV read.</span>
+<span class="sd">                Defaults to True (prints terminal output).</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            IOError: if both name/shot and explicit filenames are not set.</span>
@@ -150,11 +158,13 @@
         <span class="c"># if explicit filename for g-file is not set, check current directory for files matching name</span>
         <span class="c"># if multiple valid files or no files are found, trigger ValueError</span>
         <span class="k">if</span> <span class="n">gfile</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>   <span class="c">#attempt to generate filename</span>
-            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Searching directory for file g</span><span class="si">%s</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;Searching directory for file g</span><span class="si">%s</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
             <span class="n">gcurrfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">&#39;g&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gcurrfiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_gfilename</span> <span class="o">=</span> <span class="n">gcurrfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&#39;File found: &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfilename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&#39;File found: &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfilename</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">gcurrfiles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Multiple valid g-files detected in directory. &quot;</span>
                                   <span class="s">&quot;Please select a file with explicit &quot;</span>
@@ -179,11 +189,13 @@
         <span class="c"># nonfatally warn user.</span>
         <span class="k">if</span> <span class="n">afile</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&#39;Searching directory for file a</span><span class="si">%s</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&#39;Searching directory for file a</span><span class="si">%s</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
                 <span class="n">acurrfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">acurrfiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_afilename</span> <span class="o">=</span> <span class="n">acurrfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s">&#39;File found: &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afilename</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                        <span class="k">print</span><span class="p">(</span><span class="s">&#39;File found: &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afilename</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">acurrfiles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Multiple valid a-files detected in directory. &quot;</span>
                                   <span class="s">&quot;Please select a file with explicit &quot;</span>
@@ -454,10 +466,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_workk</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]))</span>
 
             <span class="c"># read through to end of file to get footer line</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_efittype</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_efittype</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_efittype</span> <span class="o">=</span> <span class="bp">None</span>
             
 
         <span class="c"># toroidal current density on (r,z,t) grid typically not</span>
@@ -548,9 +563,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">readAFile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_afilename</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&#39;a-file data not loaded.&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&#39;a-file data not loaded.&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s">&#39;a-file data not loaded.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;a-file data not loaded.&#39;</span><span class="p">)</span>
                     
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_efittype</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -781,7 +798,7 @@
         <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">EqdskReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">rz2psinorm</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="EqdskReader.rz2phinorm"><a class="viewcode-back" href="../../eqtools.html#eqtools.eqdskreader.EqdskReader.rz2phinorm">[docs]</a>    <span class="k">def</span> <span class="nf">rz2phinorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">sqrt</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">make_grid</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">kind</span><span class="o">=</span><span class="s">&#39;cubic&#39;</span><span class="p">,</span><span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="EqdskReader.rz2phinorm"><a class="viewcode-back" href="../../eqtools.html#eqtools.eqdskreader.EqdskReader.rz2phinorm">[docs]</a>    <span class="k">def</span> <span class="nf">rz2phinorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates normalized toroidal flux at a given (R,Z).</span>
 <span class="sd">        Wrapper for Equilibrium.rz2phinorm masking out timebase dependence.</span>
@@ -829,6 +846,8 @@
 <span class="sd">                    &#39;default&#39;   meters</span>
 <span class="sd">                If length_unit is 1 or None, meters are assumed. The default</span>
 <span class="sd">                value is 1 (R and Z given in meters).</span>
+<span class="sd">            **kwargs: other keywords passed to Equilibrium.rz2phinorm are valid,</span>
+<span class="sd">                but will return dummy values (i.e. for timebase keywords)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            phinorm: Array or scalar float. If all of the input arguments are</span>
@@ -853,7 +872,6 @@
 <span class="sd">        phi_mat = Eq_instance.rz2phinorm(R, Z, make_grid=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;return_t&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">,</span><span class="s">&#39;sqrt&#39;</span><span class="p">:</span><span class="n">sqrt</span><span class="p">,</span><span class="s">&#39;make_grid&#39;</span><span class="p">:</span><span class="n">make_grid</span><span class="p">,</span><span class="s">&#39;length_unit&#39;</span><span class="p">:</span><span class="n">length_unit</span><span class="p">,</span><span class="s">&#39;kind&#39;</span><span class="p">:</span><span class="n">kind</span><span class="p">,</span><span class="s">&#39;rho&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">}</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">EqdskReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">rz2phinorm</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EqdskReader.rz2volnorm"><a class="viewcode-back" href="../../eqtools.html#eqtools.eqdskreader.EqdskReader.rz2volnorm">[docs]</a>    <span class="k">def</span> <span class="nf">rz2volnorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -953,7 +971,10 @@
             <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;return_t&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">,</span><span class="s">&#39;sqrt&#39;</span><span class="p">:</span><span class="n">sqrt</span><span class="p">,</span><span class="s">&#39;make_grid&#39;</span><span class="p">:</span><span class="n">make_grid</span><span class="p">,</span><span class="s">&#39;length_unit&#39;</span><span class="p">:</span><span class="n">length_unit</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;return_t&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">,</span><span class="s">&#39;sqrt&#39;</span><span class="p">:</span><span class="n">sqrt</span><span class="p">,</span><span class="s">&#39;make_grid&#39;</span><span class="p">:</span><span class="n">make_grid</span><span class="p">,</span><span class="s">&#39;rho&#39;</span><span class="p">:</span><span class="bp">False</span><span class="p">,</span><span class="s">&#39;kind&#39;</span><span class="p">:</span><span class="n">kind</span><span class="p">,</span><span class="s">&#39;length_unit&#39;</span><span class="p">:</span><span class="n">length_unit</span><span class="p">}</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">EqdskReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">rz2rho</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;volnorm&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Cannot calculate volnorm from g-file equilibria.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">EqdskReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">rz2rho</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EqdskReader.rz2rmid"><a class="viewcode-back" href="../../eqtools.html#eqtools.eqdskreader.EqdskReader.rz2rmid">[docs]</a>    <span class="k">def</span> <span class="nf">rz2rmid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">sqrt</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">make_grid</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">rho</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">kind</span><span class="o">=</span><span class="s">&#39;cubic&#39;</span><span class="p">,</span><span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1828,13 +1849,8 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">rGrid</span><span class="p">,</span><span class="n">zGrid</span><span class="p">,</span><span class="n">psiRZ</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">50</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">rGrid</span><span class="p">,</span><span class="n">zGrid</span><span class="p">,</span><span class="n">psiRZ</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">50</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">linestyles</span><span class="o">=</span><span class="s">&#39;solid&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">RLCFS</span><span class="p">,</span><span class="n">ZLCFS</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-                
-
-
-
-                
-</pre></div></div></div>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+</pre></div>
 
           </div>
         </div>

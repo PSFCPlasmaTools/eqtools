@@ -1,12 +1,14 @@
 \select@language {english}
-\contentsline {chapter}{\numberline {1}eqtools Package}{3}{chapter.1}
-\contentsline {section}{\numberline {1.1}\texttt {eqtools} Package}{3}{section.1.1}
-\contentsline {section}{\numberline {1.2}\texttt {CModEFIT} Module}{3}{section.1.2}
-\contentsline {section}{\numberline {1.3}\texttt {EFIT} Module}{3}{section.1.3}
-\contentsline {section}{\numberline {1.4}\texttt {FromArrays} Module}{3}{section.1.4}
-\contentsline {section}{\numberline {1.5}\texttt {afilereader} Module}{3}{section.1.5}
-\contentsline {section}{\numberline {1.6}\texttt {core} Module}{3}{section.1.6}
-\contentsline {section}{\numberline {1.7}\texttt {eqdskreader} Module}{3}{section.1.7}
-\contentsline {section}{\numberline {1.8}\texttt {pfilereader} Module}{3}{section.1.8}
-\contentsline {section}{\numberline {1.9}\texttt {trispline} Module}{3}{section.1.9}
-\contentsline {chapter}{\numberline {2}Indices and tables}{5}{chapter.2}
+\contentsline {chapter}{\numberline {1}Contents}{3}{chapter.1}
+\contentsline {section}{\numberline {1.1}eqtools Package}{3}{section.1.1}
+\contentsline {subsection}{\numberline {1.1.1}\texttt {eqtools} Package}{3}{subsection.1.1.1}
+\contentsline {subsection}{\numberline {1.1.2}\texttt {CModEFIT} Module}{3}{subsection.1.1.2}
+\contentsline {subsection}{\numberline {1.1.3}\texttt {EFIT} Module}{3}{subsection.1.1.3}
+\contentsline {subsection}{\numberline {1.1.4}\texttt {FromArrays} Module}{5}{subsection.1.1.4}
+\contentsline {subsection}{\numberline {1.1.5}\texttt {afilereader} Module}{6}{subsection.1.1.5}
+\contentsline {subsection}{\numberline {1.1.6}\texttt {core} Module}{6}{subsection.1.1.6}
+\contentsline {subsection}{\numberline {1.1.7}\texttt {eqdskreader} Module}{15}{subsection.1.1.7}
+\contentsline {subsection}{\numberline {1.1.8}\texttt {pfilereader} Module}{22}{subsection.1.1.8}
+\contentsline {subsection}{\numberline {1.1.9}\texttt {trispline} Module}{22}{subsection.1.1.9}
+\contentsline {chapter}{\numberline {2}Indices and tables}{23}{chapter.2}
+\contentsline {chapter}{Python Module Index}{25}{section*.220}
