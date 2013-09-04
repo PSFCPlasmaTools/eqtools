@@ -40,6 +40,10 @@ except Exception:
     warnings.warn("WARNING: matplotlib modules could not be loaded -- plotting "
                   "will not be available.",
                   ModuleWarning)
+=======
+from core import Equilibrium
+from afilereader import AFileReader
+>>>>>>> 26921d3e31b3d12df81f6b4e262c7b5f4900ceed
 
 
 class EqdskReader(Equilibrium):
