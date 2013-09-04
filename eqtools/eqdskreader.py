@@ -205,8 +205,10 @@ class EqdskReader(Equilibrium):
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
             line = next(reader)[0]
             line = re.findall('-?\d\.\d*E[-+]\d*',line)
-            self._rmaxis = scipy.array([float(line[0])])
-            self._zmaxis = scipy.array([float(line[1])])
+            self._rmag = scipy.array([float(line[0])])
+            self._zmag = scipy.array([float(line[1])])
+            self._defaultUnits['_rmag'] = 'm'
+            self._defaultUnits['_zmag'] = 'm'
             self._psiAxis = scipy.array([float(line[2])])
             self._psiLCFS = scipy.array([float(line[3])])
             self._bzero = scipy.array([float(line[4])])
@@ -461,13 +463,9 @@ class EqdskReader(Equilibrium):
         self._dlower = None
 
         # dimensional geometry parameters
-        self._rmag = None
-        self._zmag = None
         self._aLCFS = None
         self._areaLCFS = None
         self._RmidLCFS = None
-        self._defaultUnits['_rmag'] = 'cm'
-        self._defaultUnits['_zmag'] = 'cm'
         self._defaultUnits['_aLCFS'] = 'cm'
         self._defaultUnits['_areaLCFS'] = 'cm^2'
         self._defaultUnits['_RmidLCFS'] = 'm'
@@ -585,8 +583,6 @@ class EqdskReader(Equilibrium):
             self._dlower = scipy.array([afr.doutl])
 
             # dimensional geometry parameters
-            self._rmag = scipy.array([afr.rmagx])
-            self._zmag = scipy.array([afr.zmagx])
             self._aLCFS = scipy.array([afr.aout])
             self._areaLCFS = scipy.array([afr.areao])
             self._RmidLCFS = scipy.array([afr.rmidout])
