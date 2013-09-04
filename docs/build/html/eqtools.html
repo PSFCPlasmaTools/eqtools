@@ -2377,7 +2377,7 @@ values in t. Must have the same shape as R unless the make_grid
 keyword is set. If the make_grid keyword is True, Z must have
 shape (len_Z,).</li>
 <li><strong>*args</strong> &#8211;
-slot for time input for consistent syntax with Equilibrium.rz2psi.
+slot for time input for consistent syntax with Equilibrium.rz2psinorm.
 will return dummy value for time if input in EqdskReader.</li>
 </ul>
 </td>
@@ -2470,6 +2470,9 @@ Array-like or scalar float. Values of the vertical coordinate to
 map to normalized toroidal flux. Must have the same shape as R
 unless the make_grid keyword is set. If the make_grid keyword
 is True, Z must have shape (len_Z,).</li>
+<li><strong>*args</strong> &#8211;
+slot for time input for consistent syntax with Equilibrium.rz2phinorm.
+will return dummy value for time if input in EqdskReader.</li>
 </ul>
 </td>
 </tr>

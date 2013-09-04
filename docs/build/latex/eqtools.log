@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.8.21)  4 SEP 2013 18:45
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.8.21)  4 SEP 2013 19:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1031,7 +1031,7 @@ n/10 , \T1/ptm/m/it/10 gfile=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 afile=None\T1
  []
 
 [23] [24] [25] [26] [27] [28] [29] [30]
-Underfull \hbox (badness 10000) in paragraph at lines 3720--3722
+Underfull \hbox (badness 10000) in paragraph at lines 3725--3727
 \T1/ptm/m/n/10 Pulls di-men-sional ge-om-e-try pa-ram-e-ters. Re-turns named-tu
 -ple con-tain-ing
  []
@@ -1283,15 +1283,15 @@ Underfull \hbox (badness 10000) in paragraph at lines 249--250
 [44
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 4337.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 4337.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 4342.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 4342.
  (./eqtools.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 4337.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 4337.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 4342.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 4342.
 
 Package rerunfilecheck Info: File `eqtools.out' has not changed.
 (rerunfilecheck)             Checksum: 1E85CF78AE12B90A85E5873ED84AE446;257.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4337.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4342.
  ) 
 Here is how much of TeX's memory you used:
  9465 strings out of 493311
@@ -1310,7 +1310,7 @@ type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/u
 rw/times/utmb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/u
 tmr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb
 >
-Output written on eqtools.pdf (48 pages, 201078 bytes).
+Output written on eqtools.pdf (48 pages, 201071 bytes).
 PDF statistics:
  798 PDF objects out of 1000 (max. 8388607)
  732 compressed objects within 8 object streams

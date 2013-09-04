@@ -213,7 +213,7 @@
   \item getZGrid() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{7}
   \item getZLCFS() (eqtools.core.Equilibrium method), \hyperpage{22}
   \item getZLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{4}
-  \item getZLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{30}
+  \item getZLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{31}
 
   \indexspace
   \bigletter M
