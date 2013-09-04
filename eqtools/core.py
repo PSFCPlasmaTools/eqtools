@@ -49,24 +49,6 @@ except ImportError:
     _has_trispline = False
 
 try:
-    import MDSplus
-    from MDSplus._treeshr import TreeException
-    _has_MDS = True
-except Exception as _e_MDS:
-    if isinstance(_e_MDS, ImportError):
-        warnings.warn("MDSplus module could not be loaded -- classes that use "
-                      "MDSplus for data access will not work.",
-                      ModuleWarning)
-    else:
-        warnings.warn("MDSplus module could not be loaded -- classes that use "
-                      "MDSplus for data access will not work. Exception raised "
-                      "was of type %s, message was '%s'."
-                      % (_e_MDS.__class__, _e_MDS.message),
-                      ModuleWarning)
-    _has_MDS = False
-
-try:
-    import matplotlib
     import matplotlib.pyplot as plt
     import matplotlib.widgets as mplw
     import matplotlib.gridspec as mplgs
@@ -143,7 +125,7 @@ class PropertyAccessMixin(object):
                                  % {'class': self.__class__.__name__,
                                     'n': name})
         else:
-            super(EFITTree, self).__setattr__(name, value)
+            super(Equilibrium, self).__setattr__(name, value)
 
 """The following is a dictionary to implement length unit conversions. The
 first key is the unit are converting FROM, the second the unit you are
@@ -1918,7 +1900,7 @@ class Equilibrium(object):
             try:
                 return scipy.digitize(v,(a[1:]+a[:-1])/2.0)
             except ValueError:
-                return scipy.digitize(SP.atleast_1d(v),(a[1:]+a[:-1])/2.0).reshape(())
+                return scipy.digitize(scipy.atleast_1d(v),(a[1:]+a[:-1])/2.0).reshape(())
 
             
 
