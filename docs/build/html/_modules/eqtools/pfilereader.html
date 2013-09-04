@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>eqtools.pfilereader &mdash; eqtools 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="eqtools 0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for eqtools.pfilereader</h1><div class="highlight"><pre>
+<span class="c"># This program is distributed under the terms of the GNU General Purpose License (GPL).</span>
+<span class="c"># Refer to http://www.gnu.org/licenses/gpl.txt</span>
+<span class="c">#</span>
+<span class="c"># This file is part of EqTools.</span>
+<span class="c">#</span>
+<span class="c"># EqTools is free software: you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># EqTools is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with EqTools.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the PFileReader class, a lightweight data</span>
+<span class="sd">handler for p-file (radial profile) datasets.</span>
+
+<span class="sd">Classes:</span>
+<span class="sd">    PFileReader: Data-storage class for p-file data.  Reads </span>
+<span class="sd">        data from ASCII p-file, storing as copy-safe object </span>
+<span class="sd">        attributes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+
+<div class="viewcode-block" id="PFileReader"><a class="viewcode-back" href="../../eqtools.html#eqtools.pfilereader.PFileReader">[docs]</a><span class="k">class</span> <span class="nc">PFileReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to read ASCII p-file (profile data storage) into lightweight, user-friendly data structure.  </span>
+
+<span class="sd">    P-files store data blocks containing the following: a header with parameter</span>
+<span class="sd">    name, parameter units, x-axis units, and number of data points, followed by values of</span>
+<span class="sd">    axis x, parameter y, and derivative dy/dx.  Each parameter block is read into a</span>
+<span class="sd">    namedtuple storing [&#39;name&#39;,&#39;npts&#39;,&#39;units&#39;,&#39;xunits&#39;,&#39;x&#39;,&#39;y&#39;,&#39;dydx&#39;], with each namedtuple</span>
+<span class="sd">    stored as an attribute of the PFileReader instance.  This gracefully handles variable</span>
+<span class="sd">    formats of p-files (differing versions of p-files will have different parameters stored).</span>
+<span class="sd">    Data blocks are accessed as attributes in a copy-safe manner.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pfile</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates instance of PFileReader.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pfile: String.  Path to ASCII p-file to be loaded.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            verbose: Boolean.  Option to print message on object creation</span>
+<span class="sd">                listing available data parameters.  Defaults to True. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pfile</span> <span class="o">=</span> <span class="n">pfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">readfile</span><span class="p">:</span>
+            <span class="n">dia</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">excel</span><span class="p">()</span>
+            <span class="n">dia</span><span class="o">.</span><span class="n">skipinitialspace</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">readfile</span><span class="p">,</span><span class="n">dia</span><span class="p">,</span><span class="n">delimiter</span><span class="o">=</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+
+            <span class="c"># define data structure as named tuple for storing parameter values</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;DataStruct&#39;</span><span class="p">,[</span><span class="s">&#39;name&#39;</span><span class="p">,</span><span class="s">&#39;npts&#39;</span><span class="p">,</span><span class="s">&#39;units&#39;</span><span class="p">,</span><span class="s">&#39;xunits&#39;</span><span class="p">,</span><span class="s">&#39;x&#39;</span><span class="p">,</span><span class="s">&#39;y&#39;</span><span class="p">,</span><span class="s">&#39;dydx&#39;</span><span class="p">])</span>
+
+            <span class="c"># iterate through lines of file, checking for a header line; </span>
+            <span class="c"># at each header, read the next npts lines of data into appropriate arrays.</span>
+            <span class="c"># continue until no headerline is found (throws StopIteration).  Populate list</span>
+            <span class="c"># of params with available variables.</span>
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">headerline</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="n">npts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">headerline</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>               <span class="c"># size of abscissa, data arrays</span>
+                <span class="n">abscis</span> <span class="o">=</span> <span class="n">headerline</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>                  <span class="c"># string name of abscissa variable (e.g. &#39;psinorm&#39;)</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;[\(\)]&#39;</span><span class="p">,</span><span class="n">headerline</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">param</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                          <span class="c"># string name of parameter (e.g. &#39;ne&#39;)</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>                          <span class="c"># string name of units (e.g. &#39;10^20/m^3&#39;)</span>
+
+                <span class="c"># read npts next lines, populate arrays</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">gradval</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
+                    <span class="n">dataline</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+                    <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dataline</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                    <span class="n">val</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dataline</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">gradval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dataline</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="n">gradval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gradval</span><span class="p">)</span>
+
+                <span class="c"># collate into storage structure</span>
+                <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">param</span><span class="p">,</span><span class="n">npts</span><span class="o">=</span><span class="n">npts</span><span class="p">,</span><span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span><span class="n">xunits</span><span class="o">=</span><span class="n">abscis</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="n">val</span><span class="p">,</span><span class="n">dydx</span><span class="o">=</span><span class="n">gradval</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;P-file data loaded from &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_pfile</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Available parameters:&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+                <span class="n">un</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">par</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
+                <span class="n">xun</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">par</span><span class="p">]</span><span class="o">.</span><span class="n">xunits</span>
+                <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">par</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">xun</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">un</span><span class="p">))</span>
+
+<div class="viewcode-block" id="PFileReader.__str__"><a class="viewcode-back" href="../../eqtools.html#eqtools.pfilereader.PFileReader.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        overrides default string method for useful output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mes</span> <span class="o">=</span> <span class="s">&#39;P-file data from &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_pfile</span><span class="o">+</span><span class="s">&#39; containing parameters:</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+            <span class="n">un</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">par</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
+            <span class="n">xun</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">par</span><span class="p">]</span><span class="o">.</span><span class="n">xunits</span>
+            <span class="n">mes</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">par</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">xun</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">un</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="k">return</span> <span class="n">mes</span>
+</div>
+<div class="viewcode-block" id="PFileReader.__getattribute__"><a class="viewcode-back" href="../../eqtools.html#eqtools.pfilereader.PFileReader.__getattribute__">[docs]</a>    <span class="k">def</span> <span class="nf">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy-safe attribute retrieval method overriding default object.__getattribute__.</span>
+
+<span class="sd">        Tries to retrieve attribute as-written (first check for default object attributes).</span>
+<span class="sd">        If that fails, looks for pseudo-private attributes, marked by preceding underscore,</span>
+<span class="sd">        to retrieve data blocks.  If this fails, raise AttributeError.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: String.  Name (without leading underscore for data variables) of attribute.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AttributeError: if no attribute can be found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PFileReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getattribute__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">attr</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PFileReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getattribute__</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">attr</span><span class="p">[:]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">attr</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&#39;No attribute &quot;</span><span class="si">%s</span><span class="s">&quot; found&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PFileReader.__setattr__"><a class="viewcode-back" href="../../eqtools.html#eqtools.pfilereader.PFileReader.__setattr__">[docs]</a>    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy-safe attribute setting method overriding default object.__setattr__.</span>
+
+<span class="sd">        Raises error if object already has attribute _{name} for input name,</span>
+<span class="sd">        as such an attribute would interfere with automatic property generation in</span>
+<span class="sd">        __getattribute__.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: String.  Attribute name.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AttributeError: if attempting to create attribute with protected</span>
+<span class="sd">                pseudo-private name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;PFileReader object already has data attribute &quot;</span>
+                                 <span class="s">&quot;&#39;_</span><span class="si">%(n)s</span><span class="s">&#39;, creating attribute &#39;</span><span class="si">%(n)s</span><span class="s">&#39; will&quot;</span>
+                                 <span class="s">&quot; conflict with automatic property generation.&quot;</span>
+                                 <span class="o">%</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">PFileReader</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+            
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+            </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

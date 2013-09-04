@@ -33,7 +33,7 @@ import warnings
 import matplotlib.pyplot as plt
 from collections import namedtuple
 from core import Equilibrium
-from AFileReader import AFileReader
+from afilereader import AFileReader
 
 
 class EqdskReader(Equilibrium):

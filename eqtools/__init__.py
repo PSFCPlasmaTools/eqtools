@@ -19,4 +19,4 @@
 from .core import *
 from .EFIT import *
 from .CModEFIT import *
-from .eqdskReader import *
+from .eqdskreader import *
