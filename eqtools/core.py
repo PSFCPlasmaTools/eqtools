@@ -2300,242 +2300,476 @@ class Equilibrium(object):
             return self._RmidOutSpline
 
     def getInfo(self):
-        #returns namedtuple of instance parameters (shot, EFIT tree, size and timebase info)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns namedtuple of instance parameters (shot, equilibrium type, size, timebase, etc.)
+        """
         raise NotImplementedError()
 
     def getTimeBase(self):
-        #returns EFIT time base array (t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns timebase array [t]
+        """
         raise NotImplementedError()
 
     def getFluxGrid(self):
-        #returns 3D grid of psi(r,z,t)
-        # The array returned should have the following dimensions:
-        #   First dimension: time
-        #   Second dimension: Z
-        #   Third dimension: R
+        """
+        Abstract method.  See child classes for implementation.
+        
+        returns 3D grid of psi(r,z,t)
+         The array returned should have the following dimensions:
+           First dimension: time
+           Second dimension: Z
+           Third dimension: R
+        """
         raise NotImplementedError()
 
     def getRGrid(self):
-        #returns vector of R-values for psirz grid (r)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns vector of R-values for psiRZ grid [r]
+        """
         raise NotImplementedError()
 
     def getZGrid(self):
-        #returns vector of Z-values for psirz grid (z)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns vector of Z-values for psiRZ grid [z]
+        """
         raise NotImplementedError()
 
     def getFluxAxis(self):
-        #returns psi at magnetic axis as simagx(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns psi at magnetic axis [t]
+        """
         raise NotImplementedError()
 
     def getFluxLCFS(self):
-        #returns psi at separatrix, sibdry(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns psi a separatrix [t]
+        """
         raise NotImplementedError()
 
     def getRLCFS(self):
-        #returns R-positions mapping LCFS, rbbbs(t,n)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns R-positions (n points) mapping LCFS [t,n]
+        """
         raise NotImplementedError()
 
     def getZLCFS(self):
-        #returns Z-positions mapping LCFS, zbbbs(t,n)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns Z-positions (n points) mapping LCFS [t,n]
+        """
         raise NotImplementedError()
 
     def getFluxVol(self):
-        #returns volume contained within a flux surface as function of psi, volp(psi,t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns volume contained within flux surface as function of psi [psi,t].
+        Psi assumed to be evenly-spaced grid on [0,1]
+        """
         raise NotImplementedError()
 
     def getVolLCFS(self):
-        #returns plasma volume in LCFS, vout(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns plasma volume within LCFS [t]
+        """
         raise NotImplementedError()
 
     def getRmidPsi(self):
-        #returns max major radius of flux surface, rpres(t,psi)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns outboard-midplane major radius of flux surface [t,psi]
+        """
         raise NotImplementedError()
 
     def getFluxPres(self):
-        #returns EFIT-calculated pressure p(psi,t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated pressure profile [psi,t].
+        Psi assumed to be evenly-spaced grid on [0,1]
+        """
         raise NotImplementedError()
 
     def getElongation(self):
-        #returns LCFS elongation, kappa(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns LCFS elongation [t]
+        """
         raise NotImplementedError()
 
     def getUpperTriangularity(self):
-        #returns LCFS upper triangularity, delta_u(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns LCFS upper triangularity [t]
+        """
         raise NotImplementedError()
 
     def getLowerTriangularity(self):
-        #returns LCFS lower triangularity, delta_l(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns LCFS lower triangularity [t]
+        """
         raise NotImplementedError()
 
     def getShaping(self):
-        #returns dimensionless shaping parameters for plasma
-        #namedtuple containing {LCFS elongation, LCFS upper/lower triangularity)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns dimensionless shaping parameters for plasma.
+        Namedtuple containing {LCFS elongation, LCFS upper/lower triangularity}
+        """
         raise NotImplementedError()
 
     def getMagR(self):
-        #returns magnetic-axis major radius, rmagx(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns magnetic-axis major radius [t]
+        """
         raise NotImplementedError()
 
     def getMagZ(self):
-        #returns magnetic-axis Z, zmagx(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns magnetic-axis Z [t]
+        """
         raise NotImplementedError()
 
     def getAreaLCFS(self):
-        #returns LCFS surface area, areao(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns LCFS surface area [t]
+        """
         raise NotImplementedError()
 
     def getAOut(self):
-        #returns outboard-midplane minor radius
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns outboard-midplane minor radius [t]
+        """
         raise NotImplementedError()
 
     def getRmidOut(self):
-        #returns outboard-midplane major radius
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns outboard-midplane major radius [t]
+        """
         raise NotImplementedError()
 
     def getGeometry(self):
-        #returns dimensional geometry parameters for plasma
-        #namedtuple containing {mag axis r,z, LCFS area, volume, outboard midplane major radius}
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns dimensional geometry parameters
+        Namedtuple containing {mag axis R,Z, LCFS area, volume, outboard-midplane major radius}
+        """
         raise NotImplementedError()
 
     def getQProfile(self):
-        #returns safety factor profile q(psi,t):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns safety factor q profile [psi,t]
+        Psi assumed to be evenly-spaced grid on [0,1]
+        """
         raise NotImplementedError()
 
     def getQ0(self):
-        #returns q-value on magnetic axis, q0(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns q on magnetic axis [t]
+        """
         raise NotImplementedError()
 
     def getQ95(self):
-        #returns q at 95% flux, psib(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns q on 95% flux surface [t]
+        """
         raise NotImplementedError()
 
     def getQLCFS(self):
-        #returns q on LCFS, qout(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns q on LCFS [t]
+        """
         raise NotImplementedError()
 
     def getQ1Surf(self):
-        #returns outboard-midplane minor radius of q=1 surface, aaq1(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns outboard-midplane minor radius of q=1 surface [t]
+        """
         raise NotImplementedError()
     
     def getQ2Surf(self):
-        #returns outboard-midplane minor radius of q=2 surface, aaq2(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns outboard-midplane minor radius of q=2 surface [t]
+        """
         raise NotImplementedError()
 
     def getQ3Surf(self):
-        #returns outboard-midplane minor radius of q=3 surface, aaq3(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns outboard-midplane minor radius of q=3 surface [t]
+        """
         raise NotImplementedError()
 
     def getQs(self):
-        #returns specific q-profile values
-        #namedtuple containing {q0, q95, q(LCFS), minor radius of q=1,2,3 surfaces}
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns specific q-profile values.
+        Namedtuple containing {q0, q95, qLCFS, minor radius of q=1,2,3 surfaces}
+        """
         raise NotImplementedError()
 
     def getBtVac(self):
-        #returns vacuum on-axis toroidal field btaxv(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns vacuum on-axis toroidal field [t]
+        """
         raise NotImplementedError()
 
     def getBtPla(self):
-        #returns plasma on-axis toroidal field btaxp(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns plasma on-axis toroidal field [t]
+        """
         raise NotImplementedError()
 
     def getBpAvg(self):
-        #returns avg poloidal field, bpolav(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns average poloidal field [t]
+        """
         raise NotImplementedError() 
 
     def getFields(self):
-        #returns magnetic-field measurements from EFIT
-        #dict containing {Btor on magnetic axis (plasma and vacuum), avg Bpol)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns magnetic-field values.
+        Namedtuple containing {Btor on magnetic axis (plasma and vacuum), avg Bpol}
+        """
         raise NotImplementedError()
 
     def getIpCalc(self):
-        #returns EFIT-calculated plasma current
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated plasma current [t]
+        """
         raise NotImplementedError()
 
     def getIpMeas(self):
-        #returns measured plasma current
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns measured plasma current [t]
+        """
         raise NotImplementedError()
 
     def getJp(self):
-        #returns (r,z,t) grid of EFIT-calculated current density
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns grid of calculated toroidal current density [t,z,r]
+        """
         raise NotImplementedError()
 
     def getBetaT(self):
-        #returns calculated toroidal beta, betat(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated global toroidal beta [t]
+        """
         raise NotImplementedError()
 
     def getBetaP(self):
-        #returns calculated avg poloidal beta, betap(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated global poloidal beta [t]
+        """
         raise NotImplementedError()
 
     def getLi(self):
-        #returns calculated internal inductance of plasma, ali(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated internal inductance of plasma [t]
+        """
         raise NotImplementedError()
 
     def getBetas(self):
-        #returns calculated beta and inductive values
-        #namedtuple of {betat,betap,li}
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated betas and inductance.
+        Namedtuple of {betat,betap,Li}
+        """
         raise NotImplementedError()
 
     def getDiamagFlux(self):
-        #returns diamagnetic flux, diamag(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns diamagnetic flux [t]
+        """
         raise NotImplementedError()
 
     def getDiamagBetaT(self):
-        #returns diamagnetic-loop toroidal beta, betatd(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns diamagnetic-loop toroidal beta [t]
+        """
         raise NotImplementedError()
 
     def getDiamagBetaP(self):
-        #returns diamagnetic-loop poloidal beta, betapd(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns diamagnetic-loop poloidal beta [t]
+        """
         raise NotImplementedError()
 
     def getDiamagTauE(self):
-        #returns diamagnetic-loop energy confinement time, taudia(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns diamagnetic-loop energy confinement time [t]
+        """
         raise NotImplementedError()
 
     def getDiamagWp(self):
-        #returns diamagnetic-loop plasma stored energy, wplasmd(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns diamagnetic-loop plasma stored energy [t]
+        """
         raise NotImplementedError()
 
     def getDiamag(self):
-        #returns diamagnetic measurements of plasma parameters
-        #namedtuple of {diamag flux, betat,betap from diamag coils, tau_E from diamag, diamag stored energy)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns diamagnetic measurements of plasma parameters.
+        Namedtuple of {diamag. flux, betat, betap from coils, tau_E from diamag., diamag. stored energy}
+        """
         raise NotImplementedError()
 
     def getWMHD(self):
-        #returns EFIT-calculated MHD stored energy wplasm(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated MHD stored energy [t]
+        """
         raise NotImplementedError()
 
     def getTauMHD(self):
-        #returns EFIT-calculated MHD energy confinement time taumhd(s)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated MHD energy confinement time [t]
+        """
         raise NotImplementedError()
 
     def getPinj(self):
-        #returns EFIT-calculated injected power, pbinj(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated injected power [t]
+        """
         raise NotImplementedError()
 
     def getCurrentSign(self):
-        #returns EFIT-calculated current direction, where counterclockwise = +
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated current direction, where CCW = +
+        """
         raise NotImplementedError()
 
     def getWbdot(self):
-        #returns EFIT-calculated d/dt of magnetic stored energy, wbdot(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated d/dt of magnetic stored energy [t]
+        """
         raise NotImplementedError()
 
     def getWpdot(self):
-        #returns EFIT-calculated d/dt of plasma stored energy, wpdot(t)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns calculated d/dt of plasma stored energy [t]
+        """
         raise NotImplementedError()
 
     def getEnergy(self):
-        #returns stored-energy parameters
-        #dict of {stored energy, MHD tau_E, injected power, d/dt of magnetic, plasma stored energy)
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns stored-energy parameters.
+        Namedtuple of {stored energy, confinement time, injected power, d/dt of magnetic, plasma stored energy}
+        """
         raise NotImplementedError()
 
     def getParam(self,path):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Backup function: takes parameter name for variable, returns variable directly.
+        Acts as wrapper to direct data-access routines from within object.
+        """
         #backup function - takes parameter name for EFIT variable, returns that variable
         #acts as wrapper for EFIT tree access from within object
         raise NotImplementedError()
 
     def getMachineCrossSection(self):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns (R,Z) coordinates of machine wall cross-section for plotting routines.
+        """
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
 
     def plotFlux(self):
