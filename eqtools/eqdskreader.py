@@ -30,10 +30,16 @@ import glob
 import re
 import csv
 import warnings
-import matplotlib.pyplot as plt
 from collections import namedtuple
-from core import Equilibrium
-from afilereader import AFileReader
+from .core import Equilibrium,ModuleWarning
+from .afilereader import AFileReader
+
+try:
+    import matplotlib.pyplot as plt
+except Exception:
+    warnings.warn("WARNING: matplotlib modules could not be loaded -- plotting "
+                  "will not be available.",
+                  ModuleWarning)
 
 
 class EqdskReader(Equilibrium):
@@ -43,7 +49,7 @@ class EqdskReader(Equilibrium):
     Inherits mapping and structural data from Equilibrium, populates equilibrium
     and profile data from g- and a-files for a selected shot and time window.
     """
-    def __init__(self,shot=None,time=None,gfile=None,afile=None,length_unit='m'):
+    def __init__(self,shot=None,time=None,gfile=None,afile=None,length_unit='m',verbose=True):
         """
         Create instance of EqdskReader.
 
@@ -66,6 +72,8 @@ class EqdskReader(Equilibrium):
             afile: String.  Manually selects ASCII file for time-history read.
             length_unit: String.  Flag setting length unit for equilibrium scales.
                 Defaults to 'm' for lengths in meters.
+            verbose: Boolean.  When set to false, suppresses terminal outputs during CSV read.
+                Defaults to True (prints terminal output).
 
         Raises:
             IOError: if both name/shot and explicit filenames are not set.
@@ -99,11 +107,13 @@ class EqdskReader(Equilibrium):
         # if explicit filename for g-file is not set, check current directory for files matching name
         # if multiple valid files or no files are found, trigger ValueError
         if gfile is None:   #attempt to generate filename
-            print('Searching directory for file g%s.' % name)
+            if verbose:
+                print('Searching directory for file g%s.' % name)
             gcurrfiles = glob.glob('g'+name+'*')
             if len(gcurrfiles) == 1:
                 self._gfilename = gcurrfiles[0]
-                print('File found: '+self._gfilename)
+                if verbose:
+                    print('File found: '+self._gfilename)
             elif len(gcurrfiles) > 1:
                 raise ValueError("Multiple valid g-files detected in directory. "
                                   "Please select a file with explicit "
@@ -128,11 +138,13 @@ class EqdskReader(Equilibrium):
         # nonfatally warn user.
         if afile is None:
             if name is not None:
-                print('Searching directory for file a%s.' % name)
+                if verbose:
+                    print('Searching directory for file a%s.' % name)
                 acurrfiles = glob.glob('a'+name+'*')
                 if len(acurrfiles) == 1:
                     self._afilename = acurrfiles[0]
-                    print('File found: '+self._afilename)
+                    if verbose:
+                        print('File found: '+self._afilename)
                 elif len(acurrfiles) > 1:
                     raise ValueError("Multiple valid a-files detected in directory. "
                                   "Please select a file with explicit "
@@ -403,10 +415,13 @@ class EqdskReader(Equilibrium):
                 self._workk = scipy.atleast_2d(scipy.array([0]))
 
             # read through to end of file to get footer line
-            r = ''
-            for row in reader:
-                r = row[0]
-            self._efittype = r.split()[-1]
+            try:
+                r = ''
+                for row in reader:
+                    r = row[0]
+                self._efittype = r.split()[-1]
+            except:
+                self._efittype = None
             
 
         # toroidal current density on (r,z,t) grid typically not
@@ -497,9 +512,11 @@ class EqdskReader(Equilibrium):
             try:
                 self.readAFile(self._afilename)
             except IOError:
-                print('a-file data not loaded.')
+                if verbose:
+                    print('a-file data not loaded.')
         else:
-            print('a-file data not loaded.')
+            if verbose:
+                print('a-file data not loaded.')
                     
     def __str__(self):
         if self._efittype is None:
@@ -730,7 +747,7 @@ class EqdskReader(Equilibrium):
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psinorm(R,Z,t,**kwargs)
 
-    def rz2phinorm(self,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
+    def rz2phinorm(self,R,Z,*args,**kwargs):
         """
         Calculates normalized toroidal flux at a given (R,Z).
         Wrapper for Equilibrium.rz2phinorm masking out timebase dependence.
@@ -778,6 +795,8 @@ class EqdskReader(Equilibrium):
                     'default'   meters
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters).
+            **kwargs: other keywords passed to Equilibrium.rz2phinorm are valid,
+                but will return dummy values (i.e. for timebase keywords)
 
         Returns:
             phinorm: Array or scalar float. If all of the input arguments are
@@ -802,7 +821,6 @@ class EqdskReader(Equilibrium):
         phi_mat = Eq_instance.rz2phinorm(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit,'kind':kind,'rho':False}
         return super(EqdskReader,self).rz2phinorm(R,Z,t,**kwargs)
 
     def rz2volnorm(self,*args,**kwargs):
@@ -902,7 +920,10 @@ class EqdskReader(Equilibrium):
             kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
         else:
             kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':False,'kind':kind,'length_unit':length_unit}
-        return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
+        if method == 'volnorm':
+            raise ValueError('Cannot calculate volnorm from g-file equilibria.')
+        else:
+            return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
     def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
         """
@@ -1778,15 +1799,3 @@ class EqdskReader(Equilibrium):
         plt.contour(rGrid,zGrid,psiRZ[0],50,colors='k',linestyles='solid')
         plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
         plt.show()
-                
-
-
-
-                
-
-
-
-
-
-
-
