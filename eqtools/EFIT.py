@@ -849,7 +849,7 @@ class EFITTree(Equilibrium):
             dTau = self.getDiamagTauE()
             dWp = self.getDiamagWp()
             data = namedtuple('Diamag',['diaFlux','diaBetat','diaBetap','diaTauE','diaWp'])
-            return data(diaFlux=dFLux,diaBetat=betatd,diaBetap=betapd,diaTauE=dTau,diaWp=dWp)
+            return data(diaFlux=dFlux,diaBetat=betatd,diaBetap=betapd,diaTauE=dTau,diaWp=dWp)
         except ValueError:
                 raise ValueError('data retrieval failed.')
 
