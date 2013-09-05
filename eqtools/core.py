@@ -69,7 +69,7 @@ class PropertyAccessMixin(object):
         """Get an attribute.
         
         Tries to get attribute as-written. If this fails, tries to call the
-        method get[name] with no arguments. If this fails, raises
+        method get<name> with no arguments. If this fails, raises
         AttributeError. This effectively generates a Python 'property' for
         each getter method.
         
@@ -341,16 +341,20 @@ class Equilibrium(object):
                 array. Default is False (do not form meshgrid).
             length_unit: String or 1. Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
-                    'm'         meters
-                    'cm'        centimeters
-                    'mm'        millimeters
-                    'in'        inches
-                    'ft'        feet
-                    'yd'        yards
-                    'smoot'     smoots
-                    'cubit'     cubits
-                    'hand'      hands
-                    'default'   meters
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters).
             
@@ -365,26 +369,31 @@ class Equilibrium(object):
                 interpolation. Only returned if return_t is True.
         
         Examples:
-        All assume that Eq_instance is a valid instance of the appropriate
-        extension of the Equilibrium abstract class.
+            All assume that Eq_instance is a valid instance of the appropriate
+            extension of the Equilibrium abstract class.
 
-        Find single psi value at R=0.6m, Z=0.0m, t=0.26s:
-        psi_val = Eq_instance.rz2psi(0.6, 0, 0.26)
+            Find single psi value at R=0.6m, Z=0.0m, t=0.26s::
+            
+                psi_val = Eq_instance.rz2psi(0.6, 0, 0.26)
 
-        Find psi values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the single
-        time t=0.26s. Note that the Z vector must be fully specified, even if
-        the values are all the same:
-        psi_arr = Eq_instance.rz2psi([0.6, 0.8], [0, 0], 0.26)
+            Find psi values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the single
+            time t=0.26s. Note that the Z vector must be fully specified, even if
+            the values are all the same::
+            
+                psi_arr = Eq_instance.rz2psi([0.6, 0.8], [0, 0], 0.26)
 
-        Find psi values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:
-        psi_arr = Eq_instance.rz2psi(0.6, 0, [0.2, 0.3])
+            Find psi values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+            
+                psi_arr = Eq_instance.rz2psi(0.6, 0, [0.2, 0.3])
 
-        Find psi values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
-        psi_arr = Eq_instance.rz2psi([0.6, 0.5], [0, 0.2], [0.2, 0.3])
+            Find psi values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
+            
+                psi_arr = Eq_instance.rz2psi([0.6, 0.5], [0, 0.2], [0.2, 0.3])
 
-        Find psi values on grid defined by 1D vector of radial positions R and
-        1D vector of vertical positions Z at time t=0.2s:
-        psi_mat = Eq_instance.rz2psi(R, Z, 0.2, make_grid=True)
+            Find psi values on grid defined by 1D vector of radial positions R and
+            1D vector of vertical positions Z at time t=0.2s::
+            
+                psi_mat = Eq_instance.rz2psi(R, Z, 0.2, make_grid=True)
         """
         
         # Check inputs and process into flat arrays with units of meters:

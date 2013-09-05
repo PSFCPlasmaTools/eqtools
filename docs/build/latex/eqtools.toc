@@ -7,9 +7,10 @@
 \contentsline {subsection}{\numberline {1.1.4}\texttt {FromArrays} Module}{8}{subsection.1.1.4}
 \contentsline {subsection}{\numberline {1.1.5}\texttt {afilereader} Module}{8}{subsection.1.1.5}
 \contentsline {subsection}{\numberline {1.1.6}\texttt {core} Module}{9}{subsection.1.1.6}
-\contentsline {subsection}{\numberline {1.1.7}\texttt {eqdskreader} Module}{27}{subsection.1.1.7}
-\contentsline {subsection}{\numberline {1.1.8}\texttt {pfilereader} Module}{38}{subsection.1.1.8}
+\contentsline {paragraph}{Examples}{12}{paragraph*.81}
+\contentsline {subsection}{\numberline {1.1.7}\texttt {eqdskreader} Module}{28}{subsection.1.1.7}
+\contentsline {subsection}{\numberline {1.1.8}\texttt {pfilereader} Module}{39}{subsection.1.1.8}
 \contentsline {subsection}{\numberline {1.1.9}\texttt {trispline} Module}{39}{subsection.1.1.9}
 \contentsline {chapter}{\numberline {2}Indices and tables}{41}{chapter.2}
-\contentsline {chapter}{Python Module Index}{43}{section*.220}
-\contentsline {chapter}{Index}{45}{section*.221}
+\contentsline {chapter}{Python Module Index}{43}{section*.221}
+\contentsline {chapter}{Index}{45}{section*.222}

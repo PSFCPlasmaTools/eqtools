@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
+"""This module provides classes for working with C-Mod EFIT data.
+"""
+
 import scipy
 
 from .EFIT import EFITTree
@@ -41,8 +44,7 @@ except Exception as _e_MDS:
     _has_MDS = False
 
 class CModEFITTree(EFITTree):
-    """
-    Inherits :py:class:`~gptools.EFIT.EFITTree` class. Machine-specific data
+    """Inherits :py:class:`~gptools.EFIT.EFITTree` class. Machine-specific data
     handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
     and shot, stores as object attributes. Each EFIT variable or set of
     variables is recovered with a corresponding getter method. Essential data
@@ -51,8 +53,7 @@ class CModEFITTree(EFITTree):
     """
 
     def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False, fast=False):
-        """
-        Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+        """Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
         in instance attributes.  Core attributes are populated from the MDS tree on initialization.
         Additional attributes are initialized as None, filled on the first request to the object.
 
@@ -100,15 +101,14 @@ class CModEFITTree(EFITTree):
         super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, fast=fast)
     
     def getMachineCrossSection(self):
-        """
-        Pulls C-Mod cross-section data from tree, converts to plottable
+        """Pulls C-Mod cross-section data from tree, converts to plottable
         vector format for use in other plotting routines
 
-        INPUTS:
-        shot:   C-Mod shot index (used for tree access) (long)
+        Args:
+            shot: (long) int. C-Mod shot index (used for tree access)
 
-        OUTPUTS:
-
+        Returns:
+            (x, y): The coordinates of the machine cross-section.
         """
         #pull cross-section from tree
         try:
