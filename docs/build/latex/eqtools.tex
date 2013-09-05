@@ -10,7 +10,7 @@
 \usepackage{longtable}
 \usepackage{sphinx}
 \usepackage{multirow}
-
+\hypersetup{bookmarksdepth=3}
 
 \title{eqtools Documentation}
 \date{September 05, 2013}
@@ -120,960 +120,21 @@
 \phantomsection\label{index::doc}
 
 
+
+\chapter{Overview}
+\label{index:overview}\label{index:eqtools-tools-for-interacting-with-magnetic-equilibria}
 Useful description and details go here.
 
 
-\chapter{Contents}
-\label{index:welcome-to-eqtools-s-documentation}\label{index:contents}
+\chapter{Package Reference}
+\label{index:package-reference}
 
 \section{eqtools Package}
 \label{eqtools::doc}\label{eqtools:eqtools-package}
 
 \subsection{\texttt{eqtools} Package}
 \label{eqtools:id1}\phantomsection\label{eqtools:module-eqtools.__init__}\index{eqtools.\_\_init\_\_ (module)}
-
-\subsection{\texttt{CModEFIT} Module}
-\label{eqtools:module-eqtools.CModEFIT}\label{eqtools:cmodefit-module}\index{eqtools.CModEFIT (module)}
-This module provides classes for working with C-Mod EFIT data.
-\index{CModEFITTree (class in eqtools.CModEFIT)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTree}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
-Bases: {\hyperref[eqtools:eqtools.EFIT.EFITTree]{\code{eqtools.EFIT.EFITTree}}}
-
-Inherits \code{EFITTree} class. Machine-specific data
-handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
-and shot, stores as object attributes. Each EFIT variable or set of
-variables is recovered with a corresponding getter method. Essential data
-for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
-data are pulled at the first request and stored for subsequent usage.
-
-Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
-in instance attributes.  Core attributes are populated from the MDS tree on initialization.
-Additional attributes are initialized as None, filled on the first request to the object.
-\begin{quote}\begin{description}
-\item[{Parameters }] \leavevmode
-\textbf{shot} --
-(long) int. C-Mod shot index (long)
-
-\item[{Keyword Arguments}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{tree} --
-str. optional input for EFIT tree, defaults to `ANALYSIS'
-(i.e., EFIT data are under analysis::top.efit.results).
-For any string TREE (such as `EFIT20') other than `ANALYSIS',
-data are taken from TREE::top.results.
-
-\item {} 
-\textbf{length\_unit} --
-str. Sets the base unit used for any quantity whose
-dimensions are length to any power. Valid options are:
-\begin{quote}
-
-\begin{tabulary}{\linewidth}{|L|L|}
-\hline
-
-`m'
- & 
-meters
-\\\hline
-
-`cm'
- & 
-centimeters
-\\\hline
-
-`mm'
- & 
-millimeters
-\\\hline
-
-`in'
- & 
-inches
-\\\hline
-
-`ft'
- & 
-feet
-\\\hline
-
-`yd'
- & 
-yards
-\\\hline
-
-`smoot'
- & 
-smoots
-\\\hline
-
-`cubit'
- & 
-cubits
-\\\hline
-
-`hand'
- & 
-hands
-\\\hline
-
-`default'
- & 
-whatever the default in the tree is (no conversion is performed, units may be inconsistent)
-\\\hline
-\end{tabulary}
-
-\end{quote}
-
-Default is `m' (all units taken and returned in meters).
-
-\item {} 
-\textbf{tspline} --
-Boolean. Sets whether or not interpolation in time is
-performed using a tricubic spline or nearest-neighbor
-interpolation. Tricubic spline interpolation requires at least
-four complete equilibria at different times. It is also assumed
-that they are functionally correlated, and that parameters do
-not vary out of their boundaries (derivative = 0 boundary
-condition). Default is False (use nearest neighbor interpolation).
-
-\item {} 
-\textbf{fast} --
-Boolean. Sets whether or not the ``fast'' form of time window
-finding is used. If True, the timebase must be monotonically
-increasing. Default is False (use slower, safer method).
-
-\end{itemize}
-
-\end{description}\end{quote}
-\index{getMachineCrossSection() (eqtools.CModEFIT.CModEFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
-Pulls C-Mod cross-section data from tree, converts to plottable
-vector format for use in other plotting routines
-\begin{quote}\begin{description}
-\item[{Parameters }] \leavevmode
-\textbf{shot} --
-(long) int. C-Mod shot index (used for tree access)
-
-\item[{Returns}] \leavevmode
-\emph{(x, y)} --
-The coordinates of the machine cross-section.
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-\index{CModEFITTreeProp (class in eqtools.CModEFIT)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTreeProp}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTreeProp}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
-Bases: {\hyperref[eqtools:eqtools.CModEFIT.CModEFITTree]{\code{eqtools.CModEFIT.CModEFITTree}}}, {\hyperref[eqtools:eqtools.core.PropertyAccessMixin]{\code{eqtools.core.PropertyAccessMixin}}}
-
-CModEFITTree with the PropertyAccessMixin added to enable property-style
-access. This is good for interactive use, but may drag the performance down.
-
-Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
-in instance attributes.  Core attributes are populated from the MDS tree on initialization.
-Additional attributes are initialized as None, filled on the first request to the object.
-\begin{quote}\begin{description}
-\item[{Parameters }] \leavevmode
-\textbf{shot} --
-(long) int. C-Mod shot index (long)
-
-\item[{Keyword Arguments}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{tree} --
-str. optional input for EFIT tree, defaults to `ANALYSIS'
-(i.e., EFIT data are under analysis::top.efit.results).
-For any string TREE (such as `EFIT20') other than `ANALYSIS',
-data are taken from TREE::top.results.
-
-\item {} 
-\textbf{length\_unit} --
-str. Sets the base unit used for any quantity whose
-dimensions are length to any power. Valid options are:
-\begin{quote}
-
-\begin{tabulary}{\linewidth}{|L|L|}
-\hline
-
-`m'
- & 
-meters
-\\\hline
-
-`cm'
- & 
-centimeters
-\\\hline
-
-`mm'
- & 
-millimeters
-\\\hline
-
-`in'
- & 
-inches
-\\\hline
-
-`ft'
- & 
-feet
-\\\hline
-
-`yd'
- & 
-yards
-\\\hline
-
-`smoot'
- & 
-smoots
-\\\hline
-
-`cubit'
- & 
-cubits
-\\\hline
-
-`hand'
- & 
-hands
-\\\hline
-
-`default'
- & 
-whatever the default in the tree is (no conversion is performed, units may be inconsistent)
-\\\hline
-\end{tabulary}
-
-\end{quote}
-
-Default is `m' (all units taken and returned in meters).
-
-\item {} 
-\textbf{tspline} --
-Boolean. Sets whether or not interpolation in time is
-performed using a tricubic spline or nearest-neighbor
-interpolation. Tricubic spline interpolation requires at least
-four complete equilibria at different times. It is also assumed
-that they are functionally correlated, and that parameters do
-not vary out of their boundaries (derivative = 0 boundary
-condition). Default is False (use nearest neighbor interpolation).
-
-\item {} 
-\textbf{fast} --
-Boolean. Sets whether or not the ``fast'' form of time window
-finding is used. If True, the timebase must be monotonically
-increasing. Default is False (use slower, safer method).
-
-\end{itemize}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-
-\subsection{\texttt{EFIT} Module}
-\label{eqtools:efit-module}\label{eqtools:module-eqtools.EFIT}\index{eqtools.EFIT (module)}\index{EFITTree (class in eqtools.EFIT)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.EFIT.}\bfcode{EFITTree}}{\emph{shot}, \emph{tree}, \emph{root}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
-Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
-
-Inherits Equilibrium class. EFIT-specific data handling class for machines using
-standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
-need overriding in a machine-specific implementation.
-Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
-Each EFIT variable or set of variables is recovered with a corresponding getter method.
-Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
-Additional data are pulled at the first request and stored for subsequent usage.
-
-Intializes EFITTree object. Pulls data from MDS tree for storage in
-instance attributes. Core attributes are populated from the MDS tree
-on initialization. Additional attributes are initialized as None,
-filled on the first request to the object.
-
-INPUTS:
-shot:   shot index
-tree:   MDSplus tree to open to fetch EFIT data.
-root:   Root path for EFIT data in MDSplus tree.
-\index{\_\_str\_\_() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
-string formatting for EFITTree class.
-
-\end{fulllineitems}
-
-\index{getInfo() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getInfo}\pysiglinewithargsret{\bfcode{getInfo}}{}{}
-returns namedtuple of shot information
-outputs:
-namedtuple containing
-\begin{quote}
-
-shot:   C-Mod shot index (long)
-tree:   EFIT tree (string)
-nr:     size of R-axis for spatial grid
-nz:     size of Z-axis for spatial grid
-nt:     size of timebase for flux grid
-\end{quote}
-
-\end{fulllineitems}
-
-\index{getTimeBase() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
-returns EFIT time base vector
-
-\end{fulllineitems}
-
-\index{getFluxGrid() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
-returns EFIT flux grid, {[}t,z,r{]}
-
-\end{fulllineitems}
-
-\index{getRGrid() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{\emph{length\_unit=1}}{}
-returns EFIT R-axis {[}r{]}
-
-\end{fulllineitems}
-
-\index{getZGrid() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{\emph{length\_unit=1}}{}
-returns EFIT Z-axis {[}z{]}
-
-\end{fulllineitems}
-
-\index{getFluxAxis() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxAxis}\pysiglinewithargsret{\bfcode{getFluxAxis}}{}{}
-returns psi on magnetic axis {[}t{]}
-
-\end{fulllineitems}
-
-\index{getFluxLCFS() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxLCFS}\pysiglinewithargsret{\bfcode{getFluxLCFS}}{}{}
-returns psi at separatrix {[}t{]}
-
-\end{fulllineitems}
-
-\index{getFluxVol() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxVol}\pysiglinewithargsret{\bfcode{getFluxVol}}{\emph{length\_unit=3}}{}
-returns volume within flux surface {[}psi,t{]}
-
-\end{fulllineitems}
-
-\index{getVolLCFS() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getVolLCFS}\pysiglinewithargsret{\bfcode{getVolLCFS}}{\emph{length\_unit=3}}{}
-returns volume within LCFS {[}t{]}
-
-\end{fulllineitems}
-
-\index{getRmidPsi() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRmidPsi}\pysiglinewithargsret{\bfcode{getRmidPsi}}{\emph{length\_unit=1}}{}
-returns maximum major radius of each flux surface {[}t,psi{]}
-
-\end{fulllineitems}
-
-\index{getRLCFS() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRLCFS}\pysiglinewithargsret{\bfcode{getRLCFS}}{\emph{length\_unit=1}}{}
-returns R-values of LCFS position {[}t,n{]}
-
-\end{fulllineitems}
-
-\index{getZLCFS() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{\emph{length\_unit=1}}{}
-returns Z-values of LCFS position {[}t,n{]}
-
-\end{fulllineitems}
-
-\index{getFluxPres() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxPres}\pysiglinewithargsret{\bfcode{getFluxPres}}{}{}
-returns pressure at flux surface {[}psi,t{]}
-
-\end{fulllineitems}
-
-\index{getElongation() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getElongation}\pysiglinewithargsret{\bfcode{getElongation}}{}{}
-returns LCFS elongation {[}t{]}
-
-\end{fulllineitems}
-
-\index{getUpperTriangularity() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getUpperTriangularity}\pysiglinewithargsret{\bfcode{getUpperTriangularity}}{}{}
-returns LCFS upper triangularity {[}t{]}
-
-\end{fulllineitems}
-
-\index{getLowerTriangularity() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getLowerTriangularity}\pysiglinewithargsret{\bfcode{getLowerTriangularity}}{}{}
-returns LCFS lower triangularity {[}t{]}
-
-\end{fulllineitems}
-
-\index{getShaping() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getShaping}\pysiglinewithargsret{\bfcode{getShaping}}{}{}
-pulls LCFS elongation and upper/lower triangularity
-returns namedtuple containing \{kappa, delta\_u, delta\_l\}
-
-\end{fulllineitems}
-
-\index{getMagR() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMagR}\pysiglinewithargsret{\bfcode{getMagR}}{\emph{length\_unit=1}}{}
-returns magnetic-axis major radius {[}t{]}
-
-\end{fulllineitems}
-
-\index{getMagZ() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMagZ}\pysiglinewithargsret{\bfcode{getMagZ}}{\emph{length\_unit=1}}{}
-returns magnetic-axis Z {[}t{]}
-
-\end{fulllineitems}
-
-\index{getAreaLCFS() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getAreaLCFS}\pysiglinewithargsret{\bfcode{getAreaLCFS}}{\emph{length\_unit=2}}{}
-returns LCFS cross-sectional area {[}t{]}
-
-\end{fulllineitems}
-
-\index{getAOut() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getAOut}\pysiglinewithargsret{\bfcode{getAOut}}{\emph{length\_unit=1}}{}
-returns outboard-midplane minor radius at LCFS {[}t{]}
-
-\end{fulllineitems}
-
-\index{getRmidOut() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRmidOut}\pysiglinewithargsret{\bfcode{getRmidOut}}{\emph{length\_unit=1}}{}
-returns outboard-midplane major radius {[}t{]}
-
-\end{fulllineitems}
-
-\index{getGeometry() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getGeometry}\pysiglinewithargsret{\bfcode{getGeometry}}{\emph{length\_unit=None}}{}
-pulls dimensional geometry parameters
-returns namedtuple containing \{magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R\}
-
-\end{fulllineitems}
-
-\index{getQProfile() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQProfile}\pysiglinewithargsret{\bfcode{getQProfile}}{}{}
-returns safety factor q {[}psi,t{]}
-
-\end{fulllineitems}
-
-\index{getQ0() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ0}\pysiglinewithargsret{\bfcode{getQ0}}{}{}
-returns q on magnetic axis {[}t{]}
-
-\end{fulllineitems}
-
-\index{getQ95() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ95}\pysiglinewithargsret{\bfcode{getQ95}}{}{}
-returns q at 95\% flux surface {[}t{]}
-
-\end{fulllineitems}
-
-\index{getQLCFS() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQLCFS}\pysiglinewithargsret{\bfcode{getQLCFS}}{}{}
-returns q on LCFS {[}t{]}
-
-\end{fulllineitems}
-
-\index{getQ1Surf() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ1Surf}\pysiglinewithargsret{\bfcode{getQ1Surf}}{\emph{length\_unit=1}}{}
-returns outboard-midplane minor radius of q=1 surface {[}t{]}
-
-\end{fulllineitems}
-
-\index{getQ2Surf() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ2Surf}\pysiglinewithargsret{\bfcode{getQ2Surf}}{\emph{length\_unit=1}}{}
-returns outboard-midplane minor radius of q=2 surface {[}t{]}
-
-\end{fulllineitems}
-
-\index{getQ3Surf() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ3Surf}\pysiglinewithargsret{\bfcode{getQ3Surf}}{\emph{length\_unit=1}}{}
-returns outboard-midplane minor radius of q=3 surface {[}t{]}
-
-\end{fulllineitems}
-
-\index{getQs() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQs}\pysiglinewithargsret{\bfcode{getQs}}{\emph{length\_unit=1}}{}
-pulls q values
-returns namedtuple containing \{q0,q95,qLCFS,rq1,rq2,rq3\}
-
-\end{fulllineitems}
-
-\index{getBtVac() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBtVac}\pysiglinewithargsret{\bfcode{getBtVac}}{}{}
-returns on-axis vacuum toroidal field {[}t{]}
-
-\end{fulllineitems}
-
-\index{getBtPla() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBtPla}\pysiglinewithargsret{\bfcode{getBtPla}}{}{}
-returns on-axis plasma toroidal field {[}t{]}
-
-\end{fulllineitems}
-
-\index{getBpAvg() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBpAvg}\pysiglinewithargsret{\bfcode{getBpAvg}}{}{}
-returns average poloidal field {[}t{]}
-
-\end{fulllineitems}
-
-\index{getFields() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFields}\pysiglinewithargsret{\bfcode{getFields}}{}{}
-pulls vacuum and plasma toroidal field, avg poloidal field
-returns namedtuple containing \{btaxv,btaxp,bpolav\}
-
-\end{fulllineitems}
-
-\index{getIpCalc() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getIpCalc}\pysiglinewithargsret{\bfcode{getIpCalc}}{}{}
-returns EFIT-calculated plasma current {[}t{]}
-
-\end{fulllineitems}
-
-\index{getIpMeas() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getIpMeas}\pysiglinewithargsret{\bfcode{getIpMeas}}{}{}
-returns magnetics-measured plasma current {[}t{]}
-
-\end{fulllineitems}
-
-\index{getJp() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getJp}\pysiglinewithargsret{\bfcode{getJp}}{}{}
-returns EFIT-calculated plasma current density Jp on flux grid {[}t,r,z{]}
-
-\end{fulllineitems}
-
-\index{getBetaT() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetaT}\pysiglinewithargsret{\bfcode{getBetaT}}{}{}
-returns EFIT-calculated toroidal beta {[}t{]}
-
-\end{fulllineitems}
-
-\index{getBetaP() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetaP}\pysiglinewithargsret{\bfcode{getBetaP}}{}{}
-returns EFIT-calculated poloidal beta {[}t{]}
-
-\end{fulllineitems}
-
-\index{getLi() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getLi}\pysiglinewithargsret{\bfcode{getLi}}{}{}
-returns EFIT-calculated internal inductance {[}t{]}
-
-\end{fulllineitems}
-
-\index{getBetas() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetas}\pysiglinewithargsret{\bfcode{getBetas}}{}{}
-pulls calculated betap, betat, internal inductance
-returns namedtuple containing \{betat,betap,Li\}
-
-\end{fulllineitems}
-
-\index{getDiamagFlux() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagFlux}\pysiglinewithargsret{\bfcode{getDiamagFlux}}{}{}
-returns measured diamagnetic-loop flux {[}t{]}
-
-\end{fulllineitems}
-
-\index{getDiamagBetaT() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagBetaT}\pysiglinewithargsret{\bfcode{getDiamagBetaT}}{}{}
-returns diamagnetic-loop toroidal beta {[}t{]}
-
-\end{fulllineitems}
-
-\index{getDiamagBetaP() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagBetaP}\pysiglinewithargsret{\bfcode{getDiamagBetaP}}{}{}
-returns diamagnetic-loop avg poloidal beta {[}t{]}
-
-\end{fulllineitems}
-
-\index{getDiamagTauE() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagTauE}\pysiglinewithargsret{\bfcode{getDiamagTauE}}{}{}
-returns diamagnetic-loop energy confinement time {[}t{]}
-
-\end{fulllineitems}
-
-\index{getDiamagWp() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagWp}\pysiglinewithargsret{\bfcode{getDiamagWp}}{}{}
-returns diamagnetic-loop plasma stored energy {[}t{]}
-
-\end{fulllineitems}
-
-\index{getDiamag() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamag}\pysiglinewithargsret{\bfcode{getDiamag}}{}{}
-pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
-returns namedtuple containing \{diamag. flux, betatd, betapd, tauDiamag, WDiamag\}
-
-\end{fulllineitems}
-
-\index{getWMHD() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWMHD}\pysiglinewithargsret{\bfcode{getWMHD}}{}{}
-returns EFIT-calculated MHD stored energy {[}t{]}
-
-\end{fulllineitems}
-
-\index{getTauMHD() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getTauMHD}\pysiglinewithargsret{\bfcode{getTauMHD}}{}{}
-returns EFIT-calculated MHD energy confinement time {[}t{]}
-
-\end{fulllineitems}
-
-\index{getPinj() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getPinj}\pysiglinewithargsret{\bfcode{getPinj}}{}{}
-returns EFIT-calculated injected power {[}t{]}
-
-\end{fulllineitems}
-
-\index{getWbdot() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWbdot}\pysiglinewithargsret{\bfcode{getWbdot}}{}{}
-returns EFIT-calculated d/dt of magnetic stored energy {[}t{]}
-
-\end{fulllineitems}
-
-\index{getWpdot() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWpdot}\pysiglinewithargsret{\bfcode{getWpdot}}{}{}
-returns EFIT-calculated d/dt of plasma stored energy {[}t{]}
-
-\end{fulllineitems}
-
-\index{getEnergy() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getEnergy}\pysiglinewithargsret{\bfcode{getEnergy}}{}{}
-pulls EFIT-calculated energy parameters - stored energy, tau\_E, injected power, d/dt of magnetic and plasma stored energy
-returns namedtuple containing \{WMHD,tauMHD,Pinj,Wbdot,Wpdot\}
-
-\end{fulllineitems}
-
-\index{getCurrentSign() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getCurrentSign}\pysiglinewithargsret{\bfcode{getCurrentSign}}{}{}
-Returns the sign of the current, based on the check in Steve Wolfe's
-IDL implementation efit\_rz2psi.pro.
-
-\end{fulllineitems}
-
-\index{getParam() (eqtools.EFIT.EFITTree method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getParam}\pysiglinewithargsret{\bfcode{getParam}}{\emph{path}}{}
-backup function - path to parameter as input, returns desired variable
-acts as wrapper for MDS call
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-
-
-\subsection{\texttt{FromArrays} Module}
-\label{eqtools:module-eqtools.FromArrays}\label{eqtools:fromarrays-module}\index{eqtools.FromArrays (module)}\index{ArrayEquilibrium (class in eqtools.FromArrays)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.FromArrays.}\bfcode{ArrayEquilibrium}}{\emph{psiRZ}, \emph{rGrid}, \emph{zGrid}, \emph{time}, \emph{q}, \emph{fluxVol}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
-Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
-
-Class to represent an equilibrium specified as arrays of data.
-
-Create ArrayEquilibrium instance from arrays of data.
-\begin{quote}\begin{description}
-\item[{Parameters }] \leavevmode\begin{itemize}
-\item {} 
-\textbf{psiRZ} --
-Array-like, (M, N, P). Flux values at M times, N Z locations
-and P R locations.
-
-\item {} 
-\textbf{rGrid} --
-Array-like, (P,). R coordinates that psiRZ is given at.
-
-\item {} 
-\textbf{zGrid} --
-Array-like, (N,). Z coordinates that psiRZ is given at.
-
-\item {} 
-\textbf{time} --
-Array-like, (M,). Times that psiRZ is given at.
-
-\item {} 
-\textbf{q} --
-Array-like, (Q, M). q profile evaluated at Q values of psinorm
-from 0 to 1, given at M times.
-
-\item {} 
-\textbf{fluxVol} --
-Array-like, (S, M). Flux surface volumes evaluated at S
-values of psinorm from 0 to 1, given at M times.
-
-\end{itemize}
-
-\item[{Keyword Arguments}] \leavevmode
-\textbf{length\_unit} --
-String. Base unit for any quantity whose dimensions
-are length to any power. Default is `m'. Valid options are:
-\begin{quote}
-
-`m'         meters
-`cm'        centimeters
-`mm'        millimeters
-`in'        inches
-`ft'        feet
-`yd'        yards
-`smoot'     smoots
-`default'   whatever the default in the tree is (no
-\begin{quote}
-
-conversion is performed, units may be
-inconsistent)
-\end{quote}
-\end{quote}
-
-\item[{Returns}] \leavevmode
-The ArrayEquilibrium instance created.
-
-\end{description}\end{quote}
-\index{getTimeBase() (eqtools.FromArrays.ArrayEquilibrium method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
-Returns a copy of the time base vector, array dimensions are (M,).
-
-\end{fulllineitems}
-
-\index{getFluxGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
-Returns a copy of the flux array, dimensions are (M, N, P), corresponding to (time, Z, R).
-
-\end{fulllineitems}
-
-\index{getRGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{\emph{length\_unit=1}}{}
-Returns a copy of the radial grid, dimensions are (P,).
-
-\end{fulllineitems}
-
-\index{getZGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{\emph{length\_unit=1}}{}
-Returns a copy of the vertical grid, dimensions are (N,).
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
-
-
-\subsection{\texttt{afilereader} Module}
-\label{eqtools:afilereader-module}\label{eqtools:module-eqtools.afilereader}\index{eqtools.afilereader (module)}
-This module contains the AFileReader class, a lightweight data
-handler for a-file (time-history) datasets.
-\begin{description}
-\item[{Classes:}] \leavevmode\begin{description}
-\item[{AFileReader: Data-storage class for a-file data.  Reads}] \leavevmode
-data from ASCII a-file, storing as copy-safe object
-attributes.
-
-\end{description}
-
-\end{description}
-\index{AFileReader (class in eqtools.afilereader)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.afilereader.AFileReader}\pysiglinewithargsret{\strong{class }\code{eqtools.afilereader.}\bfcode{AFileReader}}{\emph{afile}}{}
-Bases: \code{object}
-
-Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.
-
-A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is
-read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
-EFIT variable names.
-
-initialize object, reading from file.
-
-INPUTS:
-afile: (str) path to a-file
-\index{\_\_str\_\_() (eqtools.afilereader.AFileReader method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
-overrides default \_\_str\_\_method with more useful output.
-
-\end{fulllineitems}
-
-\index{\_\_getattribute\_\_() (eqtools.afilereader.AFileReader method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__getattribute__}\pysiglinewithargsret{\bfcode{\_\_getattribute\_\_}}{\emph{name}}{}
-Copy-safe attribute retrieval method overriding default object.\_\_getattribute\_\_.
-
-Tries to retrieve attribute as-written (first check for default object attributes).
-If that fails, looks for pseudo-private attributes, marked by preceding underscore,
-to retrieve data values.  If this fails, raise AttributeError.
-\begin{quote}\begin{description}
-\item[{Parameters }] \leavevmode
-\textbf{name} --
-String.  Name (without leading underscore for data variables) of attribute.
-
-\item[{Raises }] \leavevmode
-\code{AttributeError} -- 
-if no attribute can be found.
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-\index{\_\_setattr\_\_() (eqtools.afilereader.AFileReader method)}
-
-\begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__setattr__}\pysiglinewithargsret{\bfcode{\_\_setattr\_\_}}{\emph{name}, \emph{value}}{}
-Copy-safe attribute setting method overriding default object.\_\_setattr\_\_.
-
-Raises error if object already has attribute \_\{name\} for input name,
-as such an attribute would interfere with automatic property generation in
-\_\_getattribute\_\_.
-\begin{quote}\begin{description}
-\item[{Parameters }] \leavevmode
-\textbf{name} --
-String.  Attribute name.
-
-\item[{Raises }] \leavevmode
-\code{AttributeError} -- 
-if attempting to create attribute with protected
-pseudo-private name.
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\end{fulllineitems}
-
+Provides classes for interacting with magnetic equilibrium data in a variety of formats.
 
 
 \subsection{\texttt{core} Module}
@@ -3565,6 +2626,760 @@ Plots flux contours directly from psi grid.
 
 
 
+\subsection{\texttt{EFIT} Module}
+\label{eqtools:efit-module}\label{eqtools:module-eqtools.EFIT}\index{eqtools.EFIT (module)}\index{EFITTree (class in eqtools.EFIT)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.EFIT.}\bfcode{EFITTree}}{\emph{shot}, \emph{tree}, \emph{root}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
+
+Inherits Equilibrium class. EFIT-specific data handling class for machines using
+standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
+need overriding in a machine-specific implementation.
+Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
+Each EFIT variable or set of variables is recovered with a corresponding getter method.
+Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
+Additional data are pulled at the first request and stored for subsequent usage.
+
+Intializes EFITTree object. Pulls data from MDS tree for storage in
+instance attributes. Core attributes are populated from the MDS tree
+on initialization. Additional attributes are initialized as None,
+filled on the first request to the object.
+
+INPUTS:
+shot:   shot index
+tree:   MDSplus tree to open to fetch EFIT data.
+root:   Root path for EFIT data in MDSplus tree.
+\index{\_\_str\_\_() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
+string formatting for EFITTree class.
+
+\end{fulllineitems}
+
+\index{getInfo() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getInfo}\pysiglinewithargsret{\bfcode{getInfo}}{}{}
+returns namedtuple of shot information
+outputs:
+namedtuple containing
+\begin{quote}
+
+shot:   C-Mod shot index (long)
+tree:   EFIT tree (string)
+nr:     size of R-axis for spatial grid
+nz:     size of Z-axis for spatial grid
+nt:     size of timebase for flux grid
+\end{quote}
+
+\end{fulllineitems}
+
+\index{getTimeBase() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
+returns EFIT time base vector
+
+\end{fulllineitems}
+
+\index{getFluxGrid() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+returns EFIT flux grid, {[}t,z,r{]}
+
+\end{fulllineitems}
+
+\index{getRGrid() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{\emph{length\_unit=1}}{}
+returns EFIT R-axis {[}r{]}
+
+\end{fulllineitems}
+
+\index{getZGrid() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{\emph{length\_unit=1}}{}
+returns EFIT Z-axis {[}z{]}
+
+\end{fulllineitems}
+
+\index{getFluxAxis() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxAxis}\pysiglinewithargsret{\bfcode{getFluxAxis}}{}{}
+returns psi on magnetic axis {[}t{]}
+
+\end{fulllineitems}
+
+\index{getFluxLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxLCFS}\pysiglinewithargsret{\bfcode{getFluxLCFS}}{}{}
+returns psi at separatrix {[}t{]}
+
+\end{fulllineitems}
+
+\index{getFluxVol() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxVol}\pysiglinewithargsret{\bfcode{getFluxVol}}{\emph{length\_unit=3}}{}
+returns volume within flux surface {[}psi,t{]}
+
+\end{fulllineitems}
+
+\index{getVolLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getVolLCFS}\pysiglinewithargsret{\bfcode{getVolLCFS}}{\emph{length\_unit=3}}{}
+returns volume within LCFS {[}t{]}
+
+\end{fulllineitems}
+
+\index{getRmidPsi() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRmidPsi}\pysiglinewithargsret{\bfcode{getRmidPsi}}{\emph{length\_unit=1}}{}
+returns maximum major radius of each flux surface {[}t,psi{]}
+
+\end{fulllineitems}
+
+\index{getRLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRLCFS}\pysiglinewithargsret{\bfcode{getRLCFS}}{\emph{length\_unit=1}}{}
+returns R-values of LCFS position {[}t,n{]}
+
+\end{fulllineitems}
+
+\index{getZLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{\emph{length\_unit=1}}{}
+returns Z-values of LCFS position {[}t,n{]}
+
+\end{fulllineitems}
+
+\index{getFluxPres() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFluxPres}\pysiglinewithargsret{\bfcode{getFluxPres}}{}{}
+returns pressure at flux surface {[}psi,t{]}
+
+\end{fulllineitems}
+
+\index{getElongation() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getElongation}\pysiglinewithargsret{\bfcode{getElongation}}{}{}
+returns LCFS elongation {[}t{]}
+
+\end{fulllineitems}
+
+\index{getUpperTriangularity() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getUpperTriangularity}\pysiglinewithargsret{\bfcode{getUpperTriangularity}}{}{}
+returns LCFS upper triangularity {[}t{]}
+
+\end{fulllineitems}
+
+\index{getLowerTriangularity() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getLowerTriangularity}\pysiglinewithargsret{\bfcode{getLowerTriangularity}}{}{}
+returns LCFS lower triangularity {[}t{]}
+
+\end{fulllineitems}
+
+\index{getShaping() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getShaping}\pysiglinewithargsret{\bfcode{getShaping}}{}{}
+pulls LCFS elongation and upper/lower triangularity
+returns namedtuple containing \{kappa, delta\_u, delta\_l\}
+
+\end{fulllineitems}
+
+\index{getMagR() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMagR}\pysiglinewithargsret{\bfcode{getMagR}}{\emph{length\_unit=1}}{}
+returns magnetic-axis major radius {[}t{]}
+
+\end{fulllineitems}
+
+\index{getMagZ() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMagZ}\pysiglinewithargsret{\bfcode{getMagZ}}{\emph{length\_unit=1}}{}
+returns magnetic-axis Z {[}t{]}
+
+\end{fulllineitems}
+
+\index{getAreaLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getAreaLCFS}\pysiglinewithargsret{\bfcode{getAreaLCFS}}{\emph{length\_unit=2}}{}
+returns LCFS cross-sectional area {[}t{]}
+
+\end{fulllineitems}
+
+\index{getAOut() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getAOut}\pysiglinewithargsret{\bfcode{getAOut}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius at LCFS {[}t{]}
+
+\end{fulllineitems}
+
+\index{getRmidOut() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getRmidOut}\pysiglinewithargsret{\bfcode{getRmidOut}}{\emph{length\_unit=1}}{}
+returns outboard-midplane major radius {[}t{]}
+
+\end{fulllineitems}
+
+\index{getGeometry() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getGeometry}\pysiglinewithargsret{\bfcode{getGeometry}}{\emph{length\_unit=None}}{}
+pulls dimensional geometry parameters
+returns namedtuple containing \{magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R\}
+
+\end{fulllineitems}
+
+\index{getQProfile() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQProfile}\pysiglinewithargsret{\bfcode{getQProfile}}{}{}
+returns safety factor q {[}psi,t{]}
+
+\end{fulllineitems}
+
+\index{getQ0() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ0}\pysiglinewithargsret{\bfcode{getQ0}}{}{}
+returns q on magnetic axis {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ95() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ95}\pysiglinewithargsret{\bfcode{getQ95}}{}{}
+returns q at 95\% flux surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQLCFS}\pysiglinewithargsret{\bfcode{getQLCFS}}{}{}
+returns q on LCFS {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ1Surf() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ1Surf}\pysiglinewithargsret{\bfcode{getQ1Surf}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius of q=1 surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ2Surf() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ2Surf}\pysiglinewithargsret{\bfcode{getQ2Surf}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius of q=2 surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQ3Surf() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQ3Surf}\pysiglinewithargsret{\bfcode{getQ3Surf}}{\emph{length\_unit=1}}{}
+returns outboard-midplane minor radius of q=3 surface {[}t{]}
+
+\end{fulllineitems}
+
+\index{getQs() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getQs}\pysiglinewithargsret{\bfcode{getQs}}{\emph{length\_unit=1}}{}
+pulls q values
+returns namedtuple containing \{q0,q95,qLCFS,rq1,rq2,rq3\}
+
+\end{fulllineitems}
+
+\index{getBtVac() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBtVac}\pysiglinewithargsret{\bfcode{getBtVac}}{}{}
+returns on-axis vacuum toroidal field {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBtPla() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBtPla}\pysiglinewithargsret{\bfcode{getBtPla}}{}{}
+returns on-axis plasma toroidal field {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBpAvg() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBpAvg}\pysiglinewithargsret{\bfcode{getBpAvg}}{}{}
+returns average poloidal field {[}t{]}
+
+\end{fulllineitems}
+
+\index{getFields() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getFields}\pysiglinewithargsret{\bfcode{getFields}}{}{}
+pulls vacuum and plasma toroidal field, avg poloidal field
+returns namedtuple containing \{btaxv,btaxp,bpolav\}
+
+\end{fulllineitems}
+
+\index{getIpCalc() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getIpCalc}\pysiglinewithargsret{\bfcode{getIpCalc}}{}{}
+returns EFIT-calculated plasma current {[}t{]}
+
+\end{fulllineitems}
+
+\index{getIpMeas() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getIpMeas}\pysiglinewithargsret{\bfcode{getIpMeas}}{}{}
+returns magnetics-measured plasma current {[}t{]}
+
+\end{fulllineitems}
+
+\index{getJp() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getJp}\pysiglinewithargsret{\bfcode{getJp}}{}{}
+returns EFIT-calculated plasma current density Jp on flux grid {[}t,r,z{]}
+
+\end{fulllineitems}
+
+\index{getBetaT() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetaT}\pysiglinewithargsret{\bfcode{getBetaT}}{}{}
+returns EFIT-calculated toroidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBetaP() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetaP}\pysiglinewithargsret{\bfcode{getBetaP}}{}{}
+returns EFIT-calculated poloidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getLi() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getLi}\pysiglinewithargsret{\bfcode{getLi}}{}{}
+returns EFIT-calculated internal inductance {[}t{]}
+
+\end{fulllineitems}
+
+\index{getBetas() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getBetas}\pysiglinewithargsret{\bfcode{getBetas}}{}{}
+pulls calculated betap, betat, internal inductance
+returns namedtuple containing \{betat,betap,Li\}
+
+\end{fulllineitems}
+
+\index{getDiamagFlux() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagFlux}\pysiglinewithargsret{\bfcode{getDiamagFlux}}{}{}
+returns measured diamagnetic-loop flux {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagBetaT() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagBetaT}\pysiglinewithargsret{\bfcode{getDiamagBetaT}}{}{}
+returns diamagnetic-loop toroidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagBetaP() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagBetaP}\pysiglinewithargsret{\bfcode{getDiamagBetaP}}{}{}
+returns diamagnetic-loop avg poloidal beta {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagTauE() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagTauE}\pysiglinewithargsret{\bfcode{getDiamagTauE}}{}{}
+returns diamagnetic-loop energy confinement time {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamagWp() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamagWp}\pysiglinewithargsret{\bfcode{getDiamagWp}}{}{}
+returns diamagnetic-loop plasma stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getDiamag() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getDiamag}\pysiglinewithargsret{\bfcode{getDiamag}}{}{}
+pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
+returns namedtuple containing \{diamag. flux, betatd, betapd, tauDiamag, WDiamag\}
+
+\end{fulllineitems}
+
+\index{getWMHD() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWMHD}\pysiglinewithargsret{\bfcode{getWMHD}}{}{}
+returns EFIT-calculated MHD stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getTauMHD() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getTauMHD}\pysiglinewithargsret{\bfcode{getTauMHD}}{}{}
+returns EFIT-calculated MHD energy confinement time {[}t{]}
+
+\end{fulllineitems}
+
+\index{getPinj() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getPinj}\pysiglinewithargsret{\bfcode{getPinj}}{}{}
+returns EFIT-calculated injected power {[}t{]}
+
+\end{fulllineitems}
+
+\index{getWbdot() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWbdot}\pysiglinewithargsret{\bfcode{getWbdot}}{}{}
+returns EFIT-calculated d/dt of magnetic stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getWpdot() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getWpdot}\pysiglinewithargsret{\bfcode{getWpdot}}{}{}
+returns EFIT-calculated d/dt of plasma stored energy {[}t{]}
+
+\end{fulllineitems}
+
+\index{getEnergy() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getEnergy}\pysiglinewithargsret{\bfcode{getEnergy}}{}{}
+pulls EFIT-calculated energy parameters - stored energy, tau\_E, injected power, d/dt of magnetic and plasma stored energy
+returns namedtuple containing \{WMHD,tauMHD,Pinj,Wbdot,Wpdot\}
+
+\end{fulllineitems}
+
+\index{getCurrentSign() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getCurrentSign}\pysiglinewithargsret{\bfcode{getCurrentSign}}{}{}
+Returns the sign of the current, based on the check in Steve Wolfe's
+IDL implementation efit\_rz2psi.pro.
+
+\end{fulllineitems}
+
+\index{getParam() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getParam}\pysiglinewithargsret{\bfcode{getParam}}{\emph{path}}{}
+backup function - path to parameter as input, returns desired variable
+acts as wrapper for MDS call
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{CModEFIT} Module}
+\label{eqtools:module-eqtools.CModEFIT}\label{eqtools:cmodefit-module}\index{eqtools.CModEFIT (module)}
+This module provides classes for working with C-Mod EFIT data.
+\index{CModEFITTree (class in eqtools.CModEFIT)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTree}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.EFIT.EFITTree]{\code{eqtools.EFIT.EFITTree}}}
+
+Inherits \code{EFITTree} class. Machine-specific data
+handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
+and shot, stores as object attributes. Each EFIT variable or set of
+variables is recovered with a corresponding getter method. Essential data
+for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
+data are pulled at the first request and stored for subsequent usage.
+
+Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{shot} --
+(long) int. C-Mod shot index (long)
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{tree} --
+str. optional input for EFIT tree, defaults to `ANALYSIS'
+(i.e., EFIT data are under analysis::top.efit.results).
+For any string TREE (such as `EFIT20') other than `ANALYSIS',
+data are taken from TREE::top.results.
+
+\item {} 
+\textbf{length\_unit} --
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:
+\begin{quote}
+
+\begin{tabulary}{\linewidth}{|L|L|}
+\hline
+
+`m'
+ & 
+meters
+\\\hline
+
+`cm'
+ & 
+centimeters
+\\\hline
+
+`mm'
+ & 
+millimeters
+\\\hline
+
+`in'
+ & 
+inches
+\\\hline
+
+`ft'
+ & 
+feet
+\\\hline
+
+`yd'
+ & 
+yards
+\\\hline
+
+`smoot'
+ & 
+smoots
+\\\hline
+
+`cubit'
+ & 
+cubits
+\\\hline
+
+`hand'
+ & 
+hands
+\\\hline
+
+`default'
+ & 
+whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+\\\hline
+\end{tabulary}
+
+\end{quote}
+
+Default is `m' (all units taken and returned in meters).
+
+\item {} 
+\textbf{tspline} --
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).
+
+\item {} 
+\textbf{fast} --
+Boolean. Sets whether or not the ``fast'' form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).
+
+\end{itemize}
+
+\end{description}\end{quote}
+\index{getMachineCrossSection() (eqtools.CModEFIT.CModEFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
+Pulls C-Mod cross-section data from tree, converts to plottable
+vector format for use in other plotting routines
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{shot} --
+(long) int. C-Mod shot index (used for tree access)
+
+\item[{Returns}] \leavevmode
+\emph{(x, y)} --
+The coordinates of the machine cross-section.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{CModEFITTreeProp (class in eqtools.CModEFIT)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTreeProp}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTreeProp}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.CModEFIT.CModEFITTree]{\code{eqtools.CModEFIT.CModEFITTree}}}, {\hyperref[eqtools:eqtools.core.PropertyAccessMixin]{\code{eqtools.core.PropertyAccessMixin}}}
+
+CModEFITTree with the PropertyAccessMixin added to enable property-style
+access. This is good for interactive use, but may drag the performance down.
+
+Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{shot} --
+(long) int. C-Mod shot index (long)
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{tree} --
+str. optional input for EFIT tree, defaults to `ANALYSIS'
+(i.e., EFIT data are under analysis::top.efit.results).
+For any string TREE (such as `EFIT20') other than `ANALYSIS',
+data are taken from TREE::top.results.
+
+\item {} 
+\textbf{length\_unit} --
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:
+\begin{quote}
+
+\begin{tabulary}{\linewidth}{|L|L|}
+\hline
+
+`m'
+ & 
+meters
+\\\hline
+
+`cm'
+ & 
+centimeters
+\\\hline
+
+`mm'
+ & 
+millimeters
+\\\hline
+
+`in'
+ & 
+inches
+\\\hline
+
+`ft'
+ & 
+feet
+\\\hline
+
+`yd'
+ & 
+yards
+\\\hline
+
+`smoot'
+ & 
+smoots
+\\\hline
+
+`cubit'
+ & 
+cubits
+\\\hline
+
+`hand'
+ & 
+hands
+\\\hline
+
+`default'
+ & 
+whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+\\\hline
+\end{tabulary}
+
+\end{quote}
+
+Default is `m' (all units taken and returned in meters).
+
+\item {} 
+\textbf{tspline} --
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).
+
+\item {} 
+\textbf{fast} --
+Boolean. Sets whether or not the ``fast'' form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+
 \subsection{\texttt{eqdskreader} Module}
 \label{eqtools:eqdskreader-module}\label{eqtools:module-eqtools.eqdskreader}\index{eqtools.eqdskreader (module)}
 This module contains the EqdskReader class, which creates Equilibrium class
@@ -5121,6 +4936,93 @@ streamlined plotting of flux contours directly from psi grid
 
 
 
+\subsection{\texttt{afilereader} Module}
+\label{eqtools:afilereader-module}\label{eqtools:module-eqtools.afilereader}\index{eqtools.afilereader (module)}
+This module contains the AFileReader class, a lightweight data
+handler for a-file (time-history) datasets.
+\begin{description}
+\item[{Classes:}] \leavevmode\begin{description}
+\item[{AFileReader: Data-storage class for a-file data.  Reads}] \leavevmode
+data from ASCII a-file, storing as copy-safe object
+attributes.
+
+\end{description}
+
+\end{description}
+\index{AFileReader (class in eqtools.afilereader)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader}\pysiglinewithargsret{\strong{class }\code{eqtools.afilereader.}\bfcode{AFileReader}}{\emph{afile}}{}
+Bases: \code{object}
+
+Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.
+
+A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is
+read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
+EFIT variable names.
+
+initialize object, reading from file.
+
+INPUTS:
+afile: (str) path to a-file
+\index{\_\_str\_\_() (eqtools.afilereader.AFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__str__}\pysiglinewithargsret{\bfcode{\_\_str\_\_}}{}{}
+overrides default \_\_str\_\_method with more useful output.
+
+\end{fulllineitems}
+
+\index{\_\_getattribute\_\_() (eqtools.afilereader.AFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__getattribute__}\pysiglinewithargsret{\bfcode{\_\_getattribute\_\_}}{\emph{name}}{}
+Copy-safe attribute retrieval method overriding default object.\_\_getattribute\_\_.
+
+Tries to retrieve attribute as-written (first check for default object attributes).
+If that fails, looks for pseudo-private attributes, marked by preceding underscore,
+to retrieve data values.  If this fails, raise AttributeError.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String.  Name (without leading underscore for data variables) of attribute.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+if no attribute can be found.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{\_\_setattr\_\_() (eqtools.afilereader.AFileReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.afilereader.AFileReader.__setattr__}\pysiglinewithargsret{\bfcode{\_\_setattr\_\_}}{\emph{name}, \emph{value}}{}
+Copy-safe attribute setting method overriding default object.\_\_setattr\_\_.
+
+Raises error if object already has attribute \_\{name\} for input name,
+as such an attribute would interfere with automatic property generation in
+\_\_getattribute\_\_.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{name} --
+String.  Attribute name.
+
+\item[{Raises }] \leavevmode
+\code{AttributeError} -- 
+if attempting to create attribute with protected
+pseudo-private name.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
 \subsection{\texttt{pfilereader} Module}
 \label{eqtools:pfilereader-module}\label{eqtools:module-eqtools.pfilereader}\index{eqtools.pfilereader (module)}
 This module contains the PFileReader class, a lightweight data
@@ -5212,6 +5114,109 @@ if attempting to create attribute with protected
 pseudo-private name.
 
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{FromArrays} Module}
+\label{eqtools:module-eqtools.FromArrays}\label{eqtools:fromarrays-module}\index{eqtools.FromArrays (module)}\index{ArrayEquilibrium (class in eqtools.FromArrays)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.FromArrays.}\bfcode{ArrayEquilibrium}}{\emph{psiRZ}, \emph{rGrid}, \emph{zGrid}, \emph{time}, \emph{q}, \emph{fluxVol}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
+
+Class to represent an equilibrium specified as arrays of data.
+
+Create ArrayEquilibrium instance from arrays of data.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{psiRZ} --
+Array-like, (M, N, P). Flux values at M times, N Z locations
+and P R locations.
+
+\item {} 
+\textbf{rGrid} --
+Array-like, (P,). R coordinates that psiRZ is given at.
+
+\item {} 
+\textbf{zGrid} --
+Array-like, (N,). Z coordinates that psiRZ is given at.
+
+\item {} 
+\textbf{time} --
+Array-like, (M,). Times that psiRZ is given at.
+
+\item {} 
+\textbf{q} --
+Array-like, (Q, M). q profile evaluated at Q values of psinorm
+from 0 to 1, given at M times.
+
+\item {} 
+\textbf{fluxVol} --
+Array-like, (S, M). Flux surface volumes evaluated at S
+values of psinorm from 0 to 1, given at M times.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode
+\textbf{length\_unit} --
+String. Base unit for any quantity whose dimensions
+are length to any power. Default is `m'. Valid options are:
+\begin{quote}
+
+`m'         meters
+`cm'        centimeters
+`mm'        millimeters
+`in'        inches
+`ft'        feet
+`yd'        yards
+`smoot'     smoots
+`default'   whatever the default in the tree is (no
+\begin{quote}
+
+conversion is performed, units may be
+inconsistent)
+\end{quote}
+\end{quote}
+
+\item[{Returns}] \leavevmode
+The ArrayEquilibrium instance created.
+
+\end{description}\end{quote}
+\index{getTimeBase() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
+Returns a copy of the time base vector, array dimensions are (M,).
+
+\end{fulllineitems}
+
+\index{getFluxGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+Returns a copy of the flux array, dimensions are (M, N, P), corresponding to (time, Z, R).
+
+\end{fulllineitems}
+
+\index{getRGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{\emph{length\_unit=1}}{}
+Returns a copy of the radial grid, dimensions are (P,).
+
+\end{fulllineitems}
+
+\index{getZGrid() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{\emph{length\_unit=1}}{}
+Returns a copy of the vertical grid, dimensions are (N,).
 
 \end{fulllineitems}
 

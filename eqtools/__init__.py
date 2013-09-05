@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Provides classes for interacting with magnetic equilibrium data in a variety of formats.
+"""
+
 from .core import *
 from .EFIT import *
 from .CModEFIT import *

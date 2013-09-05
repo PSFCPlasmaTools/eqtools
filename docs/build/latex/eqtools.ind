@@ -2,250 +2,250 @@
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 
   \bigletter {Symbols}
-  \item \_\_getattribute\_\_() (eqtools.afilereader.AFileReader method), \hyperpage{9}
-  \item \_\_getattribute\_\_() (eqtools.core.PropertyAccessMixin method), \hyperpage{9}
-  \item \_\_getattribute\_\_() (eqtools.pfilereader.PFileReader method), \hyperpage{42}
-  \item \_\_setattr\_\_() (eqtools.afilereader.AFileReader method), \hyperpage{9}
-  \item \_\_setattr\_\_() (eqtools.core.PropertyAccessMixin method), \hyperpage{10}
-  \item \_\_setattr\_\_() (eqtools.pfilereader.PFileReader method), \hyperpage{42}
-  \item \_\_str\_\_() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item \_\_str\_\_() (eqtools.afilereader.AFileReader method), \hyperpage{9}
-  \item \_\_str\_\_() (eqtools.core.Equilibrium method), \hyperpage{11}
+  \item \_\_getattribute\_\_() (eqtools.afilereader.AFileReader method), \hyperpage{40}
+  \item \_\_getattribute\_\_() (eqtools.core.PropertyAccessMixin method), \hyperpage{3}
+  \item \_\_getattribute\_\_() (eqtools.pfilereader.PFileReader method), \hyperpage{41}
+  \item \_\_setattr\_\_() (eqtools.afilereader.AFileReader method), \hyperpage{40}
+  \item \_\_setattr\_\_() (eqtools.core.PropertyAccessMixin method), \hyperpage{3}
+  \item \_\_setattr\_\_() (eqtools.pfilereader.PFileReader method), \hyperpage{41}
+  \item \_\_str\_\_() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item \_\_str\_\_() (eqtools.afilereader.AFileReader method), \hyperpage{40}
+  \item \_\_str\_\_() (eqtools.core.Equilibrium method), \hyperpage{5}
   \item \_\_str\_\_() (eqtools.pfilereader.PFileReader method), \hyperpage{41}
 
   \indexspace
   \bigletter A
-  \item AFileReader (class in eqtools.afilereader), \hyperpage{9}
-  \item ArrayEquilibrium (class in eqtools.FromArrays), \hyperpage{8}
+  \item AFileReader (class in eqtools.afilereader), \hyperpage{40}
+  \item ArrayEquilibrium (class in eqtools.FromArrays), \hyperpage{41}
 
   \indexspace
   \bigletter C
-  \item CModEFITTree (class in eqtools.CModEFIT), \hyperpage{3}
-  \item CModEFITTreeProp (class in eqtools.CModEFIT), \hyperpage{4}
+  \item CModEFITTree (class in eqtools.CModEFIT), \hyperpage{27}
+  \item CModEFITTreeProp (class in eqtools.CModEFIT), \hyperpage{28}
 
   \indexspace
   \bigletter E
-  \item EFITTree (class in eqtools.EFIT), \hyperpage{5}
-  \item EqdskReader (class in eqtools.eqdskreader), \hyperpage{30}
+  \item EFITTree (class in eqtools.EFIT), \hyperpage{24}
+  \item EqdskReader (class in eqtools.eqdskreader), \hyperpage{29}
   \item eqtools.\_\_init\_\_ (module), \hyperpage{3}
-  \item eqtools.afilereader (module), \hyperpage{8}
-  \item eqtools.CModEFIT (module), \hyperpage{3}
-  \item eqtools.core (module), \hyperpage{9}
-  \item eqtools.EFIT (module), \hyperpage{5}
-  \item eqtools.eqdskreader (module), \hyperpage{30}
-  \item eqtools.FromArrays (module), \hyperpage{8}
-  \item eqtools.pfilereader (module), \hyperpage{41}
-  \item Equilibrium (class in eqtools.core), \hyperpage{10}
+  \item eqtools.afilereader (module), \hyperpage{40}
+  \item eqtools.CModEFIT (module), \hyperpage{27}
+  \item eqtools.core (module), \hyperpage{3}
+  \item eqtools.EFIT (module), \hyperpage{24}
+  \item eqtools.eqdskreader (module), \hyperpage{29}
+  \item eqtools.FromArrays (module), \hyperpage{41}
+  \item eqtools.pfilereader (module), \hyperpage{40}
+  \item Equilibrium (class in eqtools.core), \hyperpage{4}
 
   \indexspace
   \bigletter G
-  \item getAOut() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getAOut() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getAOut() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getAreaLCFS() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getAreaLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getAreaLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getBetaP() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getBetaP() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getBetaP() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getBetas() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getBetas() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getBetas() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getBetaT() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getBetaT() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getBetaT() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getBpAvg() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getBpAvg() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getBpAvg() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getBtPla() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getBtPla() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getBtPla() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getBtVac() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getBtVac() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getBtVac() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getCurrentSign() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getCurrentSign() (eqtools.EFIT.EFITTree method), \hyperpage{8}
-  \item getCurrentSign() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getDiamag() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getDiamag() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getDiamag() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getDiamagBetaP() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getDiamagBetaP() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getDiamagBetaP() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getDiamagBetaT() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getDiamagBetaT() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getDiamagBetaT() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getDiamagFlux() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getDiamagFlux() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getDiamagFlux() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getDiamagTauE() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getDiamagTauE() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getDiamagTauE() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getDiamagWp() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getDiamagWp() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getDiamagWp() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getElongation() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getElongation() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getElongation() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getEnergy() (eqtools.core.Equilibrium method), \hyperpage{30}
-  \item getEnergy() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getEnergy() (eqtools.eqdskreader.EqdskReader method), \hyperpage{41}
-  \item getFields() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getFields() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getFields() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getFluxAxis() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getFluxAxis() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getFluxAxis() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getFluxGrid() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getFluxGrid() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getFluxGrid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getFluxGrid() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{8}
-  \item getFluxLCFS() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getFluxLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getFluxLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getFluxPres() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getFluxPres() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getFluxPres() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getFluxVol() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getFluxVol() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getFluxVol() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getGeometry() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getGeometry() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getGeometry() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getInfo() (eqtools.core.Equilibrium method), \hyperpage{25}
-  \item getInfo() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getInfo() (eqtools.eqdskreader.EqdskReader method), \hyperpage{31}
-  \item getIpCalc() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getIpCalc() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getIpCalc() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getIpMeas() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getIpMeas() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getIpMeas() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getJp() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getJp() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getJp() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getLi() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getLi() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getLi() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getLowerTriangularity() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getLowerTriangularity() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getLowerTriangularity() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getMachineCrossSection() (eqtools.CModEFIT.CModEFITTree method), \hyperpage{4}
-  \item getMachineCrossSection() (eqtools.core.Equilibrium method), \hyperpage{30}
-  \item getMachineCrossSection() (eqtools.eqdskreader.EqdskReader method), \hyperpage{41}
-  \item getMagR() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getMagR() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getMagR() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getMagZ() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getMagZ() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getMagZ() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getParam() (eqtools.core.Equilibrium method), \hyperpage{30}
-  \item getParam() (eqtools.EFIT.EFITTree method), \hyperpage{8}
-  \item getParam() (eqtools.eqdskreader.EqdskReader method), \hyperpage{41}
-  \item getPinj() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getPinj() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getPinj() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getQ0() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getQ0() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQ0() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getQ1Surf() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getQ1Surf() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQ1Surf() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getQ2Surf() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getQ2Surf() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQ2Surf() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getQ3Surf() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getQ3Surf() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQ3Surf() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getQ95() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getQ95() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQ95() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getQLCFS() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getQLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getQProfile() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getQProfile() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQProfile() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getQs() (eqtools.core.Equilibrium method), \hyperpage{28}
-  \item getQs() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getQs() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
-  \item getRGrid() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getRGrid() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getRGrid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getRGrid() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{8}
-  \item getRLCFS() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getRLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getRLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getRmidOut() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getRmidOut() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getRmidOut() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getRmidPsi() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getRmidPsi() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getRmidPsi() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getShaping() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getShaping() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getShaping() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getTauMHD() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getTauMHD() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getTauMHD() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getTimeBase() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getTimeBase() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getTimeBase() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getTimeBase() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{8}
-  \item getUpperTriangularity() (eqtools.core.Equilibrium method), \hyperpage{27}
-  \item getUpperTriangularity() (eqtools.EFIT.EFITTree method), \hyperpage{6}
-  \item getUpperTriangularity() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
-  \item getVolLCFS() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getVolLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getVolLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getWbdot() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getWbdot() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getWbdot() (eqtools.eqdskreader.EqdskReader method), \hyperpage{41}
-  \item getWMHD() (eqtools.core.Equilibrium method), \hyperpage{29}
-  \item getWMHD() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getWMHD() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
-  \item getWpdot() (eqtools.core.Equilibrium method), \hyperpage{30}
-  \item getWpdot() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getWpdot() (eqtools.eqdskreader.EqdskReader method), \hyperpage{41}
-  \item getZGrid() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getZGrid() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getZGrid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item getZGrid() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{8}
-  \item getZLCFS() (eqtools.core.Equilibrium method), \hyperpage{26}
-  \item getZLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{5}
-  \item getZLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getAOut() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getAOut() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getAOut() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getAreaLCFS() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getAreaLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getAreaLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getBetaP() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getBetaP() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getBetaP() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getBetas() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getBetas() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getBetas() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getBetaT() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getBetaT() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getBetaT() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getBpAvg() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getBpAvg() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getBpAvg() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getBtPla() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getBtPla() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getBtPla() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getBtVac() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getBtVac() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getBtVac() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getCurrentSign() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getCurrentSign() (eqtools.EFIT.EFITTree method), \hyperpage{27}
+  \item getCurrentSign() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getDiamag() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getDiamag() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getDiamag() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getDiamagBetaP() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getDiamagBetaP() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getDiamagBetaP() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getDiamagBetaT() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getDiamagBetaT() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getDiamagBetaT() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getDiamagFlux() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getDiamagFlux() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getDiamagFlux() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getDiamagTauE() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getDiamagTauE() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getDiamagTauE() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getDiamagWp() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getDiamagWp() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getDiamagWp() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getElongation() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getElongation() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getElongation() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getEnergy() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getEnergy() (eqtools.EFIT.EFITTree method), \hyperpage{27}
+  \item getEnergy() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getFields() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getFields() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getFields() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getFluxAxis() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getFluxAxis() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getFluxAxis() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getFluxGrid() (eqtools.core.Equilibrium method), \hyperpage{19}
+  \item getFluxGrid() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getFluxGrid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getFluxGrid() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{42}
+  \item getFluxLCFS() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getFluxLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getFluxLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getFluxPres() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getFluxPres() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getFluxPres() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getFluxVol() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getFluxVol() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getFluxVol() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getGeometry() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getGeometry() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getGeometry() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getInfo() (eqtools.core.Equilibrium method), \hyperpage{19}
+  \item getInfo() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getInfo() (eqtools.eqdskreader.EqdskReader method), \hyperpage{29}
+  \item getIpCalc() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getIpCalc() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getIpCalc() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getIpMeas() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getIpMeas() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getIpMeas() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getJp() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getJp() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getJp() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getLi() (eqtools.core.Equilibrium method), \hyperpage{22}
+  \item getLi() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getLi() (eqtools.eqdskreader.EqdskReader method), \hyperpage{38}
+  \item getLowerTriangularity() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getLowerTriangularity() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getLowerTriangularity() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getMachineCrossSection() (eqtools.CModEFIT.CModEFITTree method), \hyperpage{28}
+  \item getMachineCrossSection() (eqtools.core.Equilibrium method), \hyperpage{24}
+  \item getMachineCrossSection() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getMagR() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getMagR() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getMagR() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getMagZ() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getMagZ() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getMagZ() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getParam() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getParam() (eqtools.EFIT.EFITTree method), \hyperpage{27}
+  \item getParam() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getPinj() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getPinj() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getPinj() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getQ0() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQ0() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQ0() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getQ1Surf() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQ1Surf() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQ1Surf() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getQ2Surf() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQ2Surf() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQ2Surf() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getQ3Surf() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQ3Surf() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQ3Surf() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getQ95() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQ95() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQ95() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getQLCFS() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getQProfile() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQProfile() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQProfile() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getQs() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getQs() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getQs() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getRGrid() (eqtools.core.Equilibrium method), \hyperpage{19}
+  \item getRGrid() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getRGrid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getRGrid() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{42}
+  \item getRLCFS() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getRLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getRLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getRmidOut() (eqtools.core.Equilibrium method), \hyperpage{21}
+  \item getRmidOut() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getRmidOut() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
+  \item getRmidPsi() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getRmidPsi() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getRmidPsi() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getShaping() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getShaping() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getShaping() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getTauMHD() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getTauMHD() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getTauMHD() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getTimeBase() (eqtools.core.Equilibrium method), \hyperpage{19}
+  \item getTimeBase() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getTimeBase() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getTimeBase() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{42}
+  \item getUpperTriangularity() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getUpperTriangularity() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getUpperTriangularity() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getVolLCFS() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getVolLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getVolLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getWbdot() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getWbdot() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getWbdot() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getWMHD() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getWMHD() (eqtools.EFIT.EFITTree method), \hyperpage{26}
+  \item getWMHD() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getWpdot() (eqtools.core.Equilibrium method), \hyperpage{23}
+  \item getWpdot() (eqtools.EFIT.EFITTree method), \hyperpage{27}
+  \item getWpdot() (eqtools.eqdskreader.EqdskReader method), \hyperpage{39}
+  \item getZGrid() (eqtools.core.Equilibrium method), \hyperpage{19}
+  \item getZGrid() (eqtools.EFIT.EFITTree method), \hyperpage{24}
+  \item getZGrid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item getZGrid() (eqtools.FromArrays.ArrayEquilibrium method), \hyperpage{42}
+  \item getZLCFS() (eqtools.core.Equilibrium method), \hyperpage{20}
+  \item getZLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{25}
+  \item getZLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
 
   \indexspace
   \bigletter M
-  \item ModuleWarning, \hyperpage{9}
+  \item ModuleWarning, \hyperpage{3}
 
   \indexspace
   \bigletter P
-  \item PFileReader (class in eqtools.pfilereader), \hyperpage{41}
-  \item plotFlux() (eqtools.core.Equilibrium method), \hyperpage{30}
-  \item plotFlux() (eqtools.eqdskreader.EqdskReader method), \hyperpage{41}
-  \item PropertyAccessMixin (class in eqtools.core), \hyperpage{9}
-  \item psinorm2phinorm() (eqtools.core.Equilibrium method), \hyperpage{24}
-  \item psinorm2phinorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{37}
-  \item psinorm2rmid() (eqtools.core.Equilibrium method), \hyperpage{22}
-  \item psinorm2rmid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
-  \item psinorm2volnorm() (eqtools.core.Equilibrium method), \hyperpage{23}
-  \item psinorm2volnorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{36}
+  \item PFileReader (class in eqtools.pfilereader), \hyperpage{40}
+  \item plotFlux() (eqtools.core.Equilibrium method), \hyperpage{24}
+  \item plotFlux() (eqtools.eqdskreader.EqdskReader method), \hyperpage{40}
+  \item PropertyAccessMixin (class in eqtools.core), \hyperpage{3}
+  \item psinorm2phinorm() (eqtools.core.Equilibrium method), \hyperpage{18}
+  \item psinorm2phinorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{35}
+  \item psinorm2rmid() (eqtools.core.Equilibrium method), \hyperpage{16}
+  \item psinorm2rmid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{34}
+  \item psinorm2volnorm() (eqtools.core.Equilibrium method), \hyperpage{17}
+  \item psinorm2volnorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{35}
 
   \indexspace
   \bigletter R
-  \item readAFile() (eqtools.eqdskreader.EqdskReader method), \hyperpage{31}
-  \item rz2phinorm() (eqtools.core.Equilibrium method), \hyperpage{14}
-  \item rz2phinorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{33}
-  \item rz2psi() (eqtools.core.Equilibrium method), \hyperpage{11}
-  \item rz2psi() (eqtools.eqdskreader.EqdskReader method), \hyperpage{31}
-  \item rz2psinorm() (eqtools.core.Equilibrium method), \hyperpage{12}
-  \item rz2psinorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{32}
-  \item rz2rho() (eqtools.core.Equilibrium method), \hyperpage{18}
-  \item rz2rho() (eqtools.eqdskreader.EqdskReader method), \hyperpage{34}
-  \item rz2rmid() (eqtools.core.Equilibrium method), \hyperpage{20}
-  \item rz2rmid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{35}
-  \item rz2volnorm() (eqtools.core.Equilibrium method), \hyperpage{16}
-  \item rz2volnorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{34}
+  \item readAFile() (eqtools.eqdskreader.EqdskReader method), \hyperpage{29}
+  \item rz2phinorm() (eqtools.core.Equilibrium method), \hyperpage{8}
+  \item rz2phinorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{31}
+  \item rz2psi() (eqtools.core.Equilibrium method), \hyperpage{5}
+  \item rz2psi() (eqtools.eqdskreader.EqdskReader method), \hyperpage{29}
+  \item rz2psinorm() (eqtools.core.Equilibrium method), \hyperpage{6}
+  \item rz2psinorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{30}
+  \item rz2rho() (eqtools.core.Equilibrium method), \hyperpage{12}
+  \item rz2rho() (eqtools.eqdskreader.EqdskReader method), \hyperpage{32}
+  \item rz2rmid() (eqtools.core.Equilibrium method), \hyperpage{14}
+  \item rz2rmid() (eqtools.eqdskreader.EqdskReader method), \hyperpage{33}
+  \item rz2volnorm() (eqtools.core.Equilibrium method), \hyperpage{10}
+  \item rz2volnorm() (eqtools.eqdskreader.EqdskReader method), \hyperpage{32}
 
 \end{theindex}
