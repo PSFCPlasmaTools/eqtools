@@ -124,7 +124,7 @@ double tricubic_eval(double a[64], double x, double y, double z)
   return(ret);
 }
 
-void ev(double val[],double dx1[], double dx2[], double dx3[], double f[], int pos[], int indx[], int fx1, int fx2, int fx3, int ix)
+void ev(double val[], double dx1[], double dx2[], double dx3[], double f[], int pos[], int indx[], int fx1, int fx2, int fx3, int ix)
 {
   int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
   double fin[64],a[64];
@@ -173,4 +173,39 @@ void ev(double val[],double dx1[], double dx2[], double dx3[], double f[], int p
       val[loc] = tricubic_eval(a,dx1[loc],dx2[loc],dx3[loc]);
 
     }
+}
+
+int ismonotonic(double val[], int ix)
+{   /* while loop based check of monotonicity,
+       so on very large bases that fail, it 
+       stops early. Starts at end.  */
+  int counter = ix - 1,output = 1;
+  
+  while( counter )
+    { counter--;  
+      if(val[counter] - val[counter + 1] > 0)
+	{
+	  counter = 0;
+	  output = 0;
+	}
+    }
+  return output;
+}
+
+int isregular(double val[], int ix)
+{   /* while loop based check of monotonicity,
+       so on very large bases that fail, it 
+       stops early. Starts at end.  */
+  int counter = ix - 2,output = 1;
+  double temp = val[counter] - val[counter + 1];
+  while( counter )
+    { counter--;
+
+      if(val[counter] - val[counter + 1] != temp)
+	{
+	  counter = 0;
+	  output = 0;
+	}
+    }
+  return output;
 }

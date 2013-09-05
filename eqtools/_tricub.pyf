@@ -18,27 +18,44 @@ C    You should have received a copy of the GNU General Public License
 C    along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 C
 C    Copyright 2013 Ian C. Faust
+     
+   subroutine ev(val,dx1,dx2,dx3,f,pos,indx,fx1,fx2,fx3,ix)
+      intent(c) ev
+      intent(c)
+	     
+      integer intent(hide),depend(dx1) :: ix = len(dx1)
+      integer intent(hide),depend(f) :: fx1 = shape(f,0)
+      integer intent(hide),depend(f) :: fx2 = shape(f,1)
+      integer intent(hide),depend(f) :: fx3 = shape(f,2)
+      double precision intent(in) :: dx1(ix)
+      double precision intent(in) :: dx2(ix)
+      double precision intent(in) :: dx3(ix)
+      integer intent(in) :: pos(ix)
+      integer intent(in) :: indx(ix)
+      integer intent(in) :: ix1(ix)
+      integer intent(in) :: ix2(ix)
+      integer intent(in) :: ix3(ix)
+      double precision intent(in) :: f(fx1,fx2,fx3)
+      double precision intent(out) :: val(ix)
+   end subroutine ev
+     
+   function ismonotonic(val,ix)
+      intent(c) ismonotonic
+      intent(c)
 
-  subroutine ev(val,dx1,dx2,dx3,f,pos,indx,fx1,fx2,fx3,ix)
-		   intent(c) ev
-		   intent(c)
+      integer intent(hide),depened(val) :: ix = len(val)
+      double precision intent(in) :: val(ix)
+     
+   end function ismonotonic  
 
-		   integer intent(hide),depend(dx1) :: ix = len(dx1)
-		   integer intent(hide),depend(f) :: fx1 = shape(f,0)
-		   integer intent(hide),depend(f) :: fx2 = shape(f,1)
-		   integer intent(hide),depend(f) :: fx3 = shape(f,2)
-		   double precision intent(in) :: dx1(ix)
-		   double precision intent(in) :: dx2(ix)
-		   double precision intent(in) :: dx3(ix)
-		   integer intent(in) :: pos(ix)
-		   integer intent(in) :: indx(ix)
-		   integer intent(in) :: ix1(ix)
-		   integer intent(in) :: ix2(ix)
-		   integer intent(in) :: ix3(ix)
-		   double precision intent(in) :: f(fx1,fx2,fx3)
-		   double precision intent(out) :: val(ix)
+   function isregular(val,ix)
+      intent(c) isregular
+      intent(c)
 
-	end subroutine ev
+      integer intent(hide),depened(val) :: ix = len(val)
+      double precision intent(in) :: val(ix)
+     
+   end function isregular(val,ix)
 
 end interface
 end python module _tricub

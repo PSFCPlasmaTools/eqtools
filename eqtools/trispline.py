@@ -31,25 +31,29 @@ class Spline():
     conditions.  It assumes a cartesian grid.
     """
 
-    def __init__(self, z, y, x, f):
+    def __init__(self, z, y, x, f, regular = False):
         """Create a new Spline instance.
 
         Args:
-            z:R: 1-dimensional float. Values of the 1st dimension
-                map to poloidal flux. If R and Z are both scalar values, they
-                are used as the coordinate pair for all of the values in t.
-                Must have the same shape as Z unless the make_grid keyword is
-                set. If the make_grid keyword is True, R must have shape (len_R,).
+            z: 1-dimensional float. Values of the positions of the 1st
+               Dimension of f. Must be monotonic without duplicates.
 
-            y:
+            y: 1-dimensional float. Values of the positions of the 2nd
+               dimension of f. Must be monotonic without duplicates.
 
-            x:
+            x: 1-dimensional float. Values of the positions of the 3rd
+               dimension of f. Must be monotonic without duplicates.
 
-            f: 3-dimensional float array.
+            f: 3-dimensional float array. f[z,y,x]. NaN and Inf will
+               affect interpolation in 4x4x4 space about its value.
         
-        Returns:
+        Kwargs:
+            regular: Boolean. If the grid is known to be regular, forces
+                     matrix-based fast evaluation of interpolation.
         
-
+        Raises:
+            ValueError: If any of the dimensions do not match specified f dim
+            ValueError: If x,y, or z are not monotonic
         Examples:
             A
 
@@ -67,21 +71,46 @@ class Spline():
         #corners
         self._f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] = f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)]
 
-        self._x = scipy.array(x)
-        self._y = scipy.array(y)
-        self._z = scipy.array(z)
+        if len(x) == self._f.shape[2]-2:
+            self._x = scipy.array(x)
+            if not _tricub.ismonotonic(self._x):
+                raise ValueError("x is not monotonic")
+        else:
+            raise ValueError("dimension of x does not match that of f ")
+
+        if len(y) == self._f.shape[1]-2:
+            self._y = scipy.array(y)
+            if not _tricub.ismonotonic(self._y):
+                raise ValueError("y is not monotonic")
+        else:
+            raise ValueError("dimension of y does not match that of f ")
+        
+        if len(z) == self._f.shape[0]-2:
+            self._z = scipy.array(z)
+            if not _tricub.ismonotonic(self._z):
+                raise ValueError("z is not monotonic")
+        else:
+            raise ValueError("dimension of z does not match that of f ")
+
+        self._regular = regular
+        if not regular:
+            for i in x,y,z:
+                regular = regular or bool(_tricub.isregular(i))
+            self._regular = regular
 
     def ev(self, z1, y1, x1):
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
         z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
         val = scipy.nan*scipy.zeros(x.shape)
+
         if scipy.any(x < self._x[0]) or scipy.any(x > self._x[-1]):
             raise ValueError('x value exceeds bounds of interpolation grid ')
         if scipy.any(y < self._y[0]) or scipy.any(y > self._y[-1]):
             raise ValueError('y value exceeds bounds of interpolation grid ')
         if scipy.any(z < self._z[0]) or scipy.any(z > self._z[-1]):
             raise ValueError('z value exceeds bounds of interpolation grid ')
+
         xinp = scipy.array(scipy.where(scipy.isfinite(x)))
         yinp = scipy.array(scipy.where(scipy.isfinite(y)))
         zinp = scipy.array(scipy.where(scipy.isfinite(z)))
@@ -96,11 +125,14 @@ class Spline():
             iz = iz.clip(0,self._z.size - 1) - 1
             pos = ix + self._f.shape[1]*(iy + self._f.shape[2]*iz)
             indx = scipy.argsort(pos) #each voxel is described uniquely, and this is passed to speed evaluation.
-            dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
-            dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
-            dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
-            val[inp] = _tricub.ev(dx, dy, dz, self._f, pos, indx)  
- 
+            if self._regular:
+                dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
+                dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
+                dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
+                val[inp] = _tricub.ev(dx, dy, dz, self._f, pos, indx)  
+            else:
+                val[inp] = _tricub.ev2(x, y, z, self._f, pos, indx)
+
         return(val)
 
 
