@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="eqtools 0.0 documentation" href="index.html" />
-    <link rel="prev" title="Welcome to eqtools’s documentation!" href="index.html" /> 
+    <link rel="prev" title="eqtools: Tools for interacting with magnetic equilibria" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +39,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to eqtools’s documentation!"
+          <a href="index.html" title="eqtools: Tools for interacting with magnetic equilibria"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">eqtools 0.0 documentation</a> &raquo;</li> 
       </ul>
@@ -54,757 +54,7 @@
 <h1>eqtools Package<a class="headerlink" href="#eqtools-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
 <h2><tt class="xref py py-mod docutils literal"><span class="pre">eqtools</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-eqtools.__init__"></span></div>
-<div class="section" id="module-eqtools.CModEFIT">
-<span id="cmodefit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">CModEFIT</span></tt> Module<a class="headerlink" href="#module-eqtools.CModEFIT" title="Permalink to this headline">¶</a></h2>
-<p>This module provides classes for working with C-Mod EFIT data.</p>
-<dl class="class">
-<dt id="eqtools.CModEFIT.CModEFITTree">
-<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTree</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#eqtools.EFIT.EFITTree" title="eqtools.EFIT.EFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.EFIT.EFITTree</span></tt></a></p>
-<p>Inherits <tt class="xref py py-class docutils literal"><span class="pre">EFITTree</span></tt> class. Machine-specific data
-handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
-and shot, stores as object attributes. Each EFIT variable or set of
-variables is recovered with a corresponding getter method. Essential data
-for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
-data are pulled at the first request and stored for subsequent usage.</p>
-<p>Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
-in instance attributes.  Core attributes are populated from the MDS tree on initialization.
-Additional attributes are initialized as None, filled on the first request to the object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>shot</strong> &#8211;
-(long) int. C-Mod shot index (long)</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last">
-<li><p class="first"><strong>tree</strong> &#8211;
-str. optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217;
-(i.e., EFIT data are under analysis::top.efit.results).
-For any string TREE (such as &#8216;EFIT20&#8217;) other than &#8216;ANALYSIS&#8217;,
-data are taken from TREE::top.results.</p>
-</li>
-<li><p class="first"><strong>length_unit</strong> &#8211;
-str. Sets the base unit used for any quantity whose
-dimensions are length to any power. Valid options are:</p>
-<blockquote>
-<div><table border="1" class="docutils">
-<colgroup>
-<col width="11%" />
-<col width="89%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td>&#8216;m&#8217;</td>
-<td>meters</td>
-</tr>
-<tr class="row-even"><td>&#8216;cm&#8217;</td>
-<td>centimeters</td>
-</tr>
-<tr class="row-odd"><td>&#8216;mm&#8217;</td>
-<td>millimeters</td>
-</tr>
-<tr class="row-even"><td>&#8216;in&#8217;</td>
-<td>inches</td>
-</tr>
-<tr class="row-odd"><td>&#8216;ft&#8217;</td>
-<td>feet</td>
-</tr>
-<tr class="row-even"><td>&#8216;yd&#8217;</td>
-<td>yards</td>
-</tr>
-<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
-<td>smoots</td>
-</tr>
-<tr class="row-even"><td>&#8216;cubit&#8217;</td>
-<td>cubits</td>
-</tr>
-<tr class="row-odd"><td>&#8216;hand&#8217;</td>
-<td>hands</td>
-</tr>
-<tr class="row-even"><td>&#8216;default&#8217;</td>
-<td>whatever the default in the tree is (no conversion is performed, units may be inconsistent)</td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
-<p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
-</li>
-<li><p class="first"><strong>tspline</strong> &#8211;
-Boolean. Sets whether or not interpolation in time is
-performed using a tricubic spline or nearest-neighbor
-interpolation. Tricubic spline interpolation requires at least
-four complete equilibria at different times. It is also assumed
-that they are functionally correlated, and that parameters do
-not vary out of their boundaries (derivative = 0 boundary
-condition). Default is False (use nearest neighbor interpolation).</p>
-</li>
-<li><p class="first"><strong>fast</strong> &#8211;
-Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
-finding is used. If True, the timebase must be monotonically
-increasing. Default is False (use slower, safer method).</p>
-</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="eqtools.CModEFIT.CModEFITTree.getMachineCrossSection">
-<tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree.getMachineCrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Pulls C-Mod cross-section data from tree, converts to plottable
-vector format for use in other plotting routines</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>shot</strong> &#8211;
-(long) int. C-Mod shot index (used for tree access)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>(x, y)</em> &#8211;
-The coordinates of the machine cross-section.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="eqtools.CModEFIT.CModEFITTreeProp">
-<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTreeProp</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTreeProp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTreeProp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#eqtools.CModEFIT.CModEFITTree" title="eqtools.CModEFIT.CModEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.CModEFIT.CModEFITTree</span></tt></a>, <a class="reference internal" href="#eqtools.core.PropertyAccessMixin" title="eqtools.core.PropertyAccessMixin"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.PropertyAccessMixin</span></tt></a></p>
-<p>CModEFITTree with the PropertyAccessMixin added to enable property-style
-access. This is good for interactive use, but may drag the performance down.</p>
-<p>Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
-in instance attributes.  Core attributes are populated from the MDS tree on initialization.
-Additional attributes are initialized as None, filled on the first request to the object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>shot</strong> &#8211;
-(long) int. C-Mod shot index (long)</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last">
-<li><p class="first"><strong>tree</strong> &#8211;
-str. optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217;
-(i.e., EFIT data are under analysis::top.efit.results).
-For any string TREE (such as &#8216;EFIT20&#8217;) other than &#8216;ANALYSIS&#8217;,
-data are taken from TREE::top.results.</p>
-</li>
-<li><p class="first"><strong>length_unit</strong> &#8211;
-str. Sets the base unit used for any quantity whose
-dimensions are length to any power. Valid options are:</p>
-<blockquote>
-<div><table border="1" class="docutils">
-<colgroup>
-<col width="11%" />
-<col width="89%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td>&#8216;m&#8217;</td>
-<td>meters</td>
-</tr>
-<tr class="row-even"><td>&#8216;cm&#8217;</td>
-<td>centimeters</td>
-</tr>
-<tr class="row-odd"><td>&#8216;mm&#8217;</td>
-<td>millimeters</td>
-</tr>
-<tr class="row-even"><td>&#8216;in&#8217;</td>
-<td>inches</td>
-</tr>
-<tr class="row-odd"><td>&#8216;ft&#8217;</td>
-<td>feet</td>
-</tr>
-<tr class="row-even"><td>&#8216;yd&#8217;</td>
-<td>yards</td>
-</tr>
-<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
-<td>smoots</td>
-</tr>
-<tr class="row-even"><td>&#8216;cubit&#8217;</td>
-<td>cubits</td>
-</tr>
-<tr class="row-odd"><td>&#8216;hand&#8217;</td>
-<td>hands</td>
-</tr>
-<tr class="row-even"><td>&#8216;default&#8217;</td>
-<td>whatever the default in the tree is (no conversion is performed, units may be inconsistent)</td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
-<p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
-</li>
-<li><p class="first"><strong>tspline</strong> &#8211;
-Boolean. Sets whether or not interpolation in time is
-performed using a tricubic spline or nearest-neighbor
-interpolation. Tricubic spline interpolation requires at least
-four complete equilibria at different times. It is also assumed
-that they are functionally correlated, and that parameters do
-not vary out of their boundaries (derivative = 0 boundary
-condition). Default is False (use nearest neighbor interpolation).</p>
-</li>
-<li><p class="first"><strong>fast</strong> &#8211;
-Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
-finding is used. If True, the timebase must be monotonically
-increasing. Default is False (use slower, safer method).</p>
-</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</div>
-<div class="section" id="module-eqtools.EFIT">
-<span id="efit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">EFIT</span></tt> Module<a class="headerlink" href="#module-eqtools.EFIT" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="eqtools.EFIT.EFITTree">
-<em class="property">class </em><tt class="descclassname">eqtools.EFIT.</tt><tt class="descname">EFITTree</tt><big>(</big><em>shot</em>, <em>tree</em>, <em>root</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.Equilibrium</span></tt></a></p>
-<p>Inherits Equilibrium class. EFIT-specific data handling class for machines using
-standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
-need overriding in a machine-specific implementation.
-Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
-Each EFIT variable or set of variables is recovered with a corresponding getter method.
-Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
-Additional data are pulled at the first request and stored for subsequent usage.</p>
-<p>Intializes EFITTree object. Pulls data from MDS tree for storage in
-instance attributes. Core attributes are populated from the MDS tree
-on initialization. Additional attributes are initialized as None,
-filled on the first request to the object.</p>
-<p>INPUTS:
-shot:   shot index
-tree:   MDSplus tree to open to fetch EFIT data.
-root:   Root path for EFIT data in MDSplus tree.</p>
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.__str__">
-<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.__str__" title="Permalink to this definition">¶</a></dt>
-<dd><p>string formatting for EFITTree class.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getInfo">
-<tt class="descname">getInfo</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns namedtuple of shot information
-outputs:
-namedtuple containing</p>
-<blockquote>
-<div>shot:   C-Mod shot index (long)
-tree:   EFIT tree (string)
-nr:     size of R-axis for spatial grid
-nz:     size of Z-axis for spatial grid
-nt:     size of timebase for flux grid</div></blockquote>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getTimeBase">
-<tt class="descname">getTimeBase</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getTimeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getTimeBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT time base vector</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getFluxGrid">
-<tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT flux grid, [t,z,r]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getRGrid">
-<tt class="descname">getRGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT R-axis [r]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getZGrid">
-<tt class="descname">getZGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getZGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT Z-axis [z]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getFluxAxis">
-<tt class="descname">getFluxAxis</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxAxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxAxis" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns psi on magnetic axis [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getFluxLCFS">
-<tt class="descname">getFluxLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxLCFS" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns psi at separatrix [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getFluxVol">
-<tt class="descname">getFluxVol</tt><big>(</big><em>length_unit=3</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxVol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxVol" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns volume within flux surface [psi,t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getVolLCFS">
-<tt class="descname">getVolLCFS</tt><big>(</big><em>length_unit=3</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getVolLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getVolLCFS" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns volume within LCFS [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getRmidPsi">
-<tt class="descname">getRmidPsi</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRmidPsi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRmidPsi" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns maximum major radius of each flux surface [t,psi]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getRLCFS">
-<tt class="descname">getRLCFS</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRLCFS" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns R-values of LCFS position [t,n]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getZLCFS">
-<tt class="descname">getZLCFS</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getZLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getZLCFS" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns Z-values of LCFS position [t,n]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getFluxPres">
-<tt class="descname">getFluxPres</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxPres"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxPres" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns pressure at flux surface [psi,t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getElongation">
-<tt class="descname">getElongation</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getElongation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getElongation" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns LCFS elongation [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getUpperTriangularity">
-<tt class="descname">getUpperTriangularity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getUpperTriangularity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getUpperTriangularity" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns LCFS upper triangularity [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getLowerTriangularity">
-<tt class="descname">getLowerTriangularity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getLowerTriangularity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getLowerTriangularity" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns LCFS lower triangularity [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getShaping">
-<tt class="descname">getShaping</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getShaping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getShaping" title="Permalink to this definition">¶</a></dt>
-<dd><p>pulls LCFS elongation and upper/lower triangularity
-returns namedtuple containing {kappa, delta_u, delta_l}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getMagR">
-<tt class="descname">getMagR</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getMagR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getMagR" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns magnetic-axis major radius [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getMagZ">
-<tt class="descname">getMagZ</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getMagZ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getMagZ" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns magnetic-axis Z [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getAreaLCFS">
-<tt class="descname">getAreaLCFS</tt><big>(</big><em>length_unit=2</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getAreaLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getAreaLCFS" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns LCFS cross-sectional area [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getAOut">
-<tt class="descname">getAOut</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getAOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getAOut" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns outboard-midplane minor radius at LCFS [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getRmidOut">
-<tt class="descname">getRmidOut</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRmidOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRmidOut" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns outboard-midplane major radius [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getGeometry">
-<tt class="descname">getGeometry</tt><big>(</big><em>length_unit=None</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getGeometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getGeometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>pulls dimensional geometry parameters
-returns namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQProfile">
-<tt class="descname">getQProfile</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQProfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQProfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns safety factor q [psi,t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQ0">
-<tt class="descname">getQ0</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ0" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns q on magnetic axis [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQ95">
-<tt class="descname">getQ95</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ95"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ95" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns q at 95% flux surface [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQLCFS">
-<tt class="descname">getQLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQLCFS" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns q on LCFS [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQ1Surf">
-<tt class="descname">getQ1Surf</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ1Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ1Surf" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns outboard-midplane minor radius of q=1 surface [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQ2Surf">
-<tt class="descname">getQ2Surf</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ2Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ2Surf" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns outboard-midplane minor radius of q=2 surface [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQ3Surf">
-<tt class="descname">getQ3Surf</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ3Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ3Surf" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns outboard-midplane minor radius of q=3 surface [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getQs">
-<tt class="descname">getQs</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQs" title="Permalink to this definition">¶</a></dt>
-<dd><p>pulls q values
-returns namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getBtVac">
-<tt class="descname">getBtVac</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBtVac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBtVac" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns on-axis vacuum toroidal field [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getBtPla">
-<tt class="descname">getBtPla</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBtPla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBtPla" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns on-axis plasma toroidal field [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getBpAvg">
-<tt class="descname">getBpAvg</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBpAvg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBpAvg" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns average poloidal field [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getFields">
-<tt class="descname">getFields</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFields" title="Permalink to this definition">¶</a></dt>
-<dd><p>pulls vacuum and plasma toroidal field, avg poloidal field
-returns namedtuple containing {btaxv,btaxp,bpolav}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getIpCalc">
-<tt class="descname">getIpCalc</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getIpCalc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getIpCalc" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated plasma current [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getIpMeas">
-<tt class="descname">getIpMeas</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getIpMeas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getIpMeas" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns magnetics-measured plasma current [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getJp">
-<tt class="descname">getJp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getJp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getJp" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getBetaT">
-<tt class="descname">getBetaT</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBetaT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBetaT" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated toroidal beta [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getBetaP">
-<tt class="descname">getBetaP</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBetaP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBetaP" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated poloidal beta [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getLi">
-<tt class="descname">getLi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getLi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getLi" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated internal inductance [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getBetas">
-<tt class="descname">getBetas</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBetas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBetas" title="Permalink to this definition">¶</a></dt>
-<dd><p>pulls calculated betap, betat, internal inductance
-returns namedtuple containing {betat,betap,Li}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getDiamagFlux">
-<tt class="descname">getDiamagFlux</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagFlux" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns measured diamagnetic-loop flux [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getDiamagBetaT">
-<tt class="descname">getDiamagBetaT</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagBetaT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagBetaT" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns diamagnetic-loop toroidal beta [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getDiamagBetaP">
-<tt class="descname">getDiamagBetaP</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagBetaP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagBetaP" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns diamagnetic-loop avg poloidal beta [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getDiamagTauE">
-<tt class="descname">getDiamagTauE</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagTauE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagTauE" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns diamagnetic-loop energy confinement time [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getDiamagWp">
-<tt class="descname">getDiamagWp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagWp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagWp" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns diamagnetic-loop plasma stored energy [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getDiamag">
-<tt class="descname">getDiamag</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamag" title="Permalink to this definition">¶</a></dt>
-<dd><p>pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
-returns namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getWMHD">
-<tt class="descname">getWMHD</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getWMHD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getWMHD" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated MHD stored energy [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getTauMHD">
-<tt class="descname">getTauMHD</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getTauMHD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getTauMHD" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated MHD energy confinement time [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getPinj">
-<tt class="descname">getPinj</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getPinj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getPinj" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated injected power [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getWbdot">
-<tt class="descname">getWbdot</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getWbdot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getWbdot" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated d/dt of magnetic stored energy [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getWpdot">
-<tt class="descname">getWpdot</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getWpdot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getWpdot" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns EFIT-calculated d/dt of plasma stored energy [t]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getEnergy">
-<tt class="descname">getEnergy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getEnergy" title="Permalink to this definition">¶</a></dt>
-<dd><p>pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy
-returns namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getCurrentSign">
-<tt class="descname">getCurrentSign</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getCurrentSign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getCurrentSign" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the sign of the current, based on the check in Steve Wolfe&#8217;s
-IDL implementation efit_rz2psi.pro.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.EFIT.EFITTree.getParam">
-<tt class="descname">getParam</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getParam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getParam" title="Permalink to this definition">¶</a></dt>
-<dd><p>backup function - path to parameter as input, returns desired variable
-acts as wrapper for MDS call</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-eqtools.FromArrays">
-<span id="fromarrays-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">FromArrays</span></tt> Module<a class="headerlink" href="#module-eqtools.FromArrays" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="eqtools.FromArrays.ArrayEquilibrium">
-<em class="property">class </em><tt class="descclassname">eqtools.FromArrays.</tt><tt class="descname">ArrayEquilibrium</tt><big>(</big><em>psiRZ</em>, <em>rGrid</em>, <em>zGrid</em>, <em>time</em>, <em>q</em>, <em>fluxVol</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.Equilibrium</span></tt></a></p>
-<p>Class to represent an equilibrium specified as arrays of data.</p>
-<p>Create ArrayEquilibrium instance from arrays of data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
-<li><strong>psiRZ</strong> &#8211;
-Array-like, (M, N, P). Flux values at M times, N Z locations
-and P R locations.</li>
-<li><strong>rGrid</strong> &#8211;
-Array-like, (P,). R coordinates that psiRZ is given at.</li>
-<li><strong>zGrid</strong> &#8211;
-Array-like, (N,). Z coordinates that psiRZ is given at.</li>
-<li><strong>time</strong> &#8211;
-Array-like, (M,). Times that psiRZ is given at.</li>
-<li><strong>q</strong> &#8211;
-Array-like, (Q, M). q profile evaluated at Q values of psinorm
-from 0 to 1, given at M times.</li>
-<li><strong>fluxVol</strong> &#8211;
-Array-like, (S, M). Flux surface volumes evaluated at S
-values of psinorm from 0 to 1, given at M times.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>length_unit</strong> &#8211;
-String. Base unit for any quantity whose dimensions
-are length to any power. Default is &#8216;m&#8217;. Valid options are:</p>
-<blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;default&#8217;   whatever the default in the tree is (no</p>
-<blockquote>
-<div><p>conversion is performed, units may be
-inconsistent)</p>
-</div></blockquote>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The ArrayEquilibrium instance created.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getTimeBase">
-<tt class="descname">getTimeBase</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getTimeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getTimeBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the time base vector, array dimensions are (M,).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getFluxGrid">
-<tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getFluxGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the flux array, dimensions are (M, N, P), corresponding to (time, Z, R).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getRGrid">
-<tt class="descname">getRGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getRGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getRGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the radial grid, dimensions are (P,).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getZGrid">
-<tt class="descname">getZGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getZGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the vertical grid, dimensions are (N,).</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-eqtools.afilereader">
-<span id="afilereader-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">afilereader</span></tt> Module<a class="headerlink" href="#module-eqtools.afilereader" title="Permalink to this headline">¶</a></h2>
-<p>This module contains the AFileReader class, a lightweight data
-handler for a-file (time-history) datasets.</p>
-<dl class="docutils">
-<dt>Classes:</dt>
-<dd><dl class="first last docutils">
-<dt>AFileReader: Data-storage class for a-file data.  Reads</dt>
-<dd>data from ASCII a-file, storing as copy-safe object
-attributes.</dd>
-</dl>
-</dd>
-</dl>
-<dl class="class">
-<dt id="eqtools.afilereader.AFileReader">
-<em class="property">class </em><tt class="descclassname">eqtools.afilereader.</tt><tt class="descname">AFileReader</tt><big>(</big><em>afile</em><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.</p>
-<p>A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is
-read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
-EFIT variable names.</p>
-<p>initialize object, reading from file.</p>
-<p>INPUTS:
-afile: (str) path to a-file</p>
-<dl class="method">
-<dt id="eqtools.afilereader.AFileReader.__str__">
-<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader.__str__" title="Permalink to this definition">¶</a></dt>
-<dd><p>overrides default __str__method with more useful output.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.afilereader.AFileReader.__getattribute__">
-<tt class="descname">__getattribute__</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader.__getattribute__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader.__getattribute__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy-safe attribute retrieval method overriding default object.__getattribute__.</p>
-<p>Tries to retrieve attribute as-written (first check for default object attributes).
-If that fails, looks for pseudo-private attributes, marked by preceding underscore,
-to retrieve data values.  If this fails, raise AttributeError.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>name</strong> &#8211;
-String.  Name (without leading underscore for data variables) of attribute.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">AttributeError</span></tt> &#8211; 
-if no attribute can be found.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="eqtools.afilereader.AFileReader.__setattr__">
-<tt class="descname">__setattr__</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader.__setattr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader.__setattr__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy-safe attribute setting method overriding default object.__setattr__.</p>
-<p>Raises error if object already has attribute _{name} for input name,
-as such an attribute would interfere with automatic property generation in
-__getattribute__.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>name</strong> &#8211;
-String.  Attribute name.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">AttributeError</span></tt> &#8211; 
-if attempting to create attribute with protected
-pseudo-private name.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<span class="target" id="module-eqtools.__init__"></span><p>Provides classes for interacting with magnetic equilibrium data in a variety of formats.</p>
 </div>
 <div class="section" id="module-eqtools.core">
 <span id="core-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">core</span></tt> Module<a class="headerlink" href="#module-eqtools.core" title="Permalink to this headline">¶</a></h2>
@@ -842,7 +92,8 @@ each getter method.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>name</strong> &#8211;
-String. Name of the attribute to retrieve. If the instance
+String.
+Name of the attribute to retrieve. If the instance
 has an attribute with this name, the attribute is returned. If
 the instance does not have an attribute with this name but does
 have a method called &#8216;get&#8217;+name, this method is called and the
@@ -870,9 +121,11 @@ property generation in __getattribute__.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>name</strong> &#8211;
-String. Name of the attribute to set.</li>
+String.
+Name of the attribute to set.</li>
 <li><strong>value</strong> &#8211;
-Object. Value to set the attribute to.</li>
+Object.
+Value to set the attribute to.</li>
 </ul>
 </td>
 </tr>
@@ -888,7 +141,7 @@ If a method called &#8216;get&#8217;+name already exists.</p>
 
 <dl class="class">
 <dt id="eqtools.core.Equilibrium">
-<em class="property">class </em><tt class="descclassname">eqtools.core.</tt><tt class="descname">Equilibrium</tt><big>(</big><em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">eqtools.core.</tt><tt class="descname">Equilibrium</tt><big>(</big><em>length_unit='m'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Abstract class of data handling object for magnetic reconstruction outputs.</p>
 <p>Defines the mapping routines and method fingerprints necessary.
@@ -896,9 +149,12 @@ Each variable or set of variables is recovered with a corresponding
 getter method. Essential data for mapping are pulled on initialization
 (psirz grid, for example) to frontload timing overhead. Additional data
 are pulled at the first request and stored for subsequent usage.</p>
-<p>NOTE: this abstract class should not be used directly. Device- and code-
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This abstract class should not be used directly. Device- and code-
 specific subclasses are set up to account for inter-device/-code differences
 in data storage.</p>
+</div>
 <p>Create a new Equilibrium instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -952,7 +208,8 @@ dimensions are length to any power. Valid options are:</p>
 <p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
 </li>
 <li><p class="first"><strong>tspline</strong> &#8211;
-Boolean. Sets whether or not interpolation in time is
+Boolean.
+Sets whether or not interpolation in time is
 performed using a tricubic spline or nearest-neighbor
 interpolation. Tricubic spline interpolation requires at least
 four complete equilibria at different times. It is also assumed
@@ -960,8 +217,9 @@ that they are functionally correlated, and that parameters do
 not vary out of their boundaries (derivative = 0 boundary
 condition). Default is False (use nearest neighbor interpolation).</p>
 </li>
-<li><p class="first"><strong>fast</strong> &#8211;
-Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
+<li><p class="first"><strong>monotonic</strong> &#8211;
+Boolean.
+Sets whether or not the &#8220;monotonic&#8221; form of time window
 finding is used. If True, the timebase must be monotonically
 increasing. Default is False (use slower, safer method).</p>
 </li>
@@ -1008,19 +266,22 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>R</strong> &#8211;
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to poloidal flux. If R and Z are both scalar values, they
 are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make_grid keyword is
 set. If the make_grid keyword is True, R must have shape (len_R,).</li>
 <li><strong>Z</strong> &#8211;
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to poloidal flux. If R and Z are both scalar values, they
 are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make_grid keyword is
 set. If the make_grid keyword is True, Z must have shape (len_Z,).</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make_grid keyword is True,
@@ -1031,14 +292,16 @@ t must have shape (len(Z), len(R)).</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
 <li><p class="first"><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (psi, time_idxs),
+Boolean.
+Set to True to return a tuple of (psi, time_idxs),
 where time_idxs is the array of time indices actually used in
 evaluating psi with nearest-neighbor interpolation. (This is
 mostly present as an internal helper.) Default is False (only
 return psi).</p>
 </li>
 <li><p class="first"><strong>make_grid</strong> &#8211;
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1049,7 +312,8 @@ returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).</p>
 </li>
 <li><p class="first"><strong>length_unit</strong> &#8211;
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:</p>
 <blockquote>
 <div><table border="1" class="docutils">
@@ -1097,20 +361,18 @@ value is 1 (R and Z given in meters).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>psi</em> &#8211;
-Array or scalar float. If all of the input arguments are scalar,</p>
-<blockquote>
-<div><p>then a scalar is returned. Otherwise, a scipy Array instance is
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>psi or (psi, time_idxs)</p>
+<ul class="simple">
+<li><strong>psi</strong> - Array or scalar float. If all of the input arguments are scalar,
+then a scalar is returned. Otherwise, a scipy Array instance is
 returned. If R and Z both have the same shape then psi has this
 shape as well. If the make_grid keyword was True then psi has
-shape (len(Z), len(R)).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as psi. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+shape (len(Z), len(R)).</li>
+<li><strong>time_idxs</strong> - Array with same shape as psi. The indices (in the
+timebase as returned by <a class="reference internal" href="#eqtools.core.Equilibrium.getTimeBase" title="eqtools.core.Equilibrium.getTimeBase"><tt class="xref py py-meth docutils literal"><span class="pre">getTimeBase()</span></tt></a>) that were used
+for nearest-neighbor interpolation. Only returned if return_t
+is True.</li>
+</ul>
 </p>
 </td>
 </tr>
@@ -1148,9 +410,10 @@ the values are all the same:</p>
 <dt id="eqtools.core.Equilibrium.rz2psinorm">
 <tt class="descname">rz2psinorm</tt><big>(</big><em>R</em>, <em>Z</em>, <em>t</em>, <em>return_t=False</em>, <em>sqrt=False</em>, <em>make_grid=False</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.rz2psinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.rz2psinorm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the normalized poloidal flux at the given (R, Z, t).</p>
-<p>Uses the definition:
-psi_norm = (psi - psi(0)) / (psi(a) - psi(0))</p>
-<p>If tspline is False for this Equilibrium instance, uses
+<p>Uses the definition:</p>
+<div class="math">
+<p><img src="_images/math/8cfc9918d98ef074d444e15f78cbe36644b86146.png" alt="\texttt{psi\_norm} = \frac{\psi - \psi(0)}{\psi(a) - \psi(0)}"/></p>
+</div><p>If tspline is False for this Equilibrium instance, uses
 scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
 Z. Finds the nearest time slices to those given: nearest-neighbor
 interpolation in time. Otherwise, uses the tricubic package to perform
@@ -1161,21 +424,24 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>R</strong> &#8211;
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized poloidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as Z unless the make_grid
 keyword is set. If the make_grid keyword is True, R must have
 shape (len_R,).</li>
 <li><strong>Z</strong> &#8211;
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized poloidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as R unless the make_grid
 keyword is set. If the make_grid keyword is True, Z must have
 shape (len_Z,).</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make_grid keyword is True,
@@ -1186,21 +452,24 @@ t must have shape (len(Z), len(R)).</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
 <li><p class="first"><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (psinorm,
+Boolean.
+Set to True to return a tuple of (psinorm,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating psi with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return psinorm).</p>
 </li>
 <li><p class="first"><strong>sqrt</strong> &#8211;
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 flux. Only the square root of positive psi_norm values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe&#8217;s IDL implementation efit_rz2rho.pro. Default is False
 (return psinorm).</p>
 </li>
 <li><p class="first"><strong>make_grid</strong> &#8211;
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1211,19 +480,48 @@ returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).</p>
 </li>
 <li><p class="first"><strong>length_unit</strong> &#8211;
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:</p>
 <blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;cubit&#8217;     cubits
-&#8216;hand&#8217;      hands
-&#8216;default&#8217;   meters</p>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>meters</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>If length_unit is 1 or None, meters are assumed. The default
 value is 1 (R and Z given in meters).</p>
@@ -1231,51 +529,60 @@ value is 1 (R and Z given in meters).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>psinorm</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>psinorm or (psinorm, time_idxs)</p>
+<ul class="simple">
+<li><strong>psinorm</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. If R and Z both have the same shape then
 psinorm has this shape as well. If the make_grid keyword was
-True then psinorm has shape (len(Z), len(R)).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as psinorm. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+True then psinorm has shape (len(Z), len(R)).</li>
+<li><strong>time_idxs</strong> - Array with same shape as psinorm. The indices (in the
+timebase returned by <a class="reference internal" href="#eqtools.core.Equilibrium.getTimeBase" title="eqtools.core.Equilibrium.getTimeBase"><tt class="xref py py-meth docutils literal"><span class="pre">getTimeBase()</span></tt></a>) that were used for
+nearest-neighbor interpolation. Only returned if return_t is True.</li>
+</ul>
 </p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single psinorm value at R=0.6m, Z=0.0m, t=0.26s:
-psi_val = Eq_instance.rz2psinorm(0.6, 0, 0.26)</p>
+<p>Find single psinorm value at R=0.6m, Z=0.0m, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2psinorm</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
 single time t=0.26s. Note that the Z vector must be fully specified,
-even if the values are all the same:
-psi_arr = Eq_instance.rz2psinorm([0.6, 0.8], [0, 0], 0.26)</p>
-<p>Find psinorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:
-psi_arr = Eq_instance.rz2psinorm(0.6, 0, [0.2, 0.3])</p>
-<p>Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
-psi_arr = Eq_instance.rz2psinorm([0.6, 0.5], [0, 0.2], [0.2, 0.3])</p>
+even if the values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2psinorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find psinorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2psinorm</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2psinorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>Find psinorm values on grid defined by 1D vector of radial positions R
-and 1D vector of vertical positions Z at time t=0.2s:
-psi_mat = Eq_instance.rz2psinorm(R, Z, 0.2, make_grid=True)</p>
+and 1D vector of vertical positions Z at time t=0.2s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_mat</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2psinorm</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">make_grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.rz2phinorm">
 <tt class="descname">rz2phinorm</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.rz2phinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.rz2phinorm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the normalized toroidal flux.</p>
-<p>Uses the definitions:
-phi = integral(q(psi), dpsi)
-phi_norm = phi / phi(a),
-based on the IDL version efit_rz2rho.pro by Steve Wolfe.</p>
+<p>Uses the definitions:</p>
+<div class="math">
+<p><img src="_images/math/3f388581bfa0ab33aac72eef1e933e63537edd5d.png" alt="\texttt{phi} &amp;= \int q(\psi)\,d\psi
+
+\texttt{phi\_norm} &amp;= \frac{\phi}{\phi(a)}"/></p>
+</div><p>This is based on the IDL version efit_rz2rho.pro by Steve Wolfe.</p>
 <p>If tspline is False for this Equilibrium instance, uses
 scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
 Z. Finds the nearest time slices to those given: nearest-neighbor
@@ -1287,21 +594,24 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>R</strong> &#8211;
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized toroidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as Z unless the make_grid
 keyword is set. If the make_grid keyword is True, R must have
 shape (len_R,).</li>
 <li><strong>Z</strong> &#8211;
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized toroidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as R unless the make_grid
 keyword is set. If the make_grid keyword is True, Z must have
 shape (len_Z,).</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make_grid keyword is True,
@@ -1312,21 +622,24 @@ t must have shape (len(Z), len(R)).</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
 <li><p class="first"><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (phinorm,
+Boolean.
+Set to True to return a tuple of (phinorm,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating phinorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return phinorm).</p>
 </li>
 <li><p class="first"><strong>sqrt</strong> &#8211;
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 flux. Only the square root of positive phi_norm values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe&#8217;s IDL implementation efit_rz2rho.pro. Default is False
 (return phinorm).</p>
 </li>
 <li><p class="first"><strong>make_grid</strong> &#8211;
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1337,11 +650,13 @@ returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).</p>
 </li>
 <li><p class="first"><strong>rho</strong> &#8211;
-Boolean. For phinorm, this should always be set to False, the
+Boolean.
+For phinorm, this should always be set to False, the
 default value.</p>
 </li>
 <li><p class="first"><strong>kind</strong> &#8211;
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to phinorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 &#8216;linear&#8217;, &#8216;nearest&#8217;, &#8216;zero&#8217;, &#8216;slinear&#8217;, &#8216;quadratic&#8217;, &#8216;cubic&#8217;
@@ -1352,19 +667,48 @@ some builds of scipy, this can cause problems, in which case
 you should try &#8216;linear&#8217; until you can rebuild your scipy install.</p>
 </li>
 <li><p class="first"><strong>length_unit</strong> &#8211;
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:</p>
 <blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;cubit&#8217;     cubits
-&#8216;hand&#8217;      hands
-&#8216;default&#8217;   meters</p>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>meters</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>If length_unit is 1 or None, meters are assumed. The default
 value is 1 (R and Z given in meters).</p>
@@ -1372,41 +716,49 @@ value is 1 (R and Z given in meters).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>phinorm</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>phinorm or (phinorm, time_idxs)</p>
+<ul class="simple">
+<li><strong>phinorm</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. If R and Z both have the same shape then
 phinorm has this shape as well. If the make_grid keyword was
-True then phinorm has shape (len(Z), len(R)).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as phinorm. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+True then phinorm has shape (len(Z), len(R)).</li>
+<li><strong>time_idxs</strong> - Array with same shape as phinorm. The indices (in
+the timebase returned by <a class="reference internal" href="#eqtools.core.Equilibrium.getTimeBase" title="eqtools.core.Equilibrium.getTimeBase"><tt class="xref py py-meth docutils literal"><span class="pre">getTimeBase()</span></tt></a>) that were used
+for nearest-neighbor interpolation. Only returned if return_t is
+True.</li>
+</ul>
 </p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single phinorm value at R=0.6m, Z=0.0m, t=0.26s:
-phi_val = Eq_instance.rz2phinorm(0.6, 0, 0.26)</p>
+<p>Find single phinorm value at R=0.6m, Z=0.0m, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phi_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2phinorm</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find phinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
 single time t=0.26s. Note that the Z vector must be fully specified,
-even if the values are all the same:
-phi_arr = Eq_instance.rz2phinorm([0.6, 0.8], [0, 0], 0.26)</p>
-<p>Find phinorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:
-phi_arr = Eq_instance.rz2phinorm(0.6, 0, [0.2, 0.3])</p>
-<p>Find phinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
-phi_arr = Eq_instance.rz2phinorm([0.6, 0.5], [0, 0.2], [0.2, 0.3])</p>
+even if the values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2phinorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find phinorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2phinorm</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find phinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2phinorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>Find phinorm values on grid defined by 1D vector of radial positions R
-and 1D vector of vertical positions Z at time t=0.2s:
-phi_mat = Eq_instance.rz2phinorm(R, Z, 0.2, make_grid=True)</p>
+and 1D vector of vertical positions Z at time t=0.2s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phi_mat</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2phinorm</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">make_grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -1425,19 +777,22 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>R</strong> &#8211;
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized volume. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make_grid keyword is
 set. If the make_grid keyword is True, R must have shape (len_R,).</li>
 <li><strong>Z</strong> &#8211;
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized volume. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make_grid keyword is
 set. If the make_grid keyword is True, Z must have shape (len_Z,).</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make_grid keyword is True,
@@ -1448,21 +803,24 @@ t must have shape (len(Z), len(R)).</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
 <li><p class="first"><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (volnorm,
+Boolean.
+Set to True to return a tuple of (volnorm,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return volnorm).</p>
 </li>
 <li><p class="first"><strong>sqrt</strong> &#8211;
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 volume. Only the square root of positive volnorm values is
 taken. Negative values are replaced with zeros, consistent with
 Steve Wolfe&#8217;s IDL implementation efit_rz2rho.pro. Default is
 False (return volnorm).</p>
 </li>
 <li><p class="first"><strong>make_grid</strong> &#8211;
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1473,11 +831,13 @@ returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).</p>
 </li>
 <li><p class="first"><strong>rho</strong> &#8211;
-Boolean. For volnorm, this should always be set to False, the
+Boolean.
+For volnorm, this should always be set to False, the
 default value.</p>
 </li>
 <li><p class="first"><strong>kind</strong> &#8211;
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to volnorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 &#8216;linear&#8217;, &#8216;nearest&#8217;, &#8216;zero&#8217;, &#8216;slinear&#8217;, &#8216;quadratic&#8217;, &#8216;cubic&#8217;
@@ -1488,19 +848,48 @@ some builds of scipy, this can cause problems, in which case
 you should try &#8216;linear&#8217; until you can rebuild your scipy install.</p>
 </li>
 <li><p class="first"><strong>length_unit</strong> &#8211;
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:</p>
 <blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;cubit&#8217;     cubits
-&#8216;hand&#8217;      hands
-&#8216;default&#8217;   meters</p>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>meters</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>If length_unit is 1 or None, meters are assumed. The default
 value is 1 (R and Z given in meters).</p>
@@ -1508,41 +897,48 @@ value is 1 (R and Z given in meters).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>volnorm</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>volnorm or (volnorm, time_idxs)</p>
+<ul class="simple">
+<li><strong>volnorm</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. If R and Z both have the same shape then
 volnorm has this shape as well. If the make_grid keyword was
-True then volnorm has shape (len(Z), len(R)).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as volnorm. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+True then volnorm has shape (len(Z), len(R)).</li>
+<li><strong>time_idxs</strong> - Array with same shape as volnorm. The indices (in
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return_t is True.</li>
+</ul>
 </p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single volnorm value at R=0.6m, Z=0.0m, t=0.26s:
-psi_val = Eq_instance.rz2volnorm(0.6, 0, 0.26)</p>
+<p>Find single volnorm value at R=0.6m, Z=0.0m, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2volnorm</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find volnorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
 single time t=0.26s. Note that the Z vector must be fully specified,
-even if the values are all the same:
-vol_arr = Eq_instance.rz2volnorm([0.6, 0.8], [0, 0], 0.26)</p>
-<p>Find volnorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:
-vol_arr = Eq_instance.rz2volnorm(0.6, 0, [0.2, 0.3])</p>
-<p>Find volnorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
-vol_arr = Eq_instance.rz2volnorm([0.6, 0.5], [0, 0.2], [0.2, 0.3])</p>
+even if the values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">vol_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2volnorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find volnorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">vol_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2volnorm</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find volnorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">vol_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2volnorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>Find volnorm values on grid defined by 1D vector of radial positions R
-and 1D vector of vertical positions Z at time t=0.2s:
-vol_mat = Eq_instance.rz2volnorm(R, Z, 0.2, make_grid=True)</p>
+and 1D vector of vertical positions Z at time t=0.2s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">vol_mat</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2volnorm</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">make_grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -1560,30 +956,48 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first">
 <li><p class="first"><strong>method</strong> &#8211;
-String. Indicates which normalized coordinates to use.
+String.
+Indicates which normalized coordinates to use.
 Valid options are:</p>
 <blockquote>
-<div><p>psinorm     Normalized poloidal flux
-phinorm     Normalized toroidal flux
-volnorm     Normalized volume</p>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>psinorm</td>
+<td>Normalized poloidal flux</td>
+</tr>
+<tr class="row-even"><td>phinorm</td>
+<td>Normalized toroidal flux</td>
+</tr>
+<tr class="row-odd"><td>volnorm</td>
+<td>Normalized volume</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 </li>
 <li><p class="first"><strong>R</strong> &#8211;
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized coordinate. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make_grid keyword is
 set. If the make_grid keyword is True, R must have shape (len_R,).</p>
 </li>
 <li><p class="first"><strong>Z</strong> &#8211;
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized coordinate. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make_grid keyword is
 set. If the make_grid keyword is True, Z must have shape (len_Z,).</p>
 </li>
 <li><p class="first"><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make_grid keyword is True,
@@ -1595,21 +1009,24 @@ t must have shape (len(Z), len(R)).</p>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
 <li><p class="first"><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (volnorm,
+Boolean.
+Set to True to return a tuple of (volnorm,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return volnorm).</p>
 </li>
 <li><p class="first"><strong>sqrt</strong> &#8211;
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 coordinate. Only the square root of positive values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe&#8217;s IDL implementation efit_rz2rho.pro. Default is False
 (return normalized coordinate itself).</p>
 </li>
 <li><p class="first"><strong>make_grid</strong> &#8211;
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1620,7 +1037,8 @@ returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).</p>
 </li>
 <li><p class="first"><strong>rho</strong> (<em>phinorm and volnorm only</em>) &#8211;
-Boolean. For phinorm and volnorm,
+Boolean.
+For phinorm and volnorm,
 this should always be set to False, the default value.</p>
 </li>
 <li><p class="first"><strong>kind</strong> (<em>phinorm and volnorm only</em>) &#8211;
@@ -1636,19 +1054,48 @@ some builds of scipy, this can cause problems, in which case
 you should try &#8216;linear&#8217; until you can rebuild your scipy install.</p>
 </li>
 <li><p class="first"><strong>length_unit</strong> &#8211;
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:</p>
 <blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;cubit&#8217;     cubits
-&#8216;hand&#8217;      hands
-&#8216;default&#8217;   meters</p>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>meters</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>If length_unit is 1 or None, meters are assumed. The default
 value is 1 (R and Z given in meters).</p>
@@ -1656,20 +1103,17 @@ value is 1 (R and Z given in meters).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p><em>rho</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>rho or (rho, time_idxs)</p>
+<ul class="simple">
+<li><strong>rho</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. If R and Z both have the same shape then
 rho has this shape as well. If the make_grid keyword was True
-then rho has shape (len(Z), len(R)).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as rho. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+then rho has shape (len(Z), len(R)).</li>
+<li><strong>time_idxs</strong> - Array with same shape as rho. The indices (in
+self.getTimeBase()) that were used for nearest-neighbor
+interpolation. Only returned if return_t is True.</li>
+</ul>
 </p>
 </td>
 </tr>
@@ -1679,22 +1123,32 @@ If method is not one of the supported values.</p>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single psinorm value at R=0.6m, Z=0.0m, t=0.26s:
-psi_val = Eq_instance.rz2rho(&#8216;psinorm&#8217;, 0.6, 0, 0.26)</p>
+<p>Find single psinorm value at R=0.6m, Z=0.0m, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rho</span><span class="p">(</span><span class="s">&#39;psinorm&#39;</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
 single time t=0.26s. Note that the Z vector must be fully specified,
-even if the values are all the same:
-psi_arr = Eq_instance.rz2rho(&#8216;psinorm&#8217;, [0.6, 0.8], [0, 0], 0.26)</p>
-<p>Find psinorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:
-psi_arr = Eq_instance.rz2rho(&#8216;psinorm&#8217;, 0.6, 0, [0.2, 0.3])</p>
-<p>Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
-psi_arr = Eq_instance.rz2rho(&#8216;psinorm&#8217;, [0.6, 0.5], [0, 0.2], [0.2, 0.3])</p>
+even if the values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rho</span><span class="p">(</span><span class="s">&#39;psinorm&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find psinorm values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rho</span><span class="p">(</span><span class="s">&#39;psinorm&#39;</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rho</span><span class="p">(</span><span class="s">&#39;psinorm&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>Find psinorm values on grid defined by 1D vector of radial positions R
-and 1D vector of vertical positions Z at time t=0.2s:
-psi_mat = Eq_instance.rz2rho(&#8216;psinorm&#8217;, R, Z, 0.2, make_grid=True)</p>
+and 1D vector of vertical positions Z at time t=0.2s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">psi_mat</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rho</span><span class="p">(</span><span class="s">&#39;psinorm&#39;</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">make_grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -1713,19 +1167,22 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>R</strong> &#8211;
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to midplane radius. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make_grid keyword is
 set. If the make_grid keyword is True, R must have shape (len_R,).</li>
 <li><strong>Z</strong> &#8211;
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to midplane radius. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make_grid keyword is
 set. If the make_grid keyword is True, Z must have shape (len_Z,).</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make_grid keyword is True,
@@ -1736,21 +1193,24 @@ t must have shape (len(Z), len(R)).</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
 <li><p class="first"><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (R_mid,
+Boolean.
+Set to True to return a tuple of (R_mid,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating R_mid with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return R_mid).</p>
 </li>
 <li><p class="first"><strong>sqrt</strong> &#8211;
-Boolean. Set to True to return the square root of midplane
+Boolean.
+Set to True to return the square root of midplane
 radius. Only the square root of positive values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe&#8217;s IDL implementation efit_rz2rho.pro. Default is False
 (return R_mid itself).</p>
 </li>
 <li><p class="first"><strong>make_grid</strong> &#8211;
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1761,11 +1221,13 @@ returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).</p>
 </li>
 <li><p class="first"><strong>rho</strong> &#8211;
-Boolean. Set to True to return r/a (normalized minor radius)
+Boolean.
+Set to True to return r/a (normalized minor radius)
 instead of R_mid. Default is False (return major radius, R_mid).</p>
 </li>
 <li><p class="first"><strong>kind</strong> &#8211;
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to R_mid. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 &#8216;linear&#8217;, &#8216;nearest&#8217;, &#8216;zero&#8217;, &#8216;slinear&#8217;, &#8216;quadratic&#8217;, &#8216;cubic&#8217;
@@ -1776,20 +1238,49 @@ some builds of scipy, this can cause problems, in which case
 you should try &#8216;linear&#8217; until you can rebuild your scipy install.</p>
 </li>
 <li><p class="first"><strong>length_unit</strong> &#8211;
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in AND that R_mid is returned in. If a string is given, it
 must be a valid unit specifier:</p>
 <blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;cubit&#8217;     cubits
-&#8216;hand&#8217;      hands
-&#8216;default&#8217;   meters</p>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>meters</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>If length_unit is 1 or None, meters are assumed. The default
 value is 1 (R and Z given in meters, R_mid returned in meters).</p>
@@ -1797,41 +1288,49 @@ value is 1 (R and Z given in meters, R_mid returned in meters).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>R_mid</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>R_mid or (R_mid, time_idxs)</p>
+<ul class="simple">
+<li><strong>R_mid</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. If R and Z both have the same shape then
 R_mid has this shape as well. If the make_grid keyword was True
-then R_mid has shape (len(Z), len(R)).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as R_mid. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+then R_mid has shape (len(Z), len(R)).</li>
+<li><strong>time_idxs</strong> - Array with same shape as R_mid. The indices (in
+the timebase returned by <a class="reference internal" href="#eqtools.core.Equilibrium.getTimeBase" title="eqtools.core.Equilibrium.getTimeBase"><tt class="xref py py-meth docutils literal"><span class="pre">getTimeBase()</span></tt></a>) that were used
+for nearest-neighbor interpolation. Only returned if return_t is
+True.</li>
+</ul>
 </p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single R_mid value at R=0.6m, Z=0.0m, t=0.26s:
-R_mid_val = Eq_instance.rz2rmid(0.6, 0, 0.26)</p>
+<p>Find single R_mid value at R=0.6m, Z=0.0m, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rmid</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find R_mid values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
 single time t=0.26s. Note that the Z vector must be fully specified,
-even if the values are all the same:
-R_mid_arr = Eq_instance.rz2rmid([0.6, 0.8], [0, 0], 0.26)</p>
-<p>Find R_mid values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:
-R_mid_arr = Eq_instance.rz2rmid(0.6, 0, [0.2, 0.3])</p>
-<p>Find R_mid values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
-R_mid_arr = Eq_instance.rz2rmid([0.6, 0.5], [0, 0.2], [0.2, 0.3])</p>
+even if the values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rmid</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find R_mid values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rmid</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find R_mid values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rmid</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>Find R_mid values on grid defined by 1D vector of radial positions R
-and 1D vector of vertical positions Z at time t=0.2s:
-R_mid_mat = Eq_instance.rz2rmid(R, Z, 0.2, make_grid=True)</p>
+and 1D vector of vertical positions Z at time t=0.2s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_mat</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">rz2rmid</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">make_grid</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -1849,11 +1348,13 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>psi_norm</strong> &#8211;
-Array-like or scalar float. Values of the normalized
+Array-like or scalar float.
+Values of the normalized
 poloidal flux to map to midplane radius. If psi_norm is a scalar,
 it is used as the value for all of the values in t.</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of psi_norm. If neither t nor psi_norm
 are scalars, t must have the same shape as psi_norm.</li>
 </ul>
@@ -1862,18 +1363,21 @@ are scalars, t must have the same shape as psi_norm.</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
 <li><p class="first"><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (R_mid,
+Boolean.
+Set to True to return a tuple of (R_mid,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating R_mid with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return R_mid).</p>
 </li>
 <li><p class="first"><strong>rho</strong> &#8211;
-Boolean. Set to True to return r/a (normalized minor radius)
+Boolean.
+Set to True to return r/a (normalized minor radius)
 instead of R_mid. Default is False (return major radius, R_mid).</p>
 </li>
 <li><p class="first"><strong>kind</strong> &#8211;
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to R_mid. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 &#8216;linear&#8217;, &#8216;nearest&#8217;, &#8216;zero&#8217;, &#8216;slinear&#8217;, &#8216;quadratic&#8217;, &#8216;cubic&#8217;
@@ -1884,19 +1388,48 @@ some builds of scipy, this can cause problems, in which case
 you should try &#8216;linear&#8217; until you can rebuild your scipy install.</p>
 </li>
 <li><p class="first"><strong>length_unit</strong> &#8211;
-String or 1. Length unit that R_mid is returned in. If
+String or 1.
+Length unit that R_mid is returned in. If
 a string is given, it must be a valid unit specifier:</p>
 <blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;cubit&#8217;     cubits
-&#8216;hand&#8217;      hands
-&#8216;default&#8217;   meters</p>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>meters</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>If length_unit is 1 or None, meters are assumed. The default
 value is 1 (R_mid returned in meters).</p>
@@ -1904,37 +1437,43 @@ value is 1 (R_mid returned in meters).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>R_mid</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>R_mid or (R_mid, time_idxs)</p>
+<ul class="simple">
+<li><strong>R_mid</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. R_mid will have the same shape as t and
-psi_norm (or whichever one is Array-like).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as R_mid. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+psi_norm (or whichever one is Array-like).</li>
+<li><strong>time_idxs</strong> - Array with same shape as R_mid. The indices (in
+the timebase returned by <a class="reference internal" href="#eqtools.core.Equilibrium.getTimeBase" title="eqtools.core.Equilibrium.getTimeBase"><tt class="xref py py-meth docutils literal"><span class="pre">getTimeBase()</span></tt></a>) that were used
+for nearest-neighbor interpolation. Only returned if return_t is
+True.</li>
+</ul>
 </p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single R_mid value for psinorm=0.7, t=0.26s:
-R_mid_val = Eq_instance.psinorm2rmid(0.7, 0.26)</p>
+<p>Find single R_mid value for psinorm=0.7, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find R_mid values at psi_norm values of 0.5 and 0.7 at the single time
 t=0.26s. Note that the Z vector must be fully specified, even if the
-values are all the same:
-R_mid_arr = Eq_instance.psinorm2rmid([0.5, 0.7], 0.26)</p>
-<p>Find R_mid values at psi_norm=0.5 at times t=[0.2s, 0.3s]:
-R_mid_arr = Eq_instance.psinorm2rmid(0.5, [0.2, 0.3])</p>
-<p>Find R_mid values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
-R_mid_arr = Eq_instance.psinorm2rmid([0.6, 0.5], [0.2, 0.3])</p>
+values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find R_mid values at psi_norm=0.5 at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find R_mid values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">R_mid_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -1952,11 +1491,13 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>psi_norm</strong> &#8211;
-Array-like or scalar float. Values of the normalized
+Array-like or scalar float.
+Values of the normalized
 poloidal flux to map to normalized volume. If psi_norm is a
 scalar, it is used as the value for all of the values in t.</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of psi_norm. If neither t nor psi_norm
 are scalars, t must have the same shape as psi_norm.</li>
 </ul>
@@ -1965,13 +1506,15 @@ are scalars, t must have the same shape as psi_norm.</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
 <li><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (volnorm,
+Boolean.
+Set to True to return a tuple of (volnorm,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return volnorm).</li>
 <li><strong>kind</strong> &#8211;
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to volnorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 &#8216;linear&#8217;, &#8216;nearest&#8217;, &#8216;zero&#8217;, &#8216;slinear&#8217;, &#8216;quadratic&#8217;, &#8216;cubic&#8217;
@@ -1983,37 +1526,43 @@ you should try &#8216;linear&#8217; until you can rebuild your scipy install.</l
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>volnorm</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>volnorm or (volnorm, time_idxs)</p>
+<ul class="simple">
+<li><strong>volnorm</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. volnorm will have the same shape as t and
-psi_norm (or whichever one is Array-like).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as volnorm. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+psi_norm (or whichever one is Array-like).</li>
+<li><strong>time_idxs</strong> - Array with same shape as volnorm. The indices (in
+the timebase returned by <a class="reference internal" href="#eqtools.core.Equilibrium.getTimeBase" title="eqtools.core.Equilibrium.getTimeBase"><tt class="xref py py-meth docutils literal"><span class="pre">getTimeBase()</span></tt></a>) that were used
+for nearest-neighbor interpolation. Only returned if return_t is
+True.</li>
+</ul>
 </p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single volnorm value for psinorm=0.7, t=0.26s:
-volnorm_val = Eq_instance.psinorm2volnorm(0.7, 0.26)</p>
+<p>Find single volnorm value for psinorm=0.7, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">volnorm_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2volnorm</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find volnorm values at psi_norm values of 0.5 and 0.7 at the single time
 t=0.26s. Note that the Z vector must be fully specified, even if the
-values are all the same:
-volnorm_arr = Eq_instance.psinorm2volnorm([0.5, 0.7], 0.26)</p>
-<p>Find volnorm values at psi_norm=0.5 at times t=[0.2s, 0.3s]:
-volnorm_arr = Eq_instance.psinorm2volnorm(0.5, [0.2, 0.3])</p>
-<p>Find volnorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
-volnorm_arr = Eq_instance.psinorm2volnorm([0.6, 0.5], [0.2, 0.3])</p>
+values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">volnorm_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2volnorm</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find volnorm values at psi_norm=0.5 at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">volnorm_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2volnorm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find volnorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">volnorm_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2volnorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -2031,11 +1580,13 @@ a trivariate interpolation in space and time.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
 <li><strong>psi_norm</strong> &#8211;
-Array-like or scalar float. Values of the normalized
+Array-like or scalar float.
+Values of the normalized
 poloidal flux to map to normalized toroidal flux. If psi_norm
 is a scalar, it is used as the value for all of the values in t.</li>
 <li><strong>t</strong> &#8211;
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of psi_norm. If neither t nor psi_norm
 are scalars, t must have the same shape as psi_norm.</li>
 </ul>
@@ -2044,13 +1595,15 @@ are scalars, t must have the same shape as psi_norm.</li>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
 <li><strong>return_t</strong> &#8211;
-Boolean. Set to True to return a tuple of (phinorm,
+Boolean.
+Set to True to return a tuple of (phinorm,
 time_idxs), where time_idxs is the array of time indices
 actually used in evaluating phinorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return phinorm).</li>
 <li><strong>kind</strong> &#8211;
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to phinorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 &#8216;linear&#8217;, &#8216;nearest&#8217;, &#8216;zero&#8217;, &#8216;slinear&#8217;, &#8216;quadratic&#8217;, &#8216;cubic&#8217;
@@ -2062,37 +1615,43 @@ you should try &#8216;linear&#8217; until you can rebuild your scipy install.</l
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>phinorm</em> &#8211;
-Array or scalar float. If all of the input arguments are</p>
-<blockquote>
-<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>phinorm or (phinorm, time_idxs)</p>
+<ul class="simple">
+<li><strong>phinorm</strong> - Array or scalar float. If all of the input arguments are
+scalar, then a scalar is returned. Otherwise, a scipy Array
 instance is returned. phinorm will have the same shape as t and
-psi_norm (or whichever one is Array-like).</p>
-</div></blockquote>
-<dl class="docutils">
-<dt>time_idxs: Array with same shape as phinorm. The indices (in</dt>
-<dd><p class="first last">self.getTimeBase()) that were used for nearest-neighbor
-interpolation. Only returned if return_t is True.</p>
-</dd>
-</dl>
+psi_norm (or whichever one is Array-like).</li>
+<li><strong>time_idxs</strong> - Array with same shape as phinorm. The indices (in
+the timebase returned by <a class="reference internal" href="#eqtools.core.Equilibrium.getTimeBase" title="eqtools.core.Equilibrium.getTimeBase"><tt class="xref py py-meth docutils literal"><span class="pre">getTimeBase()</span></tt></a>) that were used
+for nearest-neighbor interpolation. Only returned if return_t is
+True.</li>
+</ul>
 </p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Examples:
-All assume that Eq_instance is a valid instance of the appropriate
+<p class="rubric">Examples</p>
+<p>All assume that Eq_instance is a valid instance of the appropriate
 extension of the Equilibrium abstract class.</p>
-<p>Find single phinorm value for psinorm=0.7, t=0.26s:
-phinorm_val = Eq_instance.psinorm2phinorm(0.7, 0.26)</p>
+<p>Find single phinorm value for psinorm=0.7, t=0.26s:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phinorm_val</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2phinorm</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Find phinorm values at psi_norm values of 0.5 and 0.7 at the single time
 t=0.26s. Note that the Z vector must be fully specified, even if the
-values are all the same:
-phinorm_arr = Eq_instance.psinorm2phinorm([0.5, 0.7], 0.26)</p>
-<p>Find phinorm values at psi_norm=0.5 at times t=[0.2s, 0.3s]:
-phinorm_arr = Eq_instance.psinorm2phinorm(0.5, [0.2, 0.3])</p>
-<p>Find phinorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
-phinorm_arr = Eq_instance.psinorm2phinorm([0.6, 0.5], [0.2, 0.3])</p>
+values are all the same:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phinorm_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2phinorm</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span> <span class="mf">0.26</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Find phinorm values at psi_norm=0.5 at times t=[0.2s, 0.3s]:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phinorm_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2phinorm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Find phinorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">phinorm_arr</span> <span class="o">=</span> <span class="n">Eq_instance</span><span class="o">.</span><span class="n">psinorm2phinorm</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -2520,6 +2079,598 @@ Acts as wrapper to direct data-access routines from within object.</p>
 <dd><p>Plots flux contours directly from psi grid.</p>
 </dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="module-eqtools.EFIT">
+<span id="efit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">EFIT</span></tt> Module<a class="headerlink" href="#module-eqtools.EFIT" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="eqtools.EFIT.EFITTree">
+<em class="property">class </em><tt class="descclassname">eqtools.EFIT.</tt><tt class="descname">EFITTree</tt><big>(</big><em>shot</em>, <em>tree</em>, <em>root</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.Equilibrium</span></tt></a></p>
+<p>Inherits Equilibrium class. EFIT-specific data handling class for machines using
+standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
+need overriding in a machine-specific implementation.
+Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
+Each EFIT variable or set of variables is recovered with a corresponding getter method.
+Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
+Additional data are pulled at the first request and stored for subsequent usage.</p>
+<p>Intializes EFITTree object. Pulls data from MDS tree for storage in
+instance attributes. Core attributes are populated from the MDS tree
+on initialization. Additional attributes are initialized as None,
+filled on the first request to the object.</p>
+<p>INPUTS:
+shot:   shot index
+tree:   MDSplus tree to open to fetch EFIT data.
+root:   Root path for EFIT data in MDSplus tree.</p>
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>string formatting for EFITTree class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getInfo">
+<tt class="descname">getInfo</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns namedtuple of shot information
+outputs:
+namedtuple containing</p>
+<blockquote>
+<div>shot:   C-Mod shot index (long)
+tree:   EFIT tree (string)
+nr:     size of R-axis for spatial grid
+nz:     size of Z-axis for spatial grid
+nt:     size of timebase for flux grid</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getTimeBase">
+<tt class="descname">getTimeBase</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getTimeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getTimeBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT time base vector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getFluxGrid">
+<tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT flux grid, [t,z,r]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getRGrid">
+<tt class="descname">getRGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT R-axis [r]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getZGrid">
+<tt class="descname">getZGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getZGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT Z-axis [z]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getFluxAxis">
+<tt class="descname">getFluxAxis</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxAxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxAxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns psi on magnetic axis [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getFluxLCFS">
+<tt class="descname">getFluxLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns psi at separatrix [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getFluxVol">
+<tt class="descname">getFluxVol</tt><big>(</big><em>length_unit=3</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxVol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxVol" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns volume within flux surface [psi,t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getVolLCFS">
+<tt class="descname">getVolLCFS</tt><big>(</big><em>length_unit=3</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getVolLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getVolLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns volume within LCFS [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getRmidPsi">
+<tt class="descname">getRmidPsi</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRmidPsi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRmidPsi" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns maximum major radius of each flux surface [t,psi]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getRLCFS">
+<tt class="descname">getRLCFS</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns R-values of LCFS position [t,n]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getZLCFS">
+<tt class="descname">getZLCFS</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getZLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getZLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns Z-values of LCFS position [t,n]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getFluxPres">
+<tt class="descname">getFluxPres</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFluxPres"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFluxPres" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns pressure at flux surface [psi,t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getElongation">
+<tt class="descname">getElongation</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getElongation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getElongation" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns LCFS elongation [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getUpperTriangularity">
+<tt class="descname">getUpperTriangularity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getUpperTriangularity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getUpperTriangularity" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns LCFS upper triangularity [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getLowerTriangularity">
+<tt class="descname">getLowerTriangularity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getLowerTriangularity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getLowerTriangularity" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns LCFS lower triangularity [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getShaping">
+<tt class="descname">getShaping</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getShaping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getShaping" title="Permalink to this definition">¶</a></dt>
+<dd><p>pulls LCFS elongation and upper/lower triangularity
+returns namedtuple containing {kappa, delta_u, delta_l}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getMagR">
+<tt class="descname">getMagR</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getMagR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getMagR" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns magnetic-axis major radius [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getMagZ">
+<tt class="descname">getMagZ</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getMagZ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getMagZ" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns magnetic-axis Z [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getAreaLCFS">
+<tt class="descname">getAreaLCFS</tt><big>(</big><em>length_unit=2</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getAreaLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getAreaLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns LCFS cross-sectional area [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getAOut">
+<tt class="descname">getAOut</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getAOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getAOut" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns outboard-midplane minor radius at LCFS [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getRmidOut">
+<tt class="descname">getRmidOut</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getRmidOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getRmidOut" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns outboard-midplane major radius [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getGeometry">
+<tt class="descname">getGeometry</tt><big>(</big><em>length_unit=None</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getGeometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getGeometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>pulls dimensional geometry parameters
+returns namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQProfile">
+<tt class="descname">getQProfile</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQProfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns safety factor q [psi,t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQ0">
+<tt class="descname">getQ0</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ0" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns q on magnetic axis [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQ95">
+<tt class="descname">getQ95</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ95"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ95" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns q at 95% flux surface [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQLCFS">
+<tt class="descname">getQLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns q on LCFS [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQ1Surf">
+<tt class="descname">getQ1Surf</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ1Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ1Surf" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns outboard-midplane minor radius of q=1 surface [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQ2Surf">
+<tt class="descname">getQ2Surf</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ2Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ2Surf" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns outboard-midplane minor radius of q=2 surface [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQ3Surf">
+<tt class="descname">getQ3Surf</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQ3Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQ3Surf" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns outboard-midplane minor radius of q=3 surface [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getQs">
+<tt class="descname">getQs</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getQs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getQs" title="Permalink to this definition">¶</a></dt>
+<dd><p>pulls q values
+returns namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getBtVac">
+<tt class="descname">getBtVac</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBtVac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBtVac" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns on-axis vacuum toroidal field [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getBtPla">
+<tt class="descname">getBtPla</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBtPla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBtPla" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns on-axis plasma toroidal field [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getBpAvg">
+<tt class="descname">getBpAvg</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBpAvg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBpAvg" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns average poloidal field [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getFields">
+<tt class="descname">getFields</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getFields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>pulls vacuum and plasma toroidal field, avg poloidal field
+returns namedtuple containing {btaxv,btaxp,bpolav}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getIpCalc">
+<tt class="descname">getIpCalc</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getIpCalc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getIpCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated plasma current [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getIpMeas">
+<tt class="descname">getIpMeas</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getIpMeas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getIpMeas" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns magnetics-measured plasma current [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getJp">
+<tt class="descname">getJp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getJp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getJp" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getBetaT">
+<tt class="descname">getBetaT</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBetaT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBetaT" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated toroidal beta [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getBetaP">
+<tt class="descname">getBetaP</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBetaP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBetaP" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated poloidal beta [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getLi">
+<tt class="descname">getLi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getLi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getLi" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated internal inductance [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getBetas">
+<tt class="descname">getBetas</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getBetas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getBetas" title="Permalink to this definition">¶</a></dt>
+<dd><p>pulls calculated betap, betat, internal inductance
+returns namedtuple containing {betat,betap,Li}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getDiamagFlux">
+<tt class="descname">getDiamagFlux</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagFlux" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns measured diamagnetic-loop flux [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getDiamagBetaT">
+<tt class="descname">getDiamagBetaT</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagBetaT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagBetaT" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns diamagnetic-loop toroidal beta [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getDiamagBetaP">
+<tt class="descname">getDiamagBetaP</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagBetaP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagBetaP" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns diamagnetic-loop avg poloidal beta [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getDiamagTauE">
+<tt class="descname">getDiamagTauE</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagTauE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagTauE" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns diamagnetic-loop energy confinement time [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getDiamagWp">
+<tt class="descname">getDiamagWp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamagWp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamagWp" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns diamagnetic-loop plasma stored energy [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getDiamag">
+<tt class="descname">getDiamag</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getDiamag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getDiamag" title="Permalink to this definition">¶</a></dt>
+<dd><p>pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
+returns namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getWMHD">
+<tt class="descname">getWMHD</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getWMHD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getWMHD" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated MHD stored energy [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getTauMHD">
+<tt class="descname">getTauMHD</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getTauMHD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getTauMHD" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated MHD energy confinement time [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getPinj">
+<tt class="descname">getPinj</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getPinj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getPinj" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated injected power [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getWbdot">
+<tt class="descname">getWbdot</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getWbdot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getWbdot" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated d/dt of magnetic stored energy [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getWpdot">
+<tt class="descname">getWpdot</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getWpdot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getWpdot" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT-calculated d/dt of plasma stored energy [t]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getEnergy">
+<tt class="descname">getEnergy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getEnergy" title="Permalink to this definition">¶</a></dt>
+<dd><p>pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy
+returns namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getCurrentSign">
+<tt class="descname">getCurrentSign</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getCurrentSign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getCurrentSign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the sign of the current, based on the check in Steve Wolfe&#8217;s
+IDL implementation efit_rz2psi.pro.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getParam">
+<tt class="descname">getParam</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getParam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getParam" title="Permalink to this definition">¶</a></dt>
+<dd><p>backup function - path to parameter as input, returns desired variable
+acts as wrapper for MDS call</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-eqtools.CModEFIT">
+<span id="cmodefit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">CModEFIT</span></tt> Module<a class="headerlink" href="#module-eqtools.CModEFIT" title="Permalink to this headline">¶</a></h2>
+<p>This module provides classes for working with C-Mod EFIT data.</p>
+<dl class="class">
+<dt id="eqtools.CModEFIT.CModEFITTree">
+<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTree</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eqtools.EFIT.EFITTree" title="eqtools.EFIT.EFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.EFIT.EFITTree</span></tt></a></p>
+<p>Inherits <tt class="xref py py-class docutils literal"><span class="pre">EFITTree</span></tt> class. Machine-specific data
+handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
+and shot, stores as object attributes. Each EFIT variable or set of
+variables is recovered with a corresponding getter method. Essential data
+for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
+data are pulled at the first request and stored for subsequent usage.</p>
+<p>Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>shot</strong> &#8211;
+(long) int. C-Mod shot index (long)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>tree</strong> &#8211;
+str. optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217;
+(i.e., EFIT data are under analysis::top.efit.results).
+For any string TREE (such as &#8216;EFIT20&#8217;) other than &#8216;ANALYSIS&#8217;,
+data are taken from TREE::top.results.</p>
+</li>
+<li><p class="first"><strong>length_unit</strong> &#8211;
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>whatever the default in the tree is (no conversion is performed, units may be inconsistent)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
+</li>
+<li><p class="first"><strong>tspline</strong> &#8211;
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).</p>
+</li>
+<li><p class="first"><strong>fast</strong> &#8211;
+Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="eqtools.CModEFIT.CModEFITTree.getMachineCrossSection">
+<tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree.getMachineCrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulls C-Mod cross-section data from tree, converts to plottable
+vector format for use in other plotting routines</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>shot</strong> &#8211;
+(long) int. C-Mod shot index (used for tree access)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><em>(x, y)</em> &#8211;
+The coordinates of the machine cross-section.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="eqtools.CModEFIT.CModEFITTreeProp">
+<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTreeProp</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTreeProp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTreeProp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eqtools.CModEFIT.CModEFITTree" title="eqtools.CModEFIT.CModEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.CModEFIT.CModEFITTree</span></tt></a>, <a class="reference internal" href="#eqtools.core.PropertyAccessMixin" title="eqtools.core.PropertyAccessMixin"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.PropertyAccessMixin</span></tt></a></p>
+<p>CModEFITTree with the PropertyAccessMixin added to enable property-style
+access. This is good for interactive use, but may drag the performance down.</p>
+<p>Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>shot</strong> &#8211;
+(long) int. C-Mod shot index (long)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>tree</strong> &#8211;
+str. optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217;
+(i.e., EFIT data are under analysis::top.efit.results).
+For any string TREE (such as &#8216;EFIT20&#8217;) other than &#8216;ANALYSIS&#8217;,
+data are taken from TREE::top.results.</p>
+</li>
+<li><p class="first"><strong>length_unit</strong> &#8211;
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>whatever the default in the tree is (no conversion is performed, units may be inconsistent)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
+</li>
+<li><p class="first"><strong>tspline</strong> &#8211;
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).</p>
+</li>
+<li><p class="first"><strong>fast</strong> &#8211;
+Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -3995,6 +4146,82 @@ Not implemented for eqdsk class.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-eqtools.afilereader">
+<span id="afilereader-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">afilereader</span></tt> Module<a class="headerlink" href="#module-eqtools.afilereader" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the AFileReader class, a lightweight data
+handler for a-file (time-history) datasets.</p>
+<dl class="docutils">
+<dt>Classes:</dt>
+<dd><dl class="first last docutils">
+<dt>AFileReader: Data-storage class for a-file data.  Reads</dt>
+<dd>data from ASCII a-file, storing as copy-safe object
+attributes.</dd>
+</dl>
+</dd>
+</dl>
+<dl class="class">
+<dt id="eqtools.afilereader.AFileReader">
+<em class="property">class </em><tt class="descclassname">eqtools.afilereader.</tt><tt class="descname">AFileReader</tt><big>(</big><em>afile</em><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.</p>
+<p>A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is
+read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
+EFIT variable names.</p>
+<p>initialize object, reading from file.</p>
+<p>INPUTS:
+afile: (str) path to a-file</p>
+<dl class="method">
+<dt id="eqtools.afilereader.AFileReader.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>overrides default __str__method with more useful output.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.afilereader.AFileReader.__getattribute__">
+<tt class="descname">__getattribute__</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader.__getattribute__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader.__getattribute__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy-safe attribute retrieval method overriding default object.__getattribute__.</p>
+<p>Tries to retrieve attribute as-written (first check for default object attributes).
+If that fails, looks for pseudo-private attributes, marked by preceding underscore,
+to retrieve data values.  If this fails, raise AttributeError.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>name</strong> &#8211;
+String.  Name (without leading underscore for data variables) of attribute.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">AttributeError</span></tt> &#8211; 
+if no attribute can be found.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.afilereader.AFileReader.__setattr__">
+<tt class="descname">__setattr__</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/eqtools/afilereader.html#AFileReader.__setattr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.afilereader.AFileReader.__setattr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy-safe attribute setting method overriding default object.__setattr__.</p>
+<p>Raises error if object already has attribute _{name} for input name,
+as such an attribute would interfere with automatic property generation in
+__getattribute__.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>name</strong> &#8211;
+String.  Attribute name.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">AttributeError</span></tt> &#8211; 
+if attempting to create attribute with protected
+pseudo-private name.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-eqtools.pfilereader">
 <span id="pfilereader-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">pfilereader</span></tt> Module<a class="headerlink" href="#module-eqtools.pfilereader" title="Permalink to this headline">¶</a></h2>
 <p>This module contains the PFileReader class, a lightweight data
@@ -4087,6 +4314,89 @@ pseudo-private name.</td>
 </dd></dl>
 
 </div>
+<div class="section" id="module-eqtools.FromArrays">
+<span id="fromarrays-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">FromArrays</span></tt> Module<a class="headerlink" href="#module-eqtools.FromArrays" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="eqtools.FromArrays.ArrayEquilibrium">
+<em class="property">class </em><tt class="descclassname">eqtools.FromArrays.</tt><tt class="descname">ArrayEquilibrium</tt><big>(</big><em>psiRZ</em>, <em>rGrid</em>, <em>zGrid</em>, <em>time</em>, <em>q</em>, <em>fluxVol</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.Equilibrium</span></tt></a></p>
+<p>Class to represent an equilibrium specified as arrays of data.</p>
+<p>Create ArrayEquilibrium instance from arrays of data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
+<li><strong>psiRZ</strong> &#8211;
+Array-like, (M, N, P). Flux values at M times, N Z locations
+and P R locations.</li>
+<li><strong>rGrid</strong> &#8211;
+Array-like, (P,). R coordinates that psiRZ is given at.</li>
+<li><strong>zGrid</strong> &#8211;
+Array-like, (N,). Z coordinates that psiRZ is given at.</li>
+<li><strong>time</strong> &#8211;
+Array-like, (M,). Times that psiRZ is given at.</li>
+<li><strong>q</strong> &#8211;
+Array-like, (Q, M). q profile evaluated at Q values of psinorm
+from 0 to 1, given at M times.</li>
+<li><strong>fluxVol</strong> &#8211;
+Array-like, (S, M). Flux surface volumes evaluated at S
+values of psinorm from 0 to 1, given at M times.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>length_unit</strong> &#8211;
+String. Base unit for any quantity whose dimensions
+are length to any power. Default is &#8216;m&#8217;. Valid options are:</p>
+<blockquote>
+<div><p>&#8216;m&#8217;         meters
+&#8216;cm&#8217;        centimeters
+&#8216;mm&#8217;        millimeters
+&#8216;in&#8217;        inches
+&#8216;ft&#8217;        feet
+&#8216;yd&#8217;        yards
+&#8216;smoot&#8217;     smoots
+&#8216;default&#8217;   whatever the default in the tree is (no</p>
+<blockquote>
+<div><p>conversion is performed, units may be
+inconsistent)</p>
+</div></blockquote>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The ArrayEquilibrium instance created.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getTimeBase">
+<tt class="descname">getTimeBase</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getTimeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getTimeBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the time base vector, array dimensions are (M,).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getFluxGrid">
+<tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getFluxGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the flux array, dimensions are (M, N, P), corresponding to (time, Z, R).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getRGrid">
+<tt class="descname">getRGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getRGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getRGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the radial grid, dimensions are (P,).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getZGrid">
+<tt class="descname">getZGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getZGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the vertical grid, dimensions are (N,).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="trispline-module">
 <h2><tt class="xref py py-mod docutils literal"><span class="pre">trispline</span></tt> Module<a class="headerlink" href="#trispline-module" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -4102,13 +4412,13 @@ pseudo-private name.</td>
   <ul>
 <li><a class="reference internal" href="#">eqtools Package</a><ul>
 <li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">eqtools</span></tt> Package</a></li>
-<li><a class="reference internal" href="#module-eqtools.CModEFIT"><tt class="docutils literal"><span class="pre">CModEFIT</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-eqtools.EFIT"><tt class="docutils literal"><span class="pre">EFIT</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-eqtools.FromArrays"><tt class="docutils literal"><span class="pre">FromArrays</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-eqtools.afilereader"><tt class="docutils literal"><span class="pre">afilereader</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.core"><tt class="docutils literal"><span class="pre">core</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-eqtools.EFIT"><tt class="docutils literal"><span class="pre">EFIT</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-eqtools.CModEFIT"><tt class="docutils literal"><span class="pre">CModEFIT</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.eqdskreader"><tt class="docutils literal"><span class="pre">eqdskreader</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-eqtools.afilereader"><tt class="docutils literal"><span class="pre">afilereader</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.pfilereader"><tt class="docutils literal"><span class="pre">pfilereader</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-eqtools.FromArrays"><tt class="docutils literal"><span class="pre">FromArrays</span></tt> Module</a></li>
 <li><a class="reference internal" href="#trispline-module"><tt class="docutils literal"><span class="pre">trispline</span></tt> Module</a></li>
 </ul>
 </li>
@@ -4116,7 +4426,7 @@ pseudo-private name.</td>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to eqtools&#8217;s documentation!</a></p>
+                        title="previous chapter">eqtools: Tools for interacting with magnetic equilibria</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/eqtools.txt"
@@ -4149,7 +4459,7 @@ pseudo-private name.</td>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to eqtools’s documentation!"
+          <a href="index.html" title="eqtools: Tools for interacting with magnetic equilibria"
              >previous</a> |</li>
         <li><a href="index.html">eqtools 0.0 documentation</a> &raquo;</li> 
       </ul>

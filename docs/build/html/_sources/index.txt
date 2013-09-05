@@ -3,13 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to eqtools's documentation!
-===================================
+eqtools: Tools for interacting with magnetic equilibria
+=======================================================
+
+Overview
+--------
 
 Useful description and details go here.
 
-Contents
---------
+Package Reference
+-----------------
 
 .. toctree::
    :maxdepth: 4
