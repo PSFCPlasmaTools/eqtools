@@ -1172,7 +1172,7 @@ If a method called `get'+name already exists.
 \index{Equilibrium (class in eqtools.core)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.core.}\bfcode{Equilibrium}}{\emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.core.}\bfcode{Equilibrium}}{\emph{length\_unit='m'}, \emph{tspline=False}, \emph{monotonic=False}}{}
 Bases: \code{object}
 
 Abstract class of data handling object for magnetic reconstruction outputs.
@@ -1183,9 +1183,11 @@ getter method. Essential data for mapping are pulled on initialization
 (psirz grid, for example) to frontload timing overhead. Additional data
 are pulled at the first request and stored for subsequent usage.
 
-NOTE: this abstract class should not be used directly. Device- and code-
+\begin{notice}{note}{Note:}
+This abstract class should not be used directly. Device- and code-
 specific subclasses are set up to account for inter-device/-code differences
 in data storage.
+\end{notice}
 
 Create a new Equilibrium instance.
 \begin{quote}\begin{description}
@@ -1265,8 +1267,8 @@ not vary out of their boundaries (derivative = 0 boundary
 condition). Default is False (use nearest neighbor interpolation).
 
 \item {} 
-\textbf{fast} --
-Boolean. Sets whether or not the ``fast'' form of time window
+\textbf{monotonic} --
+Boolean. Sets whether or not the ``monotonic'' form of time window
 finding is used. If True, the timebase must be monotonically
 increasing. Default is False (use slower, safer method).
 

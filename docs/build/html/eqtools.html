@@ -888,7 +888,7 @@ If a method called &#8216;get&#8217;+name already exists.</p>
 
 <dl class="class">
 <dt id="eqtools.core.Equilibrium">
-<em class="property">class </em><tt class="descclassname">eqtools.core.</tt><tt class="descname">Equilibrium</tt><big>(</big><em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">eqtools.core.</tt><tt class="descname">Equilibrium</tt><big>(</big><em>length_unit='m'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Abstract class of data handling object for magnetic reconstruction outputs.</p>
 <p>Defines the mapping routines and method fingerprints necessary.
@@ -963,8 +963,8 @@ that they are functionally correlated, and that parameters do
 not vary out of their boundaries (derivative = 0 boundary
 condition). Default is False (use nearest neighbor interpolation).</p>
 </li>
-<li><p class="first"><strong>fast</strong> &#8211;
-Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
+<li><p class="first"><strong>monotonic</strong> &#8211;
+Boolean. Sets whether or not the &#8220;monotonic&#8221; form of time window
 finding is used. If True, the timebase must be monotonically
 increasing. Default is False (use slower, safer method).</p>
 </li>
