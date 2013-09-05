@@ -8,9 +8,17 @@
 \contentsline {subsection}{\numberline {1.1.5}\texttt {afilereader} Module}{8}{subsection.1.1.5}
 \contentsline {subsection}{\numberline {1.1.6}\texttt {core} Module}{9}{subsection.1.1.6}
 \contentsline {paragraph}{Examples}{12}{paragraph*.81}
-\contentsline {subsection}{\numberline {1.1.7}\texttt {eqdskreader} Module}{28}{subsection.1.1.7}
-\contentsline {subsection}{\numberline {1.1.8}\texttt {pfilereader} Module}{39}{subsection.1.1.8}
-\contentsline {subsection}{\numberline {1.1.9}\texttt {trispline} Module}{39}{subsection.1.1.9}
-\contentsline {chapter}{\numberline {2}Indices and tables}{41}{chapter.2}
-\contentsline {chapter}{Python Module Index}{43}{section*.221}
-\contentsline {chapter}{Index}{45}{section*.222}
+\contentsline {paragraph}{Examples}{14}{paragraph*.83}
+\contentsline {paragraph}{Examples}{16}{paragraph*.85}
+\contentsline {paragraph}{Examples}{18}{paragraph*.87}
+\contentsline {paragraph}{Examples}{20}{paragraph*.89}
+\contentsline {paragraph}{Examples}{21}{paragraph*.91}
+\contentsline {paragraph}{Examples}{23}{paragraph*.93}
+\contentsline {paragraph}{Examples}{24}{paragraph*.95}
+\contentsline {paragraph}{Examples}{25}{paragraph*.97}
+\contentsline {subsection}{\numberline {1.1.7}\texttt {eqdskreader} Module}{30}{subsection.1.1.7}
+\contentsline {subsection}{\numberline {1.1.8}\texttt {pfilereader} Module}{41}{subsection.1.1.8}
+\contentsline {subsection}{\numberline {1.1.9}\texttt {trispline} Module}{42}{subsection.1.1.9}
+\contentsline {chapter}{\numberline {2}Indices and tables}{43}{chapter.2}
+\contentsline {chapter}{Python Module Index}{45}{section*.229}
+\contentsline {chapter}{Index}{47}{section*.230}

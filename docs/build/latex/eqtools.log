@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.8.21)  4 SEP 2013 20:21
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.8.21)  5 SEP 2013 13:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -970,100 +970,31 @@ Overfull \hbox (2.78798pt too wide) in paragraph at lines 1251--1251
 
 [10] [11]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <9> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 1448.
- [12] [13]
-Underfull \hbox (badness 7814) in paragraph at lines 1617--1619
-[]\T1/ptm/m/n/10 Find psi-norm val-ues at (R, Z) points (0.6m, 0m) at times t=[
-0.2s, 0.3s]: psi_arr =
- []
-
-[14]
-Underfull \hbox (badness 7308) in paragraph at lines 1777--1779
-[]\T1/ptm/m/n/10 Find phi-norm val-ues at (R, Z) points (0.6m, 0m) at times t=[
-0.2s, 0.3s]: phi_arr =
- []
-
-[15] [16]
-Underfull \hbox (badness 7397) in paragraph at lines 1932--1934
-[]\T1/ptm/m/n/10 Find vol-norm val-ues at (R, Z) points (0.6m, 0m) at times t=[
-0.2s, 0.3s]: vol_arr =
- []
-
-[17]
-Underfull \hbox (badness 7814) in paragraph at lines 2101--2103
-[]\T1/ptm/m/n/10 Find psi-norm val-ues at (R, Z) points (0.6m, 0m) at times t=[
-0.2s, 0.3s]: psi_arr =
- []
-
-[18] [19]
-Underfull \hbox (badness 10000) in paragraph at lines 2236--2239
-[]\T1/ptm/m/n/10 self.getTimeBase()) that
- []
-
-
-Underfull \hbox (badness 5681) in paragraph at lines 2257--2259
-[]\T1/ptm/m/n/10 Find R_mid val-ues at (R, Z) points (0.6m, 0m) at times t=[0.2
-s, 0.3s]: R_mid_arr =
- []
-
-[20]
-Underfull \hbox (badness 10000) in paragraph at lines 2356--2359
-[]\T1/ptm/m/n/10 self.getTimeBase()) that
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 2380--2382
-[]\T1/ptm/m/n/10 Find R_mid val-ues at (psi-norm, t) points (0.6, 0.2s) and (0.
-5, 0.3s): R_mid_arr =
- []
-
-[21]
-Underfull \hbox (badness 10000) in paragraph at lines 2467--2469
-[]\T1/ptm/m/n/10 Find vol-norm val-ues at psi_norm=0.5 at times t=[0.2s, 0.3s]:
- vol-norm_arr =
- []
-
-
-Underfull \hbox (badness 6110) in paragraph at lines 2470--2472
-[]\T1/ptm/m/n/10 Find vol-norm val-ues at (psi-norm, t) points (0.6, 0.2s) and 
-(0.5, 0.3s): vol-norm_arr =
- []
-
-[22]
-Underfull \hbox (badness 10000) in paragraph at lines 2557--2559
-[]\T1/ptm/m/n/10 Find phi-norm val-ues at psi_norm=0.5 at times t=[0.2s, 0.3s]:
- phi-norm_arr =
- []
-
-
-Underfull \hbox (badness 6032) in paragraph at lines 2560--2562
-[]\T1/ptm/m/n/10 Find phi-norm val-ues at (psi-norm, t) points (0.6, 0.2s) and 
-(0.5, 0.3s): phi-norm_arr =
- []
-
-[23] [24] [25] [26] [27]
-Underfull \hbox (badness 10000) in paragraph at lines 3182--3182
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 1449.
+ [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22] [23] [24]
+[25] [26] [27] [28] [29]
+Underfull \hbox (badness 10000) in paragraph at lines 3581--3581
 []\T1/ptm/m/it/10 shot=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 time=None\T1/ptm/m/
 n/10 , \T1/ptm/m/it/10 gfile=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 afile=None\T1
 /ptm/m/n/10 ,
  []
 
-[28] [29] [30] [31] [32] [33] [34] [35]
-Underfull \hbox (badness 10000) in paragraph at lines 4238--4240
+[30] [31] [32] [33] [34] [35] [36] [37]
+Underfull \hbox (badness 10000) in paragraph at lines 4637--4639
 \T1/ptm/m/n/10 Pulls di-men-sional ge-om-e-try pa-ram-e-ters. Re-turns named-tu
 -ple con-tain-ing
  []
 
-[36] [37] [38] [39] [40
-
-]
+[38] [39] [40] [41] [42]
 Chapter 2.
-[41] [42
+[43
 
-] [43
+] [44
+
+] [45
 
 
-] (./eqtools.ind [44
+] (./eqtools.ind [46
 
 
 ]
@@ -1101,7 +1032,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 74--75
 []\T1/ptm/m/n/10 getDiamagBetaP() (eq-tools.eqdskreader.EqdskReader
  []
 
-[45
+[47
 
 ]
 Underfull \hbox (badness 10000) in paragraph at lines 77--78
@@ -1203,7 +1134,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 135--136
 \T1/ptm/m/n/10 tools.eqdskreader.EqdskReader method),
  []
 
-[46]
+[48]
 Underfull \hbox (badness 10000) in paragraph at lines 168--169
 []\T1/ptm/m/n/10 getQProfile() (eq-tools.eqdskreader.EqdskReader
  []
@@ -1283,7 +1214,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 233--234
 []\T1/ptm/m/n/10 psinorm2volnorm() (eq-tools.eqdskreader.EqdskReader
  []
 
-[47]
+[49]
 Underfull \hbox (badness 10000) in paragraph at lines 239--240
 []\T1/ptm/m/n/10 rz2phinorm() (eq-tools.eqdskreader.EqdskReader
  []
@@ -1298,40 +1229,43 @@ Underfull \hbox (badness 10000) in paragraph at lines 249--250
 []\T1/ptm/m/n/10 rz2volnorm() (eq-tools.eqdskreader.EqdskReader
  []
 
-[48
+[50
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 4855.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 4855.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 5254.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 5254.
  (./eqtools.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 4855.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 4855.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 5254.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 5254.
 
 Package rerunfilecheck Info: File `eqtools.out' has not changed.
-(rerunfilecheck)             Checksum: AFD776CA69697B156424319BE07CF508;257.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 4855.
+(rerunfilecheck)             Checksum: 6B8F215A87D96DEC62CC7E78876C3197;257.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 5254.
  ) 
 Here is how much of TeX's memory you used:
- 9495 strings out of 493311
- 138618 string characters out of 6137850
- 238575 words of memory out of 5000000
- 12477 multiletter control sequences out of 15000+600000
- 61918 words of font info for 69 fonts, out of 8000000 for 9000
+ 9509 strings out of 493311
+ 138792 string characters out of 6137850
+ 239583 words of memory out of 5000000
+ 12481 multiletter control sequences out of 15000+600000
+ 65850 words of font info for 73 fonts, out of 8000000 for 9000
  958 hyphenation exceptions out of 8191
- 36i,12n,45p,355b,683s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,16n,45p,424b,683s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2013/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/texlive/2
-013/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2013/texm
-f-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2013/texmf-dist/
-fonts/type1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/
-type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/u
-rw/times/utmb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/u
-tmr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb
->
-Output written on eqtools.pdf (52 pages, 211626 bytes).
+exlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
+xlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
+live/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texli
+ve/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texliv
+e/2013/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/texlive/2013/t
+exmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2013/texmf-dis
+t/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts
+/type1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1
+/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/ti
+mes/utmb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmr8a
+.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on eqtools.pdf (54 pages, 250853 bytes).
 PDF statistics:
- 817 PDF objects out of 1000 (max. 8388607)
- 747 compressed objects within 8 object streams
- 285 named destinations out of 1000 (max. 500000)
+ 859 PDF objects out of 1000 (max. 8388607)
+ 783 compressed objects within 8 object streams
+ 295 named destinations out of 1000 (max. 500000)
  41 words of extra memory for PDF output out of 10000 (max. 10000000)
 
