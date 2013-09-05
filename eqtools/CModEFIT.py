@@ -42,11 +42,12 @@ except Exception as _e_MDS:
 
 class CModEFITTree(EFITTree):
     """
-    Inherits EFITTree class. machine-specific data handling class for Alcator C-Mod.
-    Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
-    Each EFIT variable or set of variables is recovered with a corresponding getter method.
-    Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
-    Additional data are pulled at the first request and stored for subsequent usage.
+    Inherits :py:class:`~gptools.EFIT.EFITTree` class. Machine-specific data
+    handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
+    and shot, stores as object attributes. Each EFIT variable or set of
+    variables is recovered with a corresponding getter method. Essential data
+    for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
+    data are pulled at the first request and stored for subsequent usage.
     """
 
     def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False, fast=False):
@@ -55,12 +56,41 @@ class CModEFITTree(EFITTree):
         in instance attributes.  Core attributes are populated from the MDS tree on initialization.
         Additional attributes are initialized as None, filled on the first request to the object.
 
-        INPUTS:
-        shot:   C-Mod shot index (long)
-        tree:   optional input for EFIT tree, defaults to 'ANALYSIS' (i.e.,
-                    EFIT data are under \\analysis::top.efit.results).
-                    For any string TREE (such as 'EFIT20') other than 'ANALYSIS',
-                    data are taken from \\TREE::top.results.
+        Args:
+            shot: (long) int. C-Mod shot index (long)
+        
+        Kwargs:
+            tree: str. optional input for EFIT tree, defaults to 'ANALYSIS'
+                (i.e., EFIT data are under \\analysis::top.efit.results).
+                For any string TREE (such as 'EFIT20') other than 'ANALYSIS',
+                data are taken from \\TREE::top.results.
+            length_unit: str. Sets the base unit used for any quantity whose
+                dimensions are length to any power. Valid options are:
+                    
+                    ===========  ===========================================================================================
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+                    ===========  ===========================================================================================
+                    
+                Default is 'm' (all units taken and returned in meters).
+            tspline: Boolean. Sets whether or not interpolation in time is
+                performed using a tricubic spline or nearest-neighbor
+                interpolation. Tricubic spline interpolation requires at least
+                four complete equilibria at different times. It is also assumed
+                that they are functionally correlated, and that parameters do
+                not vary out of their boundaries (derivative = 0 boundary
+                condition). Default is False (use nearest neighbor interpolation).
+            fast: Boolean. Sets whether or not the "fast" form of time window
+                finding is used. If True, the timebase must be monotonically
+                increasing. Default is False (use slower, safer method).
         """
         if tree.upper() == 'ANALYSIS':
             root = '\\analysis::top.efit.results.'

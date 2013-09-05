@@ -61,21 +61,95 @@
 <dt id="eqtools.CModEFIT.CModEFITTree">
 <em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTree</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eqtools.EFIT.EFITTree" title="eqtools.EFIT.EFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.EFIT.EFITTree</span></tt></a></p>
-<p>Inherits EFITTree class. machine-specific data handling class for Alcator C-Mod.
-Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
-Each EFIT variable or set of variables is recovered with a corresponding getter method.
-Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
-Additional data are pulled at the first request and stored for subsequent usage.</p>
+<p>Inherits <tt class="xref py py-class docutils literal"><span class="pre">EFITTree</span></tt> class. Machine-specific data
+handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
+and shot, stores as object attributes. Each EFIT variable or set of
+variables is recovered with a corresponding getter method. Essential data
+for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
+data are pulled at the first request and stored for subsequent usage.</p>
 <p>Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
 in instance attributes.  Core attributes are populated from the MDS tree on initialization.
 Additional attributes are initialized as None, filled on the first request to the object.</p>
-<p>INPUTS:
-shot:   C-Mod shot index (long)
-tree:   optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217; (i.e.,</p>
-<blockquote>
-<div>EFIT data are under analysis::top.efit.results).
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>shot</strong> &#8211;
+(long) int. C-Mod shot index (long)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>tree</strong> &#8211;
+str. optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217;
+(i.e., EFIT data are under analysis::top.efit.results).
 For any string TREE (such as &#8216;EFIT20&#8217;) other than &#8216;ANALYSIS&#8217;,
-data are taken from TREE::top.results.</div></blockquote>
+data are taken from TREE::top.results.</p>
+</li>
+<li><p class="first"><strong>length_unit</strong> &#8211;
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>whatever the default in the tree is (no conversion is performed, units may be inconsistent)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
+</li>
+<li><p class="first"><strong>tspline</strong> &#8211;
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).</p>
+</li>
+<li><p class="first"><strong>fast</strong> &#8211;
+Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="eqtools.CModEFIT.CModEFITTree.getMachineCrossSection">
 <tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree.getMachineCrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
@@ -97,13 +171,86 @@ access. This is good for interactive use, but may drag the performance down.</p>
 <p>Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
 in instance attributes.  Core attributes are populated from the MDS tree on initialization.
 Additional attributes are initialized as None, filled on the first request to the object.</p>
-<p>INPUTS:
-shot:   C-Mod shot index (long)
-tree:   optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217; (i.e.,</p>
-<blockquote>
-<div>EFIT data are under analysis::top.efit.results).
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>shot</strong> &#8211;
+(long) int. C-Mod shot index (long)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>tree</strong> &#8211;
+str. optional input for EFIT tree, defaults to &#8216;ANALYSIS&#8217;
+(i.e., EFIT data are under analysis::top.efit.results).
 For any string TREE (such as &#8216;EFIT20&#8217;) other than &#8216;ANALYSIS&#8217;,
-data are taken from TREE::top.results.</div></blockquote>
+data are taken from TREE::top.results.</p>
+</li>
+<li><p class="first"><strong>length_unit</strong> &#8211;
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>whatever the default in the tree is (no conversion is performed, units may be inconsistent)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
+</li>
+<li><p class="first"><strong>tspline</strong> &#8211;
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).</p>
+</li>
+<li><p class="first"><strong>fast</strong> &#8211;
+Boolean. Sets whether or not the &#8220;fast&#8221; form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -651,17 +798,7 @@ pseudo-private name.</td>
 </div>
 <div class="section" id="module-eqtools.core">
 <span id="core-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">core</span></tt> Module<a class="headerlink" href="#module-eqtools.core" title="Permalink to this headline">¶</a></h2>
-<p>This module contains the core classes for EqTools, including the base
-Equilibrium class.</p>
-<dl class="docutils">
-<dt>Classes:</dt>
-<dd><p class="first">ModuleWarning: Warning class for unavailable modules.
-Equilibrium: Base class for all other equilibrium access objects. Includes</p>
-<blockquote class="last">
-<div>the main mapping routines and method stubs for all suggested methods
-that should be implemented in subclasses.</div></blockquote>
-</dd>
-</dl>
+<p>This module provides the core classes for eqtools, including the base Equilibrium class.</p>
 <dl class="exception">
 <dt id="eqtools.core.ModuleWarning">
 <em class="property">exception </em><tt class="descclassname">eqtools.core.</tt><tt class="descname">ModuleWarning</tt><a class="reference internal" href="_modules/eqtools/core.html#ModuleWarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.ModuleWarning" title="Permalink to this definition">¶</a></dt>
@@ -763,20 +900,44 @@ in data storage.</p>
 String. Sets the base unit used for any quantity whose
 dimensions are length to any power. Valid options are:</p>
 <blockquote>
-<div><p>&#8216;m&#8217;         meters
-&#8216;cm&#8217;        centimeters
-&#8216;mm&#8217;        millimeters
-&#8216;in&#8217;        inches
-&#8216;ft&#8217;        feet
-&#8216;yd&#8217;        yards
-&#8216;smoot&#8217;     smoots
-&#8216;cubit&#8217;     cubits
-&#8216;hand&#8217;      hands
-&#8216;default&#8217;   whatever the default in the tree is (no</p>
-<blockquote>
-<div><p>conversion is performed, units may be
-inconsistent)</p>
-</div></blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>whatever the default in the tree is (no conversion is performed, units may be inconsistent)</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
 <p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
 </li>
@@ -1889,287 +2050,421 @@ phinorm_arr = Eq_instance.psinorm2phinorm([0.6, 0.5], [0.2, 0.3])</p>
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getInfo">
 <tt class="descname">getInfo</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getInfo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns namedtuple of instance parameters (shot, equilibrium type, size, timebase, etc.)</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getTimeBase">
 <tt class="descname">getTimeBase</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getTimeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getTimeBase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns timebase array [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getFluxGrid">
 <tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getFluxGrid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<dl class="docutils">
+<dt>returns 3D grid of psi(r,z,t)</dt>
+<dd><dl class="first last docutils">
+<dt>The array returned should have the following dimensions:</dt>
+<dd>First dimension: time
+Second dimension: Z
+Third dimension: R</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getRGrid">
 <tt class="descname">getRGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getRGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getRGrid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns vector of R-values for psiRZ grid [r]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getZGrid">
 <tt class="descname">getZGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getZGrid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns vector of Z-values for psiRZ grid [z]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getFluxAxis">
 <tt class="descname">getFluxAxis</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getFluxAxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getFluxAxis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns psi at magnetic axis [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getFluxLCFS">
 <tt class="descname">getFluxLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getFluxLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getFluxLCFS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns psi a separatrix [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getRLCFS">
 <tt class="descname">getRLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getRLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getRLCFS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns R-positions (n points) mapping LCFS [t,n]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getZLCFS">
 <tt class="descname">getZLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getZLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getZLCFS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns Z-positions (n points) mapping LCFS [t,n]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getFluxVol">
 <tt class="descname">getFluxVol</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getFluxVol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getFluxVol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns volume contained within flux surface as function of psi [psi,t].
+Psi assumed to be evenly-spaced grid on [0,1]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getVolLCFS">
 <tt class="descname">getVolLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getVolLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getVolLCFS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns plasma volume within LCFS [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getRmidPsi">
 <tt class="descname">getRmidPsi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getRmidPsi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getRmidPsi" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns outboard-midplane major radius of flux surface [t,psi]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getFluxPres">
 <tt class="descname">getFluxPres</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getFluxPres"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getFluxPres" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated pressure profile [psi,t].
+Psi assumed to be evenly-spaced grid on [0,1]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getElongation">
 <tt class="descname">getElongation</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getElongation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getElongation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns LCFS elongation [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getUpperTriangularity">
 <tt class="descname">getUpperTriangularity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getUpperTriangularity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getUpperTriangularity" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns LCFS upper triangularity [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getLowerTriangularity">
 <tt class="descname">getLowerTriangularity</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getLowerTriangularity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getLowerTriangularity" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns LCFS lower triangularity [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getShaping">
 <tt class="descname">getShaping</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getShaping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getShaping" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns dimensionless shaping parameters for plasma.
+Namedtuple containing {LCFS elongation, LCFS upper/lower triangularity}</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getMagR">
 <tt class="descname">getMagR</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getMagR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getMagR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns magnetic-axis major radius [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getMagZ">
 <tt class="descname">getMagZ</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getMagZ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getMagZ" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns magnetic-axis Z [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getAreaLCFS">
 <tt class="descname">getAreaLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getAreaLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getAreaLCFS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns LCFS surface area [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getAOut">
 <tt class="descname">getAOut</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getAOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getAOut" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns outboard-midplane minor radius [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getRmidOut">
 <tt class="descname">getRmidOut</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getRmidOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getRmidOut" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns outboard-midplane major radius [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getGeometry">
 <tt class="descname">getGeometry</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getGeometry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getGeometry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns dimensional geometry parameters
+Namedtuple containing {mag axis R,Z, LCFS area, volume, outboard-midplane major radius}</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQProfile">
 <tt class="descname">getQProfile</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQProfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQProfile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns safety factor q profile [psi,t]
+Psi assumed to be evenly-spaced grid on [0,1]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQ0">
 <tt class="descname">getQ0</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQ0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQ0" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns q on magnetic axis [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQ95">
 <tt class="descname">getQ95</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQ95"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQ95" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns q on 95% flux surface [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQLCFS">
 <tt class="descname">getQLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQLCFS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns q on LCFS [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQ1Surf">
 <tt class="descname">getQ1Surf</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQ1Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQ1Surf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns outboard-midplane minor radius of q=1 surface [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQ2Surf">
 <tt class="descname">getQ2Surf</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQ2Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQ2Surf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns outboard-midplane minor radius of q=2 surface [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQ3Surf">
 <tt class="descname">getQ3Surf</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQ3Surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQ3Surf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns outboard-midplane minor radius of q=3 surface [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getQs">
 <tt class="descname">getQs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getQs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getQs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns specific q-profile values.
+Namedtuple containing {q0, q95, qLCFS, minor radius of q=1,2,3 surfaces}</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getBtVac">
 <tt class="descname">getBtVac</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getBtVac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getBtVac" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns vacuum on-axis toroidal field [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getBtPla">
 <tt class="descname">getBtPla</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getBtPla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getBtPla" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns plasma on-axis toroidal field [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getBpAvg">
 <tt class="descname">getBpAvg</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getBpAvg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getBpAvg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns average poloidal field [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getFields">
 <tt class="descname">getFields</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getFields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getFields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns magnetic-field values.
+Namedtuple containing {Btor on magnetic axis (plasma and vacuum), avg Bpol}</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getIpCalc">
 <tt class="descname">getIpCalc</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getIpCalc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getIpCalc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated plasma current [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getIpMeas">
 <tt class="descname">getIpMeas</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getIpMeas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getIpMeas" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns measured plasma current [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getJp">
 <tt class="descname">getJp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getJp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getJp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns grid of calculated toroidal current density [t,z,r]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getBetaT">
 <tt class="descname">getBetaT</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getBetaT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getBetaT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated global toroidal beta [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getBetaP">
 <tt class="descname">getBetaP</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getBetaP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getBetaP" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated global poloidal beta [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getLi">
 <tt class="descname">getLi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getLi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getLi" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated internal inductance of plasma [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getBetas">
 <tt class="descname">getBetas</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getBetas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getBetas" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated betas and inductance.
+Namedtuple of {betat,betap,Li}</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getDiamagFlux">
 <tt class="descname">getDiamagFlux</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getDiamagFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getDiamagFlux" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns diamagnetic flux [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getDiamagBetaT">
 <tt class="descname">getDiamagBetaT</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getDiamagBetaT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getDiamagBetaT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns diamagnetic-loop toroidal beta [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getDiamagBetaP">
 <tt class="descname">getDiamagBetaP</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getDiamagBetaP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getDiamagBetaP" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns diamagnetic-loop poloidal beta [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getDiamagTauE">
 <tt class="descname">getDiamagTauE</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getDiamagTauE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getDiamagTauE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns diamagnetic-loop energy confinement time [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getDiamagWp">
 <tt class="descname">getDiamagWp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getDiamagWp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getDiamagWp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns diamagnetic-loop plasma stored energy [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getDiamag">
 <tt class="descname">getDiamag</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getDiamag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getDiamag" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns diamagnetic measurements of plasma parameters.
+Namedtuple of {diamag. flux, betat, betap from coils, tau_E from diamag., diamag. stored energy}</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getWMHD">
 <tt class="descname">getWMHD</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getWMHD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getWMHD" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated MHD stored energy [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getTauMHD">
 <tt class="descname">getTauMHD</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getTauMHD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getTauMHD" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated MHD energy confinement time [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getPinj">
 <tt class="descname">getPinj</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getPinj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getPinj" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated injected power [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getCurrentSign">
 <tt class="descname">getCurrentSign</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getCurrentSign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getCurrentSign" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated current direction, where CCW = +</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getWbdot">
 <tt class="descname">getWbdot</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getWbdot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getWbdot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated d/dt of magnetic stored energy [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getWpdot">
 <tt class="descname">getWpdot</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getWpdot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getWpdot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns calculated d/dt of plasma stored energy [t]</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getEnergy">
 <tt class="descname">getEnergy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getEnergy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns stored-energy parameters.
+Namedtuple of {stored energy, confinement time, injected power, d/dt of magnetic, plasma stored energy}</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getParam">
 <tt class="descname">getParam</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getParam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getParam" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Backup function: takes parameter name for variable, returns variable directly.
+Acts as wrapper to direct data-access routines from within object.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.getMachineCrossSection">
 <tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getMachineCrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns (R,Z) coordinates of machine wall cross-section for plotting routines.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.plotFlux">

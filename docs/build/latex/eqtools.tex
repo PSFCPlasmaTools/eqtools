@@ -139,25 +139,112 @@ Useful description and details go here.
 \phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTree}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{fast=False}}{}
 Bases: {\hyperref[eqtools:eqtools.EFIT.EFITTree]{\code{eqtools.EFIT.EFITTree}}}
 
-Inherits EFITTree class. machine-specific data handling class for Alcator C-Mod.
-Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
-Each EFIT variable or set of variables is recovered with a corresponding getter method.
-Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
-Additional data are pulled at the first request and stored for subsequent usage.
+Inherits \code{EFITTree} class. Machine-specific data
+handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
+and shot, stores as object attributes. Each EFIT variable or set of
+variables is recovered with a corresponding getter method. Essential data
+for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
+data are pulled at the first request and stored for subsequent usage.
 
 Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
 in instance attributes.  Core attributes are populated from the MDS tree on initialization.
 Additional attributes are initialized as None, filled on the first request to the object.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{shot} --
+(long) int. C-Mod shot index (long)
 
-INPUTS:
-shot:   C-Mod shot index (long)
-tree:   optional input for EFIT tree, defaults to `ANALYSIS' (i.e.,
-\begin{quote}
-
-EFIT data are under analysis::top.efit.results).
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{tree} --
+str. optional input for EFIT tree, defaults to `ANALYSIS'
+(i.e., EFIT data are under analysis::top.efit.results).
 For any string TREE (such as `EFIT20') other than `ANALYSIS',
 data are taken from TREE::top.results.
+
+\item {} 
+\textbf{length\_unit} --
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:
+\begin{quote}
+
+\begin{tabulary}{\linewidth}{|L|L|}
+\hline
+
+`m'
+ & 
+meters
+\\\hline
+
+`cm'
+ & 
+centimeters
+\\\hline
+
+`mm'
+ & 
+millimeters
+\\\hline
+
+`in'
+ & 
+inches
+\\\hline
+
+`ft'
+ & 
+feet
+\\\hline
+
+`yd'
+ & 
+yards
+\\\hline
+
+`smoot'
+ & 
+smoots
+\\\hline
+
+`cubit'
+ & 
+cubits
+\\\hline
+
+`hand'
+ & 
+hands
+\\\hline
+
+`default'
+ & 
+whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+\\\hline
+\end{tabulary}
+
 \end{quote}
+
+Default is `m' (all units taken and returned in meters).
+
+\item {} 
+\textbf{tspline} --
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).
+
+\item {} 
+\textbf{fast} --
+Boolean. Sets whether or not the ``fast'' form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).
+
+\end{itemize}
+
+\end{description}\end{quote}
 \index{getMachineCrossSection() (eqtools.CModEFIT.CModEFITTree method)}
 
 \begin{fulllineitems}
@@ -187,16 +274,102 @@ access. This is good for interactive use, but may drag the performance down.
 Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
 in instance attributes.  Core attributes are populated from the MDS tree on initialization.
 Additional attributes are initialized as None, filled on the first request to the object.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{shot} --
+(long) int. C-Mod shot index (long)
 
-INPUTS:
-shot:   C-Mod shot index (long)
-tree:   optional input for EFIT tree, defaults to `ANALYSIS' (i.e.,
-\begin{quote}
-
-EFIT data are under analysis::top.efit.results).
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{tree} --
+str. optional input for EFIT tree, defaults to `ANALYSIS'
+(i.e., EFIT data are under analysis::top.efit.results).
 For any string TREE (such as `EFIT20') other than `ANALYSIS',
 data are taken from TREE::top.results.
+
+\item {} 
+\textbf{length\_unit} --
+str. Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:
+\begin{quote}
+
+\begin{tabulary}{\linewidth}{|L|L|}
+\hline
+
+`m'
+ & 
+meters
+\\\hline
+
+`cm'
+ & 
+centimeters
+\\\hline
+
+`mm'
+ & 
+millimeters
+\\\hline
+
+`in'
+ & 
+inches
+\\\hline
+
+`ft'
+ & 
+feet
+\\\hline
+
+`yd'
+ & 
+yards
+\\\hline
+
+`smoot'
+ & 
+smoots
+\\\hline
+
+`cubit'
+ & 
+cubits
+\\\hline
+
+`hand'
+ & 
+hands
+\\\hline
+
+`default'
+ & 
+whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+\\\hline
+\end{tabulary}
+
 \end{quote}
+
+Default is `m' (all units taken and returned in meters).
+
+\item {} 
+\textbf{tspline} --
+Boolean. Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).
+
+\item {} 
+\textbf{fast} --
+Boolean. Sets whether or not the ``fast'' form of time window
+finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -898,19 +1071,7 @@ pseudo-private name.
 
 \subsection{\texttt{core} Module}
 \label{eqtools:module-eqtools.core}\label{eqtools:core-module}\index{eqtools.core (module)}
-This module contains the core classes for EqTools, including the base
-Equilibrium class.
-\begin{description}
-\item[{Classes:}] \leavevmode
-ModuleWarning: Warning class for unavailable modules.
-Equilibrium: Base class for all other equilibrium access objects. Includes
-\begin{quote}
-
-the main mapping routines and method stubs for all suggested methods
-that should be implemented in subclasses.
-\end{quote}
-
-\end{description}
+This module provides the core classes for eqtools, including the base Equilibrium class.
 \index{ModuleWarning}
 
 \begin{fulllineitems}
@@ -1028,21 +1189,60 @@ String. Sets the base unit used for any quantity whose
 dimensions are length to any power. Valid options are:
 \begin{quote}
 
-`m'         meters
-`cm'        centimeters
-`mm'        millimeters
-`in'        inches
-`ft'        feet
-`yd'        yards
-`smoot'     smoots
-`cubit'     cubits
-`hand'      hands
-`default'   whatever the default in the tree is (no
-\begin{quote}
+\begin{tabulary}{\linewidth}{|L|L|}
+\hline
 
-conversion is performed, units may be
-inconsistent)
-\end{quote}
+`m'
+ & 
+meters
+\\\hline
+
+`cm'
+ & 
+centimeters
+\\\hline
+
+`mm'
+ & 
+millimeters
+\\\hline
+
+`in'
+ & 
+inches
+\\\hline
+
+`ft'
+ & 
+feet
+\\\hline
+
+`yd'
+ & 
+yards
+\\\hline
+
+`smoot'
+ & 
+smoots
+\\\hline
+
+`cubit'
+ & 
+cubits
+\\\hline
+
+`hand'
+ & 
+hands
+\\\hline
+
+`default'
+ & 
+whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+\\\hline
+\end{tabulary}
+
 \end{quote}
 
 Default is `m' (all units taken and returned in meters).
@@ -2300,342 +2500,589 @@ phinorm\_arr = Eq\_instance.psinorm2phinorm({[}0.6, 0.5{]}, {[}0.2, 0.3{]})
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getInfo}\pysiglinewithargsret{\bfcode{getInfo}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns namedtuple of instance parameters (shot, equilibrium type, size, timebase, etc.)
+
 \end{fulllineitems}
 
 \index{getTimeBase() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getTimeBase}\pysiglinewithargsret{\bfcode{getTimeBase}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns timebase array {[}t{]}
+
 \end{fulllineitems}
 
 \index{getFluxGrid() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+Abstract method.  See child classes for implementation.
+\begin{description}
+\item[{returns 3D grid of psi(r,z,t)}] \leavevmode\begin{description}
+\item[{The array returned should have the following dimensions:}] \leavevmode
+First dimension: time
+Second dimension: Z
+Third dimension: R
+
+\end{description}
+
+\end{description}
+
 \end{fulllineitems}
 
 \index{getRGrid() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getRGrid}\pysiglinewithargsret{\bfcode{getRGrid}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns vector of R-values for psiRZ grid {[}r{]}
+
 \end{fulllineitems}
 
 \index{getZGrid() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getZGrid}\pysiglinewithargsret{\bfcode{getZGrid}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns vector of Z-values for psiRZ grid {[}z{]}
+
 \end{fulllineitems}
 
 \index{getFluxAxis() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxAxis}\pysiglinewithargsret{\bfcode{getFluxAxis}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns psi at magnetic axis {[}t{]}
+
 \end{fulllineitems}
 
 \index{getFluxLCFS() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxLCFS}\pysiglinewithargsret{\bfcode{getFluxLCFS}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns psi a separatrix {[}t{]}
+
 \end{fulllineitems}
 
 \index{getRLCFS() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getRLCFS}\pysiglinewithargsret{\bfcode{getRLCFS}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns R-positions (n points) mapping LCFS {[}t,n{]}
+
 \end{fulllineitems}
 
 \index{getZLCFS() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns Z-positions (n points) mapping LCFS {[}t,n{]}
+
 \end{fulllineitems}
 
 \index{getFluxVol() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxVol}\pysiglinewithargsret{\bfcode{getFluxVol}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns volume contained within flux surface as function of psi {[}psi,t{]}.
+Psi assumed to be evenly-spaced grid on {[}0,1{]}
+
 \end{fulllineitems}
 
 \index{getVolLCFS() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getVolLCFS}\pysiglinewithargsret{\bfcode{getVolLCFS}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns plasma volume within LCFS {[}t{]}
+
 \end{fulllineitems}
 
 \index{getRmidPsi() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getRmidPsi}\pysiglinewithargsret{\bfcode{getRmidPsi}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns outboard-midplane major radius of flux surface {[}t,psi{]}
+
 \end{fulllineitems}
 
 \index{getFluxPres() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getFluxPres}\pysiglinewithargsret{\bfcode{getFluxPres}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated pressure profile {[}psi,t{]}.
+Psi assumed to be evenly-spaced grid on {[}0,1{]}
+
 \end{fulllineitems}
 
 \index{getElongation() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getElongation}\pysiglinewithargsret{\bfcode{getElongation}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns LCFS elongation {[}t{]}
+
 \end{fulllineitems}
 
 \index{getUpperTriangularity() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getUpperTriangularity}\pysiglinewithargsret{\bfcode{getUpperTriangularity}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns LCFS upper triangularity {[}t{]}
+
 \end{fulllineitems}
 
 \index{getLowerTriangularity() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getLowerTriangularity}\pysiglinewithargsret{\bfcode{getLowerTriangularity}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns LCFS lower triangularity {[}t{]}
+
 \end{fulllineitems}
 
 \index{getShaping() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getShaping}\pysiglinewithargsret{\bfcode{getShaping}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns dimensionless shaping parameters for plasma.
+Namedtuple containing \{LCFS elongation, LCFS upper/lower triangularity\}
+
 \end{fulllineitems}
 
 \index{getMagR() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getMagR}\pysiglinewithargsret{\bfcode{getMagR}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns magnetic-axis major radius {[}t{]}
+
 \end{fulllineitems}
 
 \index{getMagZ() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getMagZ}\pysiglinewithargsret{\bfcode{getMagZ}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns magnetic-axis Z {[}t{]}
+
 \end{fulllineitems}
 
 \index{getAreaLCFS() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getAreaLCFS}\pysiglinewithargsret{\bfcode{getAreaLCFS}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns LCFS surface area {[}t{]}
+
 \end{fulllineitems}
 
 \index{getAOut() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getAOut}\pysiglinewithargsret{\bfcode{getAOut}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns outboard-midplane minor radius {[}t{]}
+
 \end{fulllineitems}
 
 \index{getRmidOut() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getRmidOut}\pysiglinewithargsret{\bfcode{getRmidOut}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns outboard-midplane major radius {[}t{]}
+
 \end{fulllineitems}
 
 \index{getGeometry() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getGeometry}\pysiglinewithargsret{\bfcode{getGeometry}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns dimensional geometry parameters
+Namedtuple containing \{mag axis R,Z, LCFS area, volume, outboard-midplane major radius\}
+
 \end{fulllineitems}
 
 \index{getQProfile() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQProfile}\pysiglinewithargsret{\bfcode{getQProfile}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns safety factor q profile {[}psi,t{]}
+Psi assumed to be evenly-spaced grid on {[}0,1{]}
+
 \end{fulllineitems}
 
 \index{getQ0() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ0}\pysiglinewithargsret{\bfcode{getQ0}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns q on magnetic axis {[}t{]}
+
 \end{fulllineitems}
 
 \index{getQ95() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ95}\pysiglinewithargsret{\bfcode{getQ95}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns q on 95\% flux surface {[}t{]}
+
 \end{fulllineitems}
 
 \index{getQLCFS() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQLCFS}\pysiglinewithargsret{\bfcode{getQLCFS}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns q on LCFS {[}t{]}
+
 \end{fulllineitems}
 
 \index{getQ1Surf() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ1Surf}\pysiglinewithargsret{\bfcode{getQ1Surf}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns outboard-midplane minor radius of q=1 surface {[}t{]}
+
 \end{fulllineitems}
 
 \index{getQ2Surf() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ2Surf}\pysiglinewithargsret{\bfcode{getQ2Surf}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns outboard-midplane minor radius of q=2 surface {[}t{]}
+
 \end{fulllineitems}
 
 \index{getQ3Surf() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQ3Surf}\pysiglinewithargsret{\bfcode{getQ3Surf}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns outboard-midplane minor radius of q=3 surface {[}t{]}
+
 \end{fulllineitems}
 
 \index{getQs() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getQs}\pysiglinewithargsret{\bfcode{getQs}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns specific q-profile values.
+Namedtuple containing \{q0, q95, qLCFS, minor radius of q=1,2,3 surfaces\}
+
 \end{fulllineitems}
 
 \index{getBtVac() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getBtVac}\pysiglinewithargsret{\bfcode{getBtVac}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns vacuum on-axis toroidal field {[}t{]}
+
 \end{fulllineitems}
 
 \index{getBtPla() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getBtPla}\pysiglinewithargsret{\bfcode{getBtPla}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns plasma on-axis toroidal field {[}t{]}
+
 \end{fulllineitems}
 
 \index{getBpAvg() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getBpAvg}\pysiglinewithargsret{\bfcode{getBpAvg}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns average poloidal field {[}t{]}
+
 \end{fulllineitems}
 
 \index{getFields() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getFields}\pysiglinewithargsret{\bfcode{getFields}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns magnetic-field values.
+Namedtuple containing \{Btor on magnetic axis (plasma and vacuum), avg Bpol\}
+
 \end{fulllineitems}
 
 \index{getIpCalc() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getIpCalc}\pysiglinewithargsret{\bfcode{getIpCalc}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated plasma current {[}t{]}
+
 \end{fulllineitems}
 
 \index{getIpMeas() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getIpMeas}\pysiglinewithargsret{\bfcode{getIpMeas}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns measured plasma current {[}t{]}
+
 \end{fulllineitems}
 
 \index{getJp() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getJp}\pysiglinewithargsret{\bfcode{getJp}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns grid of calculated toroidal current density {[}t,z,r{]}
+
 \end{fulllineitems}
 
 \index{getBetaT() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getBetaT}\pysiglinewithargsret{\bfcode{getBetaT}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated global toroidal beta {[}t{]}
+
 \end{fulllineitems}
 
 \index{getBetaP() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getBetaP}\pysiglinewithargsret{\bfcode{getBetaP}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated global poloidal beta {[}t{]}
+
 \end{fulllineitems}
 
 \index{getLi() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getLi}\pysiglinewithargsret{\bfcode{getLi}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated internal inductance of plasma {[}t{]}
+
 \end{fulllineitems}
 
 \index{getBetas() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getBetas}\pysiglinewithargsret{\bfcode{getBetas}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated betas and inductance.
+Namedtuple of \{betat,betap,Li\}
+
 \end{fulllineitems}
 
 \index{getDiamagFlux() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagFlux}\pysiglinewithargsret{\bfcode{getDiamagFlux}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns diamagnetic flux {[}t{]}
+
 \end{fulllineitems}
 
 \index{getDiamagBetaT() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagBetaT}\pysiglinewithargsret{\bfcode{getDiamagBetaT}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns diamagnetic-loop toroidal beta {[}t{]}
+
 \end{fulllineitems}
 
 \index{getDiamagBetaP() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagBetaP}\pysiglinewithargsret{\bfcode{getDiamagBetaP}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns diamagnetic-loop poloidal beta {[}t{]}
+
 \end{fulllineitems}
 
 \index{getDiamagTauE() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagTauE}\pysiglinewithargsret{\bfcode{getDiamagTauE}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns diamagnetic-loop energy confinement time {[}t{]}
+
 \end{fulllineitems}
 
 \index{getDiamagWp() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamagWp}\pysiglinewithargsret{\bfcode{getDiamagWp}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns diamagnetic-loop plasma stored energy {[}t{]}
+
 \end{fulllineitems}
 
 \index{getDiamag() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getDiamag}\pysiglinewithargsret{\bfcode{getDiamag}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns diamagnetic measurements of plasma parameters.
+Namedtuple of \{diamag. flux, betat, betap from coils, tau\_E from diamag., diamag. stored energy\}
+
 \end{fulllineitems}
 
 \index{getWMHD() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getWMHD}\pysiglinewithargsret{\bfcode{getWMHD}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated MHD stored energy {[}t{]}
+
 \end{fulllineitems}
 
 \index{getTauMHD() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getTauMHD}\pysiglinewithargsret{\bfcode{getTauMHD}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated MHD energy confinement time {[}t{]}
+
 \end{fulllineitems}
 
 \index{getPinj() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getPinj}\pysiglinewithargsret{\bfcode{getPinj}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated injected power {[}t{]}
+
 \end{fulllineitems}
 
 \index{getCurrentSign() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getCurrentSign}\pysiglinewithargsret{\bfcode{getCurrentSign}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated current direction, where CCW = +
+
 \end{fulllineitems}
 
 \index{getWbdot() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getWbdot}\pysiglinewithargsret{\bfcode{getWbdot}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated d/dt of magnetic stored energy {[}t{]}
+
 \end{fulllineitems}
 
 \index{getWpdot() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getWpdot}\pysiglinewithargsret{\bfcode{getWpdot}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns calculated d/dt of plasma stored energy {[}t{]}
+
 \end{fulllineitems}
 
 \index{getEnergy() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getEnergy}\pysiglinewithargsret{\bfcode{getEnergy}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns stored-energy parameters.
+Namedtuple of \{stored energy, confinement time, injected power, d/dt of magnetic, plasma stored energy\}
+
 \end{fulllineitems}
 
 \index{getParam() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getParam}\pysiglinewithargsret{\bfcode{getParam}}{\emph{path}}{}
+Abstract method.  See child classes for implementation.
+
+Backup function: takes parameter name for variable, returns variable directly.
+Acts as wrapper to direct data-access routines from within object.
+
 \end{fulllineitems}
 
 \index{getMachineCrossSection() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
+Abstract method.  See child classes for implementation.
+
+Returns (R,Z) coordinates of machine wall cross-section for plotting routines.
+
 \end{fulllineitems}
 
 \index{plotFlux() (eqtools.core.Equilibrium method)}

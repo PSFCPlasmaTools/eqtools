@@ -1,29 +1,22 @@
 # This program is distributed under the terms of the GNU General Purpose License (GPL).
 # Refer to http://www.gnu.org/licenses/gpl.txt
 #
-# This file is part of EqTools.
+# This file is part of eqtools.
 #
-# EqTools is free software: you can redistribute it and/or modify
+# eqtools is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# EqTools is distributed in the hope that it will be useful,
+# eqtools is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
+# along with eqtools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module contains the core classes for EqTools, including the base
-Equilibrium class.
-
-Classes:
-    ModuleWarning: Warning class for unavailable modules.
-    Equilibrium: Base class for all other equilibrium access objects. Includes
-        the main mapping routines and method stubs for all suggested methods
-        that should be implemented in subclasses.
+"""This module provides the core classes for eqtools, including the base Equilibrium class.
 """
 
 import scipy
@@ -233,18 +226,20 @@ class Equilibrium(object):
         Kwargs:
             length_unit: String. Sets the base unit used for any quantity whose
                 dimensions are length to any power. Valid options are:
-                    'm'         meters
-                    'cm'        centimeters
-                    'mm'        millimeters
-                    'in'        inches
-                    'ft'        feet
-                    'yd'        yards
-                    'smoot'     smoots
-                    'cubit'     cubits
-                    'hand'      hands
-                    'default'   whatever the default in the tree is (no
-                                    conversion is performed, units may be
-                                    inconsistent)
+                
+                    ===========  ===========================================================================================
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+                    ===========  ===========================================================================================
+                
                 Default is 'm' (all units taken and returned in meters).
             tspline: Boolean. Sets whether or not interpolation in time is
                 performed using a tricubic spline or nearest-neighbor
