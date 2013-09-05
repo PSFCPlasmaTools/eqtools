@@ -181,7 +181,8 @@ each getter method.
 \begin{quote}\begin{description}
 \item[{Parameters }] \leavevmode
 \textbf{name} --
-String. Name of the attribute to retrieve. If the instance
+String.
+Name of the attribute to retrieve. If the instance
 has an attribute with this name, the attribute is returned. If
 the instance does not have an attribute with this name but does
 have a method called `get'+name, this method is called and the
@@ -211,11 +212,13 @@ property generation in \_\_getattribute\_\_.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{name} --
-String. Name of the attribute to set.
+String.
+Name of the attribute to set.
 
 \item {} 
 \textbf{value} --
-Object. Value to set the attribute to.
+Object.
+Value to set the attribute to.
 
 \end{itemize}
 
@@ -319,7 +322,8 @@ Default is `m' (all units taken and returned in meters).
 
 \item {} 
 \textbf{tspline} --
-Boolean. Sets whether or not interpolation in time is
+Boolean.
+Sets whether or not interpolation in time is
 performed using a tricubic spline or nearest-neighbor
 interpolation. Tricubic spline interpolation requires at least
 four complete equilibria at different times. It is also assumed
@@ -329,7 +333,8 @@ condition). Default is False (use nearest neighbor interpolation).
 
 \item {} 
 \textbf{monotonic} --
-Boolean. Sets whether or not the ``monotonic'' form of time window
+Boolean.
+Sets whether or not the ``monotonic'' form of time window
 finding is used. If True, the timebase must be monotonically
 increasing. Default is False (use slower, safer method).
 
@@ -376,7 +381,8 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{R} --
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to poloidal flux. If R and Z are both scalar values, they
 are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make\_grid keyword is
@@ -384,7 +390,8 @@ set. If the make\_grid keyword is True, R must have shape (len\_R,).
 
 \item {} 
 \textbf{Z} --
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to poloidal flux. If R and Z are both scalar values, they
 are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make\_grid keyword is
@@ -392,7 +399,8 @@ set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make\_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make\_grid keyword is True,
@@ -403,7 +411,8 @@ t must have shape (len(Z), len(R)).
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (psi, time\_idxs),
+Boolean.
+Set to True to return a tuple of (psi, time\_idxs),
 where time\_idxs is the array of time indices actually used in
 evaluating psi with nearest-neighbor interpolation. (This is
 mostly present as an internal helper.) Default is False (only
@@ -411,7 +420,8 @@ return psi).
 
 \item {} 
 \textbf{make\_grid} --
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -423,7 +433,8 @@ array. Default is False (do not form meshgrid).
 
 \item {} 
 \textbf{length\_unit} --
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:
 \begin{quote}
 
@@ -568,7 +579,8 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{R} --
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized poloidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as Z unless the make\_grid
@@ -577,7 +589,8 @@ shape (len\_R,).
 
 \item {} 
 \textbf{Z} --
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized poloidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as R unless the make\_grid
@@ -586,7 +599,8 @@ shape (len\_Z,).
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make\_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make\_grid keyword is True,
@@ -597,7 +611,8 @@ t must have shape (len(Z), len(R)).
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (psinorm,
+Boolean.
+Set to True to return a tuple of (psinorm,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating psi with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -605,7 +620,8 @@ Default is False (only return psinorm).
 
 \item {} 
 \textbf{sqrt} --
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 flux. Only the square root of positive psi\_norm values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
@@ -613,7 +629,8 @@ Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
 
 \item {} 
 \textbf{make\_grid} --
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -625,7 +642,8 @@ array. Default is False (do not form meshgrid).
 
 \item {} 
 \textbf{length\_unit} --
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:
 \begin{quote}
 
@@ -771,7 +789,8 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{R} --
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized toroidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as Z unless the make\_grid
@@ -780,7 +799,8 @@ shape (len\_R,).
 
 \item {} 
 \textbf{Z} --
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized toroidal flux. If R and Z are both scalar
 values, they are used as the coordinate pair for all of the
 values in t. Must have the same shape as R unless the make\_grid
@@ -789,7 +809,8 @@ shape (len\_Z,).
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make\_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make\_grid keyword is True,
@@ -800,7 +821,8 @@ t must have shape (len(Z), len(R)).
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (phinorm,
+Boolean.
+Set to True to return a tuple of (phinorm,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating phinorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -808,7 +830,8 @@ Default is False (only return phinorm).
 
 \item {} 
 \textbf{sqrt} --
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 flux. Only the square root of positive phi\_norm values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
@@ -816,7 +839,8 @@ Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
 
 \item {} 
 \textbf{make\_grid} --
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -828,12 +852,14 @@ array. Default is False (do not form meshgrid).
 
 \item {} 
 \textbf{rho} --
-Boolean. For phinorm, this should always be set to False, the
+Boolean.
+For phinorm, this should always be set to False, the
 default value.
 
 \item {} 
 \textbf{kind} --
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to phinorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 `linear', `nearest', `zero', `slinear', `quadratic', `cubic'
@@ -845,7 +871,8 @@ you should try `linear' until you can rebuild your scipy install.
 
 \item {} 
 \textbf{length\_unit} --
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:
 \begin{quote}
 
@@ -988,7 +1015,8 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{R} --
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized volume. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make\_grid keyword is
@@ -996,7 +1024,8 @@ set. If the make\_grid keyword is True, R must have shape (len\_R,).
 
 \item {} 
 \textbf{Z} --
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized volume. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make\_grid keyword is
@@ -1004,7 +1033,8 @@ set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make\_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make\_grid keyword is True,
@@ -1015,7 +1045,8 @@ t must have shape (len(Z), len(R)).
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (volnorm,
+Boolean.
+Set to True to return a tuple of (volnorm,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -1023,7 +1054,8 @@ Default is False (only return volnorm).
 
 \item {} 
 \textbf{sqrt} --
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 volume. Only the square root of positive volnorm values is
 taken. Negative values are replaced with zeros, consistent with
 Steve Wolfe's IDL implementation efit\_rz2rho.pro. Default is
@@ -1031,7 +1063,8 @@ False (return volnorm).
 
 \item {} 
 \textbf{make\_grid} --
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1043,12 +1076,14 @@ array. Default is False (do not form meshgrid).
 
 \item {} 
 \textbf{rho} --
-Boolean. For volnorm, this should always be set to False, the
+Boolean.
+For volnorm, this should always be set to False, the
 default value.
 
 \item {} 
 \textbf{kind} --
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to volnorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 `linear', `nearest', `zero', `slinear', `quadratic', `cubic'
@@ -1060,7 +1095,8 @@ you should try `linear' until you can rebuild your scipy install.
 
 \item {} 
 \textbf{length\_unit} --
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:
 \begin{quote}
 
@@ -1200,7 +1236,8 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{method} --
-String. Indicates which normalized coordinates to use.
+String.
+Indicates which normalized coordinates to use.
 Valid options are:
 \begin{quote}
 
@@ -1227,7 +1264,8 @@ Normalized volume
 
 \item {} 
 \textbf{R} --
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to normalized coordinate. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make\_grid keyword is
@@ -1235,7 +1273,8 @@ set. If the make\_grid keyword is True, R must have shape (len\_R,).
 
 \item {} 
 \textbf{Z} --
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to normalized coordinate. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make\_grid keyword is
@@ -1243,7 +1282,8 @@ set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make\_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make\_grid keyword is True,
@@ -1254,7 +1294,8 @@ t must have shape (len(Z), len(R)).
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (volnorm,
+Boolean.
+Set to True to return a tuple of (volnorm,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -1262,7 +1303,8 @@ Default is False (only return volnorm).
 
 \item {} 
 \textbf{sqrt} --
-Boolean. Set to True to return the square root of normalized
+Boolean.
+Set to True to return the square root of normalized
 coordinate. Only the square root of positive values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
@@ -1270,7 +1312,8 @@ Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
 
 \item {} 
 \textbf{make\_grid} --
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1282,7 +1325,8 @@ array. Default is False (do not form meshgrid).
 
 \item {} 
 \textbf{rho} (\emph{phinorm and volnorm only}) --
-Boolean. For phinorm and volnorm,
+Boolean.
+For phinorm and volnorm,
 this should always be set to False, the default value.
 
 \item {} 
@@ -1300,7 +1344,8 @@ you should try `linear' until you can rebuild your scipy install.
 
 \item {} 
 \textbf{length\_unit} --
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in. If a string is given, it must be a valid unit specifier:
 \begin{quote}
 
@@ -1446,7 +1491,8 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{R} --
-Array-like or scalar float. Values of the radial coordinate to
+Array-like or scalar float.
+Values of the radial coordinate to
 map to midplane radius. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as Z unless the make\_grid keyword is
@@ -1454,7 +1500,8 @@ set. If the make\_grid keyword is True, R must have shape (len\_R,).
 
 \item {} 
 \textbf{Z} --
-Array-like or scalar float. Values of the vertical coordinate to
+Array-like or scalar float.
+Values of the vertical coordinate to
 map to midplane radius. If R and Z are both scalar values,
 they are used as the coordinate pair for all of the values in t.
 Must have the same shape as R unless the make\_grid keyword is
@@ -1462,7 +1509,8 @@ set. If the make\_grid keyword is True, Z must have shape (len\_Z,).
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of R, Z. If t is array-like and the
 make\_grid keyword is False, t must have the same dimensions as
 R and Z. If t is array-like and the make\_grid keyword is True,
@@ -1473,7 +1521,8 @@ t must have shape (len(Z), len(R)).
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (R\_mid,
+Boolean.
+Set to True to return a tuple of (R\_mid,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating R\_mid with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -1481,7 +1530,8 @@ Default is False (only return R\_mid).
 
 \item {} 
 \textbf{sqrt} --
-Boolean. Set to True to return the square root of midplane
+Boolean.
+Set to True to return the square root of midplane
 radius. Only the square root of positive values is taken.
 Negative values are replaced with zeros, consistent with Steve
 Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
@@ -1489,7 +1539,8 @@ Wolfe's IDL implementation efit\_rz2rho.pro. Default is False
 
 \item {} 
 \textbf{make\_grid} --
-Boolean. Set to True to pass R and Z through meshgrid
+Boolean.
+Set to True to pass R and Z through meshgrid
 before evaluating. If this is set to True, R and Z must each
 only have a single dimension, but can have different lengths.
 When using this option, it is highly recommended to only pass
@@ -1501,12 +1552,14 @@ array. Default is False (do not form meshgrid).
 
 \item {} 
 \textbf{rho} --
-Boolean. Set to True to return r/a (normalized minor radius)
+Boolean.
+Set to True to return r/a (normalized minor radius)
 instead of R\_mid. Default is False (return major radius, R\_mid).
 
 \item {} 
 \textbf{kind} --
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to R\_mid. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 `linear', `nearest', `zero', `slinear', `quadratic', `cubic'
@@ -1518,7 +1571,8 @@ you should try `linear' until you can rebuild your scipy install.
 
 \item {} 
 \textbf{length\_unit} --
-String or 1. Length unit that R and Z are being given
+String or 1.
+Length unit that R and Z are being given
 in AND that R\_mid is returned in. If a string is given, it
 must be a valid unit specifier:
 \begin{quote}
@@ -1660,13 +1714,15 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{psi\_norm} --
-Array-like or scalar float. Values of the normalized
+Array-like or scalar float.
+Values of the normalized
 poloidal flux to map to midplane radius. If psi\_norm is a scalar,
 it is used as the value for all of the values in t.
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of psi\_norm. If neither t nor psi\_norm
 are scalars, t must have the same shape as psi\_norm.
 
@@ -1675,7 +1731,8 @@ are scalars, t must have the same shape as psi\_norm.
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (R\_mid,
+Boolean.
+Set to True to return a tuple of (R\_mid,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating R\_mid with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -1683,12 +1740,14 @@ Default is False (only return R\_mid).
 
 \item {} 
 \textbf{rho} --
-Boolean. Set to True to return r/a (normalized minor radius)
+Boolean.
+Set to True to return r/a (normalized minor radius)
 instead of R\_mid. Default is False (return major radius, R\_mid).
 
 \item {} 
 \textbf{kind} --
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to R\_mid. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 `linear', `nearest', `zero', `slinear', `quadratic', `cubic'
@@ -1700,7 +1759,8 @@ you should try `linear' until you can rebuild your scipy install.
 
 \item {} 
 \textbf{length\_unit} --
-String or 1. Length unit that R\_mid is returned in. If
+String or 1.
+Length unit that R\_mid is returned in. If
 a string is given, it must be a valid unit specifier:
 \begin{quote}
 
@@ -1833,13 +1893,15 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{psi\_norm} --
-Array-like or scalar float. Values of the normalized
+Array-like or scalar float.
+Values of the normalized
 poloidal flux to map to normalized volume. If psi\_norm is a
 scalar, it is used as the value for all of the values in t.
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of psi\_norm. If neither t nor psi\_norm
 are scalars, t must have the same shape as psi\_norm.
 
@@ -1848,7 +1910,8 @@ are scalars, t must have the same shape as psi\_norm.
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (volnorm,
+Boolean.
+Set to True to return a tuple of (volnorm,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -1856,7 +1919,8 @@ Default is False (only return volnorm).
 
 \item {} 
 \textbf{kind} --
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to volnorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 `linear', `nearest', `zero', `slinear', `quadratic', `cubic'
@@ -1936,13 +2000,15 @@ a trivariate interpolation in space and time.
 \item[{Parameters }] \leavevmode\begin{itemize}
 \item {} 
 \textbf{psi\_norm} --
-Array-like or scalar float. Values of the normalized
+Array-like or scalar float.
+Values of the normalized
 poloidal flux to map to normalized toroidal flux. If psi\_norm
 is a scalar, it is used as the value for all of the values in t.
 
 \item {} 
 \textbf{t} --
-Array-like or single value. If t is a single value, it is used
+Array-like or single value.
+If t is a single value, it is used
 for all of the elements of psi\_norm. If neither t nor psi\_norm
 are scalars, t must have the same shape as psi\_norm.
 
@@ -1951,7 +2017,8 @@ are scalars, t must have the same shape as psi\_norm.
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
 \item {} 
 \textbf{return\_t} --
-Boolean. Set to True to return a tuple of (phinorm,
+Boolean.
+Set to True to return a tuple of (phinorm,
 time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating phinorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
@@ -1959,7 +2026,8 @@ Default is False (only return phinorm).
 
 \item {} 
 \textbf{kind} --
-String or non-negative int. Specifies the type of interpolation
+String or non-negative int.
+Specifies the type of interpolation
 to be performed in getting from psinorm to phinorm. This is
 passed to scipy.interpolate.interp1d. Valid options are:
 `linear', `nearest', `zero', `slinear', `quadratic', `cubic'
