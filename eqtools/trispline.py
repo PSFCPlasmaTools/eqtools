@@ -1,31 +1,59 @@
+# This program is distributed under the terms of the GNU General Purpose License (GPL).
+# Refer to http://www.gnu.org/licenses/gpl.txt
+#
+#    This file is part of eqtools.
+#
+#    EqTools is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    EqTools is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Copyright 2013 Ian C. Faust
+""" This module provides interface to the tricubic spline interpolator.  It also contains an enhanced bivariate spline which generates bounds errors.
+"""
+
+
 import scipy 
 import scipy.interpolate
 import _tricub
 
 
-"""
-    This file is part of the EqTools package.
+class Spline():
+    """Tricubic interpolating spline with forced edge derivative equal zero
+    conditions.  It assumes a cartesian grid.
+    """
 
-    EqTools is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    def __init__(self, z, y, x, f):
+        """Create a new Spline instance.
 
-    EqTools is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+        Args:
+            z:R: 1-dimensional float. Values of the 1st dimension
+                map to poloidal flux. If R and Z are both scalar values, they
+                are used as the coordinate pair for all of the values in t.
+                Must have the same shape as Z unless the make_grid keyword is
+                set. If the make_grid keyword is True, R must have shape (len_R,).
 
-    You should have received a copy of the GNU General Public License
-    along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
+            y:
 
-    Copyright 2013 Ian C. Faust
-"""
+            x:
 
-class spline():
+            f: 3-dimensional float array.
+        
+        Returns:
+        
 
+        Examples:
+            A
 
-    def __init__(self,z,y,x,f):
+        """
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
         self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
         # faces
@@ -43,7 +71,7 @@ class spline():
         self._y = scipy.array(y)
         self._z = scipy.array(z)
 
-    def ev(self,z1,y1,x1):
+    def ev(self, z1, y1, x1):
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
         z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
@@ -57,22 +85,21 @@ class spline():
         xinp = scipy.array(scipy.where(scipy.isfinite(x)))
         yinp = scipy.array(scipy.where(scipy.isfinite(y)))
         zinp = scipy.array(scipy.where(scipy.isfinite(z)))
-        inp = scipy.intersect1d(scipy.intersect1d(xinp,yinp),zinp)
+        inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
 
         if inp.size != 0:
-            ix = scipy.digitize(x[inp],self._x)
+            ix = scipy.digitize(x[inp], self._x)
             ix = ix.clip(0,self._x.size - 1) - 1
-            iy = scipy.digitize(y[inp],self._y)
+            iy = scipy.digitize(y[inp], self._y)
             iy = iy.clip(0,self._y.size - 1) - 1
-            iz = scipy.digitize(z[inp],self._z)
+            iz = scipy.digitize(z[inp], self._z)
             iz = iz.clip(0,self._z.size - 1) - 1
             pos = ix + self._f.shape[1]*(iy + self._f.shape[2]*iz)
             indx = scipy.argsort(pos) #each voxel is described uniquely, and this is passed to speed evaluation.
             dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
             dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
             dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
-            val[inp] = _tricub.ev(dx,dy,dz,self._f,pos,indx)  
-
+            val[inp] = _tricub.ev(dx, dy, dz, self._f, pos, indx)  
  
         return(val)
 
@@ -85,8 +112,8 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
     def __init__(self, x, y, z, bbox=[None] *4, kx=3, ky=3, s=0, bounds_error=True, fill_value=scipy.nan):
 
         super(RectBivariateSpline, self).__init__( x, y, z, bbox=bbox, kx=kx, ky=ky, s=s)
-        self._xlim = scipy.array((x.min(),x.max()))
-        self._ylim = scipy.array((y.min(),y.max()))
+        self._xlim = scipy.array((x.min(), x.max()))
+        self._ylim = scipy.array((y.min(), y.max()))
         self.bounds_error = bounds_error
         self.fill_value = fill_value
 
@@ -133,7 +160,7 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
         Evaluate spline at points (x[i], y[i]), i=0,...,len(x)-1
         """
 
-        idx = self._check_bounds(xi,yi)
+        idx = self._check_bounds(xi, yi)
         zi = self.fill_value*scipy.ones(xi.shape)
         zi[idx] = super(RectBivariateSpline, self).ev(xi[idx], yi[idx])
         return zi

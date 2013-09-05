@@ -1948,7 +1948,7 @@ class Equilibrium(object):
         if self._psiOfRZSpline:
             return self._psiOfRZSpline
         else:
-            self._psiOfRZSpline = trispline.spline(self.getTimeBase(),
+            self._psiOfRZSpline = trispline.Spline(self.getTimeBase(),
                                                    self.getZGrid(length_unit='m'),
                                                    self.getRGrid(length_unit='m'),
                                                    self.getFluxGrid())
