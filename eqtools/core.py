@@ -220,7 +220,7 @@ class Equilibrium(object):
     specific subclasses are set up to account for inter-device/-code differences
     in data storage.
     """
-    def __init__(self, length_unit='m', tspline=False, fast=False):
+    def __init__(self, length_unit='m', tspline=False, monotonic=False):
         """Create a new Equilibrium instance.
         
         Kwargs:
@@ -248,7 +248,7 @@ class Equilibrium(object):
                 that they are functionally correlated, and that parameters do
                 not vary out of their boundaries (derivative = 0 boundary
                 condition). Default is False (use nearest neighbor interpolation).
-            fast: Boolean. Sets whether or not the "fast" form of time window
+            monotonic: Boolean. Sets whether or not the "monotonic" form of time window
                 finding is used. If True, the timebase must be monotonically
                 increasing. Default is False (use slower, safer method).
         
@@ -263,7 +263,7 @@ class Equilibrium(object):
             self._length_unit = length_unit
         
         self._tricubic = bool(tspline)
-        self._fast = bool(fast)  # assumes timebase is monotonically increasing
+        self._monotonic = bool(monotonic)  # assumes timebase is monotonically increasing
         
         if self._tricubic:
             if not _has_trispline:
@@ -1880,7 +1880,7 @@ class Equilibrium(object):
     def _getNearestIdx(self, v, a):
         """Returns the array of indices of the nearest value in a corresponding to each value in v.
         
-        If the fast keyword in the instance is True, then this is done using
+        If the monotonic keyword in the instance is True, then this is done using
         scipy.digitize under the assumption that a is monotonic. Otherwise,
         this is done in a general manner by looking for the minimum distance
         between the points in v and a.
@@ -1895,7 +1895,7 @@ class Equilibrium(object):
         """
         # Gracefully handle single-value versus array inputs, returning in the
         # corresponding type.
-        if not self._fast:
+        if not self._monotonic:
             try:
                 return scipy.array([(scipy.absolute(a - val)).argmin() for val in v])
             except TypeError:
