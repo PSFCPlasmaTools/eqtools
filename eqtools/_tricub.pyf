@@ -19,25 +19,22 @@ C    along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 C
 C    Copyright 2013 Ian C. Faust
      
-   subroutine ev(val,dx1,dx2,dx3,f,pos,indx,fx1,fx2,fx3,ix)
-      intent(c) ev
+   subroutine reg_ev(val,dx0,dx1,dx2,f,pos,loc,fx0,fx1,fx2,ix)
+      intent(c) reg_ev
       intent(c)
 	     
-      integer intent(hide),depend(dx1) :: ix = len(dx1)
-      integer intent(hide),depend(f) :: fx1 = shape(f,0)
-      integer intent(hide),depend(f) :: fx2 = shape(f,1)
-      integer intent(hide),depend(f) :: fx3 = shape(f,2)
+      integer intent(hide),depend(dx0) :: ix = len(dx0)
+      integer intent(hide),depend(f) :: fx0 = shape(f,2)
+      integer intent(hide),depend(f) :: fx1 = shape(f,1)
+      integer intent(hide),depend(f) :: fx2 = shape(f,0)
+      double precision intent(in) :: dx0(ix)
       double precision intent(in) :: dx1(ix)
       double precision intent(in) :: dx2(ix)
-      double precision intent(in) :: dx3(ix)
       integer intent(in) :: pos(ix)
-      integer intent(in) :: indx(ix)
-      integer intent(in) :: ix1(ix)
-      integer intent(in) :: ix2(ix)
-      integer intent(in) :: ix3(ix)
-      double precision intent(in) :: f(fx1,fx2,fx3)
+      integer intent(in) :: loc(ix)
+      double precision intent(in) :: f(fx0,fx1,fx2)
       double precision intent(out) :: val(ix)
-   end subroutine ev
+   end subroutine reg_ev
      
    function ismonotonic(val,ix)
       intent(c) ismonotonic

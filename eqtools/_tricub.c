@@ -154,36 +154,236 @@ int A_v2[64][64] = {
 {-12,12,12,-12,12,-12,-12,12,-8,-4, 8, 4, 8, 4,-8,-4,-6, 6,-6, 6, 6,-6, 6,-6,-6, 6, 6,-6,-6, 6, 6,-6,-4,-2,-4,-2, 4, 2, 4, 2,-4,-2, 4, 2,-4,-2, 4, 2,-3, 3,-3, 3,-3, 3,-3, 3,-2,-1,-2,-1,-2,-1,-2,-1},
 { 8,-8,-8, 8,-8, 8, 8,-8, 4, 4,-4,-4,-4,-4, 4, 4, 4,-4, 4,-4,-4, 4,-4, 4, 4,-4,-4, 4, 4,-4,-4, 4, 2, 2, 2, 2,-2,-2,-2,-2, 2, 2,-2,-2, 2, 2,-2,-2, 2,-2, 2,-2, 2,-2, 2,-2, 1, 1, 1, 1, 1, 1, 1, 1}};
 
-int ijk2n(int i, int j, int k) {
+
+int ismonotonic(double val[], int ix)
+{   /* while loop based check of monotonicity,
+       so on very large bases that fail, it 
+       stops early. Starts at end.  */
+  int counter = ix - 1,output = 1;
+  
+  while( counter )
+    { counter--;  
+      if(val[counter] - val[counter + 1] > 0)
+	{
+	  counter = 0;
+	  output = 0;
+	}
+    }
+  return output;
+}
+
+
+int isregular(double val[], int ix)
+{   /* while loop based check of monotonicity,
+       so on very large bases that fail, it 
+       stops early. Starts at end.  */
+  int counter = ix - 2,output = 1;
+  double temp = val[counter] - val[counter + 1];
+  while( counter )
+    { counter--;
+
+      if(val[counter] - val[counter + 1] != temp)
+	{
+	  counter = 0;
+	  output = 0;
+	}
+    }
+  return output;
+}
+
+
+int _compare_fun(const void * a, const void * b)
+{
+  return (**(int**)a - **(int**)b);
+}
+
+
+void int_argsort(int invec[], int outvec[], int len)
+{ int i;
+  int** temp = malloc(len * sizeof(int*));
+  /* temp is constructed to reference invec, temp will
+     be the modified order. outvec is the difference
+     from the start to provide indicies for other matricies*/
+  for(i=0; i<len; i++)
+    {
+      temp[i] = &invec[i];
+    }
+
+  qsort(temp,len,sizeof(int*),_compare_fun);
+  for(i=0; i<len; i++)
+    {
+      outvec[i] = (int)(temp[i] - &invec[0]);
+    }
+  free(temp);
+}
+
+
+void _nonreg_x_construct(double val[],double inmat[], int shape[3])
+{
+  int k,j,i,idx0,idx1,gap0,gap1;
+  gap0 = shape[0]-2;
+  gap1 = (shape[1]-2)*shape[0];
+  idx0 = 0;
+  idx1 = 0;
+  for(k=0;k<2;k++)
+    {
+      for(j=0;j<2;j++)
+	{
+	  for(i=0;i<2;i++)
+	    {
+	      val[idx1] = inmat[idx0];
+	      idx1++
+	      idx0++
+	    }
+	  idx0 = idx0 + gap0;
+	}
+      idx1 = idx1 + gap1;				    
+    }
+
+}
+
+
+void tridiff(double outmat[], double inmat[], double x[4], int shapeout[3], int shapein[3], int dim)
+{
+  /*outmat is the matrix reduced by 2 (derivatives calculated along same base or centered)
+   dimension of derivative is specified by 'dim', the shape of the input array is described by
+   'shape'. The arrays are always three dimensional (hence tridiff HARDCODED). Positions along
+   derivative axis specified by 'x' and will have length 4 in inmat, and 2 in the outmat.  Other
+  dimensions are variable and sized accoriding to the discrepancy as shown by the difference 
+  of shapeout and shapein*/
+
+  /*x0,x1,and x2 represent some sort of einstein notation, where the iteration
+   follows a similar convention to the levi-civita symbol*/
+  int x0,x1,x2,idx,gap,gap0,gap1,ixin,ixout,offset,x1lim,x2lim,x3lim;
+  x0lim = shapeout[0];
+  x1lim = shapeout[1];
+  x2lim = shapeout[2];
+  ixout = 0;
+
+  if(dim == 0)
+    {
+      gap = 1;
+    }
+  else if(dim == 1)
+    {
+      gap = shapein[0];
+    }
+  else
+    {
+      gap = shapein[0]*shapein[1];
+    }
+
+  gap0 = shapein[0] - x0lim;
+  gap1 = (shapein[1] - x1lim)*shapein[0];
+  ixin = (gap0 + gap1 + (shapein[0]*shapein[1])*(shapein[2] - x2lim))/2;
+
+  
+  for(x2=0; x2<x2lim; x2++)
+    {
+      for(x1=0; x1<x1lim; x1++)
+	{
+	  for(x0=0; x0<x0lim; x0++)
+	    { 
+	      idx = ixin/gap;
+	      outmat[ixout] = (inmat[ixin + gap] - inmat[ixin - gap])/(x[idx + 1] - x[idx - 1]);
+	      ixout++;
+	      ixin++;
+	    }
+	  ixin = ixin + gap0;
+	}
+      ixin = ixin + gap1;
+    }
+}
+
+
+void _gen_nonreg_x(double val[], double f[], double x0[4], double x1[4], double x2[4])
+{ /*initialize necessary derivatives */
+  double dfdx0[2][4][4];
+  double dfdx1[2][2][4];
+  double dfdx2[2][2][2];
+  double dfdx01[2][2][4];
+  double dfdx12[2][2][2];
+  double dfdx02[2][2][2];
+  double dfdx012[2][2][2];
+  /* i think i need to modify tridiff to intelligently deal with the different sizes  */
+
+  int in[3] = {4,4,4};
+  _nonreg_x_construct(&val[0],&f[21],&in);
+
+  int out[3] = {2,4,4};
+
+  
+  /* x0 derivative */
+  tridiff(&dfdx0, &f, &x0, &out, &in, 0);
+  _nonreg_x_construct(&val[1], &dfdx0[0,1,1], &out);
+
+  /* x1 derivative */
+  out[1] = 2;
+
+  tridiff(&dfdx1, &f, &x1, &out, &in, 1);
+  _nonreg_x_construct(&val[2], &dfdx0[0,0,1], &out);
+  
+  in[0] = 2;
+  tridiff(&dfdx01, &dfdx0, &x1, &out, &in, 1);
+  _nonreg_x_construct(&val[4], &dfdx01[0,0,1], &out);
+
+  /* x2 derivative */
+  out[2] = 2;
+ 
+  in[0] = 4;
+  tridiff(&dfdx2, &f, &out, &in, 2);
+  _nonreg_x_construct(&val[3], &dfdx2[0,0,0], &out);  
+
+  in[0] = 2;
+  tridiff(&dfdx02, &dfdx0, &out, &in, 2);
+  _nonreg_x_construct(&val[5], &dfdx02[0,0,0], &out);    
+
+  in[1] = 2;
+  tridiff(&dfdx12, &dfdx1, &out, &in, 2);
+  _nonreg_x_construct(&val[6], &dfdx02[0,0,0], &out);
+  
+  tridiff(&dfdx012, &dfdx01, &out, &in, 2);
+  _nonreg_x_construct(&val[7], &dfdx02[0,0,0], &out);    
+
+}
+
+
+int ijk2n(int i, int j, int k)
+{
   return(i+4*j+16*k);
 }
+
 
 void tricubic_get_coeff_stacked(double a[64], double x[64])
 {
   int i,j;
   for (i=0;i<64;i++) 
     {
-    a[i]=(double)(0.0);
-    for (j=0;j<64;j++) 
-      {
-      a[i]+=A[i][j]*x[j];
-      }
-    a[i] = a[i]/8; /* A is the combination of A_v2 and the proper derivative operator as ints (requires a division by 8)  */
-  }
+      a[i]=(double)(0.0);
+      for (j=0;j<64;j++) 
+	{
+	  a[i]+=A[i][j]*x[j];
+	}
+      a[i] = a[i]/8; /* A is the combination of A_v2 and the proper derivative operator as ints (requires a division by 8)  */
+    }
 }
 
-void tricubic_get_coeff_stacked_v2(double a[64], double x[64])
+
+void tricubic_get_coeff_stacked_nonreg(double a[64], double f[64], double x0[], double x1[], double x2[])
 {
-  int i,j;
+  int i,j,x[64];
+  
+  gen_nonreg_x(&x,&f,&x0,&x1,&x2);
   for (i=0;i<64;i++) 
     {
-    a[i]=(double)(0.0);
-    for (j=0;j<64;j++) 
-      {
-      a[i]+=A_v2[i][j]*x[j];
-      }
-  }
+      a[i]=(double)(0.0);
+      for (j=0;j<64;j++) 
+	{
+	  a[i]+=A_v2[i][j]*x[j];
+	}
+    }
 }
+
 
 double tricubic_eval(double a[64], double x, double y, double z)
 {
@@ -194,22 +394,28 @@ double tricubic_eval(double a[64], double x, double y, double z)
      the value of the function at a given point (x,y,z). To compute
      partial derivatives of f, use the full version with the extra args.
   */
-  for (i=0;i<4;i++) {
-    for (j=0;j<4;j++) {
-      for (k=0;k<4;k++) {
-        ret+=a[ijk2n(i,j,k)]*pow(x,i)*pow(y,j)*pow(z,k);
-      }
+  for (i=0;i<4;i++)
+    {
+      for (j=0;j<4;j++) 
+	{
+	  for (k=0;k<4;k++) 
+	    {
+	      ret+=a[ijk2n(i,j,k)]*pow(x,i)*pow(y,j)*pow(z,k);
+	    }
+	}
     }
-  }
   return(ret);
 }
 
-void ev(double val[], double dx1[], double dx2[], double dx3[], double f[], int pos[], int indx[], int fx1, int fx2, int fx3, int ix)
+
+void reg_ev(double val[], double dx0[], double dx1[], double dx2[], double f[], int pos[], int loc[], int fx0, int fx1, int fx2, int ix)
 {
   int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
   double fin[64],a[64];
-  gap1 = fx2 - 4;
-  gap2 = fx3*(fx2 - 4);
+
+  /* does this pertain only to the python/c interface ?*/
+  gap1 = fx0 - 4;
+  gap2 = fx0*(fx1 - 4);
 
  
   for(i=0;i < ix; i++)
@@ -250,114 +456,67 @@ void ev(double val[], double dx1[], double dx2[], double dx3[], double f[], int 
 
 
 	}
-      val[loc] = tricubic_eval(a,dx1[loc],dx2[loc],dx3[loc]);
+      val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
 
     }
 }
 
+void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], int pos[], int loc[], int fx0, int fx1, int fx2, int ix)
+{
+  int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
+  double fin[64],a[64],dx0[],dx1[],dx2[];
 
+  gap1 = fx0 - 4;
+  gap2 = fx0*(fx1 - 4);
 
-
-void tridiff(double outmat[], double inmat[], int out[], int in, int dim)
-{/* it is assumed that inmat is 2 larger in size in the dim dimension, assumed to be flattened to 1d array */
-  int temp = 0,temp2 = 0;
-  in = out[dim]*2
-  for(k = 0; i < out[2]; i++)
+ 
+  for(i=0;i < ix; i++)
     {
-      for(j = 0; j < out[1] ; j++)
-	{
-	  for(i = 0; k < out[0]; k++)
+      
+      /* generate matrix for input into interp, this
+       is the first attempt at trying to speed up the 
+      equation by forcing it more onto the C side*/
+      loc = indx[i];
+      if(iter != pos[loc])
+	{ 
+	  findx = 0;
+	  iter = pos[loc];
+	    /* iter provides a unique identifier to the voxel of
+		interest, and the code generates the interpolating
+		coefficients once per voxel (at max). The evaluated points
+		are sorted such that all values of a voxel are calculated
+		in direct sequence. */
+		
+	    /* the padding of f (from python) allows for a lot of
+	    	simplifcation, as its starts 1 off on every dimension */
+	  for(l = 0;l < 4; l++)
 	    {
-	      outmat[temp] = (inmat[temp] - inmat[temp + in])/; /* divide by two, as 'in' is always a separation of two points */
-	      temp = temp + 1;
+	      for(k = 0;k < 4; k++)
+		{
+		  for(j = 0;j < 4; j++)
+		    { 
+		      fin[findx] = *(f + iter);
+		      findx++;
+		      iter++;
+		    }
+		  iter = iter + gap1;
+		}	  
+	      iter = iter + gap2;
 	    }
+	  iter = pos[loc];
+	  tricubic_get_coeff_stacked_nonreg(a,fin,&x0[],&x1[],&x2[]);
+
 
 	}
+      val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
 
     }
-
 }
 
 
-
-
-
-
-double ev2(double val[], double x1[], double x2[], double x3[], double f[], int pos[], int indx[], int fx1, int fx2, int fx3, int ix)
-{ /*initialize necessary derivatives */
-  double dfdx1[2][4][4];
-  double dfdx2[2][2][4];
-  double dfdx3[2][2][2];
-  double dfdx12[2][2][4];
-  double dfdx23[2][2][2];
-  double dfdx13[2][2][2];
-  double dfdx123[2][2][2];
-  double fin[4][4][4];
-
-  /* i think i need to modify tridiff to intelligently deal with the different sizes  */
-
-  int out[3];
-  out[0] = 2;
-  out[1] = 4;
-  out[2] = 4;
-
-  
-  /* x1 derivative */
-  tridiff(&dfdx1,&f,&out,0,0);
-
-
-  /* x2 derivative */
-  out[1] = 2;
-
-  tridiff(&dfdx2,&f,&out,0,1);
-  tridiff(&dfdx12,&dfdx1,&out,1,1);
- 
-  /* x3 derivative */
-  out[2] = 2;
- 
-  tridiff(&dfdx3,&f,&out,1,2);
-  tridiff(&dfdx13,&dfdx1,&out,1,2);
-  tridiff(&dfdx23,&dfdx2,&out,2,2);
-  tridiff(&dfdx123,&dfdx12,&out,2,2);
+void ev(double val[], double xin0[], double xin1[], double xin2[], double f[], double x0[], double x1[], double x2[], int ix0, int ix1, int ix2, int ix)
+{
   
 
-  return(data)
 
-}
-
-
-
-int ismonotonic(double val[], int ix)
-{   /* while loop based check of monotonicity,
-       so on very large bases that fail, it 
-       stops early. Starts at end.  */
-  int counter = ix - 1,output = 1;
-  
-  while( counter )
-    { counter--;  
-      if(val[counter] - val[counter + 1] > 0)
-	{
-	  counter = 0;
-	  output = 0;
-	}
-    }
-  return output;
-}
-
-int isregular(double val[], int ix)
-{   /* while loop based check of monotonicity,
-       so on very large bases that fail, it 
-       stops early. Starts at end.  */
-  int counter = ix - 2,output = 1;
-  double temp = val[counter] - val[counter + 1];
-  while( counter )
-    { counter--;
-
-      if(val[counter] - val[counter + 1] != temp)
-	{
-	  counter = 0;
-	  output = 0;
-	}
-    }
-  return output;
-}
+} 
