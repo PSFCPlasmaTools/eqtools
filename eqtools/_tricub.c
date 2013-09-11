@@ -3,7 +3,7 @@
 
 /*****************************************************************
  
-    This file is part of the EqTools package.
+    This file is part of the eqtools package.
 
     EqTools is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -192,13 +192,48 @@ int isregular(double val[], int ix)
 }
 
 
-int _compare_fun(const void * a, const void * b)
+int ijk2n(int i, int j, int k)
+{
+  return(i+4*j+16*k);
+}
+
+
+double tricubic_eval(double a[64], double x, double y, double z)
+{
+  int i,j,k;
+  double ret=(double)(0.0);
+  /* TRICUBIC EVAL
+     This is the short version of tricubic_eval. It is used to compute
+     the value of the function at a given point (x,y,z). To compute
+     partial derivatives of f, use the full version with the extra args.
+  */
+  for (i=0;i<4;i++)
+    {
+      for (j=0;j<4;j++) 
+	{
+	  for (k=0;k<4;k++) 
+	    {
+	      ret+=a[ijk2n(i,j,k)]*pow(x,i)*pow(y,j)*pow(z,k);
+	    }
+	}
+    }
+  return(ret);
+}
+
+
+int _compare_fun(const void* a, const void* b)
 {
   return (**(int**)a - **(int**)b);
 }
 
 
-void int_argsort(int invec[], int outvec[], int len)
+int _compare_double(const void* a, const void* b)
+{
+  return (int)(*(double*)a - *(double*)b);
+}
+
+
+void int_argsort(int outvec[], int invec[], int len)
 { int i;
   int** temp = malloc(len * sizeof(int*));
   /* temp is constructed to reference invec, temp will
@@ -218,7 +253,7 @@ void int_argsort(int invec[], int outvec[], int len)
 }
 
 
-void _nonreg_x_construct(double val[],double inmat[], int shape[3])
+void _nonreg_x_construct(double val[], double inmat[], int shape[])
 {
   int k,j,i,idx0,idx1,gap0,gap1;
   gap0 = shape[0]-2;
@@ -232,8 +267,8 @@ void _nonreg_x_construct(double val[],double inmat[], int shape[3])
 	  for(i=0;i<2;i++)
 	    {
 	      val[idx1] = inmat[idx0];
-	      idx1++
-	      idx0++
+	      idx1++;
+	      idx0++;
 	    }
 	  idx0 = idx0 + gap0;
 	}
@@ -254,7 +289,7 @@ void tridiff(double outmat[], double inmat[], double x[4], int shapeout[3], int 
 
   /*x0,x1,and x2 represent some sort of einstein notation, where the iteration
    follows a similar convention to the levi-civita symbol*/
-  int x0,x1,x2,idx,gap,gap0,gap1,ixin,ixout,offset,x1lim,x2lim,x3lim;
+  int x0,x1,x2,idx,gap,gap0,gap1,ixin,ixout,x0lim,x1lim,x2lim;
   x0lim = shapeout[0];
   x1lim = shapeout[1];
   x2lim = shapeout[2];
@@ -298,59 +333,57 @@ void tridiff(double outmat[], double inmat[], double x[4], int shapeout[3], int 
 
 void _gen_nonreg_x(double val[], double f[], double x0[4], double x1[4], double x2[4])
 { /*initialize necessary derivatives */
-  double dfdx0[2][4][4];
-  double dfdx1[2][2][4];
-  double dfdx2[2][2][2];
-  double dfdx01[2][2][4];
-  double dfdx12[2][2][2];
-  double dfdx02[2][2][2];
-  double dfdx012[2][2][2];
+  double dfdx0[32];//[2][4][4];
+  double dfdx1[16];//[2][2][4];
+  double dfdx2[8];//[2][2][2];
+  double dfdx01[16];//[2][2][4];
+  double dfdx12[8];//[2][2][2];
+  double dfdx02[8];//[2][2][2];
+  double dfdx012[8];//[2][2][2];
   /* i think i need to modify tridiff to intelligently deal with the different sizes  */
 
-  int in[3] = {4,4,4};
-  _nonreg_x_construct(&val[0],&f[21],&in);
+  /*int in[3] = {4,4,4};*/
+  int in[3];
+  in[0] = 4;
+  in[1] = 4;
+  in[2] = 4;
+  _nonreg_x_construct(&val[0],&f[21],in);
 
   int out[3] = {2,4,4};
 
   
   /* x0 derivative */
-  tridiff(&dfdx0, &f, &x0, &out, &in, 0);
-  _nonreg_x_construct(&val[1], &dfdx0[0,1,1], &out);
+  tridiff(dfdx0, f, x0, out, in, 0);
+  _nonreg_x_construct(&val[1], &dfdx0[10], out);
 
   /* x1 derivative */
   out[1] = 2;
 
-  tridiff(&dfdx1, &f, &x1, &out, &in, 1);
-  _nonreg_x_construct(&val[2], &dfdx0[0,0,1], &out);
+  tridiff(dfdx1, f, x1, out, in, 1);
+  _nonreg_x_construct(&val[2], &dfdx1[4], out);
   
   in[0] = 2;
-  tridiff(&dfdx01, &dfdx0, &x1, &out, &in, 1);
-  _nonreg_x_construct(&val[4], &dfdx01[0,0,1], &out);
+  tridiff(dfdx01, dfdx0, x1, out, in, 1);
+  _nonreg_x_construct(&val[4], &dfdx01[4], out);
 
   /* x2 derivative */
   out[2] = 2;
  
   in[0] = 4;
-  tridiff(&dfdx2, &f, &out, &in, 2);
-  _nonreg_x_construct(&val[3], &dfdx2[0,0,0], &out);  
+  tridiff(dfdx2, f, x2, out, in, 2);
+  _nonreg_x_construct(&val[3], &dfdx2[0], out);  
 
   in[0] = 2;
-  tridiff(&dfdx02, &dfdx0, &out, &in, 2);
-  _nonreg_x_construct(&val[5], &dfdx02[0,0,0], &out);    
+  tridiff(dfdx02, dfdx0, x2, out, in, 2);
+  _nonreg_x_construct(&val[5], &dfdx02[0], out);    
 
   in[1] = 2;
-  tridiff(&dfdx12, &dfdx1, &out, &in, 2);
-  _nonreg_x_construct(&val[6], &dfdx02[0,0,0], &out);
+  tridiff(dfdx12, dfdx1, x2, out, in, 2);
+  _nonreg_x_construct(&val[6], &dfdx02[0], out);
   
-  tridiff(&dfdx012, &dfdx01, &out, &in, 2);
-  _nonreg_x_construct(&val[7], &dfdx02[0,0,0], &out);    
+  tridiff(dfdx012, dfdx01, x2, out, in, 2);
+  _nonreg_x_construct(&val[7], &dfdx02[0], out);    
 
-}
-
-
-int ijk2n(int i, int j, int k)
-{
-  return(i+4*j+16*k);
 }
 
 
@@ -371,9 +404,10 @@ void tricubic_get_coeff_stacked(double a[64], double x[64])
 
 void tricubic_get_coeff_stacked_nonreg(double a[64], double f[64], double x0[], double x1[], double x2[])
 {
-  int i,j,x[64];
+  int i,j;
+  double x[64];
   
-  gen_nonreg_x(&x,&f,&x0,&x1,&x2);
+  _gen_nonreg_x(x, f, x0, x1, x2);
   for (i=0;i<64;i++) 
     {
       a[i]=(double)(0.0);
@@ -385,37 +419,14 @@ void tricubic_get_coeff_stacked_nonreg(double a[64], double f[64], double x0[], 
 }
 
 
-double tricubic_eval(double a[64], double x, double y, double z)
-{
-  int i,j,k;
-  double ret=(double)(0.0);
-  /* TRICUBIC EVAL
-     This is the short version of tricubic_eval. It is used to compute
-     the value of the function at a given point (x,y,z). To compute
-     partial derivatives of f, use the full version with the extra args.
-  */
-  for (i=0;i<4;i++)
-    {
-      for (j=0;j<4;j++) 
-	{
-	  for (k=0;k<4;k++) 
-	    {
-	      ret+=a[ijk2n(i,j,k)]*pow(x,i)*pow(y,j)*pow(z,k);
-	    }
-	}
-    }
-  return(ret);
-}
-
-
-void reg_ev(double val[], double dx0[], double dx1[], double dx2[], double f[], int pos[], int loc[], int fx0, int fx1, int fx2, int ix)
+void reg_ev(double val[], double dx0[], double dx1[], double dx2[], double f[], int pos[], int indx[], int ix0, int ix1, int ix2, int ix)
 {
   int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
   double fin[64],a[64];
 
   /* does this pertain only to the python/c interface ?*/
-  gap1 = fx0 - 4;
-  gap2 = fx0*(fx1 - 4);
+  gap1 = ix0 - 4;
+  gap2 = ix0*(ix1 - 4);
 
  
   for(i=0;i < ix; i++)
@@ -461,13 +472,36 @@ void reg_ev(double val[], double dx0[], double dx1[], double dx2[], double f[], 
     }
 }
 
-void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], int pos[], int loc[], int fx0, int fx1, int fx2, int ix)
+void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
 {
   int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
-  double fin[64],a[64],dx0[],dx1[],dx2[];
+  double fin[64],a[64];
 
-  gap1 = fx0 - 4;
-  gap2 = fx0*(fx1 - 4);
+  double* dx0 = malloc(ix*sizeof(double));
+  double* dx1 = malloc(ix*sizeof(double));
+  double* dx2 = malloc(ix*sizeof(double));
+  int* in0 = malloc(ix*sizeof(int));
+  int* in1 = malloc(ix*sizeof(int));
+  int* in2 = malloc(ix*sizeof(int));
+  int* pos = malloc(ix*sizeof(int));
+  int* indx = malloc(ix*sizeof(int));
+
+  gap1 = ix0 - 4;
+  gap2 = ix0*(ix1 - 4);
+
+
+  /* solve for indexes */
+  for(k=0;k<ix;k++)
+    {
+      in0[k] = *(int*) bsearch(&x0[k], fx0, ix0, sizeof(double), _compare_double);
+      in1[k] = *(int*) bsearch(&x1[k], fx1, ix1, sizeof(double), _compare_double);
+      in2[k] = *(int*) bsearch(&x2[k], fx2, ix2, sizeof(double), _compare_double);
+      pos[k] = in0[k] + ix0*(in1[k] + ix1*in2[k]); 
+    }
+  int_argsort(indx, pos, ix);
+  
+
+  /*generate pos and loc */
 
  
   for(i=0;i < ix; i++)
@@ -504,19 +538,65 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
 	      iter = iter + gap2;
 	    }
 	  iter = pos[loc];
-	  tricubic_get_coeff_stacked_nonreg(a,fin,&x0[],&x1[],&x2[]);
+	  tricubic_get_coeff_stacked_nonreg(a,fin,&x0[loc],&x1[loc],&x2[loc]);
 
 
 	}
       val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
 
     }
+
+  free(dx0);
+  free(dx1);
+  free(dx2);
+  free(in0);
+  free(in1);
+  free(in2);
+  free(pos);
+  free(indx);
+
 }
 
 
-void ev(double val[], double xin0[], double xin1[], double xin2[], double f[], double x0[], double x1[], double x2[], int ix0, int ix1, int ix2, int ix)
-{
-  
+void ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
+{ 
+  if(isregular(fx0, ix0) && isregular(fx1, ix1) && isregular(fx2, ix2))
+    {
+      int idx;
+      double dx0gap,dx1gap,dx2gap,tempx0,tempx1,tempx2;
+      double* dx0 = malloc(ix*sizeof(double));
+      double* dx1 = malloc(ix*sizeof(double));
+      double* dx2 = malloc(ix*sizeof(double));    
+      int* pos = malloc(ix*sizeof(int));
+      int* loc = malloc(ix*sizeof(int));
 
+      dx0gap = fx0[1]-fx0[0];
+      dx1gap = fx1[1]-fx1[0];
+      dx2gap = fx2[1]-fx2[0];
+
+      /*generate indicies*/
+      for(idx=0;idx<ix;idx++)
+	{
+	  dx0[idx] = modf((x0[idx] - x0[0])/dx0gap,&tempx0);
+	  dx1[idx] = modf((x1[idx] - x1[0])/dx1gap,&tempx1);
+	  dx2[idx] = modf((x2[idx] - x2[0])/dx2gap,&tempx2);
+	  pos[idx] = (int)tempx0 + ix0*((int)tempx1 + ix1*((int)tempx2));
+	}
+      int_argsort(loc, pos, ix);
+
+      reg_ev(val, dx0, dx1, dx2, f, pos, loc, ix0, ix1, ix2, ix);
+
+      free(dx0);
+      free(dx1);
+      free(dx2);
+      free(pos);
+      free(loc);
+    }
+  else
+    {
+
+      nonreg_ev( val, x0, x1, x2, f, fx0, fx1, fx2, ix0, ix1, ix2, ix);
+
+    }
 
 } 
