@@ -52,7 +52,7 @@ class CModEFITTree(EFITTree):
     data are pulled at the first request and stored for subsequent usage.
     """
 
-    def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False, fast=False):
+    def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False, monotonic=False):
         """Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
         in instance attributes.  Core attributes are populated from the MDS tree on initialization.
         Additional attributes are initialized as None, filled on the first request to the object.
@@ -89,8 +89,8 @@ class CModEFITTree(EFITTree):
                 that they are functionally correlated, and that parameters do
                 not vary out of their boundaries (derivative = 0 boundary
                 condition). Default is False (use nearest neighbor interpolation).
-            fast: Boolean. Sets whether or not the "fast" form of time window
-                finding is used. If True, the timebase must be monotonically
+            monotonic: Boolean. Sets whether or not the "monotonic" form of time
+                window finding is used. If True, the timebase must be monotonically
                 increasing. Default is False (use slower, safer method).
         """
         if tree.upper() == 'ANALYSIS':
@@ -98,7 +98,7 @@ class CModEFITTree(EFITTree):
         else:
             root = '\\'+tree+'::top.results.'
 
-        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, fast=fast)
+        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, monotonic=monotonic)
     
     def getMachineCrossSection(self):
         """Pulls C-Mod cross-section data from tree, converts to plottable

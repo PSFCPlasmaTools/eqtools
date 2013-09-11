@@ -50,7 +50,7 @@ class EFITTree(Equilibrium):
     Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
     Additional data are pulled at the first request and stored for subsequent usage.
     """
-    def __init__(self, shot, tree, root, length_unit='m', tspline=False, fast=False):
+    def __init__(self, shot, tree, root, length_unit='m', tspline=False, monotonic=False):
         """
         Intializes EFITTree object. Pulls data from MDS tree for storage in
         instance attributes. Core attributes are populated from the MDS tree
@@ -67,7 +67,7 @@ class EFITTree(Equilibrium):
             print("ERROR: MDSplus module did not load properly. Exception is below:")
             raise _e_MDS
 
-        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline, fast=fast)
+        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline, monotonic=monotonic)
         
         self._shot = shot
         self._tree = tree
