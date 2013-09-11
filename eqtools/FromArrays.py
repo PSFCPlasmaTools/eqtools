@@ -20,39 +20,45 @@ from .core import Equilibrium
 
 class ArrayEquilibrium(Equilibrium):
     """Class to represent an equilibrium specified as arrays of data.
+    
+    Create ArrayEquilibrium instance from arrays of data.
+    
+    Args:
+        psiRZ: Array-like, (M, N, P).
+            Flux values at M times, N Z locations and P R locations.
+        rGrid: Array-like, (P,).
+            R coordinates that psiRZ is given at.
+        zGrid: Array-like, (N,).
+            Z coordinates that psiRZ is given at.
+        time: Array-like, (M,).
+            Times that psiRZ is given at.
+        q: Array-like, (Q, M).
+            q profile evaluated at Q values of psinorm from 0 to 1, given at M
+            times.
+        fluxVol: Array-like, (S, M).
+            Flux surface volumes evaluated at S values of psinorm from 0 to 1,
+            given at M times.
+    
+    Kwargs:
+        length_unit: String.
+            Base unit for any quantity whose dimensions are length to any power.
+            Default is 'm'. Valid options are:
+            
+            ===========  ===========================================================================================
+            'm'          meters
+            'cm'         centimeters
+            'mm'         millimeters
+            'in'         inches
+            'ft'         feet
+            'yd'         yards
+            'smoot'      smoots
+            'cubit'      cubits
+            'hand'       hands
+            'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+            ===========  ===========================================================================================
     """
     def __init__(self, psiRZ, rGrid, zGrid, time, q, fluxVol,
                  length_unit='m', tspline=False, fast=False):
-        """Create ArrayEquilibrium instance from arrays of data.
-        
-        Args:
-            psiRZ: Array-like, (M, N, P). Flux values at M times, N Z locations
-                and P R locations.
-            rGrid: Array-like, (P,). R coordinates that psiRZ is given at.
-            zGrid: Array-like, (N,). Z coordinates that psiRZ is given at.
-            time: Array-like, (M,). Times that psiRZ is given at.
-            q: Array-like, (Q, M). q profile evaluated at Q values of psinorm
-                from 0 to 1, given at M times.
-            fluxVol: Array-like, (S, M). Flux surface volumes evaluated at S
-                values of psinorm from 0 to 1, given at M times.
-        
-        Kwargs:
-            length_unit: String. Base unit for any quantity whose dimensions
-                are length to any power. Default is 'm'. Valid options are:
-                    'm'         meters
-                    'cm'        centimeters
-                    'mm'        millimeters
-                    'in'        inches
-                    'ft'        feet
-                    'yd'        yards
-                    'smoot'     smoots
-                    'default'   whatever the default in the tree is (no
-                                    conversion is performed, units may be
-                                    inconsistent)
-        
-        Returns:
-            The ArrayEquilibrium instance created.
-        """
         self._psiRZ = scipy.asarray(psiRZ, dtype=float)
         self._rGrid = scipy.asarray(rGrid, dtype=float)
         self._zGrid = scipy.asarray(zGrid, dtype=float)

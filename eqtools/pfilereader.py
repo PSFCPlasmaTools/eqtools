@@ -43,18 +43,19 @@ class PFileReader(object):
     stored as an attribute of the PFileReader instance.  This gracefully handles variable
     formats of p-files (differing versions of p-files will have different parameters stored).
     Data blocks are accessed as attributes in a copy-safe manner.
+    
+    Creates instance of PFileReader.
+
+    Args:
+        pfile: String.
+            Path to ASCII p-file to be loaded.
+
+    Kwargs:
+        verbose: Boolean.
+            Option to print message on object creation listing available data
+            parameters. Defaults to True. 
     """
     def __init__(self,pfile,verbose=True):
-        """
-        Creates instance of PFileReader.
-
-        Args:
-            pfile: String.  Path to ASCII p-file to be loaded.
-
-        Kwargs:
-            verbose: Boolean.  Option to print message on object creation
-                listing available data parameters.  Defaults to True. 
-        """
         self._pfile = pfile
         self._params = []
 
@@ -108,8 +109,7 @@ class PFileReader(object):
                 print(str(par).ljust(8)+str(xun).ljust(12)+str(un))
 
     def __str__(self):
-        """
-        overrides default string method for useful output.
+        """overrides default string method for useful output.
         """
         mes = 'P-file data from '+self._pfile+' containing parameters:\n'
         for par in self._params:
@@ -119,15 +119,15 @@ class PFileReader(object):
         return mes
 
     def __getattribute__(self, name):
-        """
-        Copy-safe attribute retrieval method overriding default object.__getattribute__.
+        """Copy-safe attribute retrieval method overriding default object.__getattribute__.
 
         Tries to retrieve attribute as-written (first check for default object attributes).
         If that fails, looks for pseudo-private attributes, marked by preceding underscore,
         to retrieve data blocks.  If this fails, raise AttributeError.
 
         Args:
-            name: String.  Name (without leading underscore for data variables) of attribute.
+            name: String.
+                Name (without leading underscore for data variables) of attribute.
 
         Raises:
             AttributeError: if no attribute can be found.
@@ -145,15 +145,15 @@ class PFileReader(object):
                 raise AttributeError('No attribute "%s" found' % name)
 
     def __setattr__(self, name, value):
-        """
-        Copy-safe attribute setting method overriding default object.__setattr__.
+        """Copy-safe attribute setting method overriding default object.__setattr__.
 
         Raises error if object already has attribute _{name} for input name,
         as such an attribute would interfere with automatic property generation in
         __getattribute__.
 
         Args:
-            name: String.  Attribute name.
+            name: String.
+                Attribute name.
 
         Raises:
             AttributeError: if attempting to create attribute with protected
@@ -166,20 +166,3 @@ class PFileReader(object):
                                  % {'n': name})
         else:
             super(PFileReader, self).__setattr__(name, value)
-
-            
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-            

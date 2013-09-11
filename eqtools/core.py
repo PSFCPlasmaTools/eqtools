@@ -222,46 +222,47 @@ class Equilibrium(object):
     .. note:: This abstract class should not be used directly. Device- and code-
         specific subclasses are set up to account for inter-device/-code differences
         in data storage.
+    
+    Create a new Equilibrium instance.
+    
+    Kwargs:
+        length_unit: String.
+            Sets the base unit used for any quantity whose
+            dimensions are length to any power. Valid options are:
+            
+                ===========  ===========================================================================================
+                'm'          meters
+                'cm'         centimeters
+                'mm'         millimeters
+                'in'         inches
+                'ft'         feet
+                'yd'         yards
+                'smoot'      smoots
+                'cubit'      cubits
+                'hand'       hands
+                'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+                ===========  ===========================================================================================
+            
+            Default is 'm' (all units taken and returned in meters).
+        tspline: Boolean.
+            Sets whether or not interpolation in time is
+            performed using a tricubic spline or nearest-neighbor
+            interpolation. Tricubic spline interpolation requires at least
+            four complete equilibria at different times. It is also assumed
+            that they are functionally correlated, and that parameters do
+            not vary out of their boundaries (derivative = 0 boundary
+            condition). Default is False (use nearest neighbor interpolation).
+        monotonic: Boolean.
+            Sets whether or not the "monotonic" form of time window
+            finding is used. If True, the timebase must be monotonically
+            increasing. Default is False (use slower, safer method).
+    
+    Raises:
+        ValueError: If length_unit is not a valid unit specifier.
+        ValueError: If tspline is True by module trispline did not load
+            successfully.
     """
     def __init__(self, length_unit='m', tspline=False, monotonic=False):
-        """Create a new Equilibrium instance.
-        
-        Kwargs:
-            length_unit: String. Sets the base unit used for any quantity whose
-                dimensions are length to any power. Valid options are:
-                
-                    ===========  ===========================================================================================
-                    'm'          meters
-                    'cm'         centimeters
-                    'mm'         millimeters
-                    'in'         inches
-                    'ft'         feet
-                    'yd'         yards
-                    'smoot'      smoots
-                    'cubit'      cubits
-                    'hand'       hands
-                    'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
-                    ===========  ===========================================================================================
-                
-                Default is 'm' (all units taken and returned in meters).
-            tspline: Boolean.
-                Sets whether or not interpolation in time is
-                performed using a tricubic spline or nearest-neighbor
-                interpolation. Tricubic spline interpolation requires at least
-                four complete equilibria at different times. It is also assumed
-                that they are functionally correlated, and that parameters do
-                not vary out of their boundaries (derivative = 0 boundary
-                condition). Default is False (use nearest neighbor interpolation).
-            monotonic: Boolean.
-                Sets whether or not the "monotonic" form of time window
-                finding is used. If True, the timebase must be monotonically
-                increasing. Default is False (use slower, safer method).
-        
-        Raises:
-            ValueError: If length_unit is not a valid unit specifier.
-            ValueError: If tspline is True by module trispline did not load
-                successfully.
-        """
         if length_unit != 'default' and not (length_unit in _length_conversion):
             raise ValueError("Unit '%s' not a valid unit specifier!" % length_unit)
         else:
