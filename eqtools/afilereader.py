@@ -65,13 +65,14 @@ class AFileReader(object):
             self._time = float(line[0])     # time point in ms
 
             # header line
-            line = next(reader)[0].split()
-            self._jflag = int(line[2])  # error flag
-            self._lflag = int(line[3])  # error flag
-            self._limloc = line[4]      # limiter location (string)
-            self._mco2v = int(line[5])  # number of vertical CO2 laser chords
-            self._mco2r = int(line[6])  # number of horizontal CO2 laser chords
-            self._qmflag = line[7]      # flag indicating fixed q0 for fit
+            line = next(reader)[0]
+            line = re.findall('[\w.]+',line)
+            self._jflag = int(line[1])  # error flag
+            self._lflag = int(line[2])  # error flag
+            self._limloc = line[3]      # limiter location (string)
+            self._mco2v = int(line[4])  # number of vertical CO2 laser chords
+            self._mco2r = int(line[5])  # number of horizontal CO2 laser chords
+            self._qmflag = line[6]      # flag indicating fixed q0 for fit
 
             # read tsaisq(?), mag-axis R, bcentr, pasmat
             line = next(reader)[0]
