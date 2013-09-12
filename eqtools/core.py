@@ -2074,7 +2074,7 @@ class Equilibrium(object):
         Z = scipy.reshape(Z, -1)
         t = scipy.reshape(t, -1)
 
-        # takes keyword to bypass for tricubic interpolation
+        # Takes keyword to bypass for tricubic interpolation
         if not self._tricubic:
             timebase = self.getTimeBase()
             # Set up times to use -- essentially use nearest-neighbor interpolation
