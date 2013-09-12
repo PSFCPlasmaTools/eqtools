@@ -76,23 +76,32 @@ class Spline():
         self._f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] = f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)]
 
         if len(x) == self._f.shape[2]-2:
-            self._x = scipy.array(x)
+            self._x = scipy.array(x,dtype=float)
             if not _tricub.ismonotonic(self._x):
                 raise ValueError("x is not monotonic")
+            # add pad values to x for evaluation
+            self._x = scipy.insert(self._x,0,2*self._x[0]-self._x[1])
+            self._x = scipy.append(self._x,2*self._x[-1]-self._x[-2])
         else:
             raise ValueError("dimension of x does not match that of f ")
 
         if len(y) == self._f.shape[1]-2:
-            self._y = scipy.array(y)
+            self._y = scipy.array(y,dtype=float)
             if not _tricub.ismonotonic(self._y):
                 raise ValueError("y is not monotonic")
+            # add pad values for y for evaluation
+            self._y = scipy.insert(self._y,0,2*self._y[0]-self._y[1])
+            self._y = scipy.append(self._y,2*self._y[-1]-self._y[-2])
         else:
             raise ValueError("dimension of y does not match that of f ")
         
         if len(z) == self._f.shape[0]-2:
-            self._z = scipy.array(z)
+            self._z = scipy.array(z,dtype=float)
             if not _tricub.ismonotonic(self._z):
                 raise ValueError("z is not monotonic")
+            # add pad values for z for evaluation
+            self._z = scipy.insert(self._z,0,2*self._z[0]-self._z[1])
+            self._z = scipy.append(self._z,2*self._z[-1]-self._z[-2])
         else:
             raise ValueError("dimension of z does not match that of f ")
 
@@ -102,17 +111,17 @@ class Spline():
                 regular = regular or bool(_tricub.isregular(i))
             self._regular = regular
 
-    def ev(self, z1, y1, x1):
+    def ev(self, z1, y1, x1,test=False):
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
         z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
         val = scipy.nan*scipy.zeros(x.shape)
 
-        if scipy.any(x < self._x[0]) or scipy.any(x > self._x[-1]):
+        if scipy.any(x < self._x[1]) or scipy.any(x > self._x[-2]):
             raise ValueError('x value exceeds bounds of interpolation grid ')
-        if scipy.any(y < self._y[0]) or scipy.any(y > self._y[-1]):
+        if scipy.any(y < self._y[1]) or scipy.any(y > self._y[-2]):
             raise ValueError('y value exceeds bounds of interpolation grid ')
-        if scipy.any(z < self._z[0]) or scipy.any(z > self._z[-1]):
+        if scipy.any(z < self._z[1]) or scipy.any(z > self._z[-2]):
             raise ValueError('z value exceeds bounds of interpolation grid ')
 
         xinp = scipy.array(scipy.where(scipy.isfinite(x)))
@@ -121,21 +130,12 @@ class Spline():
         inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
 
         if inp.size != 0:
-            ix = scipy.digitize(x[inp], self._x)
-            ix = ix.clip(0,self._x.size - 1) - 1
-            iy = scipy.digitize(y[inp], self._y)
-            iy = iy.clip(0,self._y.size - 1) - 1
-            iz = scipy.digitize(z[inp], self._z)
-            iz = iz.clip(0,self._z.size - 1) - 1
-            pos = ix + self._f.shape[1]*(iy + self._f.shape[2]*iz)
-            indx = scipy.argsort(pos) #each voxel is described uniquely, and this is passed to speed evaluation.
+
             if self._regular:
-                dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
-                dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
-                dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
-                val[inp] = _tricub.ev(dx, dy, dz, self._f, pos, indx)  
+                val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
             else:
-                val[inp] = _tricub.ev2(x, y, z, self._f, pos, indx)
+                val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
+
 
         return(val)
 
