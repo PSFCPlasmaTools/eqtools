@@ -304,7 +304,7 @@ class Equilibrium(object):
     # Mapping routines #
     ####################
     
-    def rz2psi(self, R, Z, t, return_t=False, make_grid=False, length_unit=1):
+    def rz2psi(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
         """Converts the passed R, Z, t arrays to psi values.
 
         If tspline is False for this Equilibrium instance, uses
@@ -350,6 +350,13 @@ class Equilibrium(object):
                 same shape as the resulting meshgrid, and each element in the
                 returned psi array will be at the corresponding time in the t
                 array. Default is False (do not form meshgrid).
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             length_unit: String or 1.
                 Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
@@ -403,7 +410,7 @@ class Equilibrium(object):
 
             Find psi values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
             
-                psi_arr = Eq_instance.rz2psi([0.6, 0.5], [0, 0.2], [0.2, 0.3])
+                psi_arr = Eq_instance.rz2psi([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
 
             Find psi values on grid defined by 1D vector of radial positions R and
             1D vector of vertical positions Z at time t=0.2s::
@@ -419,7 +426,9 @@ class Equilibrium(object):
          original_shape,
          single_val,
          single_time) = self._processRZt(R, Z, t,
-                                         make_grid=make_grid, length_unit=length_unit)
+                                         make_grid=make_grid,
+                                         each_t=each_t,
+                                         length_unit=length_unit)
 
         # Optimized form for single t value case:
         if not self._tricubic:
@@ -453,7 +462,7 @@ class Equilibrium(object):
         else:
             return out
 
-    def rz2psinorm(self, R, Z, t, return_t=False, sqrt=False, make_grid=False, length_unit=1):
+    def rz2psinorm(self, R, Z, t, return_t=False, sqrt=False, make_grid=False, each_t=True, length_unit=1):
         r"""Calculates the normalized poloidal flux at the given (R, Z, t).
         
         Uses the definition:
@@ -513,6 +522,13 @@ class Equilibrium(object):
                 same shape as the resulting meshgrid, and each element in the
                 returned psi array will be at the corresponding time in the t
                 array. Default is False (do not form meshgrid).
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             length_unit: String or 1.
                 Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
@@ -565,7 +581,7 @@ class Equilibrium(object):
 
             Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
             
-                psi_arr = Eq_instance.rz2psinorm([0.6, 0.5], [0, 0.2], [0.2, 0.3])
+                psi_arr = Eq_instance.rz2psinorm([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
 
             Find psinorm values on grid defined by 1D vector of radial positions R
             and 1D vector of vertical positions Z at time t=0.2s::
@@ -573,7 +589,9 @@ class Equilibrium(object):
                 psi_mat = Eq_instance.rz2psinorm(R, Z, 0.2, make_grid=True)
         """
         psi, time_idxs = self.rz2psi(R, Z, t, return_t=True,
-                                     make_grid=make_grid, length_unit=length_unit)
+                                     make_grid=make_grid,
+                                     each_t=each_t,
+                                     length_unit=length_unit)
 
         if not self._tricubic:
             psi_boundary = self.getFluxLCFS()[time_idxs]
@@ -667,6 +685,13 @@ class Equilibrium(object):
                 same shape as the resulting meshgrid, and each element in the
                 returned psi array will be at the corresponding time in the t
                 array. Default is False (do not form meshgrid).
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             rho: Boolean.
                 For phinorm, this should always be set to False, the
                 default value.
@@ -733,7 +758,7 @@ class Equilibrium(object):
 
             Find phinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
             
-                phi_arr = Eq_instance.rz2phinorm([0.6, 0.5], [0, 0.2], [0.2, 0.3])
+                phi_arr = Eq_instance.rz2phinorm([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
 
             Find phinorm values on grid defined by 1D vector of radial positions R
             and 1D vector of vertical positions Z at time t=0.2s::
@@ -796,6 +821,13 @@ class Equilibrium(object):
                 same shape as the resulting meshgrid, and each element in the
                 returned psi array will be at the corresponding time in the t
                 array. Default is False (do not form meshgrid).
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             rho: Boolean.
                 For volnorm, this should always be set to False, the
                 default value.
@@ -861,7 +893,7 @@ class Equilibrium(object):
 
             Find volnorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
             
-                vol_arr = Eq_instance.rz2volnorm([0.6, 0.5], [0, 0.2], [0.2, 0.3])
+                vol_arr = Eq_instance.rz2volnorm([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
 
             Find volnorm values on grid defined by 1D vector of radial positions R
             and 1D vector of vertical positions Z at time t=0.2s::
@@ -933,6 +965,13 @@ class Equilibrium(object):
                 same shape as the resulting meshgrid, and each element in the
                 returned psi array will be at the corresponding time in the t
                 array. Default is False (do not form meshgrid).
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             rho (phinorm and volnorm only): Boolean.
                 For phinorm and volnorm,
                 this should always be set to False, the default value.
@@ -1001,7 +1040,7 @@ class Equilibrium(object):
 
             Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
             
-                psi_arr = Eq_instance.rz2rho('psinorm', [0.6, 0.5], [0, 0.2], [0.2, 0.3])
+                psi_arr = Eq_instance.rz2rho('psinorm', [0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
 
             Find psinorm values on grid defined by 1D vector of radial positions R
             and 1D vector of vertical positions Z at time t=0.2s::
@@ -1072,6 +1111,13 @@ class Equilibrium(object):
                 same shape as the resulting meshgrid, and each element in the
                 returned psi array will be at the corresponding time in the t
                 array. Default is False (do not form meshgrid).
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             rho: Boolean.
                 Set to True to return r/a (normalized minor radius)
                 instead of R_mid. Default is False (return major radius, R_mid).
@@ -1139,7 +1185,7 @@ class Equilibrium(object):
 
             Find R_mid values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
             
-                R_mid_arr = Eq_instance.rz2rmid([0.6, 0.5], [0, 0.2], [0.2, 0.3])
+                R_mid_arr = Eq_instance.rz2rmid([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
 
             Find R_mid values on grid defined by 1D vector of radial positions R
             and 1D vector of vertical positions Z at time t=0.2s::
@@ -1161,7 +1207,7 @@ class Equilibrium(object):
         
         return unit_factor * self._RZ2Quan(self._getRmidSpline, *args, **kwargs)
 
-    def psinorm2rmid(self, psi_norm, t, return_t=False, rho=False, kind='cubic', length_unit=1):
+    def psinorm2rmid(self, psi_norm, t, each_t=True, return_t=False, rho=False, kind='cubic', length_unit=1):
         """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
         
         If tspline is False for this Equilibrium instance, uses
@@ -1181,6 +1227,13 @@ class Equilibrium(object):
                 are scalars, t must have the same shape as psi_norm.
         
         Kwargs:
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             return_t: Boolean.
                 Set to True to return a tuple of (R_mid,
                 time_idxs), where time_idxs is the array of time indices
@@ -1252,7 +1305,7 @@ class Equilibrium(object):
 
             Find R_mid values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s)::
             
-                R_mid_arr = Eq_instance.psinorm2rmid([0.6, 0.5], [0.2, 0.3])
+                R_mid_arr = Eq_instance.psinorm2rmid([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
 
         (psi_norm_proc,
@@ -1261,7 +1314,8 @@ class Equilibrium(object):
          time_idxs,
          original_shape,
          single_val,
-         single_time) = self._processRZt(psi_norm, psi_norm, t, make_grid=False, check_space=False)
+         single_time) = self._processRZt(psi_norm, psi_norm, t,
+                                         make_grid=False, each_t=each_t, check_space=False)
 
         # Handling for single-value case:
         if single_val:
@@ -1279,7 +1333,7 @@ class Equilibrium(object):
                                                 rho=rho,
                                                 kind=kind)
 
-    def psinorm2volnorm(self, psi_norm, t, return_t=False, kind='cubic'):
+    def psinorm2volnorm(self, psi_norm, t, each_t=True, return_t=False, kind='cubic'):
         """Calculates the normalized volume corresponding to the passed psi_norm (normalized poloidal flux) values.
 
         If tspline is False for this Equilibrium instance, uses
@@ -1299,6 +1353,13 @@ class Equilibrium(object):
                 are scalars, t must have the same shape as psi_norm.
         
         Kwargs:
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             return_t: Boolean.
                 Set to True to return a tuple of (volnorm,
                 time_idxs), where time_idxs is the array of time indices
@@ -1348,7 +1409,7 @@ class Equilibrium(object):
 
             Find volnorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s)::
             
-                volnorm_arr = Eq_instance.psinorm2volnorm([0.6, 0.5], [0.2, 0.3])
+                volnorm_arr = Eq_instance.psinorm2volnorm([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
 
         (psi_norm_proc,
@@ -1357,7 +1418,8 @@ class Equilibrium(object):
          time_idxs,
          original_shape,
          single_val,
-         single_time) = self._processRZt(psi_norm, psi_norm, t, make_grid=False, check_space=False)
+         single_time) = self._processRZt(psi_norm, psi_norm, t,
+                                         each_t=each_t, make_grid=False, check_space=False)
 
         # Handling for single-value case:
         if single_val:
@@ -1365,7 +1427,7 @@ class Equilibrium(object):
 
         return self._psinorm2Quan(self._getVolNormSpline, psi_norm_proc, time_idxs, psi_norm, t, return_t=return_t, kind=kind)
 
-    def psinorm2phinorm(self, psi_norm, t, return_t=False, kind='cubic'):
+    def psinorm2phinorm(self, psi_norm, t, each_t=True, return_t=False, kind='cubic'):
         """Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.
 
         If tspline is False for this Equilibrium instance, uses
@@ -1385,6 +1447,13 @@ class Equilibrium(object):
                 are scalars, t must have the same shape as psi_norm.
         
         Kwargs:
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             return_t: Boolean.
                 Set to True to return a tuple of (phinorm,
                 time_idxs), where time_idxs is the array of time indices
@@ -1434,7 +1503,7 @@ class Equilibrium(object):
 
             Find phinorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s)::
             
-                phinorm_arr = Eq_instance.psinorm2phinorm([0.6, 0.5], [0.2, 0.3])
+                phinorm_arr = Eq_instance.psinorm2phinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
 
         (psi_norm_proc,
@@ -1443,7 +1512,8 @@ class Equilibrium(object):
          time_idxs,
          original_shape,
          single_val,
-         single_time) = self._processRZt(psi_norm, psi_norm, t, make_grid=False, check_space=False)
+         single_time) = self._processRZt(psi_norm, psi_norm, t,
+                                         make_grid=False, each_t=each_t, check_space=False)
 
         # Handling for single-value case:
         if single_val:
@@ -1571,7 +1641,7 @@ class Equilibrium(object):
         else:
             return out
 
-    def _RZ2Quan(self, spline_func, R, Z, t, return_t=False, sqrt=False, make_grid=False, rho=False, kind='cubic', length_unit=1):
+    def _RZ2Quan(self, spline_func, R, Z, t, each_t=True, return_t=False, sqrt=False, make_grid=False, rho=False, kind='cubic', length_unit=1):
         """Convert RZ to a given quantity.
         
         Utility function for converting R, Z coordinates to a variety of things
@@ -1605,6 +1675,13 @@ class Equilibrium(object):
                 t must have shape (len(Z), len(R)).
         
         Kwargs:
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
             return_t: Boolean. Set to True to return a tuple of (Quan,
                 time_idxs), where time_idxs is the array of time indices
                 actually used in evaluating R_mid with nearest-neighbor
@@ -1663,34 +1740,26 @@ class Equilibrium(object):
             time_idxs: Array with same shape as R_mid. The indices (in
                 self.getTimeBase()) that were used for nearest-neighbor
                 interpolation. Only returned if return_t is True.
-        
-        Examples:
-        All assume that Eq_instance is a valid instance of the appropriate
-        extension of the Equilibrium abstract class.
-
-        Find single R_mid value at R=0.6m, Z=0.0m, t=0.26s:
-        R_mid_val = Eq_instance.rz2rmid(0.6, 0, 0.26)
-
-        Find R_mid values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
-        single time t=0.26s. Note that the Z vector must be fully specified,
-        even if the values are all the same:
-        R_mid_arr = Eq_instance.rz2rmid([0.6, 0.8], [0, 0], 0.26)
-
-        Find R_mid values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]:
-        R_mid_arr = Eq_instance.rz2rmid(0.6, 0, [0.2, 0.3])
-
-        Find R_mid values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
-        R_mid_arr = Eq_instance.rz2rmid([0.6, 0.5], [0, 0.2], [0.2, 0.3])
-
-        Find R_mid values on grid defined by 1D vector of radial positions R
-        and 1D vector of vertical positions Z at time t=0.2s:
-        R_mid_mat = Eq_instance.rz2rmid(R, Z, 0.2, make_grid=True)
-        
         """
 
-        psi_norm, time_idxs = self.rz2psinorm(R, Z, t, sqrt=sqrt, return_t=True, make_grid=make_grid, length_unit=length_unit)
+        psi_norm, time_idxs = self.rz2psinorm(R,
+                                              Z,
+                                              t,
+                                              sqrt=sqrt,
+                                              each_t=each_t,
+                                              return_t=True,
+                                              make_grid=make_grid,
+                                              length_unit=length_unit)
 
-        return self._psinorm2Quan(spline_func, psi_norm, time_idxs, R, t, return_t=return_t, sqrt=sqrt, rho=rho, kind=kind)
+        return self._psinorm2Quan(spline_func,
+                                  psi_norm,
+                                  time_idxs,
+                                  R,
+                                  t,
+                                  return_t=return_t,
+                                  sqrt=sqrt,
+                                  rho=rho,
+                                  kind=kind)
 
     ####################
     # Helper Functions #
@@ -1831,7 +1900,7 @@ class Equilibrium(object):
         except KeyError:
             raise ValueError("Unit '%s' is not a recognized length unit!" % end)
 
-    def _processRZt(self, R, Z, t, make_grid=False, check_space=True, length_unit=1):
+    def _processRZt(self, R, Z, t, make_grid=False, each_t=True, check_space=True, length_unit=1):
         """Input checker/processor.
         
         Takes R, Z and t. Appropriately packages them into scipy arrays. Checks
@@ -1841,81 +1910,100 @@ class Equilibrium(object):
         Finds list of nearest-neighbor time indices.
         
         Args:
-            R: Array-like or scalar float. Values of the radial coordinate. If
-                R and Z are both scalar values, they are used as the coordinate
-                pair for all of the values in t. Must have the same shape as Z
-                unless the make_grid keyword is set. If the make_grid keyword
-                is True, R must have shape (len_R,).
-            Z: Array-like or scalar float. Values of the vertical coordinate.
-                If R and Z are both scalar values, they are used as the
-                coordinate pair for all of the values in t. Must have the same
-                shape as R unless the make_grid keyword is set. If the
-                make_grid keyword is True, Z must have shape (len_Z,).
-            t: Array-like or single value. If t is a single value, it is used
-                for all of the elements of R, Z. If t is array-like and the
-                make_grid keyword is False, t must have the same dimensions as
-                R and Z. If t is array-like and the make_grid keyword is True,
-                t must have shape (len(Z), len(R)).
+            R: Array-like or scalar float.
+                Values of the radial coordinate. If `R` and `Z` are both scalar
+                values, they are used as the coordinate pair for all of the
+                values in `t`. Must have the same shape as `Z` unless the
+                `make_grid` keyword is True. If `make_grid` is True, `R` must
+                have only one dimension (or be a scalar).
+            Z: Array-like or scalar float.
+                Values of the vertical coordinate. If `R` and `Z` are both
+                scalar values, they are used as the coordinate pair for all of
+                the values in `t`. Must have the same shape as `R` unless the
+                `make_grid` keyword is True. If `make_grid` is True, `Z` must
+                have only one dimension.
+            t: Array-like or single value.
+                If `t` is a single value, it is used for all of the elements of
+                `R`, `Z`. If `t` is array-like and `make_grid` is False, `t`
+                must have the same dimensions as `R` and `Z`. If `t` is
+                array-like and `make_grid` is True, `t` must have shape
+                (len(Z), len(R)).
         
         Kwargs:
-            make_grid: Boolean. Set to True to pass R and Z through meshgrid
-                before evaluating. If this is set to True, R and Z must each
+            make_grid: Boolean.
+                Set to True to pass `R` and `Z` through :py:func:`meshgrid`
+                before evaluating. If this is set to True, `R` and `Z` must each
                 only have a single dimension, but can have different lengths.
-                When using this option, it is highly recommended to only pass
-                a scalar value for t (such that each point in the flux grid is
-                evaluated at this same value t). Otherwise, t must have the
-                same shape as the resulting meshgrid, and each element in the
-                returned psi array will be at the corresponding time in the t
-                array. Default is False (do not form meshgrid).
-            check_space: Boolean. If True, R and Z are converted to meters and
-                checked against the extents of the spatial grid.
-            length_unit: String or 1. Length unit that R and Z are being given
-                in. If a string is given, it must be a valid unit specifier:
-                    'm'         meters
-                    'cm'        centimeters
-                    'mm'        millimeters
-                    'in'        inches
-                    'ft'        feet
-                    'yd'        yards
-                    'smoot'     smoots
-                    'cubit'     cubits
-                    'hand'      hands
-                    'default'   meters
+                Default is False (do not form meshgrid).
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
+            check_space: Boolean.
+                If True, `R` and `Z` are converted to meters and checked against
+                the extents of the spatial grid.
+            length_unit: String or 1.
+                Length unit that `R` and `Z` are being given in. If a string is
+                given, it must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters). Note that this factor is
                 ONLY applied to the inputs in this function -- if Quan needs to
                 be corrected, it must be done in the calling function.
         
         Returns:
-            R: Flattened R array with out-of-range values replaced with NaN.
-            Z: Flattened Z array with out-of-range values replaced with NaN.
-            t: Flattened t array with out-of-range values replaced with NaN.
-            time_idxs: Flattened array of nearest-neighbor time indices.
-            original_shape: Original shape tuple, used to return the arrays to
-                their starting form.
-            single_val: Boolean indicating whether a single point is used. If
-                True, then the final step of the calling code should unpack the
-                result from the array.
-            single_time: Boolean indicating whether a single time value is used.
-                If True, then certain simplifying steps can be made.
+            Tuple of:
+            
+            * **R** - Flattened `R` array with out-of-range values replaced with NaN.
+            * **Z** - Flattened Z array with out-of-range values replaced with NaN.
+            * **t** - Flattened t array with out-of-range values replaced with NaN.
+            * **time_idxs** - Flattened array of nearest-neighbor time indices.
+            * **original_shape** - Original shape tuple, used to return the
+              arrays to their starting form.
+            * **single_val** - Boolean indicating whether a single point is used.
+              If True, then the final step of the calling code should unpack the
+              result from the array.
+            * **single_time** - Boolean indicating whether a single time value
+              is used. If True, then certain simplifying steps can be made.
         """
 
         # Handle single-value form of R and Z:
+        single_val = True
         try:
             iter(R)
         except TypeError:
-            single_val = True
-            R = scipy.array([R], dtype=float)
-            Z = scipy.array([Z], dtype=float)
+            R = scipy.asarray([R], dtype=float)
         else:
             single_val = False
-            # Cast into scipy.array so we can handle list inputs:
-            R = scipy.array(R, dtype=float)
-            Z = scipy.array(Z, dtype=float)
+            R = scipy.asarray(R, dtype=float)
+        
+        try:
+            iter(Z)
+        except TypeError:
+            Z = scipy.asarray([Z], dtype=float)
+        else:
+            single_val = False
+            Z = scipy.asarray(Z, dtype=float)
 
         # Make the grid, if called for:
         if make_grid:
-            if R.ndim != 1 and Z.ndim != 1:
+            if R.ndim != 1 or Z.ndim != 1:
                 raise ValueError('_processRZt: When using the make_grid keyword, the '
                                  'number of dimensions of R and Z must both be one!')
             else:
@@ -1948,16 +2036,26 @@ class Equilibrium(object):
             iter(t)
         except TypeError:
             single_time = True
-            t = scipy.array([t])
+            # The bivariate spline case technically only needs one element, but
+            # the trispline case looks like it needs the full shape.
+            t = t * scipy.ones_like(R, dtype=float)
         else:
             single_time = False
-            t = scipy.array(t)
+            t = scipy.asarray(t, dtype=float)
             # Handle case where there is a single R/Z but multiple t:
             if single_val:
                 single_val = False
-                R = scipy.ones(t.shape) * R
-                Z = scipy.ones(t.shape) * Z
-
+                R = R * scipy.ones_like(t, dtype=float)
+                Z = Z * scipy.ones_like(t, dtype=float)
+        
+        if each_t and not single_time:
+            if t.ndim != 1:
+                raise ValueError("_processRZt: When using the each_t keyword, "
+                                 "t must have only one dimension.")
+            R = scipy.tile(R, (len(t), 1, 1))
+            Z = scipy.tile(Z, (len(t), 1, 1))
+            t = t[scipy.indices(R.shape)[0]]
+        
         if t.size > 1 and t.shape != R.shape:
             if make_grid:
                 raise ValueError('_processRZt: shape of t does not match shape of R '

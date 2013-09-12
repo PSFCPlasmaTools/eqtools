@@ -9,23 +9,23 @@
 \contentsline {subsection}{\numberline {2.1.5}\texttt {afilereader} Module}{9}{subsection.2.1.5}
 \contentsline {subsection}{\numberline {2.1.6}\texttt {core} Module}{10}{subsection.2.1.6}
 \contentsline {paragraph}{Examples}{13}{paragraph*.81}
-\contentsline {paragraph}{Examples}{14}{paragraph*.83}
-\contentsline {paragraph}{Examples}{16}{paragraph*.85}
-\contentsline {paragraph}{Examples}{18}{paragraph*.87}
-\contentsline {paragraph}{Examples}{20}{paragraph*.89}
-\contentsline {paragraph}{Examples}{22}{paragraph*.91}
+\contentsline {paragraph}{Examples}{15}{paragraph*.83}
+\contentsline {paragraph}{Examples}{17}{paragraph*.85}
+\contentsline {paragraph}{Examples}{19}{paragraph*.87}
+\contentsline {paragraph}{Examples}{21}{paragraph*.89}
+\contentsline {paragraph}{Examples}{23}{paragraph*.91}
 \contentsline {paragraph}{Examples}{24}{paragraph*.93}
 \contentsline {paragraph}{Examples}{25}{paragraph*.95}
-\contentsline {paragraph}{Examples}{26}{paragraph*.97}
+\contentsline {paragraph}{Examples}{27}{paragraph*.97}
 \contentsline {subsection}{\numberline {2.1.7}\texttt {eqdskreader} Module}{31}{subsection.2.1.7}
 \contentsline {paragraph}{Examples}{34}{paragraph*.161}
-\contentsline {paragraph}{Examples}{35}{paragraph*.163}
-\contentsline {paragraph}{Examples}{37}{paragraph*.166}
-\contentsline {paragraph}{Examples}{38}{paragraph*.168}
-\contentsline {paragraph}{Examples}{39}{paragraph*.170}
-\contentsline {paragraph}{Examples}{40}{paragraph*.173}
-\contentsline {subsection}{\numberline {2.1.8}\texttt {pfilereader} Module}{44}{subsection.2.1.8}
-\contentsline {subsection}{\numberline {2.1.9}\texttt {trispline} Module}{45}{subsection.2.1.9}
+\contentsline {paragraph}{Examples}{36}{paragraph*.163}
+\contentsline {paragraph}{Examples}{38}{paragraph*.166}
+\contentsline {paragraph}{Examples}{39}{paragraph*.168}
+\contentsline {paragraph}{Examples}{40}{paragraph*.170}
+\contentsline {paragraph}{Examples}{41}{paragraph*.173}
+\contentsline {subsection}{\numberline {2.1.8}\texttt {pfilereader} Module}{45}{subsection.2.1.8}
+\contentsline {subsection}{\numberline {2.1.9}\texttt {trispline} Module}{46}{subsection.2.1.9}
 \contentsline {chapter}{\numberline {3}Indices and tables}{47}{chapter.3}
 \contentsline {chapter}{Python Module Index}{49}{section*.235}
 \contentsline {chapter}{Index}{51}{section*.236}

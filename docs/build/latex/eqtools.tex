@@ -13,7 +13,7 @@
 \hypersetup{bookmarksdepth=3}
 
 \title{eqtools Documentation}
-\date{September 11, 2013}
+\date{September 12, 2013}
 \release{0.0}
 \author{Mark Chilenski, Ian Faust and John Walk}
 \newcommand{\sphinxlogo}{}
@@ -1430,7 +1430,7 @@ String describing this object.
 \index{rz2psi() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2psi}\pysiglinewithargsret{\bfcode{rz2psi}}{\emph{R}, \emph{Z}, \emph{t}, \emph{return\_t=False}, \emph{make\_grid=False}, \emph{length\_unit=1}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2psi}\pysiglinewithargsret{\bfcode{rz2psi}}{\emph{R}, \emph{Z}, \emph{t}, \emph{return\_t=False}, \emph{make\_grid=False}, \emph{each\_t=True}, \emph{length\_unit=1}}{}
 Converts the passed R, Z, t arrays to psi values.
 
 If tspline is False for this Equilibrium instance, uses
@@ -1491,6 +1491,16 @@ evaluated at this same value t). Otherwise, t must have the
 same shape as the resulting meshgrid, and each element in the
 returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
 
 \item {} 
 \textbf{length\_unit} --
@@ -1609,7 +1619,7 @@ Find psi values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
 Find psi values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{psi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2psi}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{psi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2psi}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 Find psi values on grid defined by 1D vector of radial positions R and
@@ -1624,7 +1634,7 @@ Find psi values on grid defined by 1D vector of radial positions R and
 \index{rz2psinorm() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2psinorm}\pysiglinewithargsret{\bfcode{rz2psinorm}}{\emph{R}, \emph{Z}, \emph{t}, \emph{return\_t=False}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{length\_unit=1}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.rz2psinorm}\pysiglinewithargsret{\bfcode{rz2psinorm}}{\emph{R}, \emph{Z}, \emph{t}, \emph{return\_t=False}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{each\_t=True}, \emph{length\_unit=1}}{}
 Calculates the normalized poloidal flux at the given (R, Z, t).
 
 Uses the definition:
@@ -1700,6 +1710,16 @@ evaluated at this same value t). Otherwise, t must have the
 same shape as the resulting meshgrid, and each element in the
 returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
 
 \item {} 
 \textbf{length\_unit} --
@@ -1817,7 +1837,7 @@ Find psinorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
 Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{psi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2psinorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{psi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2psinorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 Find psinorm values on grid defined by 1D vector of radial positions R
@@ -1910,6 +1930,16 @@ evaluated at this same value t). Otherwise, t must have the
 same shape as the resulting meshgrid, and each element in the
 returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
 
 \item {} 
 \textbf{rho} --
@@ -2047,7 +2077,7 @@ Find phinorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
 Find phinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{phi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2phinorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{phi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2phinorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 Find phinorm values on grid defined by 1D vector of radial positions R
@@ -2134,6 +2164,16 @@ evaluated at this same value t). Otherwise, t must have the
 same shape as the resulting meshgrid, and each element in the
 returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
 
 \item {} 
 \textbf{rho} --
@@ -2270,7 +2310,7 @@ Find volnorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
 Find volnorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{vol\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2volnorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{vol\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2volnorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 Find volnorm values on grid defined by 1D vector of radial positions R
@@ -2383,6 +2423,16 @@ evaluated at this same value t). Otherwise, t must have the
 same shape as the resulting meshgrid, and each element in the
 returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
 
 \item {} 
 \textbf{rho} (\emph{phinorm and volnorm only}) --
@@ -2523,7 +2573,7 @@ Find psinorm values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
 Find psinorm values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{psi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2rho}\PYG{p}{(}\PYG{l+s}{\PYGZsq{}}\PYG{l+s}{psinorm}\PYG{l+s}{\PYGZsq{}}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{psi\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2rho}\PYG{p}{(}\PYG{l+s}{\PYGZsq{}}\PYG{l+s}{psinorm}\PYG{l+s}{\PYGZsq{}}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 Find psinorm values on grid defined by 1D vector of radial positions R
@@ -2610,6 +2660,16 @@ evaluated at this same value t). Otherwise, t must have the
 same shape as the resulting meshgrid, and each element in the
 returned psi array will be at the corresponding time in the t
 array. Default is False (do not form meshgrid).
+
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
 
 \item {} 
 \textbf{rho} --
@@ -2748,7 +2808,7 @@ Find R\_mid values at (R, Z) points (0.6m, 0m) at times t={[}0.2s, 0.3s{]}:
 Find R\_mid values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{R\PYGZus{}mid\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2rmid}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{R\PYGZus{}mid\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{rz2rmid}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 Find R\_mid values on grid defined by 1D vector of radial positions R
@@ -2763,7 +2823,7 @@ and 1D vector of vertical positions Z at time t=0.2s:
 \index{psinorm2rmid() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{t}, \emph{return\_t=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{t}, \emph{each\_t=True}, \emph{return\_t=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
 Calculates the outboard R\_mid location corresponding to the passed psi\_norm (normalized poloidal flux) values.
 
 If tspline is False for this Equilibrium instance, uses
@@ -2790,6 +2850,16 @@ are scalars, t must have the same shape as psi\_norm.
 \end{itemize}
 
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
+
 \item {} 
 \textbf{return\_t} --
 Boolean.
@@ -2934,7 +3004,7 @@ Find R\_mid values at psi\_norm=0.5 at times t={[}0.2s, 0.3s{]}:
 Find R\_mid values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{R\PYGZus{}mid\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{psinorm2rmid}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{R\PYGZus{}mid\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{psinorm2rmid}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 \end{fulllineitems}
@@ -2942,7 +3012,7 @@ Find R\_mid values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
 \index{psinorm2volnorm() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2volnorm}\pysiglinewithargsret{\bfcode{psinorm2volnorm}}{\emph{psi\_norm}, \emph{t}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2volnorm}\pysiglinewithargsret{\bfcode{psinorm2volnorm}}{\emph{psi\_norm}, \emph{t}, \emph{each\_t=True}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
 Calculates the normalized volume corresponding to the passed psi\_norm (normalized poloidal flux) values.
 
 If tspline is False for this Equilibrium instance, uses
@@ -2969,6 +3039,16 @@ are scalars, t must have the same shape as psi\_norm.
 \end{itemize}
 
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
+
 \item {} 
 \textbf{return\_t} --
 Boolean.
@@ -3041,7 +3121,7 @@ Find volnorm values at psi\_norm=0.5 at times t={[}0.2s, 0.3s{]}:
 Find volnorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{volnorm\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{psinorm2volnorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{volnorm\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{psinorm2volnorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 \end{fulllineitems}
@@ -3049,7 +3129,7 @@ Find volnorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
 \index{psinorm2phinorm() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{t}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{t}, \emph{each\_t=True}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
 Calculates the normalized toroidal flux corresponding to the passed psi\_norm (normalized poloidal flux) values.
 
 If tspline is False for this Equilibrium instance, uses
@@ -3076,6 +3156,16 @@ are scalars, t must have the same shape as psi\_norm.
 \end{itemize}
 
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{each\_t} --
+Boolean.
+When True, the elements in \emph{R} and \emph{Z} (or the meshgrid thereof
+if \emph{make\_grid} is True) are evaluated at each value in \emph{t}. If
+True, \emph{t} must have only one dimension (or be a scalar). If
+False, \emph{t} must match the shape of \emph{R} and \emph{Z} (or their
+meshgrid if \emph{make\_grid} is True) or be a scalar. Default is True
+(evaluate ALL \emph{R}, \emph{Z} at each element in \emph{t}).
+
 \item {} 
 \textbf{return\_t} --
 Boolean.
@@ -3148,7 +3238,7 @@ Find phinorm values at psi\_norm=0.5 at times t={[}0.2s, 0.3s{]}:
 Find phinorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{phinorm\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{psinorm2phinorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{phinorm\PYGZus{}arr} \PYG{o}{=} \PYG{n}{Eq\PYGZus{}instance}\PYG{o}{.}\PYG{n}{psinorm2phinorm}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mf}{0.3}\PYG{p}{]}\PYG{p}{,} \PYG{n}{each\PYGZus{}t}\PYG{o}{=}\PYG{n+nb+bp}{False}\PYG{p}{)}
 \end{Verbatim}
 
 \end{fulllineitems}
