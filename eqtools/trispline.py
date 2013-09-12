@@ -102,10 +102,10 @@ class Spline():
             raise ValueError("dimension of z does not match that of f ")
 
         self._regular = regular
-        if not regular:
-            for i in x,y,z:
-                regular = regular or bool(_tricub.isregular(i))
-            self._regular = regular
+       # if not regular:
+       #     for i in x,y,z:
+       #         regular = regular or bool(_tricub.isregular(i))
+       #     self._regular = regular
 
     def ev(self, z1, y1, x1,test=False):
         x = scipy.atleast_1d(x1)
