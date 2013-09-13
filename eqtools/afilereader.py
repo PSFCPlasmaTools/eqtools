@@ -38,13 +38,15 @@ class AFileReader(object):
     A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is 
     read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
     EFIT variable names.
-    """
-    def __init__(self,afile):
-        """
-        initialize object, reading from file.
+    
+    initialize object, reading from file.
 
-        INPUTS:
-        afile: (str) path to a-file
+    Args:
+        afile: str
+            path to a-file
+    """
+    def __init__(self, afile):
+        """
         """
         self._afile = afile
 

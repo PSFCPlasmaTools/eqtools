@@ -41,26 +41,61 @@ except Exception as _e_MDS:
     _has_MDS = False
 
 class EFITTree(Equilibrium):
-    """
-    Inherits Equilibrium class. EFIT-specific data handling class for machines using
+    """Inherits Equilibrium class. EFIT-specific data handling class for machines using
     standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
     need overriding in a machine-specific implementation.
     Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
     Each EFIT variable or set of variables is recovered with a corresponding getter method.
     Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
     Additional data are pulled at the first request and stored for subsequent usage.
+    
+    Intializes EFITTree object. Pulls data from MDS tree for storage in
+    instance attributes. Core attributes are populated from the MDS tree
+    on initialization. Additional attributes are initialized as None,
+    filled on the first request to the object.
+
+    Args:
+        shot: int
+            shot number
+        tree: tree
+            MDSplus tree to open to fetch EFIT data.
+        root: str
+            Root path for EFIT data in MDSplus tree.
+    
+    Kwargs:
+        length_unit: String.
+            Sets the base unit used for any quantity whose
+            dimensions are length to any power. Valid options are:
+
+                ===========  ===========================================================================================
+                'm'          meters
+                'cm'         centimeters
+                'mm'         millimeters
+                'in'         inches
+                'ft'         feet
+                'yd'         yards
+                'smoot'      smoots
+                'cubit'      cubits
+                'hand'       hands
+                'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+                ===========  ===========================================================================================
+
+            Default is 'm' (all units taken and returned in meters).
+        tspline: Boolean.
+            Sets whether or not interpolation in time is
+            performed using a tricubic spline or nearest-neighbor
+            interpolation. Tricubic spline interpolation requires at least
+            four complete equilibria at different times. It is also assumed
+            that they are functionally correlated, and that parameters do
+            not vary out of their boundaries (derivative = 0 boundary
+            condition). Default is False (use nearest neighbor interpolation).
+        monotonic: Boolean.
+            Sets whether or not the "monotonic" form of time window
+            finding is used. If True, the timebase must be monotonically
+            increasing. Default is False (use slower, safer method).
     """
     def __init__(self, shot, tree, root, length_unit='m', tspline=False, monotonic=False):
         """
-        Intializes EFITTree object. Pulls data from MDS tree for storage in
-        instance attributes. Core attributes are populated from the MDS tree
-        on initialization. Additional attributes are initialized as None,
-        filled on the first request to the object.
-
-        INPUTS:
-        shot:   shot index
-        tree:   MDSplus tree to open to fetch EFIT data.
-        root:   Root path for EFIT data in MDSplus tree.
         """
 
         if not _has_MDS:
@@ -159,8 +194,7 @@ class EFITTree(Equilibrium):
         self.getRmidPsi()
         
     def __str__(self):
-        """
-        string formatting for EFITTree class.
+        """string formatting for EFITTree class.
         """
         try:
             nt = len(self._time)
@@ -175,15 +209,18 @@ class EFITTree(Equilibrium):
             return 'tree has failed data load.'
 
     def getInfo(self):
-        """
-        returns namedtuple of shot information
-        outputs:
-        namedtuple containing
-            shot:   C-Mod shot index (long)
-            tree:   EFIT tree (string)
-            nr:     size of R-axis for spatial grid
-            nz:     size of Z-axis for spatial grid
-            nt:     size of timebase for flux grid
+        """returns namedtuple of shot information
+        
+        Returns:
+            namedtuple containing
+                
+                =====   ===============================
+                shot    C-Mod shot index (long)
+                tree    EFIT tree (string)
+                nr      size of R-axis for spatial grid
+                nz      size of Z-axis for spatial grid
+                nt      size of timebase for flux grid
+                =====   ===============================
         """
         try:
             nt = len(self._time)
@@ -197,8 +234,7 @@ class EFITTree(Equilibrium):
         return data(shot=self._shot,tree=self._tree,nr=nr,nz=nz,nt=nt)
 
     def getTimeBase(self):
-        """
-        returns EFIT time base vector
+        """returns EFIT time base vector
         """
         if self._time is None:
             try:
@@ -210,8 +246,7 @@ class EFITTree(Equilibrium):
         return self._time.copy()
 
     def getFluxGrid(self):
-        """
-        returns EFIT flux grid, [t,z,r]
+        """returns EFIT flux grid, [t,z,r]
         """
         if self._psiRZ is None:
             try:
@@ -227,8 +262,7 @@ class EFITTree(Equilibrium):
         return self._psiRZ.copy()
 
     def getRGrid(self, length_unit=1):
-        """
-        returns EFIT R-axis [r]
+        """returns EFIT R-axis [r]
         """
         if self._rGrid is None:
             raise ValueError('data retrieval failed.')
@@ -239,8 +273,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rGrid.copy()
 
     def getZGrid(self, length_unit=1):
-        """
-        returns EFIT Z-axis [z]
+        """returns EFIT Z-axis [z]
         """
         if self._zGrid is None:
             raise ValueError('data retrieval failed.')
@@ -251,8 +284,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
-        """
-        returns psi on magnetic axis [t]
+        """returns psi on magnetic axis [t]
         """
         if self._psiAxis is None:
             try:
@@ -264,8 +296,7 @@ class EFITTree(Equilibrium):
         return self._psiAxis.copy()
 
     def getFluxLCFS(self):
-        """
-        returns psi at separatrix [t]
+        """returns psi at separatrix [t]
         """
         if self._psiLCFS is None:
             try:
@@ -277,8 +308,7 @@ class EFITTree(Equilibrium):
         return self._psiLCFS.copy()
 
     def getFluxVol(self, length_unit=3):
-        """
-        returns volume within flux surface [psi,t]
+        """returns volume within flux surface [psi,t]
         """
         if self._fluxVol is None:
             try:
@@ -296,8 +326,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._fluxVol.copy()
 
     def getVolLCFS(self, length_unit=3):
-        """
-        returns volume within LCFS [t]
+        """returns volume within LCFS [t]
         """
         if self._volLCFS is None:
             try:
@@ -311,8 +340,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._volLCFS.copy()
 
     def getRmidPsi(self, length_unit=1):
-        """
-        returns maximum major radius of each flux surface [t,psi]
+        """returns maximum major radius of each flux surface [t,psi]
         """
         if self._RmidPsi is None:
             try:
@@ -329,8 +357,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._RmidPsi.copy()
 
     def getRLCFS(self, length_unit=1):
-        """
-        returns R-values of LCFS position [t,n]
+        """returns R-values of LCFS position [t,n]
         """
         if self._RLCFS is None:
             try:
@@ -343,8 +370,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._RLCFS.copy()
 
     def getZLCFS(self, length_unit=1):
-        """
-        returns Z-values of LCFS position [t,n]
+        """returns Z-values of LCFS position [t,n]
         """
         if self._ZLCFS is None:
             try:
@@ -357,8 +383,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._ZLCFS.copy()
 
     def getFluxPres(self):
-        """
-        returns pressure at flux surface [psi,t]
+        """returns pressure at flux surface [psi,t]
         """
         if self._fluxPres is None:
             try:
@@ -370,8 +395,7 @@ class EFITTree(Equilibrium):
         return self._fluxPres.copy()
 
     def getElongation(self):
-        """
-        returns LCFS elongation [t]
+        """returns LCFS elongation [t]
         """
         if self._kappa is None:
             try:
@@ -383,8 +407,7 @@ class EFITTree(Equilibrium):
         return self._kappa.copy()
 
     def getUpperTriangularity(self):
-        """
-        returns LCFS upper triangularity [t]
+        """returns LCFS upper triangularity [t]
         """
         if self._dupper is None:
             try:
@@ -396,8 +419,7 @@ class EFITTree(Equilibrium):
         return self._dupper.copy()
 
     def getLowerTriangularity(self):
-        """
-        returns LCFS lower triangularity [t]
+        """returns LCFS lower triangularity [t]
         """
         if self._dlower is None:
             try:
@@ -409,9 +431,10 @@ class EFITTree(Equilibrium):
         return self._dlower.copy()
 
     def getShaping(self):
-        """
-        pulls LCFS elongation and upper/lower triangularity
-        returns namedtuple containing {kappa, delta_u, delta_l}
+        """pulls LCFS elongation and upper/lower triangularity
+        
+        Returns:
+            namedtuple containing {kappa, delta_u, delta_l}
         """
         try:
             kap = self.getElongation()
@@ -423,8 +446,7 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getMagR(self, length_unit=1):
-        """
-        returns magnetic-axis major radius [t]
+        """returns magnetic-axis major radius [t]
         """
         if self._rmag is None:
             try:
@@ -437,8 +459,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rmag.copy()
 
     def getMagZ(self, length_unit=1):
-        """
-        returns magnetic-axis Z [t]
+        """returns magnetic-axis Z [t]
         """
         if self._zmag is None:
             try:
@@ -451,8 +472,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._zmag.copy()
 
     def getAreaLCFS(self, length_unit=2):
-        """
-        returns LCFS cross-sectional area [t]
+        """returns LCFS cross-sectional area [t]
         """
         if self._areaLCFS is None:
             try:
@@ -466,8 +486,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._areaLCFS.copy()
 
     def getAOut(self, length_unit=1):
-        """
-        returns outboard-midplane minor radius at LCFS [t]
+        """returns outboard-midplane minor radius at LCFS [t]
         """
         if self._aLCFS is None:
             try:
@@ -480,8 +499,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._aLCFS.copy()
 
     def getRmidOut(self, length_unit=1):
-        """
-        returns outboard-midplane major radius [t]
+        """returns outboard-midplane major radius [t]
         """
         if self._RmidLCFS is None:
             try:
@@ -499,9 +517,10 @@ class EFITTree(Equilibrium):
         return unit_factor * self._RmidLCFS.copy()
 
     def getGeometry(self, length_unit=None):
-        """
-        pulls dimensional geometry parameters
-        returns namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}
+        """pulls dimensional geometry parameters
+        
+        Returns:
+            namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}
         """
         try:
             Rmag = self.getMagR(length_unit=(length_unit if length_unit is not None else 1))
@@ -515,8 +534,7 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getQProfile(self):
-        """
-        returns safety factor q [psi,t]
+        """returns safety factor q [psi,t]
         """
         if self._qpsi is None:
             try:
@@ -528,8 +546,7 @@ class EFITTree(Equilibrium):
         return self._qpsi.copy()
 
     def getQ0(self):
-        """
-        returns q on magnetic axis [t]
+        """returns q on magnetic axis [t]
         """
         if self._q0 is None:
             try:
@@ -541,8 +558,7 @@ class EFITTree(Equilibrium):
         return self._q0.copy()
 
     def getQ95(self):
-        """
-        returns q at 95% flux surface [t]
+        """returns q at 95% flux surface [t]
         """
         if self._q95 is None:
             try:
@@ -554,8 +570,7 @@ class EFITTree(Equilibrium):
         return self._q95.copy()
 
     def getQLCFS(self):
-        """
-        returns q on LCFS [t]
+        """returns q on LCFS [t]
         """
         if self._qLCFS is None:
             try:
@@ -567,8 +582,7 @@ class EFITTree(Equilibrium):
         return self._qLCFS.copy()
 
     def getQ1Surf(self, length_unit=1):
-        """
-        returns outboard-midplane minor radius of q=1 surface [t]
+        """returns outboard-midplane minor radius of q=1 surface [t]
         """
         if self._rq1 is None:
             try:
@@ -581,8 +595,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rq1.copy()
 
     def getQ2Surf(self, length_unit=1):
-        """
-        returns outboard-midplane minor radius of q=2 surface [t]
+        """returns outboard-midplane minor radius of q=2 surface [t]
         """
         if self._rq2 is None:
             try:
@@ -595,8 +608,7 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rq2.copy()
 
     def getQ3Surf(self, length_unit=1):
-        """
-        returns outboard-midplane minor radius of q=3 surface [t]
+        """returns outboard-midplane minor radius of q=3 surface [t]
         """
         if self._rq3 is None:
             try:
@@ -609,9 +621,10 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rq3.copy()
 
     def getQs(self, length_unit=1):
-        """
-        pulls q values
-        returns namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}
+        """pulls q values
+        
+        Returns:
+            namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}
         """
         try:
             q0 = self.getQ0()
@@ -626,8 +639,7 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getBtVac(self):
-        """
-        returns on-axis vacuum toroidal field [t]
+        """returns on-axis vacuum toroidal field [t]
         """
         if self._btaxv is None:
             try:
@@ -639,8 +651,7 @@ class EFITTree(Equilibrium):
         return self._btaxv.copy()
 
     def getBtPla(self):
-        """
-        returns on-axis plasma toroidal field [t]
+        """returns on-axis plasma toroidal field [t]
         """
         if self._btaxp is None:
             try:
@@ -652,8 +663,7 @@ class EFITTree(Equilibrium):
         return self._btaxp.copy()
 
     def getBpAvg(self):
-        """
-        returns average poloidal field [t]
+        """returns average poloidal field [t]
         """
         if self._bpolav is None:
             try:
@@ -665,9 +675,10 @@ class EFITTree(Equilibrium):
         return self._bpolav.copy()
 
     def getFields(self):
-        """
-        pulls vacuum and plasma toroidal field, avg poloidal field
-        returns namedtuple containing {btaxv,btaxp,bpolav}
+        """pulls vacuum and plasma toroidal field, avg poloidal field
+        
+        Returns:
+            namedtuple containing {btaxv,btaxp,bpolav}
         """
         try:
             btaxv = self.getBtVac()
@@ -679,8 +690,7 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getIpCalc(self):
-        """
-        returns EFIT-calculated plasma current [t]
+        """returns EFIT-calculated plasma current [t]
         """
         if self._IpCalc is None:
             try:
@@ -692,8 +702,7 @@ class EFITTree(Equilibrium):
         return self._IpCalc.copy()
 
     def getIpMeas(self):
-        """
-        returns magnetics-measured plasma current [t]
+        """returns magnetics-measured plasma current [t]
         """
         if self._IpMeas is None:
             try:
@@ -705,8 +714,7 @@ class EFITTree(Equilibrium):
         return self._IpMeas.copy()
 
     def getJp(self):
-        """
-        returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]
+        """returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]
         """
         if self._Jp is None:
             try:
@@ -720,8 +728,7 @@ class EFITTree(Equilibrium):
         return self._Jp.copy()
 
     def getBetaT(self):
-        """
-        returns EFIT-calculated toroidal beta [t]
+        """returns EFIT-calculated toroidal beta [t]
         """
         if self._betat is None:
             try:
@@ -733,8 +740,7 @@ class EFITTree(Equilibrium):
         return self._betat.copy()
 
     def getBetaP(self):
-        """
-        returns EFIT-calculated poloidal beta [t]
+        """returns EFIT-calculated poloidal beta [t]
         """
         if self._betap is None:
             try:
@@ -746,8 +752,7 @@ class EFITTree(Equilibrium):
         return self._betap.copy()
 
     def getLi(self):
-        """
-        returns EFIT-calculated internal inductance [t]
+        """returns EFIT-calculated internal inductance [t]
         """
         if self._Li is None:
             try:
@@ -759,9 +764,10 @@ class EFITTree(Equilibrium):
         return self._Li.copy()
 
     def getBetas(self):
-        """
-        pulls calculated betap, betat, internal inductance
-        returns namedtuple containing {betat,betap,Li}
+        """pulls calculated betap, betat, internal inductance
+        
+        Returns:
+            namedtuple containing {betat,betap,Li}
         """
         try:
             betat = self.getBetaT()
@@ -773,8 +779,7 @@ class EFITTree(Equilibrium):
                 raise ValueError('data retrieval failed.')
 
     def getDiamagFlux(self):
-        """
-        returns measured diamagnetic-loop flux [t]
+        """returns measured diamagnetic-loop flux [t]
         """
         if self._diamag is None:
             try:
@@ -786,8 +791,7 @@ class EFITTree(Equilibrium):
         return self._diamag.copy()
 
     def getDiamagBetaT(self):
-        """
-        returns diamagnetic-loop toroidal beta [t]
+        """returns diamagnetic-loop toroidal beta [t]
         """
         if self._betatd is None:
             try:
@@ -799,8 +803,7 @@ class EFITTree(Equilibrium):
         return self._betatd.copy()
 
     def getDiamagBetaP(self):
-        """
-        returns diamagnetic-loop avg poloidal beta [t]
+        """returns diamagnetic-loop avg poloidal beta [t]
         """
         if self._betapd is None:
             try:
@@ -812,8 +815,7 @@ class EFITTree(Equilibrium):
         return self._betapd.copy()
 
     def getDiamagTauE(self):
-        """
-        returns diamagnetic-loop energy confinement time [t]
+        """returns diamagnetic-loop energy confinement time [t]
         """
         if self._tauDiamag is None:
             try:
@@ -825,8 +827,7 @@ class EFITTree(Equilibrium):
         return self._tauDiamag.copy()
 
     def getDiamagWp(self):
-        """
-        returns diamagnetic-loop plasma stored energy [t]
+        """returns diamagnetic-loop plasma stored energy [t]
         """
         if self._WDiamag is None:
             try:
@@ -838,9 +839,10 @@ class EFITTree(Equilibrium):
         return self._WDiamag.copy()
 
     def getDiamag(self):
-        """
-        pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
-        returns namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}
+        """pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
+        
+        Returns:
+            namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}
         """
         try:
             dFlux = self.getDiamagFlux()
@@ -854,8 +856,7 @@ class EFITTree(Equilibrium):
                 raise ValueError('data retrieval failed.')
 
     def getWMHD(self):
-        """
-        returns EFIT-calculated MHD stored energy [t]
+        """returns EFIT-calculated MHD stored energy [t]
         """
         if self._WMHD is None:
             try:
@@ -867,8 +868,7 @@ class EFITTree(Equilibrium):
         return self._WMHD.copy()
 
     def getTauMHD(self):
-        """
-        returns EFIT-calculated MHD energy confinement time [t]
+        """returns EFIT-calculated MHD energy confinement time [t]
         """
         if self._tauMHD is None:
             try:
@@ -880,8 +880,7 @@ class EFITTree(Equilibrium):
         return self._tauMHD.copy()
 
     def getPinj(self):
-        """
-        returns EFIT-calculated injected power [t]
+        """returns EFIT-calculated injected power [t]
         """
         if self._Pinj is None:
             try:
@@ -893,8 +892,7 @@ class EFITTree(Equilibrium):
         return self._Pinj.copy()
 
     def getWbdot(self):
-        """
-        returns EFIT-calculated d/dt of magnetic stored energy [t]
+        """returns EFIT-calculated d/dt of magnetic stored energy [t]
         """
         if self._Wbdot is None:
             try:
@@ -906,8 +904,7 @@ class EFITTree(Equilibrium):
         return self._Wbdot.copy()
 
     def getWpdot(self):
-        """
-        returns EFIT-calculated d/dt of plasma stored energy [t]
+        """returns EFIT-calculated d/dt of plasma stored energy [t]
         """
         if self._Wpdot is None:
             try:
@@ -919,9 +916,10 @@ class EFITTree(Equilibrium):
         return self._Wpdot.copy()
 
     def getEnergy(self):
-        """
-        pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy
-        returns namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}
+        """pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy
+        
+        Returns:
+            namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}
         """
         try:
             WMHD = self.getWMHD()
@@ -935,16 +933,20 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getCurrentSign(self):
-        """Returns the sign of the current, based on the check in Steve Wolfe's
-        IDL implementation efit_rz2psi.pro."""
+        """Returns the sign of the current, based on the check in Steve Wolfe's IDL implementation efit_rz2psi.pro."""
         if self._currentSign is None:
             self._currentSign = 1 if scipy.mean(self.getIpMeas()) > 1e5 else -1
         return self._currentSign
 
     def getParam(self, path):
-        """
-        backup function - path to parameter as input, returns desired variable
-        acts as wrapper for MDS call
+        """backup function - path to parameter as input, returns desired variable acts as wrapper for MDS call
+        
+        Args:
+            path: str
+                The path to the MDSplus node you wish to pull in.
+        
+        Returns:
+            The requested data.
         """
         if self._root in path:
             EFITpath = path

@@ -9,10 +9,10 @@ eqtools Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`core` Module
-------------------
+:mod:`CModEFIT` Module
+----------------------
 
-.. automodule:: eqtools.core
+.. automodule:: eqtools.CModEFIT
     :members:
     :undoc-members:
     :show-inheritance:
@@ -25,18 +25,10 @@ eqtools Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`CModEFIT` Module
-----------------------
+:mod:`FromArrays` Module
+------------------------
 
-.. automodule:: eqtools.CModEFIT
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`eqdskreader` Module
--------------------------
-
-.. automodule:: eqtools.eqdskreader
+.. automodule:: eqtools.FromArrays
     :members:
     :undoc-members:
     :show-inheritance:
@@ -49,18 +41,26 @@ eqtools Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`pfilereader` Module
--------------------------
+:mod:`core` Module
+------------------
 
-.. automodule:: eqtools.pfilereader
+.. automodule:: eqtools.core
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`FromArrays` Module
-------------------------
+:mod:`eqdskreader` Module
+-------------------------
 
-.. automodule:: eqtools.FromArrays
+.. automodule:: eqtools.eqdskreader
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`pfilereader` Module
+-------------------------
+
+.. automodule:: eqtools.pfilereader
     :members:
     :undoc-members:
     :show-inheritance:

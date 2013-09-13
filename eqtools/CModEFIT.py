@@ -50,49 +50,53 @@ class CModEFITTree(EFITTree):
     variables is recovered with a corresponding getter method. Essential data
     for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
     data are pulled at the first request and stored for subsequent usage.
+    
+    Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
+    in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+    Additional attributes are initialized as None, filled on the first request to the object.
+
+    Args:
+        shot: (long) int
+            C-Mod shot index (long)
+    
+    Kwargs:
+        tree: str
+            Optional input for EFIT tree, defaults to 'ANALYSIS'
+            (i.e., EFIT data are under \\analysis::top.efit.results).
+            For any string TREE (such as 'EFIT20') other than 'ANALYSIS',
+            data are taken from \\TREE::top.results.
+        length_unit: str
+            Sets the base unit used for any quantity whose
+            dimensions are length to any power. Valid options are:
+                
+                ===========  ===========================================================================================
+                'm'          meters
+                'cm'         centimeters
+                'mm'         millimeters
+                'in'         inches
+                'ft'         feet
+                'yd'         yards
+                'smoot'      smoots
+                'cubit'      cubits
+                'hand'       hands
+                'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+                ===========  ===========================================================================================
+                
+            Default is 'm' (all units taken and returned in meters).
+        tspline: Boolean
+            Sets whether or not interpolation in time is
+            performed using a tricubic spline or nearest-neighbor
+            interpolation. Tricubic spline interpolation requires at least
+            four complete equilibria at different times. It is also assumed
+            that they are functionally correlated, and that parameters do
+            not vary out of their boundaries (derivative = 0 boundary
+            condition). Default is False (use nearest neighbor interpolation).
+        monotonic: Boolean
+            Sets whether or not the "monotonic" form of time
+            window finding is used. If True, the timebase must be monotonically
+            increasing. Default is False (use slower, safer method).
     """
-
     def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False, monotonic=False):
-        """Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
-        in instance attributes.  Core attributes are populated from the MDS tree on initialization.
-        Additional attributes are initialized as None, filled on the first request to the object.
-
-        Args:
-            shot: (long) int. C-Mod shot index (long)
-        
-        Kwargs:
-            tree: str. optional input for EFIT tree, defaults to 'ANALYSIS'
-                (i.e., EFIT data are under \\analysis::top.efit.results).
-                For any string TREE (such as 'EFIT20') other than 'ANALYSIS',
-                data are taken from \\TREE::top.results.
-            length_unit: str. Sets the base unit used for any quantity whose
-                dimensions are length to any power. Valid options are:
-                    
-                    ===========  ===========================================================================================
-                    'm'          meters
-                    'cm'         centimeters
-                    'mm'         millimeters
-                    'in'         inches
-                    'ft'         feet
-                    'yd'         yards
-                    'smoot'      smoots
-                    'cubit'      cubits
-                    'hand'       hands
-                    'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
-                    ===========  ===========================================================================================
-                    
-                Default is 'm' (all units taken and returned in meters).
-            tspline: Boolean. Sets whether or not interpolation in time is
-                performed using a tricubic spline or nearest-neighbor
-                interpolation. Tricubic spline interpolation requires at least
-                four complete equilibria at different times. It is also assumed
-                that they are functionally correlated, and that parameters do
-                not vary out of their boundaries (derivative = 0 boundary
-                condition). Default is False (use nearest neighbor interpolation).
-            monotonic: Boolean. Sets whether or not the "monotonic" form of time
-                window finding is used. If True, the timebase must be monotonically
-                increasing. Default is False (use slower, safer method).
-        """
         if tree.upper() == 'ANALYSIS':
             root = '\\analysis::top.efit.results.'
         else:
@@ -105,7 +109,8 @@ class CModEFITTree(EFITTree):
         vector format for use in other plotting routines
 
         Args:
-            shot: (long) int. C-Mod shot index (used for tree access)
+            shot: (long) int
+                C-Mod shot index (used for tree access)
 
         Returns:
             (x, y): The coordinates of the machine cross-section.
@@ -146,5 +151,6 @@ class CModEFITTree(EFITTree):
 
 class CModEFITTreeProp(CModEFITTree, PropertyAccessMixin):
     """CModEFITTree with the PropertyAccessMixin added to enable property-style
-    access. This is good for interactive use, but may drag the performance down."""
+    access. This is good for interactive use, but may drag the performance down.
+    """
     pass
