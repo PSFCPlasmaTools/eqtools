@@ -3081,8 +3081,6 @@ class Equilibrium(object):
         title = fluxPlot.suptitle('')
 
         def updateTime(val):
-            start = time.time()
-
             psi.clear()
             t_idx = int(timeSlider.val)
 
@@ -3097,9 +3095,6 @@ class Equilibrium(object):
             fillcont = psi.contourf(rGrid,zGrid,psiRZ[t_idx],50)
             cont = psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid')
             fluxPlot.canvas.draw()
-
-            end = time.time()
-            print 'elapsed time: '+str(end-start)
 
         timeSlider = mplw.Slider(timeSliderSub,'t index',0,len(t)-1,valinit=0,valfmt="%d")
         timeSlider.on_changed(updateTime)
