@@ -1814,10 +1814,8 @@ class EqdskReader(Equilibrium):
         
     def getMachineCrossSection(self):
         """Method to pull machine cross-section from data storage, convert to standard format for plotting routine.
-        
-        Not implemented for eqdsk class.
         """
-        raise NotImplementedError('no machine cross section stored in g-files.')
+        return (self._xlim,self._ylim)
         
     def plotFlux(self):
         """streamlined plotting of flux contours directly from psi grid
@@ -1831,6 +1829,8 @@ class EqdskReader(Equilibrium):
 
             RLCFS = self.getRLCFS()
             ZLCFS = self.getZLCFS()
+
+            xlim,ylim = self.getMachineCrossSection()
         except ValueError:
             raise AttributeError('cannot plot EFIT flux map.')
 
@@ -1841,4 +1841,5 @@ class EqdskReader(Equilibrium):
         plt.contourf(rGrid,zGrid,psiRZ[0],50)
         plt.contour(rGrid,zGrid,psiRZ[0],50,colors='k',linestyles='solid')
         plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
+        plt.plot(xlim,ylim,'k',linewidth=2)
         plt.show()
