@@ -210,6 +210,49 @@ _length_conversion = {'m': {'m': 1.0,
                                'hand': 1.0}}
 
 
+def inPolygon(polyx,polyy,pointx,pointy):
+    """Function calculating whether a given point is within a 2D polygon.
+
+    Given an array of X,Y coordinates describing a 2D polygon, checks whether
+    a point given by x,y coordinates lies within the polygon.  Operates via a
+    ray-casting approach - the function projects a semi-infinite ray parallel to the
+    positive horizontal axis, and counts how many edges of the polygon this ray intersects.
+    For a simply-connected polygon, this determines whether the point is inside (even number
+    of crossings) or outside (odd number of crossings) the polygon, by the Jordan Curve Theorem.
+
+    Args:
+        polyx: Array-like.
+            Array of x-coordinates of the vertices of the polygon.
+        polyy: Array-like.
+            Array of y-coordinates of the vertices of the polygon.
+        pointx: Int or float.
+            x-coordinate of test point.
+        pointy: Int or float.
+            y-coordinate of test point.
+
+    Returns:
+        result: Boolean.
+            True/False result for whether the point is contained within the polygon.
+    """
+    #generator function for "lines" - pairs of (x,y) coords describing each edge of the polygon.
+    def lines():
+        p0x = polyx[-1]
+        p0y = polyy[-1]
+        p0 = (p0x,p0y)
+        for i,x in enumerate(polyx):
+            y = polyy[i]
+            p1 = (x,y)
+            yield p0,p1
+            p0 = p1
+
+    result = False
+    for p0,p1 in lines():
+        if ((p0[1] > y) != (p1[1] > y)) and (x < ((p1[0]-p0[0])*(y-p0[1])/(p1[1]-p0[1]) + p0[0])):
+                result = not result
+
+    return result
+
+
 class Equilibrium(object):
     """Abstract class of data handling object for magnetic reconstruction outputs.
     
@@ -3032,11 +3075,20 @@ class Equilibrium(object):
         #acts as wrapper for EFIT tree access from within object
         raise NotImplementedError()
 
+    def getLimiter(self):
+        """
+        Abstract method.  See child classes for implementation.
+
+        Returns (R,Z) coordinates of vacuum wall cross-section for plotting/masking routines.
+        """
+        raise NotImplementedError()
+
     def getMachineCrossSection(self):
         """
         Abstract method.  See child classes for implementation.
         
         Returns (R,Z) coordinates of machine wall cross-section for plotting routines.
+        Returns a more detailed cross-section than getLimiter().
         """
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
 
