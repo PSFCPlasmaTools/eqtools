@@ -36,6 +36,8 @@ from .afilereader import AFileReader
 
 try:
     import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    import matplotlib.path as mpath
     _has_plt = True
 except Exception:
     _has_plt = False
@@ -1881,30 +1883,49 @@ class EqdskReader(Equilibrium):
             RLCFS = self.getRLCFS()[:,0]
             ZLCFS = self.getZLCFS()[:,0]
 
-            xlim,ylim = self.getMachineCrossSection()
+            Rlim,Zlim = self.getMachineCrossSection()
         except ValueError:
-            raise AttributeError('cannot plot EFIT flux map.')
-            
-        # generate masking to machine wall
-        nR = len(rGrid)
-        nZ = len(zGrid)
-        mask = scipy.array([[False for j in range(nZ)] for i in range(nR)])
-        for i in range(nZ):
-            for j in range(nR):
-                x = rGrid[j]
-                y = zGrid[i]
-                mask[i,j] = not inPolygon(xlim,ylim,x,y)
-        psiRZ[mask] = scipy.nan
+            raise AttributeError('cannot plot EFIT flux map.')       
 
-        plt.figure(figsize=(6,11))
-        plt.xlabel('$R$ (m)')
-        plt.ylabel('$Z$ (m)')
-        plt.title(self._gfilename)
+        fig = plt.figure(figsize=(6,11))
+        ax = fig.add_subplot(111)
+        ax.set_aspect('equal')
+        ax.set_xlabel('$R$ (m)')
+        ax.set_ylabel('$Z$ (m)')
+        ax.set_title(self._gfilename)
+
         if fill:
-            plt.contourf(rGrid,zGrid,psiRZ,50)
-            plt.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid')
+            ax.contourf(rGrid,zGrid,psiRZ,50)
+            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid')
         else:
-            plt.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2)
-        plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
-        plt.plot(xlim,ylim,'k',linewidth=3)
-        plt.show()
+            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2)
+        ax.plot(RLCFS,ZLCFS,'r',linewidth=3)
+
+        # generate graphical mask for limiter wall
+        xlim = ax.get_xlim()
+        ylim = ax.get_ylim()
+        bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
+        poly_verts = [(Rlim[i],Zlim[i]) for i in range(len(Rlim))]
+        
+        bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
+        poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
+        
+        path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
+        patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
+        patch = ax.add_patch(patch)
+        
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+
+        ax.plot(Rlim,Zlim,'k',linewidth=3)
+        plt.show(fig)
+
+
+
+
+
+
+
+
+
+
