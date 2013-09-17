@@ -45,7 +45,6 @@ try:
     import matplotlib.pyplot as plt
     import matplotlib.widgets as mplw
     import matplotlib.gridspec as mplgs
-    import time
 except Exception:
     warnings.warn("WARNING: matplotlib modules could not be loaded -- plotting "
                   "will not be available.",
@@ -247,7 +246,7 @@ def inPolygon(polyx,polyy,pointx,pointy):
 
     result = False
     for p0,p1 in lines():
-        if ((p0[1] > y) != (p1[1] > y)) and (x < ((p1[0]-p0[0])*(y-p0[1])/(p1[1]-p0[1]) + p0[0])):
+        if ((p0[1] > pointy) != (p1[1] > pointy)) and (pointx < ((p1[0]-p0[0])*(pointy-p0[1])/(p1[1]-p0[1]) + p0[0])):
                 result = not result
 
     return result
@@ -299,13 +298,17 @@ class Equilibrium(object):
             Sets whether or not the "monotonic" form of time window
             finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
+        verbose: Boolean.
+            Allows or blocks console readout during operation.  Defaults to True,
+            displaying useful information for the user.  Set to False for quiet
+            usage or to avoid console clutter for multiple instances.
     
     Raises:
         ValueError: If length_unit is not a valid unit specifier.
         ValueError: If tspline is True by module trispline did not load
             successfully.
     """
-    def __init__(self, length_unit='m', tspline=False, monotonic=False):
+    def __init__(self, length_unit='m', tspline=False, monotonic=False,verbose=True):
         if length_unit != 'default' and not (length_unit in _length_conversion):
             raise ValueError("Unit '%s' not a valid unit specifier!" % length_unit)
         else:
@@ -313,6 +316,7 @@ class Equilibrium(object):
         
         self._tricubic = bool(tspline)
         self._monotonic = bool(monotonic)  # assumes timebase is monotonically increasing
+        self._verbose = bool(verbose)
         
         if self._tricubic:
             if not _has_trispline:
@@ -2685,6 +2689,18 @@ class Equilibrium(object):
         Returns Z-positions (n points) mapping LCFS [t,n]
         """
         raise NotImplementedError()
+        
+    def remapLCFS(self):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Overwrites stored R,Z positions of LCFS with explicitly calculated psinorm=1
+        surface.  This surface is then masked using core.inPolygon() to only draw within
+        vacuum vessel, the end result replacing RLCFS, ZLCFS with an R,Z array showing
+        the divertor legs of the flux surface in addition to the core-enclosing closed
+        flux surface.
+        """
+        raise NotImplementedError()
 
     def getFluxVol(self):
         """
@@ -3075,7 +3091,7 @@ class Equilibrium(object):
         #acts as wrapper for EFIT tree access from within object
         raise NotImplementedError()
 
-    def getLimiter(self):
+    def getMachineCrossSection(self):
         """
         Abstract method.  See child classes for implementation.
 
@@ -3083,17 +3099,25 @@ class Equilibrium(object):
         """
         raise NotImplementedError()
 
-    def getMachineCrossSection(self):
+    def getMachineCrossSectionFull(self):
         """
         Abstract method.  See child classes for implementation.
         
         Returns (R,Z) coordinates of machine wall cross-section for plotting routines.
-        Returns a more detailed cross-section than getLimiter().
+        Returns a more detailed cross-section than getLimiter(), generally a vector map
+        displaying non-critical cross-section information.  If this is unavailable, this
+        should point to self.getMachineCrossSection(), which pulls the limiter outline
+        stored by default in data files e.g. g-eqdsk files.
         """
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
 
-    def plotFlux(self):
+    def plotFlux(self,fill=False):
         """Plots flux contours directly from psi grid.
+        
+        Kwargs:
+            fill: Boolean.
+                Set True to plot filled contours.  Set False (default) to plot white-background
+                color contours.
         """
         
         plt.ion()
@@ -3106,14 +3130,20 @@ class Equilibrium(object):
 
             RLCFS = self.getRLCFS(length_unit='m')
             ZLCFS = self.getZLCFS(length_unit='m')
-            try:
-                x, y = self.getMachineCrossSection()
-            except NotImplementedError:
-                print('No machine cross-section implemented!')
-                x = []
-                y = []
         except ValueError:
             raise AttributeError('cannot plot EFIT flux map.')
+        try:
+            limx, limy = self.getMachineCrossSection()
+        except NotImplementedError:
+            if self._verbose:
+                print('No machine cross-section implemented!')
+            limx = None
+            limy = None
+        try:
+            macx, macy = self.getMachineCrossSectionFull()
+        except:
+            macx = None
+            macy = None
 
         #event handler for arrow key events in plot windows.  Pass slider object
         #to update as masked argument using lambda function
@@ -3131,6 +3161,8 @@ class Equilibrium(object):
         psi.set_aspect('equal')
         timeSliderSub = fluxPlot.add_subplot(gs[1,0])
         title = fluxPlot.suptitle('')
+        
+        # code here to generate mask for psiRZ?
 
         def updateTime(val):
             psi.clear()
@@ -3139,13 +3171,19 @@ class Equilibrium(object):
             title.set_text('EFIT Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
             psi.set_xlabel('$R$ [m]')
             psi.set_ylabel('$Z$ [m]')
-            machine = psi.plot(x,y,'k')
+            if macx is not None:
+                psi.plot(macx,macy,'k',linewidth=3)
+            elif limx is not None:
+                psi.plot(limx,limy,'k',linewidth=3)
             mask = scipy.where(RLCFS[:,t_idx] > 0.0)
             RLCFSframe = RLCFS[mask[0],t_idx]
             ZLCFSframe = ZLCFS[mask[0],t_idx]
-            LCFS = psi.plot(RLCFSframe,ZLCFSframe,'r',linewidth=3)
-            fillcont = psi.contourf(rGrid,zGrid,psiRZ[t_idx],50)
-            cont = psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid')
+            psi.plot(RLCFSframe,ZLCFSframe,'r',linewidth=3)
+            if fill:
+                psi.contourf(rGrid,zGrid,psiRZ[t_idx],50)
+                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid')
+            else:
+                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,linestyles='solid')
             fluxPlot.canvas.draw()
 
         timeSlider = mplw.Slider(timeSliderSub,'t index',0,len(t)-1,valinit=0,valfmt="%d")

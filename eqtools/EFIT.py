@@ -19,7 +19,7 @@
 import scipy
 from collections import namedtuple
 
-from .core import Equilibrium, ModuleWarning
+from .core import Equilibrium, ModuleWarning, inPolygon
 
 import warnings
 
@@ -39,6 +39,14 @@ except Exception as _e_MDS:
                       % (_e_MDS.__class__, _e_MDS.message),
                       ModuleWarning)
     _has_MDS = False
+    
+try:
+    import matplotlib.pyplot as plt
+    _has_plt = True
+except:
+    warnings.warn("Matplotlib.pyplot module could not be loaded -- classes that "
+                  "use pyplot will not work.",ModuleWarning)
+    _has_plt = False
 
 class EFITTree(Equilibrium):
     """Inherits Equilibrium class. EFIT-specific data handling class for machines using
@@ -149,6 +157,10 @@ class EFITTree(Equilibrium):
         self._areaLCFS = None                                                #LCFS surface area (t)
         self._RLCFS = None                                                   #R-positions of LCFS (t,n)
         self._ZLCFS = None                                                   #Z-positions of LCFS (t,n)
+        
+        #machine geometry parameters
+        self._Rlimiter = None                                                #R-positions of vacuum-vessel wall (t)
+        self._Zlimiter = None                                                #Z-positions of vacuum-vessel wall (t)
 
         #calc. normalized-pressure values
         self._betat = None                                                   #EFIT-calc toroidal beta (t)
@@ -381,6 +393,46 @@ class EFITTree(Equilibrium):
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
         return unit_factor * self._ZLCFS.copy()
+        
+    def remapLCFS(self):
+        """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
+        of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
+        restricting the contour to the closed plasma surface and the divertor legs.
+        """
+        if not _has_plt:
+            raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
+            
+        try:
+            Rlim,Zlim = self.getMachineCrossSection()
+        except:
+            raise ValueError("Limiter outline (self.getMachineCrossSection) must be available.")
+            
+        psiRZ = self.getFluxGrid()
+        R = self.getRGrid()
+        Z = self.getZGrid()
+        psiLCFS = self.getFluxLCFS()
+        
+        fig = plt.figure()  # generate a dummy plotting window to dump contour into; will be deleted later
+        cs = plt.contour(R,Z,psiRZ,[psiLCFS])   # calculates psi= psiLCFS contour
+        path = cs.collections[0].get_paths()[0]
+        v = path.vertices
+        RLCFS = v[:,0]
+        ZLCFS = v[:,1]
+        
+        # generate masking array
+        mask = scipy.array([[False for j in range(len(self.getTimeBase()))] for i in range(len(RLCFS))])
+        for i in range(len(self.getTimeBase())):
+            for j in range(len(RLCFS)):
+                x = RLCFS[j]
+                y = ZLCFS[j]
+                mask[j,i] = inPolygon(Rlim,Zlim,x,y)
+            
+        # this will probably break...
+        self._RLCFS = RLCFS[mask]
+        self._ZLCFS = ZLCFS[mask]        
+        
+        # cleanup
+        del fig
 
     def getFluxPres(self):
         """returns pressure at flux surface [psi,t]
@@ -931,6 +983,42 @@ class EFITTree(Equilibrium):
             return data(WMHD=WMHD,tauMHD=tauMHD,Pinj=Pinj,Wbdot=Wbdot,Wpdot=Wpdot)
         except ValueError:
             raise ValueError('data retrieval failed.')
+            
+    def getMachineCrossSection(self):
+        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.
+        
+        Returns:
+            The requested data.
+        """
+        if self._Rlimiter is None or self._Zlimiter is None:
+            try:
+                limitr = self._MDSTree.getNode(self._root+'g_eqdsk:limitr').data()
+                xlim = self._MDSTree.getNode(self._root+'g_eqdsk:xlim').data()
+                ylim = self._MDSTree.getNode(self._root+'g_eqdsk:ylim').data()
+                npts = len(xlim)
+                
+                if npts < limitr:
+                    raise ValueError("Dimensions inconsistent in limiter array lengths.")
+                    
+                self._Rlimiter = xlim[0:limitr]
+                self._Zlimiter = ylim[0:limitr]
+            except (TreeException, AttributeError):
+                raise ValueError("data retrieval failed.")
+        return (self._Rlimiter,self._Zlimiter)
+
+    def getMachineCrossSectionFull(self):
+        """Returns R,Z coordinates of vacuum-vessel wall for plotting routines.
+        
+        Absent additional vector-graphic data on machine cross-section, returns
+        self.getMachineCrossSection().
+        
+        Returns:
+            The requested data.
+        """
+        try:
+            return self.getMachineCrossSection()
+        except:
+            raise NotImplementedError("self.getMachineCrossSection not implemented.")
 
     def getCurrentSign(self):
         """Returns the sign of the current, based on the check in Steve Wolfe's IDL implementation efit_rz2psi.pro."""
