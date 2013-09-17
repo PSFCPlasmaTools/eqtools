@@ -1905,7 +1905,7 @@ class EqdskReader(Equilibrium):
         xlim = ax.get_xlim()
         ylim = ax.get_ylim()
         bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
-        poly_verts = [(Rlim[i],Zlim[i]) for i in range(len(Rlim))]
+        poly_verts = [(Rlim[i],Zlim[i]) for i in range(len(Rlim) - 1, -1, -1)]
         
         bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
         poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
@@ -1918,7 +1918,7 @@ class EqdskReader(Equilibrium):
         ax.set_ylim(ylim)
 
         ax.plot(Rlim,Zlim,'k',linewidth=3)
-        plt.show(fig)
+        fig.show()
 
 
 
