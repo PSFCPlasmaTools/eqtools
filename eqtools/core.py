@@ -1367,7 +1367,6 @@ class Equilibrium(object):
         # Handling for single-value case:
         if single_val:
             psi_norm_proc = psi_norm
-        print(t)
         # Convert units from meters to desired target:
         unit_factor = self._getLengthConversionFactor('m', length_unit)
         
@@ -2079,7 +2078,7 @@ class Equilibrium(object):
                 scipy.place(Z, ~good_points, scipy.nan)
 
         # Handle single-value time cases:
-        print(t)
+        
         try:
             iter(t)
         except TypeError:
@@ -2096,7 +2095,7 @@ class Equilibrium(object):
                 R = R * scipy.ones_like(t, dtype=float)
                 Z = Z * scipy.ones_like(t, dtype=float)
                 
-        print(t.shape)
+        
         if each_t and not single_time:
             if t.ndim != 1:
                 raise ValueError("_processRZt: When using the each_t keyword, "
