@@ -104,7 +104,7 @@ class CModEFITTree(EFITTree):
 
         super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, monotonic=monotonic)
     
-    def getMachineCrossSection(self):
+    def getMachineCrossSectionFull(self):
         """Pulls C-Mod cross-section data from tree, converts to plottable
         vector format for use in other plotting routines
 

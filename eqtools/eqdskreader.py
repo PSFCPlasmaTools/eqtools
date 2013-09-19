@@ -31,12 +31,16 @@ import re
 import csv
 import warnings
 from collections import namedtuple
-from .core import Equilibrium,ModuleWarning
+from .core import Equilibrium, ModuleWarning, inPolygon
 from .afilereader import AFileReader
 
 try:
     import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    import matplotlib.path as mpath
+    _has_plt = True
 except Exception:
+    _has_plt = False
     warnings.warn("WARNING: matplotlib modules could not be loaded -- plotting "
                   "will not be available.",
                   ModuleWarning)
@@ -85,6 +89,7 @@ class EqdskReader(Equilibrium):
     def __init__(self,shot=None,time=None,gfile=None,afile=None,length_unit='m',verbose=True):
         # instantiate superclass, forcing time splining to false (eqdsk only contains single time slice)
         super(EqdskReader,self).__init__(length_unit=length_unit,tspline=False)
+        self._verbose = bool(verbose)
 
         # dict to store default units of length-scale parameters, used by core._getLengthConversionFactor
         self._defaultUnits = {}
@@ -1249,6 +1254,47 @@ class EqdskReader(Equilibrium):
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'],length_unit)
         return unit_factor * self._ZLCFS.copy()
+        
+    def remapLCFS(self):
+        """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
+        of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
+        restricting the contour to the closed plasma surface and the divertor legs.
+        """
+        if not _has_plt:
+            raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
+            
+        try:
+            Rlim,Zlim = self.getMachineCrossSection()
+        except:
+            raise ValueError("Limiter outline in self.getMachineCrossSection must be available.")
+            
+        psiRZ = self.getFluxGrid()
+        R = self.getRGrid()
+        Z = self.getZGrid()
+        psiLCFS = self.getFluxLCFS()
+        
+        fig = plt.figure()  # generate a dummy plotting window to dump contour into; will be deleted later
+        cs = plt.contour(R,Z,psiRZ[0],psiLCFS)   # calculates psi= psiLCFS contour
+        path = cs.collections[0].get_paths()[0]
+        v = path.vertices
+        RLCFS = v[:,0]
+        ZLCFS = v[:,1]
+        
+        # generate masking array
+        mask = scipy.array([False for i in range(len(RLCFS))])
+        for i,x in enumerate(RLCFS):
+            y = ZLCFS[i]
+            mask[i] = inPolygon(Rlim,Zlim,x,y)
+            
+        RLCFS = RLCFS[mask]
+        ZLCFS = ZLCFS[mask]
+        npts = len(RLCFS)
+        self._RLCFS = RLCFS.reshape((npts,1))
+        self._ZLCFS = ZLCFS.reshape((npts,1))
+        
+        # cleanup
+        plt.clf()
+        plt.close(fig)
 
     def getFluxVol(self):
         #returns volume contained within a flux surface as function of psi, volp(psi,t)
@@ -1817,29 +1863,69 @@ class EqdskReader(Equilibrium):
         """
         return (self._xlim,self._ylim)
         
-    def plotFlux(self):
+    def getMachineCrossSectionFull(self):
+        """Returns vectorization of machine cross-section.
+        
+        Absent additional data (not found in eqdsks) simply returns self.getMachineCrossSection().
+        """
+        return self.getMachineCrossSection()
+        
+    def plotFlux(self,fill=True):
         """streamlined plotting of flux contours directly from psi grid
         """
         plt.ion()
 
         try:
-            psiRZ = self.getFluxGrid()
+            psiRZ = self.getFluxGrid()[0]
             rGrid = self.getRGrid()
             zGrid = self.getZGrid()
 
-            RLCFS = self.getRLCFS()
-            ZLCFS = self.getZLCFS()
+            RLCFS = self.getRLCFS()[:,0]
+            ZLCFS = self.getZLCFS()[:,0]
 
-            xlim,ylim = self.getMachineCrossSection()
+            Rlim,Zlim = self.getMachineCrossSection()
         except ValueError:
-            raise AttributeError('cannot plot EFIT flux map.')
+            raise AttributeError('cannot plot EFIT flux map.')       
 
-        plt.figure(figsize=(6,11))
-        plt.xlabel('$R$ (m)')
-        plt.ylabel('$Z$ (m)')
-        plt.title(self._gfilename)
-        plt.contourf(rGrid,zGrid,psiRZ[0],50)
-        plt.contour(rGrid,zGrid,psiRZ[0],50,colors='k',linestyles='solid')
-        plt.plot(RLCFS,ZLCFS,'r',linewidth=3)
-        plt.plot(xlim,ylim,'k',linewidth=2)
-        plt.show()
+        fig = plt.figure(figsize=(6,11))
+        ax = fig.add_subplot(111)
+        ax.set_aspect('equal')
+        ax.set_xlabel('$R$ (m)')
+        ax.set_ylabel('$Z$ (m)')
+        ax.set_title(self._gfilename)
+
+        if fill:
+            ax.contourf(rGrid,zGrid,psiRZ,50)
+            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid')
+        else:
+            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2)
+        ax.plot(RLCFS,ZLCFS,'r',linewidth=3)
+
+        # generate graphical mask for limiter wall
+        xlim = ax.get_xlim()
+        ylim = ax.get_ylim()
+        bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
+        poly_verts = [(Rlim[i],Zlim[i]) for i in range(len(Rlim) - 1, -1, -1)]
+        
+        bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
+        poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
+        
+        path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
+        patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
+        patch = ax.add_patch(patch)
+        
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+
+        ax.plot(Rlim,Zlim,'k',linewidth=3)
+        fig.show()
+
+
+
+
+
+
+
+
+
+
