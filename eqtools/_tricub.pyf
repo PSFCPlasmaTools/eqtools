@@ -19,6 +19,23 @@ C    along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 C
 C    Copyright 2013 Ian C. Faust
 
+   subroutine reg_eval(val,dx0,dx1,dx2,f,pos,indx,ix0,ix1,ix2,ix)
+      intent(c) reg_eval
+      intent(c)
+		   
+      integer intent(hide),depend(dx0) :: ix = len(dx0)
+      integer intent(hide),depend(f) :: ix0 = shape(f,2)
+      integer intent(hide),depend(f) :: ix1 = shape(f,1)
+      integer intent(hide),depend(f) :: ix2 = shape(f,0)
+      double precision intent(in) :: dx0(ix)
+      double precision intent(in) :: dx1(ix)
+      double precision intent(in) :: dx2(ix)
+      integer intent(in) :: pos(ix)
+      integer intent(in) :: indx(ix)
+      double precision intent(in) :: f(ix2,ix1,ix0)
+      double precision intent(out) :: val(ix)
+
+   end subroutine reg_eval
 
    subroutine reg_ev(val,x0,x1,x2,f,fx0,fx1,fx2,ix0,ix1,ix2,ix)
       intent(c) reg_ev
@@ -34,10 +51,31 @@ C    Copyright 2013 Ian C. Faust
       double precision intent(in) :: fx0(ix0)
       double precision intent(in) :: fx1(ix1)
       double precision intent(in) :: fx2(ix2)
-      double precision intent(in) :: f(ix0,ix1,ix2)
+      double precision intent(in) :: f(ix2,ix1,ix0)
       double precision intent(out) :: val(ix) 
 
    end subroutine reg_ev
+
+   subroutine nonreg_eval(val,x0,x1,x2,f,fx0,fx1,fx2,pos,indx,in0,in1,in2,ix0,ix1,ix2,ix)
+      intent(c) nonreg_eval
+      intent(c)
+		   
+      integer intent(hide),depend(dx1) :: ix = len(x0)
+      integer intent(hide),depend(f) :: ix0 = shape(f,2)
+      integer intent(hide),depend(f) :: ix1 = shape(f,1)
+      integer intent(hide),depend(f) :: ix2 = shape(f,0)
+      double precision intent(in) :: x0(ix)
+      double precision intent(in) :: x1(ix)
+      double precision intent(in) :: x2(ix)
+      integer intent(in) :: pos(ix)
+      integer intent(in) :: indx(ix)
+      double precision intent(in) :: f(ix2,ix1,ix0)
+      double precision intent(in) :: fx0(ix0)
+      double precision intent(in) :: fx1(ix1)
+      double precision intent(in) :: fx2(ix2)
+      double precision intent(out) :: val(ix)
+
+   end subroutine nonreg_eval
 
    subroutine nonreg_ev(val,x0,x1,x2,f,fx0,fx1,fx2,ix0,ix1,ix2,ix)
       intent(c) nonreg_ev
@@ -53,7 +91,7 @@ C    Copyright 2013 Ian C. Faust
       double precision intent(in) :: fx0(ix0)
       double precision intent(in) :: fx1(ix1)
       double precision intent(in) :: fx2(ix2)
-      double precision intent(in) :: f(ix0,ix1,ix2)
+      double precision intent(in) :: f(ix2,ix1,ix0)
       double precision intent(out) :: val(ix)      
 
    end subroutine nonreg_ev
@@ -72,7 +110,7 @@ C    Copyright 2013 Ian C. Faust
       double precision intent(in) :: fx0(ix0)
       double precision intent(in) :: fx1(ix1)
       double precision intent(in) :: fx2(ix2)
-      double precision intent(in) :: f(ix0,ix1,ix2)
+      double precision intent(in) :: f(ix2,ix1,ix0)
       double precision intent(out) :: val(ix) 
       
    end subroutine ev

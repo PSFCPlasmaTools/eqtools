@@ -476,34 +476,14 @@ void _reg_ev(double val[], double dx0[], double dx1[], double dx2[], double f[],
     }
 }
 
-void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
+
+void nonreg_eval(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int pos[], int indx[], int in0[], int in1[], int in2[], int ix0, int ix1, int ix2, int ix)
 {
   int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
   double fin[64],a[64];
 
-  int* in0 = malloc(ix*sizeof(int));
-  int* in1 = malloc(ix*sizeof(int));
-  int* in2 = malloc(ix*sizeof(int));
-  int* pos = malloc(ix*sizeof(int));
-  int* indx = malloc(ix*sizeof(int));
-
   gap1 = ix0 - 4;
   gap2 = ix0*(ix1 - 4);
-
-
-  /* solve for indexes */
-  for(k=0;k<ix;k++)
-    {
-      in0[k] = (int)((double*) bsearch(&x0[k], fx0, ix0, sizeof(double), _bin_double) - &fx0[0]) - 1;
-      in1[k] = (int)((double*) bsearch(&x1[k], fx1, ix1, sizeof(double), _bin_double) - &fx1[0]) - 1;
-      in2[k] = (int)((double*) bsearch(&x2[k], fx2, ix2, sizeof(double), _bin_double) - &fx2[0]) - 1;
-      pos[k] = in0[k] + ix0*(in1[k] + ix1*(in2[k])); 
-    }
-  int_argsort(indx, pos, ix);
-  
-
-  /*generate pos and loc */
-
  
   for(i=0;i < ix; i++)
     {
@@ -537,14 +517,40 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
 	      iter = iter + gap2;
 	    }
 	  iter = pos[loc];
-	  tricubic_get_coeff_stacked_nonreg(a,fin,&fx0[in0[loc]],&fx1[in1[loc]],&fx2[in2[loc]]);
+	  tricubic_get_coeff_stacked_nonreg(a,fin,&fx0[in0[loc]-1],&fx1[in1[loc]-1],&fx2[in2[loc]-1]);
 
 	}
-      //printf(" %f %f %f \n",(x0[loc] - fx0[in0[loc]+1]),(x1[loc] - fx1[in1[loc]+1]),(x2[loc] - fx2[in2[loc]+1]));
 
-      val[loc] = tricubic_eval(a,(x0[loc] - fx0[in0[loc]+1]),(x1[loc] - fx1[in1[loc]+1]),(x2[loc] - fx2[in2[loc]+1]));
+      val[loc] = tricubic_eval(a,(x0[loc] - fx0[in0[loc]]),(x1[loc] - fx1[in1[loc]]),(x2[loc] - fx2[in2[loc]]));
 
     }
+
+}
+
+
+
+void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
+{
+  int k;
+
+  int* in0 = malloc(ix*sizeof(int));
+  int* in1 = malloc(ix*sizeof(int));
+  int* in2 = malloc(ix*sizeof(int));
+  int* pos = malloc(ix*sizeof(int));
+  int* indx = malloc(ix*sizeof(int));
+
+  /* solve for indexes */
+  for(k=0;k<ix;k++)
+    {
+      in0[k] = (int)((double*) bsearch(&x0[k], fx0, ix0, sizeof(double), _bin_double) - &fx0[0]);
+      in1[k] = (int)((double*) bsearch(&x1[k], fx1, ix1, sizeof(double), _bin_double) - &fx1[0]);
+      in2[k] = (int)((double*) bsearch(&x2[k], fx2, ix2, sizeof(double), _bin_double) - &fx2[0]);
+      pos[k] = (in0[k] - 1) + ix0*((in1[k] - 1) + ix1*(in2[k] - 1)); 
+    }
+  int_argsort(indx, pos, ix);
+  nonreg_eval(val,x0,x1,x2,f,fx0,fx1,fx2,pos,indx,in0,in1,in2,ix0,ix1,ix2,ix);
+
+  /*generate pos and loc */
 
   free(in0);
   free(in1);
@@ -555,34 +561,12 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
 }
 
 
-void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
+void reg_eval(double val[], double dx0[], double dx1[], double dx2[] , double f[], int pos[], int indx[], int ix0, int ix1, int ix2, int ix)
 {
-  int i,j,k,l,iter = -1,gap1,gap2,loc,findx,idx;
-  double fin[64],a[64],dx0gap,dx1gap,dx2gap,tempx0,tempx1,tempx2;
-  double* dx0 = malloc(ix*sizeof(double));
-  double* dx1 = malloc(ix*sizeof(double));
-  double* dx2 = malloc(ix*sizeof(double));    
-  int* pos = malloc(ix*sizeof(int));
-  int* indx = malloc(ix*sizeof(int));
-  
-  dx0gap = fx0[1] - fx0[0];
-  dx1gap = fx1[1] - fx1[0];
-  dx2gap = fx2[1] - fx2[0];
-  
-  /*generate indicies*/
-  for(idx=0;idx<ix;idx++)
-    {
-      dx0[idx] = modf((x0[idx] - fx0[0])/dx0gap,&tempx0);
-      dx1[idx] = modf((x1[idx] - fx1[0])/dx1gap,&tempx1);
-      dx2[idx] = modf((x2[idx] - fx2[0])/dx2gap,&tempx2);
-      pos[idx] = (int)tempx0 - 1 + ix0*((int)tempx1 - 1 + ix1*((int)tempx2 - 1));
-    }
-  int_argsort(indx, pos, ix);
-
+  int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
+  double fin[64],a[64];
   gap1 = ix0 - 4;
   gap2 = ix0*(ix1 - 4);
-
- 
   for(i=0;i < ix; i++)
     {
       
@@ -624,12 +608,42 @@ void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], dou
       val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
 
     }
+
+}
+
+
+void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
+{
+  int idx;
+  double dx0gap,dx1gap,dx2gap,tempx0,tempx1,tempx2;
+  double* dx0 = malloc(ix*sizeof(double));
+  double* dx1 = malloc(ix*sizeof(double));
+  double* dx2 = malloc(ix*sizeof(double));    
+  int* pos = malloc(ix*sizeof(int));
+  int* indx = malloc(ix*sizeof(int));
+  
+  dx0gap = fx0[1] - fx0[0];
+  dx1gap = fx1[1] - fx1[0];
+  dx2gap = fx2[1] - fx2[0];
+  
+  /*generate indicies*/
+  for(idx=0;idx<ix;idx++)
+    {
+      dx0[idx] = modf((x0[idx] - fx0[0])/dx0gap,&tempx0);
+      dx1[idx] = modf((x1[idx] - fx1[0])/dx1gap,&tempx1);
+      dx2[idx] = modf((x2[idx] - fx2[0])/dx2gap,&tempx2);
+      pos[idx] = (int)tempx0 - 1 + ix0*((int)tempx1 - 1 + ix1*((int)tempx2 - 1));
+    }
+  int_argsort(indx, pos, ix);
+  reg_eval(val, dx0, dx1, dx2, f, pos, indx, ix0, ix1, ix2, ix);
  
   free(dx0);
   free(dx1);
   free(dx2);
   free(pos);
   free(indx);
+
+
 }
 
 

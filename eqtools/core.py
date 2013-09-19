@@ -598,8 +598,8 @@ class Equilibrium(object):
             psi_0 = self.getFluxAxis()[time_idxs]
         else:
             # use 1d spline to generate the psi at the core and at boundary.
-            psi_boundary = self._getLCFSPsiSpline()(t)
-            psi_0 = self._getPsi0Spline()(t)
+            psi_boundary = scipy.atleast_1d(self._getLCFSPsiSpline()(t))
+            psi_0 = scipy.atleast_1d(self._getPsi0Spline()(t))
 
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
 
@@ -608,7 +608,7 @@ class Equilibrium(object):
             out = scipy.sqrt(psi_norm)
         else:
             out = psi_norm
-
+        
         # Unwrap single values to ensure least surprise:
         try:
             iter(psi)
@@ -1320,7 +1320,7 @@ class Equilibrium(object):
         # Handling for single-value case:
         if single_val:
             psi_norm_proc = psi_norm
-        
+        print(t)
         # Convert units from meters to desired target:
         unit_factor = self._getLengthConversionFactor('m', length_unit)
         
@@ -1618,7 +1618,7 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(time_idxs).ev(psi_norm.flatten(), t.flatten()) #time_idxs is set to None
+            quan_norm = spline_func(time_idxs).ev(psi_norm, t) #time_idxs is set to None
             if rho:
                 magR = self._getMagRSpline(length_unit='m')(t)
                 quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(t) - magR)
@@ -2032,6 +2032,7 @@ class Equilibrium(object):
                 scipy.place(Z, ~good_points, scipy.nan)
 
         # Handle single-value time cases:
+        print(t)
         try:
             iter(t)
         except TypeError:
@@ -2047,7 +2048,8 @@ class Equilibrium(object):
                 single_val = False
                 R = R * scipy.ones_like(t, dtype=float)
                 Z = Z * scipy.ones_like(t, dtype=float)
-        
+                
+        print(t.shape)
         if each_t and not single_time:
             if t.ndim != 1:
                 raise ValueError("_processRZt: When using the each_t keyword, "
@@ -2250,6 +2252,7 @@ class Equilibrium(object):
                 return self._phiNormSpline[idx][kind]
             except KeyError:
                 # Insert zero at beginning because older versions of cumtrapz don't
+
                 # support the initial keyword to make the initial value zero:
                 phi_norm_meas = scipy.insert(
                     scipy.integrate.cumtrapz(self.getQProfile()[:, idx]),
@@ -2418,7 +2421,7 @@ class Equilibrium(object):
                                                    self.getRGrid(length_unit='m')[-1],
                                                    resample_factor)
 
-                psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t)
+                psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
                     
                 self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(psi_norm_on_grid.flatten(),
                                                                            t.flatten(),

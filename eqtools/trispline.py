@@ -61,7 +61,7 @@ class Spline():
     Examples:
         A
     """
-    def __init__(self, z, y, x, f, regular = False):
+    def __init__(self, z, y, x, f, regular=True, fast=False):
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
         self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
         # faces
@@ -106,12 +106,13 @@ class Spline():
             raise ValueError("dimension of z does not match that of f ")
 
         self._regular = regular
+        self._fast = fast
        # if not regular:
        #     for i in x,y,z:
        #         regular = regular or bool(_tricub.isregular(i))
        #     self._regular = regular
 
-    def ev(self, z1, y1, x1,test=False):
+    def ev(self, z1, y1, x1):
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
         z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
@@ -128,16 +129,73 @@ class Spline():
         yinp = scipy.array(scipy.where(scipy.isfinite(y)))
         zinp = scipy.array(scipy.where(scipy.isfinite(z)))
         inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
+        if inp.size != 0:
+            
+            if self._fast:
+                ix = scipy.digitize(x[inp],self._x) - 1
+                iy = scipy.digitize(y[inp],self._y) - 1
+                iz = scipy.digitize(z[inp],self._z) - 1
+                pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
+                indx = scipy.argsort(pos) # I believe this is much faster...
+
+                if self._regular:
+                    dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
+                    dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
+                    dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
+                    val[inp] = _tricub.reg_eval(dx,dy,dz,self._f,pos,indx)
+
+                else:
+                    val[inp] = _tricub.nonreg_eval(x[inp],y[inp],z[inp],self._f,self._x,self._y,self._z,pos,indx,ix,iy,iz)
+                    
+            else:
+                
+                if self._regular:
+                    val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
+                else:
+                    val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
+
+        return val
+
+
+class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
+    """the lack of a graceful bounds error causes the fortran to fail hard. This masks the 
+    scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
+    such that it will not fail in use for EqTools
+    """
+    def __init__(self, x, y, z, bbox=[None] *4, kx=3, ky=3, s=0, bounds_error=True, fill_value=scipy.nan):
+
+        xinp = scipy.array(scipy.where(scipy.isfinite(x)))
+        yinp = scipy.array(scipy.where(scipy.isfinite(y)))
+        zinp = scipy.array(scipy.where(scipy.isfinite(z)))
+        inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
 
         if inp.size != 0:
+            
+            if self._fast:
+                ix = scipy.digitize(x[inp],self._x) - 1
+                iy = scipy.digitize(y[inp],self._y) - 1
+                iz = scipy.digitize(z[inp],self._z) - 1
+                pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
+                indx = scipy.argsort(pos) # I believe this is much faster...
 
-            if self._regular:
-                val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
+                if self._regular:
+                    dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
+                    dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
+                    dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
+                    val[inp] = _tricub.reg_eval(dx,dy,dz,self._f,pos,indx)
+
+                else:
+                    val[inp] = _tricub.nonreg_eval(x[inp],y[inp],z[inp],self._f,self._x,self._y,self._z,pos,indx,ix,iy,iz)
+                    
             else:
-                val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
+                
+                if self._regular:
+                    val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
+                else:
+                    val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
 
 
-        return(val)
+        return val
 
 
 class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
@@ -194,6 +252,8 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
         """
 
         idx = self._check_bounds(xi, yi)
+        print(idx)
         zi = self.fill_value*scipy.ones(xi.shape)
-        zi[idx] = super(RectBivariateSpline, self).ev(xi[idx], yi[idx])
+        zi[idx] = super(RectBivariateSpline, self).ev(scipy.atleast_1d(xi)[idx],
+                                                      scipy.atleast_1d(yi)[idx])
         return zi
