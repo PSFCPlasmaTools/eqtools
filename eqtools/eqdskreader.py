@@ -196,7 +196,7 @@ class EqdskReader(Equilibrium):
             
             # next line - construction values for RZ grid
             line = next(reader)[0]
-            line = re.findall('-?\d\.\d*E[-+]\d*',line)     # regex magic!
+            line = re.findall('-?\d\.\d*[eE][-+]\d*',line)     # regex magic!
             xdim = float(line[0])     # width of R-axis in grid
             zdim = float(line[1])     # height of Z-axis in grid
             #rzero = float(line[2])    # zero point of R grid
@@ -213,7 +213,7 @@ class EqdskReader(Equilibrium):
 
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
             line = next(reader)[0]
-            line = re.findall('-?\d\.\d*E[-+]\d*',line)
+            line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
             self._rmag = scipy.array([float(line[0])])
             self._zmag = scipy.array([float(line[1])])
             self._defaultUnits['_rmag'] = 'm'
@@ -227,7 +227,7 @@ class EqdskReader(Equilibrium):
             # read EFIT-calculated plasma current, psi at magnetic axis (duplicate), 
             # dummy, R of magnetic axis (duplicate), dummy
             line = next(reader)[0]
-            line = re.findall('-?\d\.\d*E[-+]\d*',line)
+            line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
             self._IpCalc = scipy.array([float(line[0])])
             self._defaultUnits['_IpCalc'] = 'A'
 
@@ -243,7 +243,7 @@ class EqdskReader(Equilibrium):
             self._fpol = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._fpol.append(float(val))
             self._fpol = scipy.array(self._fpol).reshape((nw,1))
@@ -252,7 +252,7 @@ class EqdskReader(Equilibrium):
             self._fluxPres = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._fluxPres.append(float(val))
             self._fluxPres = scipy.array(self._fluxPres).reshape((nw,1))
@@ -263,7 +263,7 @@ class EqdskReader(Equilibrium):
             self._ffprim = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._ffprim.append(float(val))
             self._ffprim = scipy.array(self._ffprim).reshape((nw,1))
@@ -271,7 +271,7 @@ class EqdskReader(Equilibrium):
             self._pprime = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._pprime.append(float(val))
             self._pprime = scipy.array(self._pprime).reshape((nw,1))
@@ -287,7 +287,7 @@ class EqdskReader(Equilibrium):
             psis = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     psis.append(float(val))
             self._psiRZ = scipy.array(psis).reshape((1,nh,nw),order='C')
@@ -301,7 +301,7 @@ class EqdskReader(Equilibrium):
             self._qpsi = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._qpsi.append(float(val))
             self._qpsi = scipy.array(self._qpsi).reshape((nw,1))
@@ -320,7 +320,7 @@ class EqdskReader(Equilibrium):
             bbbs = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     bbbs.append(float(val))
             bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='F')
@@ -338,7 +338,7 @@ class EqdskReader(Equilibrium):
             lim = []
             for i in range(nrows):
                 line = next(reader)[0]
-                line = re.findall('-?\d\.\d*E[-+]\d*',line)
+                line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     lim.append(float(val))
             lim = scipy.array(lim).reshape((2,limitr),order='F')
@@ -363,14 +363,14 @@ class EqdskReader(Equilibrium):
                     self._presw = []
                     for i in range(nrows):
                         line = next(reader)[0]
-                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                         for val in line:
                             self._presw.append(float(val))
                     self._presw = scipy.array(self._presw).reshape((nw,1))
                     self._preswp = []
                     for i in range(nrows):
                         line = next(reader)[0]
-                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                         for val in line:
                             self._preswp.append(float(val))
                     self._preswp = scipy.array(self._preswp).reshape((nw,1))
@@ -386,7 +386,7 @@ class EqdskReader(Equilibrium):
                     self._dmion = []
                     for i in range(nrows):
                         line = next(reader)[0]
-                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                         for val in line:
                             self._dmion.append(float(val))
                     self._dmion = scipy.array(self._dmion).reshape((nw,1))
@@ -400,7 +400,7 @@ class EqdskReader(Equilibrium):
                 self._rhovn = []
                 for i in range(nrows):
                     line = next(reader)[0]
-                    line = re.findall('-?\d.\d*E[-+]\d*',line)
+                    line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                     for val in line:
                         self._rhovn.append(float(val))
                 self._rhovn = scipy.array(self._rhovn).reshape((nw,1))
@@ -412,7 +412,7 @@ class EqdskReader(Equilibrium):
                     self._workk = []
                     for i in range(nrows):
                         line = next(reader)[0]
-                        line = re.findall('-?\d.\d*E[-+]\d*',line)
+                        line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                         for val in line:
                             self._workk.append(float(val))
                     self._workk = scipy.array(self._workk).reshape((nw,1))
