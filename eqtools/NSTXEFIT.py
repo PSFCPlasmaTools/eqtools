@@ -81,6 +81,12 @@ class NSTXEFITTree(EFITTree):
                 ===========  ===========================================================================================
                 
             Default is 'm' (all units taken and returned in meters).
+        gfile: str
+            Optional input for EFIT geqdsk location name, defaults to 'g_eqdsk'
+            (i.e., EFIT data are under \\tree::top.results.G_EQDSK)
+        afile: str
+            Optional input for EFIT aeqdsk location name, defaults to 'a_eqdsk'
+            (i.e., EFIT data are under \\tree::top.results.A_EQDSK)
         tspline: Boolean
             Sets whether or not interpolation in time is
             performed using a tricubic spline or nearest-neighbor
