@@ -105,6 +105,46 @@ class NSTXEFITTree(EFITTree):
         root = '\\'+tree+'::top.results.'
         super(NSTXEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, gfile=gfile, afile=afile, tspline=tspline, monotonic=monotonic)
   
+    def getFluxVol(self): 
+        """
+        Not implemented in NSTXEFIT tree.
+        
+        Returns volume within flux surface [psi,t]
+        """
+        raise NotImplementedError()
+        
+    def getRmidPsi(self, length_unit=1):
+        """ returns maximum major radius of each flux surface [t,psi]
+        """
+        
+        if self._RmidPsi is None:
+            try:
+                RmidPsiNode = self._MDSTree.getNode(self._root+'derived:rpres')
+                self._RmidPsi = RmidPsiNode.data()
+                # Units aren't properly stored in the tree for this one!
+                if RmidPsiNode.units != ' ':
+                    self._defaultUnits['_RmidPsi'] = RmidPsiNode.units
+                else:
+                    self._defaultUnits['_RmidPsi'] = 'm'
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
+        return unit_factor * self._RmidPsi.copy()
+        
+        
+    def getVolLCFS(self, length_unit=3):
+        """returns volume within LCFS [t]
+        """
+        if self._volLCFS is None:
+            try:
+                volLCFSNode = self._MDSTree.getNode(self._root+self_afile+':volume')
+                self._volLCFS = volLCFSNode.data()
+                self._defaultUnits['_volLCFS'] = volLCFSNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        # Default units should be 'cm^3':
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
+        return unit_factor * self._volLCFS.copy()
 
 class NSTXEFITTreeProp(NSTXEFITTree, PropertyAccessMixin):
     """NSTXEFITTree with the PropertyAccessMixin added to enable property-style
