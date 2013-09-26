@@ -22,4 +22,5 @@
 from .core import *
 from .EFIT import *
 from .CModEFIT import *
+from .NSTXEFIT import *
 from .eqdskreader import *
