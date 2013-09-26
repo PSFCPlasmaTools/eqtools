@@ -83,6 +83,14 @@ class CModEFITTree(EFITTree):
                 ===========  ===========================================================================================
                 
             Default is 'm' (all units taken and returned in meters).
+        gfile: str
+            Optional input for EFIT geqdsk location name, defaults to 'g_eqdsk'
+            (i.e., EFIT data are under \\tree::top.results.G_EQDSK)
+
+        afile: str
+            Optional input for EFIT aeqdsk location name, defaults to 'a_eqdsk'
+            (i.e., EFIT data are under \\tree::top.results.A_EQDSK)
+            
         tspline: Boolean
             Sets whether or not interpolation in time is
             performed using a tricubic spline or nearest-neighbor
@@ -96,13 +104,13 @@ class CModEFITTree(EFITTree):
             window finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
-    def __init__(self, shot, tree='ANALYSIS', length_unit='m', tspline=False, monotonic=False):
+    def __init__(self, shot, tree='ANALYSIS', length_unit='m', gfile='g_eqdsk', afile='a_eqdsk', tspline=False, monotonic=False):
         if tree.upper() == 'ANALYSIS':
             root = '\\analysis::top.efit.results.'
         else:
             root = '\\'+tree+'::top.results.'
 
-        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, monotonic=monotonic)
+        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, gfile=gfile, afile=afile, tspline=tspline, monotonic=monotonic)
     
     def getMachineCrossSectionFull(self):
         """Pulls C-Mod cross-section data from tree, converts to plottable
