@@ -102,7 +102,7 @@ class EFITTree(Equilibrium):
             finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
-    def __init__(self, shot, tree, root, length_unit='m', tspline=False, monotonic=False):
+    def __init__(self, shot, tree, root, length_unit='m', gfile = 'g_eqdsk', afile='a_eqdsk', tspline=False, monotonic=False):
         """
         """
 
@@ -115,6 +115,8 @@ class EFITTree(Equilibrium):
         self._shot = shot
         self._tree = tree
         self._root = root
+        self._gfile = gfile
+        self._afile = afile
 
         self._MDSTree = MDSplus.Tree(self._tree, self._shot)
         
@@ -250,7 +252,7 @@ class EFITTree(Equilibrium):
         """
         if self._time is None:
             try:
-                timeNode = self._MDSTree.getNode(self._root+'a_eqdsk:time')
+                timeNode = self._MDSTree.getNode(self._root+self._afile+':time')
                 self._time = timeNode.data()
                 self._defaultUnits['_time'] = timeNode.units
             except TreeException:
@@ -262,7 +264,7 @@ class EFITTree(Equilibrium):
         """
         if self._psiRZ is None:
             try:
-                psinode = self._MDSTree.getNode(self._root+'g_eqdsk:psirz')
+                psinode = self._MDSTree.getNode(self._root+self._gfile+':psirz')
                 self._psiRZ = psinode.data()
                 self._rGrid = psinode.dim_of(0).data()
                 self._zGrid = psinode.dim_of(1).data()
@@ -300,7 +302,7 @@ class EFITTree(Equilibrium):
         """
         if self._psiAxis is None:
             try:
-                psiAxisNode = self._MDSTree.getNode(self._root+'a_eqdsk:simagx')
+                psiAxisNode = self._MDSTree.getNode(self._root+self._afile+':simagx')
                 self._psiAxis = psiAxisNode.data()
                 self._defaultUnits['_psiAxis'] = psiAxisNode.units
             except TreeException:
@@ -312,7 +314,7 @@ class EFITTree(Equilibrium):
         """
         if self._psiLCFS is None:
             try:
-                psiLCFSNode = self._MDSTree.getNode(self._root+'a_eqdsk:sibdry')
+                psiLCFSNode = self._MDSTree.getNode(self._root+self._afile+':sibdry')
                 self._psiLCFS = psiLCFSNode.data()
                 self._defaultUnits['_psiLCFS'] = psiLCFSNode.units
             except TreeException:
@@ -342,7 +344,7 @@ class EFITTree(Equilibrium):
         """
         if self._volLCFS is None:
             try:
-                volLCFSNode = self._MDSTree.getNode(self._root+'a_eqdsk:vout')
+                volLCFSNode = self._MDSTree.getNode(self._root+self._afile+':vout')
                 self._volLCFS = volLCFSNode.data()
                 self._defaultUnits['_volLCFS'] = volLCFSNode.units
             except TreeException:
@@ -373,7 +375,7 @@ class EFITTree(Equilibrium):
         """
         if self._RLCFS is None:
             try:
-                RLCFSNode = self._MDSTree.getNode(self._root+'g_eqdsk:rbbbs')
+                RLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':rbbbs')
                 self._RLCFS = RLCFSNode.data()
                 self._defaultUnits['_RLCFS'] = RLCFSNode.units
             except TreeException:
@@ -386,7 +388,7 @@ class EFITTree(Equilibrium):
         """
         if self._ZLCFS is None:
             try:
-                ZLCFSNode = self._MDSTree.getNode(self._root+'g_eqdsk:zbbbs')
+                ZLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':zbbbs')
                 self._ZLCFS = ZLCFSNode.data()
                 self._defaultUnits['_ZLCFS'] = ZLCFSNode.units
             except TreeException:
@@ -439,7 +441,7 @@ class EFITTree(Equilibrium):
         """
         if self._fluxPres is None:
             try:
-                fluxPresNode = self._MDSTree.getNode(self._root+'g_eqdsk:pres')
+                fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
                 self._fluxPres = fluxPresNode.data()
                 self._defaultUnits['_fluxPres'] = fluxPresNode.units
             except TreeException:
@@ -451,7 +453,7 @@ class EFITTree(Equilibrium):
         """
         if self._kappa is None:
             try:
-                kappaNode = self._MDSTree.getNode(self._root+'a_eqdsk:eout')
+                kappaNode = self._MDSTree.getNode(self._root+self._afile+':eout')
                 self._kappa = kappaNode.data()
                 self._defaultUnits['_kappa'] = kappaNode.units
             except TreeException:
@@ -463,7 +465,7 @@ class EFITTree(Equilibrium):
         """
         if self._dupper is None:
             try:
-                dupperNode = self._MDSTree.getNode(self._root+'a_eqdsk:doutu')
+                dupperNode = self._MDSTree.getNode(self._root+self._afile'+:doutu')
                 self._dupper = dupperNode.data()
                 self._defaultUnits['_dupper'] = dupperNode.units
             except TreeException:
@@ -475,7 +477,7 @@ class EFITTree(Equilibrium):
         """
         if self._dlower is None:
             try:
-                dlowerNode = self._MDSTree.getNode(self._root+'a_eqdsk:doutl')
+                dlowerNode = self._MDSTree.getNode(self._root+self._afile+':doutl')
                 self._dlower = dlowerNode.data()
                 self._defaultUnits['_dlower']  = dlowerNode.units
             except TreeException:
@@ -502,7 +504,7 @@ class EFITTree(Equilibrium):
         """
         if self._rmag is None:
             try:
-                rmagNode = self._MDSTree.getNode(self._root+'a_eqdsk:rmagx')
+                rmagNode = self._MDSTree.getNode(self._root+self._afile+':rmagx')
                 self._rmag = rmagNode.data()
                 self._defaultUnits['_rmag'] = rmagNode.units
             except (TreeException,AttributeError):
@@ -515,7 +517,7 @@ class EFITTree(Equilibrium):
         """
         if self._zmag is None:
             try:
-                zmagNode = self._MDSTree.getNode(self._root+'a_eqdsk:zmagx')
+                zmagNode = self._MDSTree.getNode(self._root+self._afile+':zmagx')
                 self._zmag = zmagNode.data()
                 self._defaultUnits['_zmag'] = zmagNode.units
             except TreeException:
@@ -528,7 +530,7 @@ class EFITTree(Equilibrium):
         """
         if self._areaLCFS is None:
             try:
-                areaLCFSNode = self._MDSTree.getNode(self._root+'a_eqdsk:areao')
+                areaLCFSNode = self._MDSTree.getNode(self._root+self._afile+':areao')
                 self._areaLCFS = areaLCFSNode.data()
                 self._defaultUnits['_areaLCFS'] = areaLCFSNode.units
             except TreeException:
@@ -542,7 +544,7 @@ class EFITTree(Equilibrium):
         """
         if self._aLCFS is None:
             try:
-                aLCFSNode = self._MDSTree.getNode(self._root+'a_eqdsk:aout')
+                aLCFSNode = self._MDSTree.getNode(self._root+self._afile+':aout')
                 self._aLCFS = aLCFSNode.data()
                 self._defaultUnits['_aLCFS'] = aLCFSNode.units
             except TreeException:
@@ -555,7 +557,7 @@ class EFITTree(Equilibrium):
         """
         if self._RmidLCFS is None:
             try:
-                RmidLCFSNode = self._MDSTree.getNode(self._root+'a_eqdsk:rmidout')
+                RmidLCFSNode = self._MDSTree.getNode(self._root+self._afile+':rmidout')
                 self._RmidLCFS = RmidLCFSNode.data()
                 # The units aren't properly stored in the tree for this one!
                 # Should be meters.
@@ -590,7 +592,7 @@ class EFITTree(Equilibrium):
         """
         if self._qpsi is None:
             try:
-                qpsiNode = self._MDSTree.getNode(self._root+'g_eqdsk:qpsi')
+                qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
                 self._qpsi = qpsiNode.data()
                 self._defaultUnits['_qpsi'] = qpsiNode.units
             except TreeException:
@@ -602,7 +604,7 @@ class EFITTree(Equilibrium):
         """
         if self._q0 is None:
             try:
-                q0Node = self._MDSTree.getNode(self._root+'a_eqdsk:qqmagx')
+                q0Node = self._MDSTree.getNode(self._root+self._afile+':qqmagx')
                 self._q0 = q0Node.data()
                 self._defaultUnits['_q0'] = q0Node.units
             except (TreeException, AttributeError):
@@ -614,7 +616,7 @@ class EFITTree(Equilibrium):
         """
         if self._q95 is None:
             try:
-                q95Node = self._MDSTree.getNode(self._root+'a_eqdsk:qpsib')
+                q95Node = self._MDSTree.getNode(self._root+self._afile+':qpsib')
                 self._q95 = q95Node.data()
                 self._defaultUnits['_q95'] = q95Node.units
             except (TreeException, AttributeError):
@@ -626,7 +628,7 @@ class EFITTree(Equilibrium):
         """
         if self._qLCFS is None:
             try:
-                qLCFSNode = self._MDSTree.getNode(self._root+'a_eqdsk:qout')
+                qLCFSNode = self._MDSTree.getNode(self._root+self._afile+':qout')
                 self._qLCFS = qLCFSNode.data()
                 self._defaultUnits['_qLCFS'] = qLCFSNode.units
             except (TreeException, AttributeError):
@@ -638,7 +640,7 @@ class EFITTree(Equilibrium):
         """
         if self._rq1 is None:
             try:
-                rq1Node = self._MDSTree.getNode(self._root+'a_eqdsk:aaq1')
+                rq1Node = self._MDSTree.getNode(self._root+self._afile+':aaq1')
                 self._rq1 = rq1Node.data()
                 self._defaultUnits['_rq1'] = rq1Node.units
             except (TreeException,AttributeError):
@@ -651,7 +653,7 @@ class EFITTree(Equilibrium):
         """
         if self._rq2 is None:
             try:
-                rq2Node = self._MDSTree.getNode(self._root+'a_eqdsk:aaq2')
+                rq2Node = self._MDSTree.getNode(self._root+self._afile+':aaq2')
                 self._rq2 = rq2Node.data()
                 self._defaultUnits['_rq2'] = rq2Node.units
             except (TreeException,AttributeError):
@@ -664,7 +666,7 @@ class EFITTree(Equilibrium):
         """
         if self._rq3 is None:
             try:
-                rq3Node = self._MDSTree.getNode(self._root+'a_eqdsk:aaq3')
+                rq3Node = self._MDSTree.getNode(self._root+self._afile+':aaq3')
                 self._rq3 = rq3Node.data()
                 self._defaultUnits['_rq3'] = rq3Node.units
             except (TreeException,AttributeError):
@@ -695,7 +697,7 @@ class EFITTree(Equilibrium):
         """
         if self._btaxv is None:
             try:
-                btaxvNode = self._MDSTree.getNode(self._root+'a_eqdsk:btaxv')
+                btaxvNode = self._MDSTree.getNode(self._root+self._afile+':btaxv')
                 self._btaxv = btaxvNode.data()
                 self._defaultUnits['_btaxv'] = btaxvNode.units
             except (TreeException, AttributeError):
@@ -707,7 +709,7 @@ class EFITTree(Equilibrium):
         """
         if self._btaxp is None:
             try:
-                btaxpNode = self._MDSTree.getNode(self._root+'a_eqdsk:btaxp')
+                btaxpNode = self._MDSTree.getNode(self._root+self._afile+':btaxp')
                 self._btaxp = btaxpNode.data()
                 self._defaultUnits['_btaxp'] = btaxpNode.units
             except (TreeException,AttributeError):
@@ -719,7 +721,7 @@ class EFITTree(Equilibrium):
         """
         if self._bpolav is None:
             try:
-                bpolavNode = self._MDSTree.getNode(self._root+'a_eqdsk:bpolav')
+                bpolavNode = self._MDSTree.getNode(self._root+self._afile+':bpolav')
                 self._bpolav = bpolavNode.data()
                 self._defaultUnits['_bpolav'] = bpolavNode.units
             except (TreeException,AttributeError):
@@ -746,7 +748,7 @@ class EFITTree(Equilibrium):
         """
         if self._IpCalc is None:
             try:
-                IpCalcNode = self._MDSTree.getNode(self._root+'a_eqdsk:cpasma')
+                IpCalcNode = self._MDSTree.getNode(self._root+self._afile+':cpasma')
                 self._IpCalc = IpCalcNode.data()
                 self._defaultUnits['_IpCalc'] = IpCalcNode.units
             except (TreeException,AttributeError):
@@ -758,7 +760,7 @@ class EFITTree(Equilibrium):
         """
         if self._IpMeas is None:
             try:
-                IpMeasNode = self._MDSTree.getNode(self._root+'a_eqdsk:pasmat')
+                IpMeasNode = self._MDSTree.getNode(self._root+self._afile+':pasmat')
                 self._IpMeas = IpMeasNode.data()
                 self._defaultUnits['_IpMeas'] = IpMeasNode.units
             except (TreeException, AttributeError):
@@ -770,7 +772,7 @@ class EFITTree(Equilibrium):
         """
         if self._Jp is None:
             try:
-                JpNode = self._MDSTree.getNode(self._root+'g_eqdsk:pcurrt')
+                JpNode = self._MDSTree.getNode(self._root+self._gfile+':pcurrt')
                 self._Jp = JpNode.data()
                 # Units come in as 'a': am I missing something about the
                 # definition of this quantity?
@@ -784,7 +786,7 @@ class EFITTree(Equilibrium):
         """
         if self._betat is None:
             try:
-                betatNode = self._MDSTree.getNode(self._root+'a_eqdsk:betat')
+                betatNode = self._MDSTree.getNode(self._root+self._afile':betat')
                 self._betat = betatNode.data()
                 self._defaultUnits['_betat'] = betatNode.units
             except (TreeException, AttributeError):
@@ -796,7 +798,7 @@ class EFITTree(Equilibrium):
         """
         if self._betap is None:
             try:
-                betapNode = self._MDSTree.getNode(self._root+'a_eqdsk:betap')
+                betapNode = self._MDSTree.getNode(self._root+self._afile+':betap')
                 self._betap = betapNode.data()
                 self._defaultUnits['_betap'] = betapNode.units
             except (TreeException, AttributeError):
@@ -808,7 +810,7 @@ class EFITTree(Equilibrium):
         """
         if self._Li is None:
             try:
-                LiNode = self._MDSTree.getNode(self._root+'a_eqdsk:ali')
+                LiNode = self._MDSTree.getNode(self._root+self._afile+':ali')
                 self._Li = LiNode.data()
                 self._defaultUnits['_Li'] = LiNode.units
             except (TreeException, AttributeError):
@@ -835,7 +837,7 @@ class EFITTree(Equilibrium):
         """
         if self._diamag is None:
             try:
-                diamagNode = self._MDSTree.getNode(self._root+'a_eqdsk:diamag')
+                diamagNode = self._MDSTree.getNode(self._root+self._afile+':diamag')
                 self._diamag = diamagNode.data()
                 self._defaultUnits['_diamag'] = diamagNode.units
             except (TreeException, AttributeError):
@@ -847,7 +849,7 @@ class EFITTree(Equilibrium):
         """
         if self._betatd is None:
             try:
-                betatdNode = self._MDSTree.getNode(self._root+'a_eqdsk:betatd')
+                betatdNode = self._MDSTree.getNode(self._root+self._afile+':betatd')
                 self._betatd = betatdNode.data()
                 self._defaultUnits['_betatd'] = betatdNode.units
             except (TreeException, AttributeError):
@@ -859,7 +861,7 @@ class EFITTree(Equilibrium):
         """
         if self._betapd is None:
             try:
-                betapdNode = self._MDSTree.getNode(self._root+'a_eqdsk:betapd')
+                betapdNode = self._MDSTree.getNode(self._root+self._afile+':betapd')
                 self._betapd = betapdNode.data()
                 self._defaultUnits['_betapd'] = betapdNode.units
             except (TreeException, AttributeError):
@@ -871,7 +873,7 @@ class EFITTree(Equilibrium):
         """
         if self._tauDiamag is None:
             try:
-                tauDiamagNode = self._MDSTree.getNode(self._root+'a_eqdsk:taudia')
+                tauDiamagNode = self._MDSTree.getNode(self._root+self._afile+':taudia')
                 self._tauDiamag = tauDiamagNode.data()
                 self._defaultUnits['_tauDiamag'] = tauDiamagNode.units
             except (TreeException, AttributeError):
@@ -883,7 +885,7 @@ class EFITTree(Equilibrium):
         """
         if self._WDiamag is None:
             try:
-                WDiamagNode = self._MDSTree.getNode(self._root+'a_eqdsk:wplasmd')
+                WDiamagNode = self._MDSTree.getNode(self._root+self._afile+':wplasmd')
                 self._WDiamag = WDiamagNode.data()
                 self._defaultUnits['_WDiamag'] = WDiamagNode.units
             except (TreeException, AttributeError):
@@ -912,7 +914,7 @@ class EFITTree(Equilibrium):
         """
         if self._WMHD is None:
             try:
-                WMHDNode = self._MDSTree.getNode(self._root+'a_eqdsk:wplasm')
+                WMHDNode = self._MDSTree.getNode(self._root+self._afile+':wplasm')
                 self._WMHD = WMHDNode.data()
                 self._defaultUnits['_WMHD'] = WMHDNode.units
             except (TreeException, AttributeError):
@@ -924,7 +926,7 @@ class EFITTree(Equilibrium):
         """
         if self._tauMHD is None:
             try:
-                tauMHDNode = self._MDSTree.getNode(self._root+'a_eqdsk:taumhd')
+                tauMHDNode = self._MDSTree.getNode(self._root+self._afile+':taumhd')
                 self._tauMHD = tauMHDNode.data()
                 self._defaultUnits['_tauMHD'] = tauMHDNode.units
             except (TreeException, AttributeError):
@@ -936,7 +938,7 @@ class EFITTree(Equilibrium):
         """
         if self._Pinj is None:
             try:
-                PinjNode = self._MDSTree.getNode(self._root+'a_eqdsk:pbinj')
+                PinjNode = self._MDSTree.getNode(self._root+self._afile+':pbinj')
                 self._Pinj = PinjNode.data()
                 self._defaultUnits['_Pinj'] = PinjNode.units
             except (TreeException, AttributeError):
@@ -948,7 +950,7 @@ class EFITTree(Equilibrium):
         """
         if self._Wbdot is None:
             try:
-                WbdotNode = self._MDSTree.getNode(self._root+'a_eqdsk:wbdot')
+                WbdotNode = self._MDSTree.getNode(self._root+self._afile+':wbdot')
                 self._Wbdot = WbdotNode.data()
                 self._defaultUnits['_Wbdot'] = WbdotNode.units
             except (TreeException, AttributeError):
@@ -960,7 +962,7 @@ class EFITTree(Equilibrium):
         """
         if self._Wpdot is None:
             try:
-                WpdotNode = self._MDSTree.getNode(self._root+'a_eqdsk:wpdot')
+                WpdotNode = self._MDSTree.getNode(self._root+self._afile+':wpdot')
                 self._Wpdot = WpdotNode.data()
                 self._defaultUnits['_Wpdot'] = WpdotNode.units
             except (TreeException, AttributeError):
@@ -992,9 +994,9 @@ class EFITTree(Equilibrium):
         """
         if self._Rlimiter is None or self._Zlimiter is None:
             try:
-                limitr = self._MDSTree.getNode(self._root+'g_eqdsk:limitr').data()
-                xlim = self._MDSTree.getNode(self._root+'g_eqdsk:xlim').data()
-                ylim = self._MDSTree.getNode(self._root+'g_eqdsk:ylim').data()
+                limitr = self._MDSTree.getNode(self._root+self._gfile+':limitr').data()
+                xlim = self._MDSTree.getNode(self._root+self._gfile+':xlim').data()
+                ylim = self._MDSTree.getNode(self._root+self._gfile+':ylim').data()
                 npts = len(xlim)
                 
                 if npts < limitr:
