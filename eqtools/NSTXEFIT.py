@@ -63,8 +63,6 @@ class NSTXEFITTree(EFITTree):
         tree: str
             Optional input for EFIT tree, defaults to 'EFIT01'
             (i.e., EFIT data are under \\EFIT01::top.results).
-            For any string TREE (such as 'EFIT02') other than 'EFIT01',
-            data are taken from \\TREE::top.results.
         length_unit: str
             Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
@@ -96,13 +94,10 @@ class NSTXEFITTree(EFITTree):
             window finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
-    def __init__(self, shot, tree='EFIT01', length_unit='m', tspline=False, monotonic=False):
-        if tree.upper() == 'EFIT01':
-            root = '\\analysis::top.results.'
-        else:
-            root = '\\'+tree+'::top.results.'
+    def __init__(self, shot, tree='EFIT01', length_unit='m', gfile='geqdsk', afile='aeqdsk', tspline=False, monotonic=False):
 
-        super(NSTXEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, monotonic=monotonic)
+        root = '\\'+tree+'::top.results.'
+        super(NSTXEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, gfile=gfile, afile=afile, tspline=tspline, monotonic=monotonic)
   
 
 class NSTXEFITTreeProp(NSTXEFITTree, PropertyAccessMixin):
