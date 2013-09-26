@@ -465,7 +465,7 @@ class EFITTree(Equilibrium):
         """
         if self._dupper is None:
             try:
-                dupperNode = self._MDSTree.getNode(self._root+self._afile'+:doutu')
+                dupperNode = self._MDSTree.getNode(self._root+self._afile+':doutu')
                 self._dupper = dupperNode.data()
                 self._defaultUnits['_dupper'] = dupperNode.units
             except TreeException:
@@ -786,7 +786,7 @@ class EFITTree(Equilibrium):
         """
         if self._betat is None:
             try:
-                betatNode = self._MDSTree.getNode(self._root+self._afile':betat')
+                betatNode = self._MDSTree.getNode(self._root+self._afile+':betat')
                 self._betat = betatNode.data()
                 self._defaultUnits['_betat'] = betatNode.units
             except (TreeException, AttributeError):
