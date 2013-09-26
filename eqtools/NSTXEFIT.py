@@ -106,7 +106,7 @@ class NSTXEFITTree(EFITTree):
   
 
 class NSTXEFITTreeProp(NSTXEFITTree, PropertyAccessMixin):
-    """CModEFITTree with the PropertyAccessMixin added to enable property-style
+    """NSTXEFITTree with the PropertyAccessMixin added to enable property-style
     access. This is good for interactive use, but may drag the performance down.
     """
     pass
