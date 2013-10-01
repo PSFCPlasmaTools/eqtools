@@ -1608,7 +1608,8 @@ class Equilibrium(object):
              original_shape,
              single_val,
              single_time) = self._processRZt(psi_norm, psi_norm, t,
-                                             each_t=each_t, make_grid=False, check_space=False)
+                                             each_t=each_t, make_grid=False,
+                                             check_space=False)
         else:
             single_val = True
             try:
@@ -2029,8 +2030,7 @@ class Equilibrium(object):
             if R.ndim != 1 or Z.ndim != 1:
                 raise ValueError('_processRZt: When using the make_grid keyword, the '
                                  'number of dimensions of R and Z must both be one!')
-            else:
-                R, Z = scipy.meshgrid(R, Z)
+            R, Z = scipy.meshgrid(R, Z)
 
         if R.shape != Z.shape:
             raise ValueError('_processRZt: Shape of R and Z arrays must match!')
@@ -2077,8 +2077,9 @@ class Equilibrium(object):
             if t.ndim != 1:
                 raise ValueError("_processRZt: When using the each_t keyword, "
                                  "t must have only one dimension.")
-            R = scipy.tile(R, (len(t), 1, 1))
-            Z = scipy.tile(Z, (len(t), 1, 1))
+            singe_val = False
+            R = scipy.tile(R, [len(t),] + [1,] * R.ndim))
+            Z = scipy.tile(Z, [len(t),] + [1,] * Z.ndim))
             t = t[scipy.indices(R.shape)[0]]
         
         if t.size > 1 and t.shape != R.shape:
