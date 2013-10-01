@@ -2078,8 +2078,8 @@ class Equilibrium(object):
                 raise ValueError("_processRZt: When using the each_t keyword, "
                                  "t must have only one dimension.")
             singe_val = False
-            R = scipy.tile(R, [len(t),] + [1,] * R.ndim))
-            Z = scipy.tile(Z, [len(t),] + [1,] * Z.ndim))
+            R = scipy.tile(R, [len(t),] + [1,] * R.ndim)
+            Z = scipy.tile(Z, [len(t),] + [1,] * Z.ndim)
             t = t[scipy.indices(R.shape)[0]]
         
         if t.size > 1 and t.shape != R.shape:
