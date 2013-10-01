@@ -2066,12 +2066,6 @@ class Equilibrium(object):
         else:
             single_time = False
             t = scipy.asarray(t, dtype=float)
-            # Handle case where there is a single R/Z but multiple t:
-            if single_val:
-                single_val = False
-                R = R * scipy.ones_like(t, dtype=float)
-                Z = Z * scipy.ones_like(t, dtype=float)
-                
         
         if each_t and not single_time:
             if t.ndim != 1:
