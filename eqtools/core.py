@@ -1254,7 +1254,7 @@ class Equilibrium(object):
         
         return unit_factor * self._RZ2Quan(self._getRmidSpline, *args, **kwargs)
 
-    def psinorm2rmid(self, psi_norm, t, each_t=True, return_t=False, rho=False, kind='cubic', length_unit=1):
+    def psinorm2rmid(self, psi_norm, t, **kwargs):
         """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
         
         If tspline is False for this Equilibrium instance, uses
@@ -1287,6 +1287,11 @@ class Equilibrium(object):
                 actually used in evaluating R_mid with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return R_mid).
+            sqrt: Boolean. Set to True to return the square root of the quantity
+                obtained (R_mid or r/a). Only the square root of positive
+                values is taken. Negative values are replaced with zeros,
+                consistent with Steve Wolfe's IDL implementation efit_rz2rho.pro.
+                Default is False (return Quan itself).
             rho: Boolean.
                 Set to True to return r/a (normalized minor radius)
                 instead of R_mid. Default is False (return major radius, R_mid).
@@ -1354,32 +1359,16 @@ class Equilibrium(object):
             
                 R_mid_arr = Eq_instance.psinorm2rmid([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
-
-        (psi_norm_proc,
-         dum,
-         t_proc,
-         time_idxs,
-         original_shape,
-         single_val,
-         single_time) = self._processRZt(psi_norm, psi_norm, t,
-                                         make_grid=False, each_t=each_t, check_space=False)
-
-        # Handling for single-value case:
-        if single_val:
-            psi_norm_proc = psi_norm
         # Convert units from meters to desired target:
+        length_unit = kwargs.pop('length_unit', 1)
         unit_factor = self._getLengthConversionFactor('m', length_unit)
         
         return unit_factor * self._psinorm2Quan(self._getRmidSpline,
-                                                psi_norm_proc,
-                                                time_idxs,
                                                 psi_norm,
                                                 t,
-                                                return_t=return_t,
-                                                rho=rho,
-                                                kind=kind)
+                                                **kwargs)
 
-    def psinorm2volnorm(self, psi_norm, t, each_t=True, return_t=False, kind='cubic'):
+    def psinorm2volnorm(self, psi_norm, t, **kwargs):
         """Calculates the normalized volume corresponding to the passed psi_norm (normalized poloidal flux) values.
 
         If tspline is False for this Equilibrium instance, uses
@@ -1412,6 +1401,11 @@ class Equilibrium(object):
                 actually used in evaluating volnorm with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return volnorm).
+            sqrt: Boolean. Set to True to return the square root of volnorm.
+                Only the square root of positive values is taken. Negative
+                values are replaced with zeros, consistent with Steve Wolfe's
+                IDL implementation efit_rz2rho.pro. Default is False (return
+                volnorm itself).
             kind: String or non-negative int.
                 Specifies the type of interpolation
                 to be performed in getting from psinorm to volnorm. This is
@@ -1457,23 +1451,9 @@ class Equilibrium(object):
             
                 volnorm_arr = Eq_instance.psinorm2volnorm([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
+        return self._psinorm2Quan(self._getVolNormSpline, psi_norm, t, **kwargs)
 
-        (psi_norm_proc,
-         dum,
-         t_proc,
-         time_idxs,
-         original_shape,
-         single_val,
-         single_time) = self._processRZt(psi_norm, psi_norm, t,
-                                         each_t=each_t, make_grid=False, check_space=False)
-
-        # Handling for single-value case:
-        if single_val:
-            psi_norm_proc = psi_norm
-
-        return self._psinorm2Quan(self._getVolNormSpline, psi_norm_proc, time_idxs, psi_norm, t, return_t=return_t, kind=kind)
-
-    def psinorm2phinorm(self, psi_norm, t, each_t=True, return_t=False, kind='cubic'):
+    def psinorm2phinorm(self, psi_norm, t, **kwargs):
         """Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.
 
         If tspline is False for this Equilibrium instance, uses
@@ -1551,28 +1531,14 @@ class Equilibrium(object):
             
                 phinorm_arr = Eq_instance.psinorm2phinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
-
-        (psi_norm_proc,
-         dum,
-         t_proc,
-         time_idxs,
-         original_shape,
-         single_val,
-         single_time) = self._processRZt(psi_norm, psi_norm, t,
-                                         make_grid=False, each_t=each_t, check_space=False)
-
-        # Handling for single-value case:
-        if single_val:
-            psi_norm_proc = psi_norm
-
-            
-        return self._psinorm2Quan(self._getPhiNormSpline, psi_norm_proc, time_idxs, psi_norm, t, return_t=return_t, kind=kind)
+        return self._psinorm2Quan(self._getPhiNormSpline, psi_norm, t, **kwargs)
 
     ###########################
     # Backend Mapping Drivers #
     ###########################
 
-    def _psinorm2Quan(self, spline_func, psi_norm, time_idxs, x, t, return_t=False, sqrt=False, rho=False, kind='cubic'):
+    def _psinorm2Quan(self, spline_func, psi_norm, t, each_t=True, return_t=False,
+                      sqrt=False, rho=False, kind='cubic', time_idxs=None):
         """Convert psinorm to a given quantity.
         
         Utility function for computing a variety of quantities given psi_norm
@@ -1592,6 +1558,12 @@ class Equilibrium(object):
                 and time_idxs was formed from (used to determine output shape).
         
         Kwargs:
+            each_t: Boolean.
+                When True, the elements in `psi_norm` are evaluated at each
+                value in `t`. If True, `t` must have only one dimension (or be
+                a scalar). If False, `t` must match the shape of `psi_norm` or
+                be a scalar. Default is True (evaluate ALL `psi_norm` at each
+                element in `t`).
             return_t: Boolean. Set to True to return a tuple of (Quan,
                 time_idxs), where time_idxs is the array of time indices
                 actually used in evaluating Quan with nearest-neighbor
@@ -1615,6 +1587,9 @@ class Equilibrium(object):
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
+            time_idxs: Array with same shape as `psi_norm` or None.
+                The time indices to use (as computed by _processRZt). Default
+                is None (compute time indices in method).
         
         Returns:
             Quan: Array or scalar float. If all of the input arguments are
@@ -1625,28 +1600,36 @@ class Equilibrium(object):
                 self.getTimeBase()) that were used for nearest-neighbor
                 interpolation. Only returned if return_t is True.
         """
-
-        # Handle single value case properly:
-        try:
-            iter(x)
-        except TypeError:
-            single_value = True
-            psi_norm = scipy.array([psi_norm])
-            time_idxs = scipy.array([time_idxs])
+        if time_idxs is None:
+            (psi_norm,
+             dum,
+             t,
+             time_idxs,
+             original_shape,
+             single_val,
+             single_time) = self._processRZt(psi_norm, psi_norm, t,
+                                             each_t=each_t, make_grid=False, check_space=False)
         else:
-            single_value = False
-
-        # Check for single time for speedy evaluation of these cases:
-        try:
-            iter(t)
-        except TypeError:
-            single_time = True
-        else:
-            single_time = False
-
-        original_shape = psi_norm.shape
-        psi_norm = scipy.reshape(psi_norm, -1)
-        time_idxs = scipy.reshape(time_idxs, -1)
+            single_val = True
+            try:
+                iter(psi_norm)
+            except TypeError:
+                psi_norm = scipy.asarray([psi_norm], dtype=float)
+            else:
+                single_val = False
+                # This is almost certainly redundant for the designed use case,
+                # but should add minimal overhead in either case:
+                psi_norm = scipy.asarray(psi_norm, dtype=float)
+            
+            single_time = (len(time_idxs.flatten()) == 1)
+            
+            original_shape = psi_norm.shape
+            psi_norm = scipy.reshape(psi_norm, -1)
+            time_idxs = scipy.reshape(time_idxs, -1)
+            
+            if not self._tricubic:
+                # TODO: This might waste more time than it saves with long time_idxs:
+                single_time = (len(scipy.unique(time_idxs)) == 1)
 
         if not self._tricubic:
             if single_time:
@@ -1673,12 +1656,12 @@ class Equilibrium(object):
         quan_norm = scipy.reshape(quan_norm, original_shape)
  
         if sqrt:
-            scipy.place(quan_norm, quan_norm < 0, 0)
+            scipy.place(quan_norm, quan_norm < 0, 0.0)
             out = scipy.sqrt(quan_norm)
         else:
             out = quan_norm
 
-        if single_value:
+        if single_val:
             out = out[0]
             time_idxs = time_idxs[0]
  
@@ -1687,7 +1670,7 @@ class Equilibrium(object):
         else:
             return out
 
-    def _RZ2Quan(self, spline_func, R, Z, t, each_t=True, return_t=False, sqrt=False, make_grid=False, rho=False, kind='cubic', length_unit=1):
+    def _RZ2Quan(self, spline_func, R, Z, t, **kwargs):
         """Convert RZ to a given quantity.
         
         Utility function for converting R, Z coordinates to a variety of things
@@ -1787,25 +1770,19 @@ class Equilibrium(object):
                 self.getTimeBase()) that were used for nearest-neighbor
                 interpolation. Only returned if return_t is True.
         """
-
-        psi_norm, time_idxs = self.rz2psinorm(R,
-                                              Z,
-                                              t,
-                                              sqrt=sqrt,
-                                              each_t=each_t,
-                                              return_t=True,
-                                              make_grid=make_grid,
-                                              length_unit=length_unit)
-
+        return_t = kwargs.get('return_t', False)
+        kwargs['return_t'] = True
+        psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
+        kwargs['return_t'] = return_t
+        kwargs.pop('length_unit', 1)
+        # TODO: This technically computes the time indices twice. Is there are
+        # good compromise to get the best of both worlds (nice calling of
+        # _psinorm2Quan AND no recompute)?
         return self._psinorm2Quan(spline_func,
                                   psi_norm,
-                                  time_idxs,
-                                  R,
-                                  t,
-                                  return_t=return_t,
-                                  sqrt=sqrt,
-                                  rho=rho,
-                                  kind=kind)
+                                  self.getTimeBase()[time_idxs],
+                                  time_idxs=time_idxs,
+                                  **kwargs)
 
     ####################
     # Helper Functions #

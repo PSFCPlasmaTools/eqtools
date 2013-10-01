@@ -18,6 +18,8 @@
 
 from .core import Equilibrium
 
+import scipy
+
 class ArrayEquilibrium(Equilibrium):
     """Class to represent an equilibrium specified as arrays of data.
     
@@ -44,7 +46,7 @@ class ArrayEquilibrium(Equilibrium):
             Base unit for any quantity whose dimensions are length to any power.
             Default is 'm'. Valid options are:
             
-            ===========  ===========================================================================================
+            ===========  ===========
             'm'          meters
             'cm'         centimeters
             'mm'         millimeters
@@ -54,8 +56,8 @@ class ArrayEquilibrium(Equilibrium):
             'smoot'      smoots
             'cubit'      cubits
             'hand'       hands
-            'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
-            ===========  ===========================================================================================
+            'default'    meters
+            ===========  ===========
     """
     def __init__(self, psiRZ, rGrid, zGrid, time, q, fluxVol,
                  length_unit='m', tspline=False, fast=False):
@@ -67,8 +69,11 @@ class ArrayEquilibrium(Equilibrium):
         self._fluxVol = scipy.asarray(fluxVol, dtype=float)
         
         self._defaultUnits = {}
+        self._defaultUnits['_psiRZ'] = 'Wb/rad'
         self._defaultUnits['_rGrid'] = 'm'
         self._defaultUnits['_zGrid'] = 'm'
+        self._defaultUnits['_time'] = 's'
+        self._defaultUnits['_qpsi'] = ' '
         self._defaultUnits['_fluxVol'] = 'm^3'
     
     def getTimeBase(self):
@@ -95,3 +100,8 @@ class ArrayEquilibrium(Equilibrium):
                                                       length_unit)
         return unit_factor * self._zGrid.copy()
     
+    def getQProfile(self):
+        """Returns safety factor q profile (over Q values of psinorm from 0 to 1),
+        dimensions are (Q, M)
+        """
+        return self._qpsi.copy()
