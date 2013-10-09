@@ -236,7 +236,7 @@ class NSTXEFITTree(EFITTree):
         """
         if self._volLCFS is None:
             try:
-                volLCFSNode = self._MDSTree.getNode(self._root+self_afile+':volume')
+                volLCFSNode = self._MDSTree.getNode(self._root+self._afile+':volume')
                 self._volLCFS = volLCFSNode.data()
                 self._defaultUnits['_volLCFS'] = volLCFSNode.units
             except TreeException:
