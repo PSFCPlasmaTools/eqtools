@@ -218,7 +218,7 @@ class NSTXEFITTree(EFITTree):
         
         if self._RmidPsi is None:
             try:
-                RmidPsiNode = self._MDSTree.getNode(self._root+'derived:rpres')
+                RmidPsiNode = self._MDSTree.getNode(self._root+'derived:psivsrz0')
                 self._RmidPsi = RmidPsiNode.data()
                 # Units aren't properly stored in the tree for this one!
                 if RmidPsiNode.units != ' ':
