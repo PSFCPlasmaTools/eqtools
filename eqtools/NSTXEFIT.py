@@ -227,7 +227,12 @@ class NSTXEFITTree(EFITTree):
                     self._defaultUnits['_RmidPsi'] = 'm'
             except TreeException:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
+        
+        if self._defaultUnits['_RmidPsi'] != 'Wb/rad':
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
+        else:
+            unit_factor = scipy.array([1.])
+        
         return unit_factor * self._RmidPsi.copy()
         
         
