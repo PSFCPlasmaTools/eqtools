@@ -203,6 +203,25 @@ class NSTXEFITTree(EFITTree):
         self.getVolLCFS()
         self.getQProfile()
         self.getRmidPsi()
+        
+        
+    def getFluxGrid(self):
+        """returns EFIT flux grid, [t,z,r]
+        """
+        if self._psiRZ is None:
+            try:
+                psinode = self._MDSTree.getNode(self._root+self._gfile+':psirz')
+                self._psiRZ = psinode.data()
+                self._rGrid = psinode.dim_of(1).data()[0]
+                self._zGrid = psinode.dim_of(2).data()[0]
+                self._defaultUnits['_psiRZ'] = psinode.units
+                self._defaultUnits['_rGrid'] = psinode.dim_of(1).units
+                self._defaultUnits['_zGrid'] = psinode.dim_of(2).units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._psiRZ.copy()
+        
+        
 
     def getFluxVol(self): 
         """
