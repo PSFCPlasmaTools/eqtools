@@ -231,6 +231,7 @@ class NSTXEFITTree(EFITTree):
         """
         raise NotImplementedError()
         
+        
     def getRmidPsi(self, length_unit=1):
         """ returns maximum major radius of each flux surface [t,psi]
         """
@@ -271,15 +272,18 @@ class NSTXEFITTree(EFITTree):
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
         return unit_factor * self._volLCFS.copy()
 
+
     def rz2volnorm(self,*args,**kwargs):
         """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
         not implemented"""
         raise NotImplementedError()
 
+
     def psinorm2volnorm(self,*args,**kwargs):
         """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
         not implemented"""
         raise NotImplementedError()
+
 
 class NSTXEFITTreeProp(NSTXEFITTree, PropertyAccessMixin):
     """NSTXEFITTree with the PropertyAccessMixin added to enable property-style
