@@ -233,7 +233,7 @@ class NSTXEFITTree(EFITTree):
         else:
             unit_factor = scipy.array([1.])
         
-        with warnings.cath_warnings():
+        with warnings.catch_warnings():
             warnings.filterwarnings("ignore",category=RuntimeWarning)
             return unit_factor * self._RmidPsi.copy()
         
