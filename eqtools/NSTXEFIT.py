@@ -233,7 +233,9 @@ class NSTXEFITTree(EFITTree):
         else:
             unit_factor = scipy.array([1.])
         
-        return unit_factor * self._RmidPsi.copy()
+        with warnings.cath_warnings():
+            warnings.filterwarnings("ignore",category=RuntimeWarning)
+            return unit_factor * self._RmidPsi.copy()
         
         
     def getVolLCFS(self, length_unit=3):
