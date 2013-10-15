@@ -203,6 +203,25 @@ class NSTXEFITTree(EFITTree):
         self.getVolLCFS()
         self.getQProfile()
         self.getRmidPsi()
+        
+        
+    def getFluxGrid(self):
+        """returns EFIT flux grid, [t,z,r]
+        """
+        if self._psiRZ is None:
+            try:
+                psinode = self._MDSTree.getNode(self._root+self._gfile+':psirz')
+                self._psiRZ = psinode.data()
+                self._rGrid = psinode.dim_of(1).data()[0]
+                self._zGrid = psinode.dim_of(2).data()[0]
+                self._defaultUnits['_psiRZ'] = psinode.units
+                self._defaultUnits['_rGrid'] = psinode.dim_of(1).units
+                self._defaultUnits['_zGrid'] = psinode.dim_of(2).units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._psiRZ.copy()
+        
+        
 
     def getFluxVol(self): 
         """
@@ -212,13 +231,14 @@ class NSTXEFITTree(EFITTree):
         """
         raise NotImplementedError()
         
+        
     def getRmidPsi(self, length_unit=1):
         """ returns maximum major radius of each flux surface [t,psi]
         """
         
         if self._RmidPsi is None:
             try:
-                RmidPsiNode = self._MDSTree.getNode(self._root+'derived:rpres')
+                RmidPsiNode = self._MDSTree.getNode(self._root+'derived:psivsrz0')
                 self._RmidPsi = RmidPsiNode.data()
                 # Units aren't properly stored in the tree for this one!
                 if RmidPsiNode.units != ' ':
@@ -227,8 +247,15 @@ class NSTXEFITTree(EFITTree):
                     self._defaultUnits['_RmidPsi'] = 'm'
             except TreeException:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
-        return unit_factor * self._RmidPsi.copy()
+        
+        if self._defaultUnits['_RmidPsi'] != 'Wb/rad':
+            unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
+        else:
+            unit_factor = scipy.array([1.])
+        
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore",category=RuntimeWarning)
+            return unit_factor * self._RmidPsi.copy()
         
         
     def getVolLCFS(self, length_unit=3):
@@ -236,7 +263,7 @@ class NSTXEFITTree(EFITTree):
         """
         if self._volLCFS is None:
             try:
-                volLCFSNode = self._MDSTree.getNode(self._root+self_afile+':volume')
+                volLCFSNode = self._MDSTree.getNode(self._root+self._afile+':volume')
                 self._volLCFS = volLCFSNode.data()
                 self._defaultUnits['_volLCFS'] = volLCFSNode.units
             except TreeException:
@@ -245,15 +272,18 @@ class NSTXEFITTree(EFITTree):
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
         return unit_factor * self._volLCFS.copy()
 
+
     def rz2volnorm(self,*args,**kwargs):
         """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
         not implemented"""
         raise NotImplementedError()
 
+
     def psinorm2volnorm(self,*args,**kwargs):
         """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
         not implemented"""
         raise NotImplementedError()
+
 
 class NSTXEFITTreeProp(NSTXEFITTree, PropertyAccessMixin):
     """NSTXEFITTree with the PropertyAccessMixin added to enable property-style
