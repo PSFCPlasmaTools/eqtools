@@ -1773,9 +1773,12 @@ class Equilibrium(object):
         """
         return_t = kwargs.get('return_t', False)
         kwargs['return_t'] = True
+        kind = kwargs.pop('kind', 'cubic')
+        rho = kwargs.pop('rho', False)
         psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
         kwargs['return_t'] = return_t
         kwargs.pop('length_unit', 1)
+        kwargs.pop('make_grid',False)
         # TODO: This technically computes the time indices twice. Is there are
         # good compromise to get the best of both worlds (nice calling of
         # _psinorm2Quan AND no recompute)?
@@ -1783,6 +1786,7 @@ class Equilibrium(object):
                                   psi_norm,
                                   self.getTimeBase()[time_idxs],
                                   time_idxs=time_idxs,
+                                  kind=kind,
                                   **kwargs)
 
     ####################

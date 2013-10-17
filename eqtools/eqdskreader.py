@@ -989,7 +989,7 @@ class EqdskReader(Equilibrium):
         else:
             return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
-    def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1,*args):
+    def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
         """Maps the given points to the outboard midplane major radius, R_mid.
         Wrapper for Equilibrium.rz2rmid masking timebase dependence.
         
