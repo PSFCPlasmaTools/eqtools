@@ -882,7 +882,7 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def rz2rho(self,method,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
+    def rz2rho(self,method,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1,*args):
         """Convert the passed (R, Z) coordinates into one of several normalized coordinates.
         Wrapper for Equilibrium.rz2rho masking timebase dependence.
         
@@ -989,7 +989,7 @@ class EqdskReader(Equilibrium):
         else:
             return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
-    def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
+    def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1,*args):
         """Maps the given points to the outboard midplane major radius, R_mid.
         Wrapper for Equilibrium.rz2rmid masking timebase dependence.
         
@@ -1083,7 +1083,7 @@ class EqdskReader(Equilibrium):
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':rho,'kind':kind,'length_unit':length_unit}
         return super(EqdskReader,self).rz2rmid(R,Z,t,**kwargs)
 
-    def psinorm2rmid(self,psi_norm,rho=False,kind='cubic',length_unit=1):
+    def psinorm2rmid(self,psi_norm,rho=False,kind='cubic',length_unit=1,*args):
         """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
         
         Args:
@@ -1155,7 +1155,7 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def psinorm2phinorm(self,psi_norm,kind='cubic'):
+    def psinorm2phinorm(self,psi_norm,kind='cubic',*args):
         """Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.
         
         Args:
