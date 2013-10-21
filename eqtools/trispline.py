@@ -60,6 +60,7 @@ class Spline():
     
     Raises:
         ValueError: If any of the dimensions do not match specified f dim
+        
         ValueError: If x,y, or z are not monotonic
         
     Examples:
@@ -131,6 +132,10 @@ class Spline():
 
         Returns:
             val: The interpolated value at (x1,y1,z1).
+            
+        Raises:
+            ValueError: If any of the dimensions exceed the evaluation boundary
+                of the grid
         """
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
