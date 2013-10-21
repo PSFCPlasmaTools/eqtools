@@ -61,7 +61,7 @@ class Spline():
     Examples:
         A
     """
-    def __init__(self, z, y, x, f, regular=True, fast=False):
+    def __init__(self, z, y, x, f, regular=True, fast=True):
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
         self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
         # faces
@@ -132,10 +132,11 @@ class Spline():
         if inp.size != 0:
             
             if self._fast:
-                ix = scipy.digitize(x[inp],self._x) - 1
-                iy = scipy.digitize(y[inp],self._y) - 1
-                iz = scipy.digitize(z[inp],self._z) - 1
+                ix = scipy.clip(scipy.digitize(x[inp],self._x),2,self._x.size - 2) - 1
+                iy = scipy.clip(scipy.digitize(y[inp],self._y),2,self._y.size - 2) - 1
+                iz = scipy.clip(scipy.digitize(z[inp],self._z),2,self._z.size - 2) - 1
                 pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
+                print(ix,iy,iz,pos)
                 indx = scipy.argsort(pos) # I believe this is much faster...
 
                 if self._regular:
@@ -176,6 +177,7 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
                 iy = scipy.digitize(y[inp],self._y) - 1
                 iz = scipy.digitize(z[inp],self._z) - 1
                 pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
+                print(ix,iy,iz,pos)
                 indx = scipy.argsort(pos) # I believe this is much faster...
 
                 if self._regular:
