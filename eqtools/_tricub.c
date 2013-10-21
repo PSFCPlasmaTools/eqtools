@@ -601,7 +601,7 @@ void reg_eval(double val[], double dx0[], double dx1[], double dx2[] , double f[
 		  for(j = 0;j < 4; j++)
 		    { 
 		      fin[findx] = *(f + iter);
-		      printf(" %i %i %f \n",findx,iter,fin[findx]);
+		      /*printf(" %i %i %f \n",findx,iter,fin[findx])*/
 		      findx++;
 		      iter++;
 		    }

@@ -136,7 +136,6 @@ class Spline():
                 iy = scipy.clip(scipy.digitize(y[inp],self._y),2,self._y.size - 2) - 1
                 iz = scipy.clip(scipy.digitize(z[inp],self._z),2,self._z.size - 2) - 1
                 pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
-                print(ix,iy,iz,pos)
                 indx = scipy.argsort(pos) # I believe this is much faster...
 
                 if self._regular:
@@ -154,48 +153,6 @@ class Spline():
                     val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
                 else:
                     val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
-
-        return val
-
-
-class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
-    """the lack of a graceful bounds error causes the fortran to fail hard. This masks the 
-    scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
-    such that it will not fail in use for EqTools
-    """
-    def __init__(self, x, y, z, bbox=[None] *4, kx=3, ky=3, s=0, bounds_error=True, fill_value=scipy.nan):
-
-        xinp = scipy.array(scipy.where(scipy.isfinite(x)))
-        yinp = scipy.array(scipy.where(scipy.isfinite(y)))
-        zinp = scipy.array(scipy.where(scipy.isfinite(z)))
-        inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
-
-        if inp.size != 0:
-            
-            if self._fast:
-                ix = scipy.digitize(x[inp],self._x) - 1
-                iy = scipy.digitize(y[inp],self._y) - 1
-                iz = scipy.digitize(z[inp],self._z) - 1
-                pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
-                print(ix,iy,iz,pos)
-                indx = scipy.argsort(pos) # I believe this is much faster...
-
-                if self._regular:
-                    dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
-                    dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
-                    dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
-                    val[inp] = _tricub.reg_eval(dx,dy,dz,self._f,pos,indx)
-
-                else:
-                    val[inp] = _tricub.nonreg_eval(x[inp],y[inp],z[inp],self._f,self._x,self._y,self._z,pos,indx,ix,iy,iz)
-                    
-            else:
-                
-                if self._regular:
-                    val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
-                else:
-                    val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
-
 
         return val
 
