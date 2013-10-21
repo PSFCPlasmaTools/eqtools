@@ -177,6 +177,41 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
     scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
     such that it will not fail in use for EqTools
     """
+    """
+    Bivariate spline approximation over a rectangular mesh. The lack of a graceful bounds
+    error causes the fortran to fail hard. This masks the scipy.interpolate.RectBivariateSpline
+    with a proper bound checker and value filler such that it will not fail in use for EqTools
+
+    Can be used for both smoothing and interpolating data.
+
+    Args:
+        x: 1 dimensional float
+            1-D array of coordinates in monotonically increasing order.
+
+        y: 1 dimensional float
+            1-D array of coordinates in monotonically increasing order.
+
+        z: array_like
+            2-D array of data with shape (x.size,y.size).
+
+    Kwargs:
+        bbox: 1 dimensional float
+            Sequence of length 4 specifying the boundary of the rectangular
+            approximation domain.  By default,
+            ``bbox=[min(x,tx),max(x,tx), min(y,ty),max(y,ty)]``.
+        
+        kx: integer
+            Degrees of the bivariate spline. Default is 3.
+        
+        ky: integer
+            Degrees of the bivariate spline. Default is 3.
+
+        s : float
+            Positive smoothing factor defined for estimation condition:
+            ``sum((w[i]*(z[i]-s(x[i], y[i])))**2, axis=0) <= s``
+            Default is ``s=0``, which is for interpolation.
+    """
+
     def __init__(self, x, y, z, bbox=[None] *4, kx=3, ky=3, s=0, bounds_error=True, fill_value=scipy.nan):
 
         super(RectBivariateSpline, self).__init__( x, y, z, bbox=bbox, kx=kx, ky=ky, s=s)
@@ -190,6 +225,7 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
 
         Args:
             x_new: array
+
             y_new: array
 
         Returns:
@@ -222,9 +258,20 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
 
 
     def ev(self, xi, yi):
-        """Evaluate spline at points (x[i], y[i]), i=0,...,len(x)-1
-        """
+        """Evaluate the rectBiVariateSpline at (xi,yi).  (x,y)values are
+           checked for being in the bounds of the interpolated data.
 
+        Args:
+            xi: float array
+                input x dimensional values 
+
+            yi: float array
+                input x dimensional values 
+
+        Returns:
+            val: float array
+               evaluated spline at points (x[i], y[i]), i=0,...,len(x)-1
+        """
         idx = self._check_bounds(xi, yi)
         print(idx)
         zi = self.fill_value*scipy.ones(xi.shape)
