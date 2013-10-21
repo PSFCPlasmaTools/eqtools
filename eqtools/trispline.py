@@ -118,7 +118,10 @@ class Spline():
        #     self._regular = regular
 
     def ev(self, z1, y1, x1):
-        """evaluates tricubic spline at point (x1,y1,z1) which is [z1,y1,x1] 
+        """evaluates tricubic spline at point (x1,y1,z1) which is f[z1,y1,x1].
+        Data is grouped into the grid voxels so as to reuse calculated spline
+        coefficents, thus speeding evaluation.  It is recommended that it is
+        evaluated outside of for loops to best utilize this feature.
 
         Args:
             z1: float or 1-dimensional float
