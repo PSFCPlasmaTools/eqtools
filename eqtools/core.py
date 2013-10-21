@@ -1640,6 +1640,7 @@ class Equilibrium(object):
                                  / (self.getRmidOut(length_unit='m')[time_idxs[0]]
                                     - self.getMagR(length_unit='m')[time_idxs[0]]))
             else:
+                # TODO: This can probaby be done a lot better!
                 quan_norm = scipy.zeros(psi_norm.shape)
                 for k in xrange(0, len(quan_norm)):
                     quan_norm[k] = spline_func(time_idxs[k], kind=kind)(psi_norm[k])
