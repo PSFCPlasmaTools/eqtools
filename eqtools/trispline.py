@@ -53,6 +53,10 @@ class Spline():
         regular: Boolean.
             If the grid is known to be regular, forces
             matrix-based fast evaluation of interpolation.
+            
+        fast: Boolean
+            Outdated input to test the indexing performance of the c
+            code vs internal python handling.
     
     Raises:
         ValueError: If any of the dimensions do not match specified f dim
@@ -61,7 +65,7 @@ class Spline():
     Examples:
         temp
     """
-    def __init__(self, z, y, x, f, regular=True, fast=True):
+    def __init__(self, z, y, x, f, regular=True, fast=False):
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
         self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
         # faces
