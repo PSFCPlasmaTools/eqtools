@@ -53,13 +53,18 @@ class Spline():
         regular: Boolean.
             If the grid is known to be regular, forces
             matrix-based fast evaluation of interpolation.
+            
+        fast: Boolean
+            Outdated input to test the indexing performance of the c
+            code vs internal python handling.
     
     Raises:
         ValueError: If any of the dimensions do not match specified f dim
+        
         ValueError: If x,y, or z are not monotonic
         
     Examples:
-        A
+        temp
     """
     def __init__(self, z, y, x, f, regular=True, fast=False):
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
@@ -113,6 +118,28 @@ class Spline():
        #     self._regular = regular
 
     def ev(self, z1, y1, x1):
+        """evaluates tricubic spline at point (x1,y1,z1) which is f[z1,y1,x1].
+        Data is grouped into the grid voxels so as to reuse calculated spline
+        coefficents, thus speeding evaluation.  It is recommended that it is
+        evaluated outside of for loops to best utilize this feature.
+
+        Args:
+            z1: float or 1-dimensional float
+                Position in z dimension. (First dimension of 3d valued grid)
+
+            y1: float or 1-dimensional float
+                Position in y dimension. (Second dimension of 3d valued grid)
+
+            x1: float or 1-dimensional float
+                Position in x dimension. (Third dimension of 3d valued grid)
+
+        Returns:
+            val: The interpolated value at (x1,y1,z1).
+            
+        Raises:
+            ValueError: If any of the dimensions exceed the evaluation boundary
+                of the grid
+        """
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
         z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
@@ -132,9 +159,9 @@ class Spline():
         if inp.size != 0:
             
             if self._fast:
-                ix = scipy.digitize(x[inp],self._x) - 1
-                iy = scipy.digitize(y[inp],self._y) - 1
-                iz = scipy.digitize(z[inp],self._z) - 1
+                ix = scipy.clip(scipy.digitize(x[inp],self._x),2,self._x.size - 2) - 1
+                iy = scipy.clip(scipy.digitize(y[inp],self._y),2,self._y.size - 2) - 1
+                iz = scipy.clip(scipy.digitize(z[inp],self._z),2,self._z.size - 2) - 1
                 pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
                 indx = scipy.argsort(pos) # I believe this is much faster...
 
@@ -162,47 +189,41 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
     scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
     such that it will not fail in use for EqTools
     """
-    def __init__(self, x, y, z, bbox=[None] *4, kx=3, ky=3, s=0, bounds_error=True, fill_value=scipy.nan):
-
-        xinp = scipy.array(scipy.where(scipy.isfinite(x)))
-        yinp = scipy.array(scipy.where(scipy.isfinite(y)))
-        zinp = scipy.array(scipy.where(scipy.isfinite(z)))
-        inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
-
-        if inp.size != 0:
-            
-            if self._fast:
-                ix = scipy.digitize(x[inp],self._x) - 1
-                iy = scipy.digitize(y[inp],self._y) - 1
-                iz = scipy.digitize(z[inp],self._z) - 1
-                pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
-                indx = scipy.argsort(pos) # I believe this is much faster...
-
-                if self._regular:
-                    dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
-                    dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
-                    dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
-                    val[inp] = _tricub.reg_eval(dx,dy,dz,self._f,pos,indx)
-
-                else:
-                    val[inp] = _tricub.nonreg_eval(x[inp],y[inp],z[inp],self._f,self._x,self._y,self._z,pos,indx,ix,iy,iz)
-                    
-            else:
-                
-                if self._regular:
-                    val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
-                else:
-                    val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
-
-
-        return val
-
-
-class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
-    """the lack of a graceful bounds error causes the fortran to fail hard. This masks the 
-    scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
-    such that it will not fail in use for EqTools
     """
+    Bivariate spline approximation over a rectangular mesh. The lack of a graceful bounds
+    error causes the fortran to fail hard. This masks the scipy.interpolate.RectBivariateSpline
+    with a proper bound checker and value filler such that it will not fail in use for EqTools
+
+    Can be used for both smoothing and interpolating data.
+
+    Args:
+        x: 1 dimensional float
+            1-D array of coordinates in monotonically increasing order.
+
+        y: 1 dimensional float
+            1-D array of coordinates in monotonically increasing order.
+
+        z: array_like
+            2-D array of data with shape (x.size,y.size).
+
+    Kwargs:
+        bbox: 1 dimensional float
+            Sequence of length 4 specifying the boundary of the rectangular
+            approximation domain.  By default,
+            ``bbox=[min(x,tx),max(x,tx), min(y,ty),max(y,ty)]``.
+        
+        kx: integer
+            Degrees of the bivariate spline. Default is 3.
+        
+        ky: integer
+            Degrees of the bivariate spline. Default is 3.
+
+        s : float
+            Positive smoothing factor defined for estimation condition:
+            ``sum((w[i]*(z[i]-s(x[i], y[i])))**2, axis=0) <= s``
+            Default is ``s=0``, which is for interpolation.
+    """
+
     def __init__(self, x, y, z, bbox=[None] *4, kx=3, ky=3, s=0, bounds_error=True, fill_value=scipy.nan):
 
         super(RectBivariateSpline, self).__init__( x, y, z, bbox=bbox, kx=kx, ky=ky, s=s)
@@ -216,6 +237,7 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
 
         Args:
             x_new: array
+
             y_new: array
 
         Returns:
@@ -248,9 +270,20 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
 
 
     def ev(self, xi, yi):
-        """Evaluate spline at points (x[i], y[i]), i=0,...,len(x)-1
-        """
+        """Evaluate the rectBiVariateSpline at (xi,yi).  (x,y)values are
+           checked for being in the bounds of the interpolated data.
 
+        Args:
+            xi: float array
+                input x dimensional values 
+
+            yi: float array
+                input x dimensional values 
+
+        Returns:
+            val: float array
+               evaluated spline at points (x[i], y[i]), i=0,...,len(x)-1
+        """
         idx = self._check_bounds(xi, yi)
         print(idx)
         zi = self.fill_value*scipy.ones(xi.shape)

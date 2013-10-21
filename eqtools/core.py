@@ -1774,9 +1774,12 @@ class Equilibrium(object):
         """
         return_t = kwargs.get('return_t', False)
         kwargs['return_t'] = True
+        kind = kwargs.pop('kind', 'cubic')
+        rho = kwargs.pop('rho', False)
         psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
         kwargs['return_t'] = return_t
         kwargs.pop('length_unit', 1)
+        kwargs.pop('make_grid',False)
         # TODO: This technically computes the time indices twice. Is there are
         # good compromise to get the best of both worlds (nice calling of
         # _psinorm2Quan AND no recompute)?
@@ -1784,6 +1787,7 @@ class Equilibrium(object):
                                   psi_norm,
                                   self.getTimeBase()[time_idxs],
                                   time_idxs=time_idxs,
+                                  kind=kind,
                                   **kwargs)
 
     ####################
@@ -2546,6 +2550,50 @@ class Equilibrium(object):
                                                           bounds_error=False)
 
             return self._MagRSpline
+
+    def _getMagZSpline(self, length_unit=1, kind='cubic'):
+        """Gets the univariate spline to interpolate Z_mag as a function of time.
+        
+        Generated for completeness of the core position calculation when using
+        tspline = True
+        
+        Kwargs:
+            length_unit: String or 1. Length unit that R_mag is returned in. If
+                a string is given, it must be a valid unit specifier:
+                    'm'         meters
+                    'cm'        centimeters
+                    'mm'        millimeters
+                    'in'        inches
+                    'ft'        feet
+                    'yd'        yards
+                    'smoot'     smoots
+                    'cubit'     cubits
+                    'hand'      hands
+                    'default'   meters
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R_out returned in meters).
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from t to R_mag. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to R_mid.
+        """
+        if self._MagZSpline:
+            return self._MagZSpline
+        else:
+            self._MagZSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                          self.getMagZ(length_unit=length_unit),
+                                                          kind=kind,
+                                                          bounds_error=False)
+
+            return self._MagZSpline
 
     def _getRmidOutSpline(self, length_unit=1, kind='cubic'):
         """Gets the univariate spline to interpolate R_out as a function of time.

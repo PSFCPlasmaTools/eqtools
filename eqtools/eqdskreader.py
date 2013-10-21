@@ -882,7 +882,7 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def rz2rho(self,method,R,Z,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
+    def rz2rho(self,method,R,Z,t=False,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
         """Convert the passed (R, Z) coordinates into one of several normalized coordinates.
         Wrapper for Equilibrium.rz2rho masking timebase dependence.
         
@@ -909,6 +909,9 @@ class EqdskReader(Equilibrium):
                 is True, Z must have shape (len_Z,).
         
         Kwargs:
+            t: indeterminant.
+                Provides duck typing for inclusion of t values. Passed t values
+                either as an Arg or Kwarg are neglected.
             sqrt: Boolean.
                 Set to True to return the square root of normalized
                 coordinate. Only the square root of positive values is taken.
@@ -989,7 +992,7 @@ class EqdskReader(Equilibrium):
         else:
             return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
-    def rz2rmid(self,R,Z,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
+    def rz2rmid(self,R,Z,t=False,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
         """Maps the given points to the outboard midplane major radius, R_mid.
         Wrapper for Equilibrium.rz2rmid masking timebase dependence.
         
@@ -1008,6 +1011,9 @@ class EqdskReader(Equilibrium):
                 must have shape (len_Z,).
         
         Kwargs:
+            t: indeterminant.
+                Provides duck typing for inclusion of t values. Passed t values
+                either as an Arg or Kwarg are neglected.
             sqrt: Boolean.
                 Set to True to return the square root of midplane
                 radius. Only the square root of positive values is taken.
@@ -1083,7 +1089,7 @@ class EqdskReader(Equilibrium):
         kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':rho,'kind':kind,'length_unit':length_unit}
         return super(EqdskReader,self).rz2rmid(R,Z,t,**kwargs)
 
-    def psinorm2rmid(self,psi_norm,rho=False,kind='cubic',length_unit=1):
+    def psinorm2rmid(self,psi_norm,t=False,rho=False,kind='cubic',length_unit=1):
         """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
         
         Args:
@@ -1092,6 +1098,9 @@ class EqdskReader(Equilibrium):
                 poloidal flux to map to midplane radius.
 
         Kwargs:
+            t: indeterminant.
+                Provides duck typing for inclusion of t values. Passed t values
+                either as an Arg or Kwarg are neglected.
             rho: Boolean.
                 Set to True to return r/a (normalized minor radius)
                 instead of R_mid. Default is False (return major radius, R_mid).
@@ -1155,7 +1164,7 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def psinorm2phinorm(self,psi_norm,kind='cubic'):
+    def psinorm2phinorm(self,psi_norm,t=False,kind='cubic'):
         """Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.
         
         Args:
@@ -1164,6 +1173,9 @@ class EqdskReader(Equilibrium):
                 poloidal flux to map to normalized toroidal flux.
         
         Kwargs:
+            t: indeterminant.
+                Provides duck typing for inclusion of t values. Passed t values
+                either as an Arg or Kwarg are neglected.
             kind: String or non-negative int.
                 Specifies the type of interpolation
                 to be performed in getting from psinorm to phinorm. This is

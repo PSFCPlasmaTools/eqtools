@@ -545,6 +545,14 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
       in0[k] = (int)((double*) bsearch(&x0[k], fx0, ix0, sizeof(double), _bin_double) - &fx0[0]);
       in1[k] = (int)((double*) bsearch(&x1[k], fx1, ix1, sizeof(double), _bin_double) - &fx1[0]);
       in2[k] = (int)((double*) bsearch(&x2[k], fx2, ix2, sizeof(double), _bin_double) - &fx2[0]);
+      /* bounds checking required here, modify in* values */
+      if(in0[k] < 1) in0[k] = 1;
+      else if( in0[k] > ix0 - 3) in0[k] = (double)ix0 - 3;
+      if(in1[k] < 1) in1[k] = 1;
+      else if( in1[k] > ix1 - 3) in1[k] = (double)ix1 - 3;
+      if(in2[k] < 1) in2[k] = 1;
+      else if( in2[k] > ix2 - 3) in2[k] = (double)ix2 - 3;
+
       pos[k] = (in0[k] - 1) + ix0*((in1[k] - 1) + ix1*(in2[k] - 1)); 
     }
   int_argsort(indx, pos, ix);
@@ -593,6 +601,7 @@ void reg_eval(double val[], double dx0[], double dx1[], double dx2[] , double f[
 		  for(j = 0;j < 4; j++)
 		    { 
 		      fin[findx] = *(f + iter);
+		      /*printf(" %i %i %f \n",findx,iter,fin[findx])*/
 		      findx++;
 		      iter++;
 		    }
@@ -632,6 +641,41 @@ void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], dou
       dx0[idx] = modf((x0[idx] - fx0[0])/dx0gap,&tempx0);
       dx1[idx] = modf((x1[idx] - fx1[0])/dx1gap,&tempx1);
       dx2[idx] = modf((x2[idx] - fx2[0])/dx2gap,&tempx2);
+
+      /*bounds checking so that the grid can be properly evaluated */
+      if(tempx0 < 1)
+	{
+	  dx0[idx] = dx0[idx] - 1 + tempx0; 
+	  tempx0 = 1; 
+	}
+      else if(tempx0 > (double)ix0 - 3)
+	{
+	  dx0[idx] = dx0[idx] + (tempx0 - ((double)ix0 - 3));
+	  tempx0 = (double)ix0 - 3;
+	}
+
+      if(tempx1 < 1) 
+	{
+	  dx1[idx] = dx1[idx] - 1 + tempx1; 
+	  tempx1 = 1;
+	}
+      else if(tempx1 > (double)ix1 - 3)
+	{
+	  dx1[idx] = dx1[idx] + (tempx1 - ((double)ix1 - 3));
+	  tempx1 = (double)ix1 - 3;
+	}
+
+      if(tempx2 < 1) 
+	{
+	  dx2[idx] = dx2[idx] - 1 + tempx2; 
+	  tempx2 = 1;
+	}
+      else if(tempx2 > (double)ix2 - 3) 
+	{
+          dx2[idx] = dx2[idx] + (tempx2 - ((double)ix2 - 3));
+	  tempx2 = (double)ix2 - 3;
+	}
+
       pos[idx] = (int)tempx0 - 1 + ix0*((int)tempx1 - 1 + ix1*((int)tempx2 - 1));
     }
   int_argsort(indx, pos, ix);
