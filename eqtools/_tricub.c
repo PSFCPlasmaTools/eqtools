@@ -545,7 +545,14 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
       in0[k] = (int)((double*) bsearch(&x0[k], fx0, ix0, sizeof(double), _bin_double) - &fx0[0]);
       in1[k] = (int)((double*) bsearch(&x1[k], fx1, ix1, sizeof(double), _bin_double) - &fx1[0]);
       in2[k] = (int)((double*) bsearch(&x2[k], fx2, ix2, sizeof(double), _bin_double) - &fx2[0]);
-      /* bounds checking required here */
+      /* bounds checking required here, modify in* values */
+      if(in0[k] < 1) in0[k] = 1;
+      else if( in0[k] > ix0 - 3) in0[k] = (double)ix0 - 3;
+      if(in1[k] < 1) in1[k] = 1;
+      else if( in1[k] > ix1 - 3) in1[k] = (double)ix1 - 3;
+      if(in2[k] < 1) in2[k] = 1;
+      else if( in2[k] > ix2 - 3) in2[k] = (double)ix2 - 3;
+
       pos[k] = (in0[k] - 1) + ix0*((in1[k] - 1) + ix1*(in2[k] - 1)); 
     }
   int_argsort(indx, pos, ix);
