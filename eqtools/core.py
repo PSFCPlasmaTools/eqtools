@@ -1785,7 +1785,7 @@ class Equilibrium(object):
         # _psinorm2Quan AND no recompute)?
         return self._psinorm2Quan(spline_func,
                                   psi_norm,
-                                  self.getTimeBase()[time_idxs],
+                                  t,
                                   time_idxs=time_idxs,
                                   kind=kind,
                                   **kwargs)
@@ -2119,7 +2119,7 @@ class Equilibrium(object):
                 t = scipy.ones(R.shape) * t[0]
                 time_idxs = scipy.ones(R.shape, dtype=int) * time_idxs[0]
         else:
-            time_idxs = scipy.array([None])
+            time_idxs = scipy.array([])
 
         return (R, Z, t, time_idxs, original_shape, single_val, single_time)
 
