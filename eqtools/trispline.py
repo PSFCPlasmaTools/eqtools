@@ -59,7 +59,7 @@ class Spline():
         ValueError: If x,y, or z are not monotonic
         
     Examples:
-        A
+        temp
     """
     def __init__(self, z, y, x, f, regular=True, fast=True):
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
@@ -113,6 +113,21 @@ class Spline():
        #     self._regular = regular
 
     def ev(self, z1, y1, x1):
+        """evaluates tricubic spline at point (x1,y1,z1) which is [z1,y1,x1] 
+
+        Args:
+            z1: float or 1-dimensional float
+                Position in z dimension. (First dimension of 3d valued grid)
+
+            y1: float or 1-dimensional float
+                Position in y dimension. (Second dimension of 3d valued grid)
+
+            x1: float or 1-dimensional float
+                Position in x dimension. (Third dimension of 3d valued grid)
+
+        Returns:
+            val: The interpolated value at (x1,y1,z1).
+        """
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
         z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
