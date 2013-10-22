@@ -487,6 +487,7 @@ class Equilibrium(object):
                 for k in xrange(0, len(t)):
                     out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k])
         else:
+            t = time_idxs
             out_vals = self._getFluxTriSpline().ev(t,Z,R)
 
         # Correct for current sign:
@@ -650,10 +651,8 @@ class Equilibrium(object):
         else:
             # use 1d spline to generate the psi at the core and at boundary.
             #psi = psi.squeeze(psi)
-            t = time_idxs
-            time_idxs = scipy.array([None])
-            psi_boundary = scipy.array(self._getLCFSPsiSpline()(t)).reshape(t.shape)
-            psi_0 = scipy.array(self._getPsi0Spline()(t)).reshape(t.shape)
+            psi_boundary = scipy.array(self._getLCFSPsiSpline()(time_idxs)).reshape(time_idxs.shape)
+            psi_0 = scipy.array(self._getPsi0Spline()(time_idxs)).reshape(time_idxs.shape)
 
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
        
@@ -1634,9 +1633,8 @@ class Equilibrium(object):
             psi_norm = scipy.reshape(psi_norm, -1)
             time_idxs = scipy.reshape(time_idxs, -1)
             
-            if not self._tricubic:
-                # TODO: This might waste more time than it saves with long time_idxs:
-                single_time = (len(scipy.unique(time_idxs)) == 1)
+            # TODO: This might waste more time than it saves with long time_idxs:
+            single_time = (len(scipy.unique(time_idxs)) == 1)
 
         if not self._tricubic:
             if single_time:
@@ -1655,10 +1653,10 @@ class Equilibrium(object):
                                         / (self.getRmidOut(length_unit='m')[time_idxs[k]]
                                            - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(time_idxs).ev(psi_norm, t) #time_idxs is set to None
+            quan_norm = spline_func(time_idxs).ev(psi_norm, time_idxs) #time_idxs is set to None
             if rho:
-                magR = self._getMagRSpline(length_unit='m')(t)
-                quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(t) - magR)
+                magR = self._getMagRSpline(length_unit='m')(time_idxs)
+                quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(time_idxs) - magR)
 
         # Restore original shape:
         quan_norm = scipy.reshape(quan_norm, original_shape)
@@ -1784,7 +1782,6 @@ class Equilibrium(object):
         rho = kwargs.pop('rho', False)
 
         psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
-
         kwargs['return_t'] = return_t
         kwargs.pop('length_unit', 1)
         kwargs.pop('make_grid',False)
@@ -2127,7 +2124,7 @@ class Equilibrium(object):
                 t = scipy.ones(R.shape) * t[0]
                 time_idxs = scipy.ones(R.shape, dtype=int) * time_idxs[0]
         else:
-            time_idxs = scipy.array([None])
+            time_idxs = t
 
         return (R, Z, t, time_idxs, original_shape, single_val, single_time)
 
