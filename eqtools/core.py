@@ -487,8 +487,7 @@ class Equilibrium(object):
                 for k in xrange(0, len(t)):
                     out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k])
         else:
-            t = time_idxs
-            out_vals = self._getFluxTriSpline().ev(t,Z,R)
+            out_vals = self._getFluxTriSpline().ev(time_idxs,Z,R)
 
         # Correct for current sign:
         out_vals = -1 * out_vals * self.getCurrentSign()
