@@ -1543,7 +1543,7 @@ class Equilibrium(object):
     ###########################
 
     def _psinorm2Quan(self, spline_func, psi_norm, t, each_t=True, return_t=False,
-                      sqrt=False, rho=False, kind='cubic', time_idxs=[]):
+                      sqrt=False, rho=False, kind='cubic', time_idxs=None):
         """Convert psinorm to a given quantity.
         
         Utility function for computing a variety of quantities given psi_norm
@@ -1606,7 +1606,7 @@ class Equilibrium(object):
                 interpolation. Only returned if return_t is True.
         """
  
-        if time_idxs == []:
+        if time_idxs is None:
             (psi_norm,
              dum,
              t,
