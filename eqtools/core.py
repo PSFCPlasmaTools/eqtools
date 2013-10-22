@@ -476,7 +476,7 @@ class Equilibrium(object):
                                          make_grid=make_grid,
                                          each_t=each_t,
                                          length_unit=length_unit)
-
+ 
         # Optimized form for single t value case:
         if not self._tricubic:
             if single_time:
@@ -488,6 +488,7 @@ class Equilibrium(object):
                     out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k])
         else:
             out_vals = self._getFluxTriSpline().ev(t,Z,R)
+
         # Correct for current sign:
         out_vals = -1 * out_vals * self.getCurrentSign()
 
@@ -504,6 +505,9 @@ class Equilibrium(object):
             # will reshape time_idxs only if it is utilized (otherwise set to None)
             if not self._tricubic:
                 time_idxs = scipy.reshape(time_idxs, original_shape)
+            else:
+                #there is no easy way around this, this is a product of the time_idxs reliance
+                time_idxs = scipy.reshape(t, original_shape)
 
             return (out, time_idxs)
         else:
@@ -639,17 +643,20 @@ class Equilibrium(object):
                                      make_grid=make_grid,
                                      each_t=each_t,
                                      length_unit=length_unit)
-
+       
         if not self._tricubic:
             psi_boundary = self.getFluxLCFS()[time_idxs]
             psi_0 = self.getFluxAxis()[time_idxs]
         else:
             # use 1d spline to generate the psi at the core and at boundary.
-            psi_boundary = scipy.atleast_1d(self._getLCFSPsiSpline()(t))
-            psi_0 = scipy.atleast_1d(self._getPsi0Spline()(t))
+            #psi = psi.squeeze(psi)
+            t = time_idxs
+            time_idxs = scipy.array([None])
+            psi_boundary = scipy.array(self._getLCFSPsiSpline()(t)).reshape(t.shape)
+            psi_0 = scipy.array(self._getPsi0Spline()(t)).reshape(t.shape)
 
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
-
+       
         if sqrt:
             scipy.place(psi_norm, psi_norm < 0, 0)
             out = scipy.sqrt(psi_norm)
@@ -1538,7 +1545,7 @@ class Equilibrium(object):
     ###########################
 
     def _psinorm2Quan(self, spline_func, psi_norm, t, each_t=True, return_t=False,
-                      sqrt=False, rho=False, kind='cubic', time_idxs=None):
+                      sqrt=False, rho=False, kind='cubic', time_idxs=[]):
         """Convert psinorm to a given quantity.
         
         Utility function for computing a variety of quantities given psi_norm
@@ -1600,7 +1607,8 @@ class Equilibrium(object):
                 self.getTimeBase()) that were used for nearest-neighbor
                 interpolation. Only returned if return_t is True.
         """
-        if time_idxs is None:
+ 
+        if time_idxs == []:
             (psi_norm,
              dum,
              t,
@@ -1621,8 +1629,6 @@ class Equilibrium(object):
                 # This is almost certainly redundant for the designed use case,
                 # but should add minimal overhead in either case:
                 psi_norm = scipy.asarray(psi_norm, dtype=float)
-            
-            single_time = (len(time_idxs.flatten()) == 1)
             
             original_shape = psi_norm.shape
             psi_norm = scipy.reshape(psi_norm, -1)
@@ -1776,7 +1782,9 @@ class Equilibrium(object):
         kwargs['return_t'] = True
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
+
         psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
+
         kwargs['return_t'] = return_t
         kwargs.pop('length_unit', 1)
         kwargs.pop('make_grid',False)
@@ -2071,7 +2079,7 @@ class Equilibrium(object):
         else:
             single_time = False
             t = scipy.asarray(t, dtype=float)
-        
+   
         if each_t and not single_time:
             if t.ndim != 1:
                 raise ValueError("_processRZt: When using the each_t keyword, "
@@ -2080,7 +2088,7 @@ class Equilibrium(object):
             R = scipy.tile(R, [len(t),] + [1,] * R.ndim)
             Z = scipy.tile(Z, [len(t),] + [1,] * Z.ndim)
             t = t[scipy.indices(R.shape)[0]]
-        
+
         if t.size > 1 and t.shape != R.shape:
             if make_grid:
                 raise ValueError('_processRZt: shape of t does not match shape of R '
@@ -2098,7 +2106,7 @@ class Equilibrium(object):
         R = scipy.reshape(R, -1)
         Z = scipy.reshape(Z, -1)
         t = scipy.reshape(t, -1)
-
+ 
         # Takes keyword to bypass for tricubic interpolation
         if not self._tricubic:
             timebase = self.getTimeBase()
@@ -2119,7 +2127,7 @@ class Equilibrium(object):
                 t = scipy.ones(R.shape) * t[0]
                 time_idxs = scipy.ones(R.shape, dtype=int) * time_idxs[0]
         else:
-            time_idxs = scipy.array([])
+            time_idxs = scipy.array([None])
 
         return (R, Z, t, time_idxs, original_shape, single_val, single_time)
 
