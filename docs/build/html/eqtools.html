@@ -61,7 +61,7 @@
 <p>This module provides classes for working with C-Mod EFIT data.</p>
 <dl class="class">
 <dt id="eqtools.CModEFIT.CModEFITTree">
-<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTree</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTree</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>gfile='g_eqdsk'</em>, <em>afile='a_eqdsk'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eqtools.EFIT.EFITTree" title="eqtools.EFIT.EFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.EFIT.EFITTree</span></tt></a></p>
 <p>Inherits <tt class="xref py py-class docutils literal"><span class="pre">EFITTree</span></tt> class. Machine-specific data
 handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
@@ -136,6 +136,16 @@ dimensions are length to any power. Valid options are:</p>
 </div></blockquote>
 <p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
 </li>
+<li><p class="first"><strong>gfile</strong> &#8211;
+str
+Optional input for EFIT geqdsk location name, defaults to &#8216;g_eqdsk&#8217;
+(i.e., EFIT data are under tree::top.results.G_EQDSK)</p>
+</li>
+<li><p class="first"><strong>afile</strong> &#8211;
+str
+Optional input for EFIT aeqdsk location name, defaults to &#8216;a_eqdsk&#8217;
+(i.e., EFIT data are under tree::top.results.A_EQDSK)</p>
+</li>
 <li><p class="first"><strong>tspline</strong> &#8211;
 Boolean
 Sets whether or not interpolation in time is
@@ -158,8 +168,8 @@ increasing. Default is False (use slower, safer method).</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="eqtools.CModEFIT.CModEFITTree.getMachineCrossSection">
-<tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTree.getMachineCrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
+<dt id="eqtools.CModEFIT.CModEFITTree.getMachineCrossSectionFull">
+<tt class="descname">getMachineCrossSectionFull</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTree.getMachineCrossSectionFull" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pulls C-Mod cross-section data from tree, converts to plottable
 vector format for use in other plotting routines</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -181,7 +191,7 @@ The coordinates of the machine cross-section.</td>
 
 <dl class="class">
 <dt id="eqtools.CModEFIT.CModEFITTreeProp">
-<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTreeProp</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTreeProp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTreeProp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">eqtools.CModEFIT.</tt><tt class="descname">CModEFITTreeProp</tt><big>(</big><em>shot</em>, <em>tree='ANALYSIS'</em>, <em>length_unit='m'</em>, <em>gfile='g_eqdsk'</em>, <em>afile='a_eqdsk'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/CModEFIT.html#CModEFITTreeProp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.CModEFIT.CModEFITTreeProp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eqtools.CModEFIT.CModEFITTree" title="eqtools.CModEFIT.CModEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.CModEFIT.CModEFITTree</span></tt></a>, <a class="reference internal" href="#eqtools.core.PropertyAccessMixin" title="eqtools.core.PropertyAccessMixin"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.PropertyAccessMixin</span></tt></a></p>
 <p>CModEFITTree with the PropertyAccessMixin added to enable property-style
 access. This is good for interactive use, but may drag the performance down.</p>
@@ -192,7 +202,7 @@ access. This is good for interactive use, but may drag the performance down.</p>
 <span id="efit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">EFIT</span></tt> Module<a class="headerlink" href="#module-eqtools.EFIT" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="eqtools.EFIT.EFITTree">
-<em class="property">class </em><tt class="descclassname">eqtools.EFIT.</tt><tt class="descname">EFITTree</tt><big>(</big><em>shot</em>, <em>tree</em>, <em>root</em>, <em>length_unit='m'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">eqtools.EFIT.</tt><tt class="descname">EFITTree</tt><big>(</big><em>shot</em>, <em>tree</em>, <em>root</em>, <em>length_unit='m'</em>, <em>gfile='g_eqdsk'</em>, <em>afile='a_eqdsk'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.Equilibrium</span></tt></a></p>
 <p>Inherits Equilibrium class. EFIT-specific data handling class for machines using
 standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
@@ -398,6 +408,14 @@ increasing. Default is False (use slower, safer method).</p>
 <dt id="eqtools.EFIT.EFITTree.getZLCFS">
 <tt class="descname">getZLCFS</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getZLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getZLCFS" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns Z-values of LCFS position [t,n]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.remapLCFS">
+<tt class="descname">remapLCFS</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.EFIT.EFITTree.remapLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
+of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
+restricting the contour to the closed plasma surface and the divertor legs.</p>
 </dd></dl>
 
 <dl class="method">
@@ -709,6 +727,36 @@ increasing. Default is False (use slower, safer method).</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getMachineCrossSection">
+<tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.EFIT.EFITTree.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The requested data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.EFIT.EFITTree.getMachineCrossSectionFull">
+<tt class="descname">getMachineCrossSectionFull</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.EFIT.EFITTree.getMachineCrossSectionFull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns R,Z coordinates of vacuum-vessel wall for plotting routines.</p>
+<p>Absent additional vector-graphic data on machine cross-section, returns
+self.getMachineCrossSection().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The requested data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="eqtools.EFIT.EFITTree.getCurrentSign">
 <tt class="descname">getCurrentSign</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/EFIT.html#EFITTree.getCurrentSign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.EFIT.EFITTree.getCurrentSign" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the sign of the current, based on the check in Steve Wolfe&#8217;s IDL implementation efit_rz2psi.pro.</p>
@@ -778,6 +826,119 @@ Base unit for any quantity whose dimensions are length to any power.
 Default is &#8216;m&#8217;. Valid options are:</p>
 <table border="1" class="last docutils">
 <colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#8216;m&#8217;</td>
+<td>meters</td>
+</tr>
+<tr class="row-even"><td>&#8216;cm&#8217;</td>
+<td>centimeters</td>
+</tr>
+<tr class="row-odd"><td>&#8216;mm&#8217;</td>
+<td>millimeters</td>
+</tr>
+<tr class="row-even"><td>&#8216;in&#8217;</td>
+<td>inches</td>
+</tr>
+<tr class="row-odd"><td>&#8216;ft&#8217;</td>
+<td>feet</td>
+</tr>
+<tr class="row-even"><td>&#8216;yd&#8217;</td>
+<td>yards</td>
+</tr>
+<tr class="row-odd"><td>&#8216;smoot&#8217;</td>
+<td>smoots</td>
+</tr>
+<tr class="row-even"><td>&#8216;cubit&#8217;</td>
+<td>cubits</td>
+</tr>
+<tr class="row-odd"><td>&#8216;hand&#8217;</td>
+<td>hands</td>
+</tr>
+<tr class="row-even"><td>&#8216;default&#8217;</td>
+<td>meters</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getTimeBase">
+<tt class="descname">getTimeBase</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getTimeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getTimeBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the time base vector, array dimensions are (M,).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getFluxGrid">
+<tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getFluxGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the flux array, dimensions are (M, N, P), corresponding to (time, Z, R).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getRGrid">
+<tt class="descname">getRGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getRGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getRGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the radial grid, dimensions are (P,).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getZGrid">
+<tt class="descname">getZGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getZGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the vertical grid, dimensions are (N,).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.FromArrays.ArrayEquilibrium.getQProfile">
+<tt class="descname">getQProfile</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getQProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns safety factor q profile (over Q values of psinorm from 0 to 1),
+dimensions are (Q, M)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-eqtools.NSTXEFIT">
+<span id="nstxefit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">NSTXEFIT</span></tt> Module<a class="headerlink" href="#module-eqtools.NSTXEFIT" title="Permalink to this headline">¶</a></h2>
+<p>This module provides classes for working with NSTX EFIT data.</p>
+<dl class="class">
+<dt id="eqtools.NSTXEFIT.NSTXEFITTree">
+<em class="property">class </em><tt class="descclassname">eqtools.NSTXEFIT.</tt><tt class="descname">NSTXEFITTree</tt><big>(</big><em>shot</em>, <em>tree='EFIT01'</em>, <em>length_unit='m'</em>, <em>gfile='geqdsk'</em>, <em>afile='aeqdsk'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eqtools.EFIT.EFITTree" title="eqtools.EFIT.EFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.EFIT.EFITTree</span></tt></a></p>
+<p>Inherits <tt class="xref py py-class docutils literal"><span class="pre">EFITTree</span></tt> class. Machine-specific data
+handling class for the National Spherical Torus Experiment (NSTX). Pulls EFIT
+data from selected MDS tree and shot, stores as object attributes. Each EFIT
+variable or set of variables is recovered with a corresponding getter method.
+Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
+Additional data are pulled at the first request and stored for subsequent usage.</p>
+<p>Intializes NSTX version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>shot</strong> &#8211;
+(long) int
+NSTX shot index (long)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first last">
+<li><p class="first"><strong>tree</strong> &#8211;
+str
+Optional input for EFIT tree, defaults to &#8216;EFIT01&#8217;
+(i.e., EFIT data are under EFIT01::top.results).</p>
+</li>
+<li><p class="first"><strong>length_unit</strong> &#8211;
+str
+Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
 <col width="11%" />
 <col width="89%" />
 </colgroup>
@@ -814,34 +975,87 @@ Default is &#8216;m&#8217;. Valid options are:</p>
 </tr>
 </tbody>
 </table>
+</div></blockquote>
+<p>Default is &#8216;m&#8217; (all units taken and returned in meters).</p>
+</li>
+<li><p class="first"><strong>gfile</strong> &#8211;
+str
+Optional input for EFIT geqdsk location name, defaults to &#8216;g_eqdsk&#8217;
+(i.e., EFIT data are under tree::top.results.G_EQDSK)</p>
+</li>
+<li><p class="first"><strong>afile</strong> &#8211;
+str
+Optional input for EFIT aeqdsk location name, defaults to &#8216;a_eqdsk&#8217;
+(i.e., EFIT data are under tree::top.results.A_EQDSK)</p>
+</li>
+<li><p class="first"><strong>tspline</strong> &#8211;
+Boolean
+Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).</p>
+</li>
+<li><p class="first"><strong>monotonic</strong> &#8211;
+Boolean
+Sets whether or not the &#8220;monotonic&#8221; form of time
+window finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).</p>
+</li>
+</ul>
 </td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getTimeBase">
-<tt class="descname">getTimeBase</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getTimeBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getTimeBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the time base vector, array dimensions are (M,).</p>
+<dt id="eqtools.NSTXEFIT.NSTXEFITTree.getFluxGrid">
+<tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTree.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTree.getFluxGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns EFIT flux grid, [t,z,r]</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getFluxGrid">
-<tt class="descname">getFluxGrid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getFluxGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getFluxGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the flux array, dimensions are (M, N, P), corresponding to (time, Z, R).</p>
+<dt id="eqtools.NSTXEFIT.NSTXEFITTree.getFluxVol">
+<tt class="descname">getFluxVol</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTree.getFluxVol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTree.getFluxVol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented in NSTXEFIT tree.</p>
+<p>Returns volume within flux surface [psi,t]</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getRGrid">
-<tt class="descname">getRGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getRGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getRGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the radial grid, dimensions are (P,).</p>
+<dt id="eqtools.NSTXEFIT.NSTXEFITTree.getRmidPsi">
+<tt class="descname">getRmidPsi</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTree.getRmidPsi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTree.getRmidPsi" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns maximum major radius of each flux surface [t,psi]</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="eqtools.FromArrays.ArrayEquilibrium.getZGrid">
-<tt class="descname">getZGrid</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/FromArrays.html#ArrayEquilibrium.getZGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.FromArrays.ArrayEquilibrium.getZGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a copy of the vertical grid, dimensions are (N,).</p>
+<dt id="eqtools.NSTXEFIT.NSTXEFITTree.getVolLCFS">
+<tt class="descname">getVolLCFS</tt><big>(</big><em>length_unit=3</em><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTree.getVolLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTree.getVolLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns volume within LCFS [t]</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="eqtools.NSTXEFIT.NSTXEFITTree.rz2volnorm">
+<tt class="descname">rz2volnorm</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTree.rz2volnorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTree.rz2volnorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
+not implemented</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.NSTXEFIT.NSTXEFITTree.psinorm2volnorm">
+<tt class="descname">psinorm2volnorm</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTree.psinorm2volnorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTree.psinorm2volnorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
+not implemented</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="eqtools.NSTXEFIT.NSTXEFITTreeProp">
+<em class="property">class </em><tt class="descclassname">eqtools.NSTXEFIT.</tt><tt class="descname">NSTXEFITTreeProp</tt><big>(</big><em>shot</em>, <em>tree='EFIT01'</em>, <em>length_unit='m'</em>, <em>gfile='geqdsk'</em>, <em>afile='aeqdsk'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/NSTXEFIT.html#NSTXEFITTreeProp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.NSTXEFIT.NSTXEFITTreeProp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#eqtools.NSTXEFIT.NSTXEFITTree" title="eqtools.NSTXEFIT.NSTXEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.NSTXEFIT.NSTXEFITTree</span></tt></a>, <a class="reference internal" href="#eqtools.core.PropertyAccessMixin" title="eqtools.core.PropertyAccessMixin"><tt class="xref py py-class docutils literal"><span class="pre">eqtools.core.PropertyAccessMixin</span></tt></a></p>
+<p>NSTXEFITTree with the PropertyAccessMixin added to enable property-style
+access. This is good for interactive use, but may drag the performance down.</p>
 </dd></dl>
 
 </div>
@@ -1012,9 +1226,51 @@ If a method called &#8216;get&#8217;+name already exists.</p>
 
 </dd></dl>
 
+<dl class="function">
+<dt id="eqtools.core.inPolygon">
+<tt class="descclassname">eqtools.core.</tt><tt class="descname">inPolygon</tt><big>(</big><em>polyx</em>, <em>polyy</em>, <em>pointx</em>, <em>pointy</em><big>)</big><a class="headerlink" href="#eqtools.core.inPolygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function calculating whether a given point is within a 2D polygon.</p>
+<p>Given an array of X,Y coordinates describing a 2D polygon, checks whether
+a point given by x,y coordinates lies within the polygon.  Operates via a
+ray-casting approach - the function projects a semi-infinite ray parallel to the
+positive horizontal axis, and counts how many edges of the polygon this ray intersects.
+For a simply-connected polygon, this determines whether the point is inside (even number
+of crossings) or outside (odd number of crossings) the polygon, by the Jordan Curve Theorem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
+<li><strong>polyx</strong> &#8211;
+Array-like.
+Array of x-coordinates of the vertices of the polygon.</li>
+<li><strong>polyy</strong> &#8211;
+Array-like.
+Array of y-coordinates of the vertices of the polygon.</li>
+<li><strong>pointx</strong> &#8211;
+Int or float.
+x-coordinate of test point.</li>
+<li><strong>pointy</strong> &#8211;
+Int or float.
+y-coordinate of test point.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>result</em> &#8211;
+Boolean.</p>
+<blockquote>
+<div><p>True/False result for whether the point is contained within the polygon.</p>
+</div></blockquote>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="class">
 <dt id="eqtools.core.Equilibrium">
-<em class="property">class </em><tt class="descclassname">eqtools.core.</tt><tt class="descname">Equilibrium</tt><big>(</big><em>length_unit='m'</em>, <em>tspline=False</em>, <em>monotonic=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">eqtools.core.</tt><tt class="descname">Equilibrium</tt><big>(</big><em>length_unit='m'</em>, <em>tspline=False</em>, <em>monotonic=False</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>Abstract class of data handling object for magnetic reconstruction outputs.</p>
 <p>Defines the mapping routines and method fingerprints necessary.
@@ -1096,6 +1352,12 @@ Boolean.
 Sets whether or not the &#8220;monotonic&#8221; form of time window
 finding is used. If True, the timebase must be monotonically
 increasing. Default is False (use slower, safer method).</p>
+</li>
+<li><p class="first"><strong>verbose</strong> &#8211;
+Boolean.
+Allows or blocks console readout during operation.  Defaults to True,
+displaying useful information for the user.  Set to False for quiet
+usage or to avoid console clutter for multiple instances.</p>
 </li>
 </ul>
 </td>
@@ -2263,7 +2525,7 @@ and 1D vector of vertical positions Z at time t=0.2s:</p>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.psinorm2rmid">
-<tt class="descname">psinorm2rmid</tt><big>(</big><em>psi_norm</em>, <em>t</em>, <em>each_t=True</em>, <em>return_t=False</em>, <em>rho=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.psinorm2rmid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.psinorm2rmid" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">psinorm2rmid</tt><big>(</big><em>psi_norm</em>, <em>t</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.psinorm2rmid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.psinorm2rmid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.</p>
 <p>If tspline is False for this Equilibrium instance, uses
 scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
@@ -2306,6 +2568,13 @@ time_idxs), where time_idxs is the array of time indices
 actually used in evaluating R_mid with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return R_mid).</p>
+</li>
+<li><p class="first"><strong>sqrt</strong> &#8211;
+Boolean. Set to True to return the square root of the quantity
+obtained (R_mid or r/a). Only the square root of positive
+values is taken. Negative values are replaced with zeros,
+consistent with Steve Wolfe&#8217;s IDL implementation efit_rz2rho.pro.
+Default is False (return Quan itself).</p>
 </li>
 <li><p class="first"><strong>rho</strong> &#8211;
 Boolean.
@@ -2415,7 +2684,7 @@ values are all the same:</p>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.psinorm2volnorm">
-<tt class="descname">psinorm2volnorm</tt><big>(</big><em>psi_norm</em>, <em>t</em>, <em>each_t=True</em>, <em>return_t=False</em>, <em>kind='cubic'</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.psinorm2volnorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.psinorm2volnorm" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">psinorm2volnorm</tt><big>(</big><em>psi_norm</em>, <em>t</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.psinorm2volnorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.psinorm2volnorm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the normalized volume corresponding to the passed psi_norm (normalized poloidal flux) values.</p>
 <p>If tspline is False for this Equilibrium instance, uses
 scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
@@ -2457,6 +2726,12 @@ time_idxs), where time_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return volnorm).</li>
+<li><strong>sqrt</strong> &#8211;
+Boolean. Set to True to return the square root of volnorm.
+Only the square root of positive values is taken. Negative
+values are replaced with zeros, consistent with Steve Wolfe&#8217;s
+IDL implementation efit_rz2rho.pro. Default is False (return
+volnorm itself).</li>
 <li><strong>kind</strong> &#8211;
 String or non-negative int.
 Specifies the type of interpolation
@@ -2512,7 +2787,7 @@ values are all the same:</p>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.psinorm2phinorm">
-<tt class="descname">psinorm2phinorm</tt><big>(</big><em>psi_norm</em>, <em>t</em>, <em>each_t=True</em>, <em>return_t=False</em>, <em>kind='cubic'</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.psinorm2phinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.psinorm2phinorm" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">psinorm2phinorm</tt><big>(</big><em>psi_norm</em>, <em>t</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.psinorm2phinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.psinorm2phinorm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.</p>
 <p>If tspline is False for this Equilibrium instance, uses
 scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
@@ -2677,6 +2952,17 @@ Third dimension: R</dd>
 <tt class="descname">getZLCFS</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getZLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getZLCFS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract method.  See child classes for implementation.</p>
 <p>Returns Z-positions (n points) mapping LCFS [t,n]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.core.Equilibrium.remapLCFS">
+<tt class="descname">remapLCFS</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.core.Equilibrium.remapLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Overwrites stored R,Z positions of LCFS with explicitly calculated psinorm=1
+surface.  This surface is then masked using core.inPolygon() to only draw within
+vacuum vessel, the end result replacing RLCFS, ZLCFS with an R,Z array showing
+the divertor legs of the flux surface in addition to the core-enclosing closed
+flux surface.</p>
 </dd></dl>
 
 <dl class="method">
@@ -3023,13 +3309,36 @@ Acts as wrapper to direct data-access routines from within object.</p>
 <dt id="eqtools.core.Equilibrium.getMachineCrossSection">
 <tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.getMachineCrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract method.  See child classes for implementation.</p>
-<p>Returns (R,Z) coordinates of machine wall cross-section for plotting routines.</p>
+<p>Returns (R,Z) coordinates of vacuum wall cross-section for plotting/masking routines.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.core.Equilibrium.getMachineCrossSectionFull">
+<tt class="descname">getMachineCrossSectionFull</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.core.Equilibrium.getMachineCrossSectionFull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method.  See child classes for implementation.</p>
+<p>Returns (R,Z) coordinates of machine wall cross-section for plotting routines.
+Returns a more detailed cross-section than getLimiter(), generally a vector map
+displaying non-critical cross-section information.  If this is unavailable, this
+should point to self.getMachineCrossSection(), which pulls the limiter outline
+stored by default in data files e.g. g-eqdsk files.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="eqtools.core.Equilibrium.plotFlux">
-<tt class="descname">plotFlux</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.plotFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.plotFlux" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">plotFlux</tt><big>(</big><em>fill=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/core.html#Equilibrium.plotFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.core.Equilibrium.plotFlux" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots flux contours directly from psi grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><strong>fill</strong> &#8211;
+Boolean.
+Set True to plot filled contours.  Set False (default) to plot white-background
+color contours.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -3569,7 +3878,7 @@ in all cases.</td>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.rz2rho">
-<tt class="descname">rz2rho</tt><big>(</big><em>method</em>, <em>R</em>, <em>Z</em>, <em>sqrt=False</em>, <em>make_grid=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.rz2rho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.rz2rho" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">rz2rho</tt><big>(</big><em>method</em>, <em>R</em>, <em>Z</em>, <em>t=False</em>, <em>sqrt=False</em>, <em>make_grid=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.rz2rho"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.rz2rho" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the passed (R, Z) coordinates into one of several normalized coordinates.
 Wrapper for Equilibrium.rz2rho masking timebase dependence.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -3620,6 +3929,11 @@ is True, Z must have shape (len_Z,).</p>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
+<li><p class="first"><strong>t</strong> &#8211;
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.</p>
+</li>
 <li><p class="first"><strong>sqrt</strong> &#8211;
 Boolean.
 Set to True to return the square root of normalized
@@ -3734,7 +4048,7 @@ and 1D vector of vertical positions Z:</p>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.rz2rmid">
-<tt class="descname">rz2rmid</tt><big>(</big><em>R</em>, <em>Z</em>, <em>sqrt=False</em>, <em>make_grid=False</em>, <em>rho=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.rz2rmid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.rz2rmid" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">rz2rmid</tt><big>(</big><em>R</em>, <em>Z</em>, <em>t=False</em>, <em>sqrt=False</em>, <em>make_grid=False</em>, <em>rho=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.rz2rmid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.rz2rmid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps the given points to the outboard midplane major radius, R_mid.
 Wrapper for Equilibrium.rz2rmid masking timebase dependence.</p>
 <p>Based on the IDL version efit_rz2rmid.pro by Steve Wolfe.</p>
@@ -3760,6 +4074,11 @@ must have shape (len_Z,).</li>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
+<li><p class="first"><strong>t</strong> &#8211;
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.</p>
+</li>
 <li><p class="first"><strong>sqrt</strong> &#8211;
 Boolean.
 Set to True to return the square root of midplane
@@ -3881,7 +4200,7 @@ and 1D vector of vertical positions Z:</p>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.psinorm2rmid">
-<tt class="descname">psinorm2rmid</tt><big>(</big><em>psi_norm</em>, <em>rho=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.psinorm2rmid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.psinorm2rmid" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">psinorm2rmid</tt><big>(</big><em>psi_norm</em>, <em>t=False</em>, <em>rho=False</em>, <em>kind='cubic'</em>, <em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.psinorm2rmid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.psinorm2rmid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3895,6 +4214,11 @@ poloidal flux to map to midplane radius.</p>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first">
+<li><p class="first"><strong>t</strong> &#8211;
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.</p>
+</li>
 <li><p class="first"><strong>rho</strong> &#8211;
 Boolean.
 Set to True to return r/a (normalized minor radius)
@@ -3996,19 +4320,25 @@ is not read from a/g-files.</p>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.psinorm2phinorm">
-<tt class="descname">psinorm2phinorm</tt><big>(</big><em>psi_norm</em>, <em>kind='cubic'</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.psinorm2phinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.psinorm2phinorm" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">psinorm2phinorm</tt><big>(</big><em>psi_norm</em>, <em>t=False</em>, <em>kind='cubic'</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.psinorm2phinorm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.psinorm2phinorm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><strong>psi_norm</strong> &#8211;
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>psi_norm</strong> &#8211;
 Array-like or scalar float.
 Values of the normalized
-poloidal flux to map to normalized toroidal flux.</td>
+poloidal flux to map to normalized toroidal flux.</p>
+</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><strong>kind</strong> &#8211;
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> &#8211;
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.</li>
+<li><strong>kind</strong> &#8211;
 String or non-negative int.
 Specifies the type of interpolation
 to be performed in getting from psinorm to phinorm. This is
@@ -4018,12 +4348,17 @@ If this keyword is an integer, it specifies the order of spline
 to use. See the documentation for interp1d for more details.
 Default value is &#8216;cubic&#8217; (3rd order spline interpolation). On
 some builds of scipy, this can cause problems, in which case
-you should try &#8216;linear&#8217; until you can rebuild your scipy install.</td>
+you should try &#8216;linear&#8217; until you can rebuild your scipy install.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><em>phinorm</em> &#8211;
-Array or scalar float. If all of the input arguments are<blockquote>
-<div>scalar, then a scalar is returned. Otherwise, a scipy Array
-instance is returned.</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>phinorm</em> &#8211;
+Array or scalar float. If all of the input arguments are</p>
+<blockquote>
+<div><p>scalar, then a scalar is returned. Otherwise, a scipy Array
+instance is returned.</p>
+</div></blockquote>
+</p>
 </td>
 </tr>
 </tbody>
@@ -4095,6 +4430,14 @@ values are all the same:</p>
 <dt id="eqtools.eqdskreader.EqdskReader.getZLCFS">
 <tt class="descname">getZLCFS</tt><big>(</big><em>length_unit=1</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.getZLCFS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.getZLCFS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns array of Z-values of LCFS</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.eqdskreader.EqdskReader.remapLCFS">
+<tt class="descname">remapLCFS</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.remapLCFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
+of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
+restricting the contour to the closed plasma surface and the divertor legs.</p>
 </dd></dl>
 
 <dl class="method">
@@ -4780,12 +5123,18 @@ raised if no attribute is found.</td>
 <dt id="eqtools.eqdskreader.EqdskReader.getMachineCrossSection">
 <tt class="descname">getMachineCrossSection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.getMachineCrossSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.getMachineCrossSection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to pull machine cross-section from data storage, convert to standard format for plotting routine.</p>
-<p>Not implemented for eqdsk class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="eqtools.eqdskreader.EqdskReader.getMachineCrossSectionFull">
+<tt class="descname">getMachineCrossSectionFull</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.getMachineCrossSectionFull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns vectorization of machine cross-section.</p>
+<p>Absent additional data (not found in eqdsks) simply returns self.getMachineCrossSection().</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.plotFlux">
-<tt class="descname">plotFlux</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.plotFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.plotFlux" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">plotFlux</tt><big>(</big><em>fill=True</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.plotFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.plotFlux" title="Permalink to this definition">¶</a></dt>
 <dd><p>streamlined plotting of flux contours directly from psi grid</p>
 </dd></dl>
 
@@ -4888,8 +5237,143 @@ pseudo-private name.</td>
 </dd></dl>
 
 </div>
-<div class="section" id="trispline-module">
-<h2><tt class="xref py py-mod docutils literal"><span class="pre">trispline</span></tt> Module<a class="headerlink" href="#trispline-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-eqtools.trispline">
+<span id="trispline-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">trispline</span></tt> Module<a class="headerlink" href="#module-eqtools.trispline" title="Permalink to this headline">¶</a></h2>
+<p>This module provides interface to the tricubic spline interpolator.  It also contains an enhanced bivariate spline which generates bounds errors.</p>
+<dl class="class">
+<dt id="eqtools.trispline.Spline">
+<em class="property">class </em><tt class="descclassname">eqtools.trispline.</tt><tt class="descname">Spline</tt><big>(</big><em>z</em>, <em>y</em>, <em>x</em>, <em>f</em>, <em>regular=True</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/eqtools/trispline.html#Spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.trispline.Spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tricubic interpolating spline with forced edge derivative equal zero
+conditions.  It assumes a cartesian grid.</p>
+<p>Create a new Spline instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> &#8211;
+1-dimensional float.
+Values of the positions of the 1st
+Dimension of f. Must be monotonic without duplicates.</li>
+<li><strong>y</strong> &#8211;
+1-dimensional float.
+Values of the positions of the 2nd
+dimension of f. Must be monotonic without duplicates.</li>
+<li><strong>x</strong> &#8211;
+1-dimensional float.
+Values of the positions of the 3rd
+dimension of f. Must be monotonic without duplicates.</li>
+<li><strong>f</strong> &#8211;
+3-dimensional float array.
+f[z,y,x]. NaN and Inf will
+affect interpolation in 4x4x4 space about its value.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>regular</strong> &#8211;
+Boolean.
+If the grid is known to be regular, forces
+matrix-based fast evaluation of interpolation.</li>
+<li><strong>fast</strong> &#8211;
+Boolean
+Outdated input to test the indexing performance of the c
+code vs internal python handling.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt> &#8211; 
+If any of the dimensions do not match specified f dim</li>
+<li><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt> &#8211; 
+If x,y, or z are not monotonic</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>temp</p>
+<dl class="method">
+<dt id="eqtools.trispline.Spline.ev">
+<tt class="descname">ev</tt><big>(</big><em>z1</em>, <em>y1</em>, <em>x1</em><big>)</big><a class="reference internal" href="_modules/eqtools/trispline.html#Spline.ev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.trispline.Spline.ev" title="Permalink to this definition">¶</a></dt>
+<dd><p>evaluates tricubic spline at point (x1,y1,z1) which is f[z1,y1,x1].
+Data is grouped into the grid voxels so as to reuse calculated spline
+coefficents, thus speeding evaluation.  It is recommended that it is
+evaluated outside of for loops to best utilize this feature.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
+<li><strong>z1</strong> &#8211;
+float or 1-dimensional float
+Position in z dimension. (First dimension of 3d valued grid)</li>
+<li><strong>y1</strong> &#8211;
+float or 1-dimensional float
+Position in y dimension. (Second dimension of 3d valued grid)</li>
+<li><strong>x1</strong> &#8211;
+float or 1-dimensional float
+Position in x dimension. (Third dimension of 3d valued grid)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><em>val</em> &#8211;
+The interpolated value at (x1,y1,z1).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last"><tt class="xref py py-exc docutils literal"><span class="pre">ValueError</span></tt> &#8211; 
+If any of the dimensions exceed the evaluation boundary
+of the grid</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="eqtools.trispline.RectBivariateSpline">
+<em class="property">class </em><tt class="descclassname">eqtools.trispline.</tt><tt class="descname">RectBivariateSpline</tt><big>(</big><em>x, y, z, bbox=[None, None, None, None], kx=3, ky=3, s=0, bounds_error=True, fill_value=nan</em><big>)</big><a class="reference internal" href="_modules/eqtools/trispline.html#RectBivariateSpline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.trispline.RectBivariateSpline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">scipy.interpolate.fitpack2.RectBivariateSpline</span></tt></p>
+<p>the lack of a graceful bounds error causes the fortran to fail hard. This masks the
+scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
+such that it will not fail in use for EqTools</p>
+<dl class="method">
+<dt id="eqtools.trispline.RectBivariateSpline.ev">
+<tt class="descname">ev</tt><big>(</big><em>xi</em>, <em>yi</em><big>)</big><a class="reference internal" href="_modules/eqtools/trispline.html#RectBivariateSpline.ev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.trispline.RectBivariateSpline.ev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the rectBiVariateSpline at (xi,yi).  (x,y)values are
+checked for being in the bounds of the interpolated data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><ul class="first simple">
+<li><strong>xi</strong> &#8211;
+float array
+input x dimensional values</li>
+<li><strong>yi</strong> &#8211;
+float array
+input x dimensional values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p><em>val</em> &#8211;
+float array</p>
+<blockquote>
+<div><p>evaluated spline at points (x[i], y[i]), i=0,...,len(x)-1</p>
+</div></blockquote>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -4906,11 +5390,12 @@ pseudo-private name.</td>
 <li><a class="reference internal" href="#module-eqtools.CModEFIT"><tt class="docutils literal"><span class="pre">CModEFIT</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.EFIT"><tt class="docutils literal"><span class="pre">EFIT</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.FromArrays"><tt class="docutils literal"><span class="pre">FromArrays</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-eqtools.NSTXEFIT"><tt class="docutils literal"><span class="pre">NSTXEFIT</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.afilereader"><tt class="docutils literal"><span class="pre">afilereader</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.core"><tt class="docutils literal"><span class="pre">core</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.eqdskreader"><tt class="docutils literal"><span class="pre">eqdskreader</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-eqtools.pfilereader"><tt class="docutils literal"><span class="pre">pfilereader</span></tt> Module</a></li>
-<li><a class="reference internal" href="#trispline-module"><tt class="docutils literal"><span class="pre">trispline</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-eqtools.trispline"><tt class="docutils literal"><span class="pre">trispline</span></tt> Module</a></li>
 </ul>
 </li>
 </ul>

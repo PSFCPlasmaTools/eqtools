@@ -13,7 +13,7 @@
 \hypersetup{bookmarksdepth=3}
 
 \title{eqtools Documentation}
-\date{September 12, 2013}
+\date{October 23, 2013}
 \release{0.0}
 \author{Mark Chilenski, Ian Faust and John Walk}
 \newcommand{\sphinxlogo}{}
@@ -143,7 +143,7 @@ This module provides classes for working with C-Mod EFIT data.
 \index{CModEFITTree (class in eqtools.CModEFIT)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTree}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{monotonic=False}}{}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTree}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{gfile='g\_eqdsk'}, \emph{afile='a\_eqdsk'}, \emph{tspline=False}, \emph{monotonic=False}}{}
 Bases: {\hyperref[eqtools:eqtools.EFIT.EFITTree]{\code{eqtools.EFIT.EFITTree}}}
 
 Inherits \code{EFITTree} class. Machine-specific data
@@ -237,6 +237,18 @@ whatever the default in the tree is (no conversion is performed, units may be in
 Default is `m' (all units taken and returned in meters).
 
 \item {} 
+\textbf{gfile} --
+str
+Optional input for EFIT geqdsk location name, defaults to `g\_eqdsk'
+(i.e., EFIT data are under tree::top.results.G\_EQDSK)
+
+\item {} 
+\textbf{afile} --
+str
+Optional input for EFIT aeqdsk location name, defaults to `a\_eqdsk'
+(i.e., EFIT data are under tree::top.results.A\_EQDSK)
+
+\item {} 
 \textbf{tspline} --
 Boolean
 Sets whether or not interpolation in time is
@@ -257,10 +269,10 @@ increasing. Default is False (use slower, safer method).
 \end{itemize}
 
 \end{description}\end{quote}
-\index{getMachineCrossSection() (eqtools.CModEFIT.CModEFITTree method)}
+\index{getMachineCrossSectionFull() (eqtools.CModEFIT.CModEFITTree method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTree.getMachineCrossSectionFull}\pysiglinewithargsret{\bfcode{getMachineCrossSectionFull}}{}{}
 Pulls C-Mod cross-section data from tree, converts to plottable
 vector format for use in other plotting routines
 \begin{quote}\begin{description}
@@ -283,7 +295,7 @@ The coordinates of the machine cross-section.
 \index{CModEFITTreeProp (class in eqtools.CModEFIT)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTreeProp}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTreeProp}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{monotonic=False}}{}
+\phantomsection\label{eqtools:eqtools.CModEFIT.CModEFITTreeProp}\pysiglinewithargsret{\strong{class }\code{eqtools.CModEFIT.}\bfcode{CModEFITTreeProp}}{\emph{shot}, \emph{tree='ANALYSIS'}, \emph{length\_unit='m'}, \emph{gfile='g\_eqdsk'}, \emph{afile='a\_eqdsk'}, \emph{tspline=False}, \emph{monotonic=False}}{}
 Bases: {\hyperref[eqtools:eqtools.CModEFIT.CModEFITTree]{\code{eqtools.CModEFIT.CModEFITTree}}}, {\hyperref[eqtools:eqtools.core.PropertyAccessMixin]{\code{eqtools.core.PropertyAccessMixin}}}
 
 CModEFITTree with the PropertyAccessMixin added to enable property-style
@@ -297,7 +309,7 @@ access. This is good for interactive use, but may drag the performance down.
 \label{eqtools:efit-module}\label{eqtools:module-eqtools.EFIT}\index{eqtools.EFIT (module)}\index{EFITTree (class in eqtools.EFIT)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.EFIT.}\bfcode{EFITTree}}{\emph{shot}, \emph{tree}, \emph{root}, \emph{length\_unit='m'}, \emph{tspline=False}, \emph{monotonic=False}}{}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.EFIT.}\bfcode{EFITTree}}{\emph{shot}, \emph{tree}, \emph{root}, \emph{length\_unit='m'}, \emph{gfile='g\_eqdsk'}, \emph{afile='a\_eqdsk'}, \emph{tspline=False}, \emph{monotonic=False}}{}
 Bases: {\hyperref[eqtools:eqtools.core.Equilibrium]{\code{eqtools.core.Equilibrium}}}
 
 Inherits Equilibrium class. EFIT-specific data handling class for machines using
@@ -556,6 +568,16 @@ returns R-values of LCFS position {[}t,n{]}
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{\emph{length\_unit=1}}{}
 returns Z-values of LCFS position {[}t,n{]}
+
+\end{fulllineitems}
+
+\index{remapLCFS() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.remapLCFS}\pysiglinewithargsret{\bfcode{remapLCFS}}{}{}
+Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
+of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
+restricting the contour to the closed plasma surface and the divertor legs.
 
 \end{fulllineitems}
 
@@ -930,6 +952,35 @@ namedtuple containing \{WMHD,tauMHD,Pinj,Wbdot,Wpdot\}
 
 \end{fulllineitems}
 
+\index{getMachineCrossSection() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
+Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+The requested data.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{getMachineCrossSectionFull() (eqtools.EFIT.EFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.getMachineCrossSectionFull}\pysiglinewithargsret{\bfcode{getMachineCrossSectionFull}}{}{}
+Returns R,Z coordinates of vacuum-vessel wall for plotting routines.
+
+Absent additional vector-graphic data on machine cross-section, returns
+self.getMachineCrossSection().
+\begin{quote}\begin{description}
+\item[{Returns}] \leavevmode
+The requested data.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
 \index{getCurrentSign() (eqtools.EFIT.EFITTree method)}
 
 \begin{fulllineitems}
@@ -1063,7 +1114,7 @@ hands
 
 `default'
  & 
-whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+meters
 \\\hline
 \end{tabulary}
 
@@ -1101,6 +1152,213 @@ Returns a copy of the vertical grid, dimensions are (N,).
 
 \end{fulllineitems}
 
+\index{getQProfile() (eqtools.FromArrays.ArrayEquilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.FromArrays.ArrayEquilibrium.getQProfile}\pysiglinewithargsret{\bfcode{getQProfile}}{}{}
+Returns safety factor q profile (over Q values of psinorm from 0 to 1),
+dimensions are (Q, M)
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
+
+\subsection{\texttt{NSTXEFIT} Module}
+\label{eqtools:module-eqtools.NSTXEFIT}\label{eqtools:nstxefit-module}\index{eqtools.NSTXEFIT (module)}
+This module provides classes for working with NSTX EFIT data.
+\index{NSTXEFITTree (class in eqtools.NSTXEFIT)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTree}\pysiglinewithargsret{\strong{class }\code{eqtools.NSTXEFIT.}\bfcode{NSTXEFITTree}}{\emph{shot}, \emph{tree='EFIT01'}, \emph{length\_unit='m'}, \emph{gfile='geqdsk'}, \emph{afile='aeqdsk'}, \emph{tspline=False}, \emph{monotonic=False}}{}
+Bases: {\hyperref[eqtools:eqtools.EFIT.EFITTree]{\code{eqtools.EFIT.EFITTree}}}
+
+Inherits \code{EFITTree} class. Machine-specific data
+handling class for the National Spherical Torus Experiment (NSTX). Pulls EFIT
+data from selected MDS tree and shot, stores as object attributes. Each EFIT
+variable or set of variables is recovered with a corresponding getter method.
+Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
+Additional data are pulled at the first request and stored for subsequent usage.
+
+Intializes NSTX version of EFITTree object.  Pulls data from MDS tree for storage
+in instance attributes.  Core attributes are populated from the MDS tree on initialization.
+Additional attributes are initialized as None, filled on the first request to the object.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode
+\textbf{shot} --
+(long) int
+NSTX shot index (long)
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{tree} --
+str
+Optional input for EFIT tree, defaults to `EFIT01'
+(i.e., EFIT data are under EFIT01::top.results).
+
+\item {} 
+\textbf{length\_unit} --
+str
+Sets the base unit used for any quantity whose
+dimensions are length to any power. Valid options are:
+\begin{quote}
+
+\begin{tabulary}{\linewidth}{|L|L|}
+\hline
+
+`m'
+ & 
+meters
+\\\hline
+
+`cm'
+ & 
+centimeters
+\\\hline
+
+`mm'
+ & 
+millimeters
+\\\hline
+
+`in'
+ & 
+inches
+\\\hline
+
+`ft'
+ & 
+feet
+\\\hline
+
+`yd'
+ & 
+yards
+\\\hline
+
+`smoot'
+ & 
+smoots
+\\\hline
+
+`cubit'
+ & 
+cubits
+\\\hline
+
+`hand'
+ & 
+hands
+\\\hline
+
+`default'
+ & 
+whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+\\\hline
+\end{tabulary}
+
+\end{quote}
+
+Default is `m' (all units taken and returned in meters).
+
+\item {} 
+\textbf{gfile} --
+str
+Optional input for EFIT geqdsk location name, defaults to `g\_eqdsk'
+(i.e., EFIT data are under tree::top.results.G\_EQDSK)
+
+\item {} 
+\textbf{afile} --
+str
+Optional input for EFIT aeqdsk location name, defaults to `a\_eqdsk'
+(i.e., EFIT data are under tree::top.results.A\_EQDSK)
+
+\item {} 
+\textbf{tspline} --
+Boolean
+Sets whether or not interpolation in time is
+performed using a tricubic spline or nearest-neighbor
+interpolation. Tricubic spline interpolation requires at least
+four complete equilibria at different times. It is also assumed
+that they are functionally correlated, and that parameters do
+not vary out of their boundaries (derivative = 0 boundary
+condition). Default is False (use nearest neighbor interpolation).
+
+\item {} 
+\textbf{monotonic} --
+Boolean
+Sets whether or not the ``monotonic'' form of time
+window finding is used. If True, the timebase must be monotonically
+increasing. Default is False (use slower, safer method).
+
+\end{itemize}
+
+\end{description}\end{quote}
+\index{getFluxGrid() (eqtools.NSTXEFIT.NSTXEFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTree.getFluxGrid}\pysiglinewithargsret{\bfcode{getFluxGrid}}{}{}
+returns EFIT flux grid, {[}t,z,r{]}
+
+\end{fulllineitems}
+
+\index{getFluxVol() (eqtools.NSTXEFIT.NSTXEFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTree.getFluxVol}\pysiglinewithargsret{\bfcode{getFluxVol}}{}{}
+Not implemented in NSTXEFIT tree.
+
+Returns volume within flux surface {[}psi,t{]}
+
+\end{fulllineitems}
+
+\index{getRmidPsi() (eqtools.NSTXEFIT.NSTXEFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTree.getRmidPsi}\pysiglinewithargsret{\bfcode{getRmidPsi}}{\emph{length\_unit=1}}{}
+returns maximum major radius of each flux surface {[}t,psi{]}
+
+\end{fulllineitems}
+
+\index{getVolLCFS() (eqtools.NSTXEFIT.NSTXEFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTree.getVolLCFS}\pysiglinewithargsret{\bfcode{getVolLCFS}}{\emph{length\_unit=3}}{}
+returns volume within LCFS {[}t{]}
+
+\end{fulllineitems}
+
+\index{rz2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTree.rz2volnorm}\pysiglinewithargsret{\bfcode{rz2volnorm}}{\emph{*args}, \emph{**kwargs}}{}
+Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
+not implemented
+
+\end{fulllineitems}
+
+\index{psinorm2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTree.psinorm2volnorm}\pysiglinewithargsret{\bfcode{psinorm2volnorm}}{\emph{*args}, \emph{**kwargs}}{}
+Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
+not implemented
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{NSTXEFITTreeProp (class in eqtools.NSTXEFIT)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.NSTXEFIT.NSTXEFITTreeProp}\pysiglinewithargsret{\strong{class }\code{eqtools.NSTXEFIT.}\bfcode{NSTXEFITTreeProp}}{\emph{shot}, \emph{tree='EFIT01'}, \emph{length\_unit='m'}, \emph{gfile='geqdsk'}, \emph{afile='aeqdsk'}, \emph{tspline=False}, \emph{monotonic=False}}{}
+Bases: {\hyperref[eqtools:eqtools.NSTXEFIT.NSTXEFITTree]{\code{eqtools.NSTXEFIT.NSTXEFITTree}}}, {\hyperref[eqtools:eqtools.core.PropertyAccessMixin]{\code{eqtools.core.PropertyAccessMixin}}}
+
+NSTXEFITTree with the PropertyAccessMixin added to enable property-style
+access. This is good for interactive use, but may drag the performance down.
 
 \end{fulllineitems}
 
@@ -1293,10 +1551,60 @@ If a method called `get'+name already exists.
 
 \end{fulllineitems}
 
+\index{inPolygon() (in module eqtools.core)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.inPolygon}\pysiglinewithargsret{\code{eqtools.core.}\bfcode{inPolygon}}{\emph{polyx}, \emph{polyy}, \emph{pointx}, \emph{pointy}}{}
+Function calculating whether a given point is within a 2D polygon.
+
+Given an array of X,Y coordinates describing a 2D polygon, checks whether
+a point given by x,y coordinates lies within the polygon.  Operates via a
+ray-casting approach - the function projects a semi-infinite ray parallel to the
+positive horizontal axis, and counts how many edges of the polygon this ray intersects.
+For a simply-connected polygon, this determines whether the point is inside (even number
+of crossings) or outside (odd number of crossings) the polygon, by the Jordan Curve Theorem.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{polyx} --
+Array-like.
+Array of x-coordinates of the vertices of the polygon.
+
+\item {} 
+\textbf{polyy} --
+Array-like.
+Array of y-coordinates of the vertices of the polygon.
+
+\item {} 
+\textbf{pointx} --
+Int or float.
+x-coordinate of test point.
+
+\item {} 
+\textbf{pointy} --
+Int or float.
+y-coordinate of test point.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{result} --
+Boolean.
+\begin{quote}
+
+True/False result for whether the point is contained within the polygon.
+\end{quote}
+
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
 \index{Equilibrium (class in eqtools.core)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.core.}\bfcode{Equilibrium}}{\emph{length\_unit='m'}, \emph{tspline=False}, \emph{monotonic=False}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium}\pysiglinewithargsret{\strong{class }\code{eqtools.core.}\bfcode{Equilibrium}}{\emph{length\_unit='m'}, \emph{tspline=False}, \emph{monotonic=False}, \emph{verbose=True}}{}
 Bases: \code{object}
 
 Abstract class of data handling object for magnetic reconstruction outputs.
@@ -1398,6 +1706,13 @@ Boolean.
 Sets whether or not the ``monotonic'' form of time window
 finding is used. If True, the timebase must be monotonically
 increasing. Default is False (use slower, safer method).
+
+\item {} 
+\textbf{verbose} --
+Boolean.
+Allows or blocks console readout during operation.  Defaults to True,
+displaying useful information for the user.  Set to False for quiet
+usage or to avoid console clutter for multiple instances.
 
 \end{itemize}
 
@@ -2823,7 +3138,7 @@ and 1D vector of vertical positions Z at time t=0.2s:
 \index{psinorm2rmid() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{t}, \emph{each\_t=True}, \emph{return\_t=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{t}, \emph{**kwargs}}{}
 Calculates the outboard R\_mid location corresponding to the passed psi\_norm (normalized poloidal flux) values.
 
 If tspline is False for this Equilibrium instance, uses
@@ -2868,6 +3183,14 @@ time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating R\_mid with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return R\_mid).
+
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of the quantity
+obtained (R\_mid or r/a). Only the square root of positive
+values is taken. Negative values are replaced with zeros,
+consistent with Steve Wolfe's IDL implementation efit\_rz2rho.pro.
+Default is False (return Quan itself).
 
 \item {} 
 \textbf{rho} --
@@ -3012,7 +3335,7 @@ Find R\_mid values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
 \index{psinorm2volnorm() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2volnorm}\pysiglinewithargsret{\bfcode{psinorm2volnorm}}{\emph{psi\_norm}, \emph{t}, \emph{each\_t=True}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2volnorm}\pysiglinewithargsret{\bfcode{psinorm2volnorm}}{\emph{psi\_norm}, \emph{t}, \emph{**kwargs}}{}
 Calculates the normalized volume corresponding to the passed psi\_norm (normalized poloidal flux) values.
 
 If tspline is False for this Equilibrium instance, uses
@@ -3057,6 +3380,14 @@ time\_idxs), where time\_idxs is the array of time indices
 actually used in evaluating volnorm with nearest-neighbor
 interpolation. (This is mostly present as an internal helper.)
 Default is False (only return volnorm).
+
+\item {} 
+\textbf{sqrt} --
+Boolean. Set to True to return the square root of volnorm.
+Only the square root of positive values is taken. Negative
+values are replaced with zeros, consistent with Steve Wolfe's
+IDL implementation efit\_rz2rho.pro. Default is False (return
+volnorm itself).
 
 \item {} 
 \textbf{kind} --
@@ -3129,7 +3460,7 @@ Find volnorm values at (psinorm, t) points (0.6, 0.2s) and (0.5, 0.3s):
 \index{psinorm2phinorm() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{t}, \emph{each\_t=True}, \emph{return\_t=False}, \emph{kind='cubic'}}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{t}, \emph{**kwargs}}{}
 Calculates the normalized toroidal flux corresponding to the passed psi\_norm (normalized poloidal flux) values.
 
 If tspline is False for this Equilibrium instance, uses
@@ -3338,6 +3669,20 @@ Returns R-positions (n points) mapping LCFS {[}t,n{]}
 Abstract method.  See child classes for implementation.
 
 Returns Z-positions (n points) mapping LCFS {[}t,n{]}
+
+\end{fulllineitems}
+
+\index{remapLCFS() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.remapLCFS}\pysiglinewithargsret{\bfcode{remapLCFS}}{}{}
+Abstract method.  See child classes for implementation.
+
+Overwrites stored R,Z positions of LCFS with explicitly calculated psinorm=1
+surface.  This surface is then masked using core.inPolygon() to only draw within
+vacuum vessel, the end result replacing RLCFS, ZLCFS with an R,Z array showing
+the divertor legs of the flux surface in addition to the core-enclosing closed
+flux surface.
 
 \end{fulllineitems}
 
@@ -3828,15 +4173,37 @@ Acts as wrapper to direct data-access routines from within object.
 \phantomsection\label{eqtools:eqtools.core.Equilibrium.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
 Abstract method.  See child classes for implementation.
 
+Returns (R,Z) coordinates of vacuum wall cross-section for plotting/masking routines.
+
+\end{fulllineitems}
+
+\index{getMachineCrossSectionFull() (eqtools.core.Equilibrium method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.getMachineCrossSectionFull}\pysiglinewithargsret{\bfcode{getMachineCrossSectionFull}}{}{}
+Abstract method.  See child classes for implementation.
+
 Returns (R,Z) coordinates of machine wall cross-section for plotting routines.
+Returns a more detailed cross-section than getLimiter(), generally a vector map
+displaying non-critical cross-section information.  If this is unavailable, this
+should point to self.getMachineCrossSection(), which pulls the limiter outline
+stored by default in data files e.g. g-eqdsk files.
 
 \end{fulllineitems}
 
 \index{plotFlux() (eqtools.core.Equilibrium method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.core.Equilibrium.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{}{}
+\phantomsection\label{eqtools:eqtools.core.Equilibrium.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{\emph{fill=False}}{}
 Plots flux contours directly from psi grid.
+\begin{quote}\begin{description}
+\item[{Keyword Arguments}] \leavevmode
+\textbf{fill} --
+Boolean.
+Set True to plot filled contours.  Set False (default) to plot white-background
+color contours.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -4492,7 +4859,7 @@ in all cases.
 \index{rz2rho() (eqtools.eqdskreader.EqdskReader method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2rho}\pysiglinewithargsret{\bfcode{rz2rho}}{\emph{method}, \emph{R}, \emph{Z}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2rho}\pysiglinewithargsret{\bfcode{rz2rho}}{\emph{method}, \emph{R}, \emph{Z}, \emph{t=False}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
 Convert the passed (R, Z) coordinates into one of several normalized coordinates.
 Wrapper for Equilibrium.rz2rho masking timebase dependence.
 \begin{quote}\begin{description}
@@ -4544,6 +4911,12 @@ is True, Z must have shape (len\_Z,).
 \end{itemize}
 
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{t} --
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.
+
 \item {} 
 \textbf{sqrt} --
 Boolean.
@@ -4689,7 +5062,7 @@ and 1D vector of vertical positions Z:
 \index{rz2rmid() (eqtools.eqdskreader.EqdskReader method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2rmid}\pysiglinewithargsret{\bfcode{rz2rmid}}{\emph{R}, \emph{Z}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.rz2rmid}\pysiglinewithargsret{\bfcode{rz2rmid}}{\emph{R}, \emph{Z}, \emph{t=False}, \emph{sqrt=False}, \emph{make\_grid=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
 Maps the given points to the outboard midplane major radius, R\_mid.
 Wrapper for Equilibrium.rz2rmid masking timebase dependence.
 
@@ -4715,6 +5088,12 @@ must have shape (len\_Z,).
 \end{itemize}
 
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{t} --
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.
+
 \item {} 
 \textbf{sqrt} --
 Boolean.
@@ -4868,7 +5247,7 @@ and 1D vector of vertical positions Z:
 \index{psinorm2rmid() (eqtools.eqdskreader.EqdskReader method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.psinorm2rmid}\pysiglinewithargsret{\bfcode{psinorm2rmid}}{\emph{psi\_norm}, \emph{t=False}, \emph{rho=False}, \emph{kind='cubic'}, \emph{length\_unit=1}}{}
 Calculates the outboard R\_mid location corresponding to the passed psi\_norm (normalized poloidal flux) values.
 \begin{quote}\begin{description}
 \item[{Parameters }] \leavevmode
@@ -4878,6 +5257,12 @@ Values of the normalized
 poloidal flux to map to midplane radius.
 
 \item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{t} --
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.
+
 \item {} 
 \textbf{rho} --
 Boolean.
@@ -5009,7 +5394,7 @@ is not read from a/g-files.
 \index{psinorm2phinorm() (eqtools.eqdskreader.EqdskReader method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{kind='cubic'}}{}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.psinorm2phinorm}\pysiglinewithargsret{\bfcode{psinorm2phinorm}}{\emph{psi\_norm}, \emph{t=False}, \emph{kind='cubic'}}{}
 Calculates the normalized toroidal flux corresponding to the passed psi\_norm (normalized poloidal flux) values.
 \begin{quote}\begin{description}
 \item[{Parameters }] \leavevmode
@@ -5018,7 +5403,14 @@ Array-like or scalar float.
 Values of the normalized
 poloidal flux to map to normalized toroidal flux.
 
-\item[{Keyword Arguments}] \leavevmode
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{t} --
+indeterminant.
+Provides duck typing for inclusion of t values. Passed t values
+either as an Arg or Kwarg are neglected.
+
+\item {} 
 \textbf{kind} --
 String or non-negative int.
 Specifies the type of interpolation
@@ -5030,6 +5422,8 @@ to use. See the documentation for interp1d for more details.
 Default value is `cubic' (3rd order spline interpolation). On
 some builds of scipy, this can cause problems, in which case
 you should try `linear' until you can rebuild your scipy install.
+
+\end{itemize}
 
 \item[{Returns}] \leavevmode
 
@@ -5133,6 +5527,16 @@ Returns array of R-values of LCFS
 \begin{fulllineitems}
 \phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getZLCFS}\pysiglinewithargsret{\bfcode{getZLCFS}}{\emph{length\_unit=1}}{}
 Returns array of Z-values of LCFS
+
+\end{fulllineitems}
+
+\index{remapLCFS() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.remapLCFS}\pysiglinewithargsret{\bfcode{remapLCFS}}{}{}
+Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
+of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
+restricting the contour to the closed plasma surface and the divertor legs.
 
 \end{fulllineitems}
 
@@ -5796,14 +6200,22 @@ raised if no attribute is found.
 \phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getMachineCrossSection}\pysiglinewithargsret{\bfcode{getMachineCrossSection}}{}{}
 Method to pull machine cross-section from data storage, convert to standard format for plotting routine.
 
-Not implemented for eqdsk class.
+\end{fulllineitems}
+
+\index{getMachineCrossSectionFull() (eqtools.eqdskreader.EqdskReader method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.getMachineCrossSectionFull}\pysiglinewithargsret{\bfcode{getMachineCrossSectionFull}}{}{}
+Returns vectorization of machine cross-section.
+
+Absent additional data (not found in eqdsks) simply returns self.getMachineCrossSection().
 
 \end{fulllineitems}
 
 \index{plotFlux() (eqtools.eqdskreader.EqdskReader method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{}{}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{\emph{fill=True}}{}
 streamlined plotting of flux contours directly from psi grid
 
 \end{fulllineitems}
@@ -5917,7 +6329,164 @@ pseudo-private name.
 
 
 \subsection{\texttt{trispline} Module}
-\label{eqtools:trispline-module}
+\label{eqtools:trispline-module}\label{eqtools:module-eqtools.trispline}\index{eqtools.trispline (module)}
+This module provides interface to the tricubic spline interpolator.  It also contains an enhanced bivariate spline which generates bounds errors.
+\index{Spline (class in eqtools.trispline)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.trispline.Spline}\pysiglinewithargsret{\strong{class }\code{eqtools.trispline.}\bfcode{Spline}}{\emph{z}, \emph{y}, \emph{x}, \emph{f}, \emph{regular=True}, \emph{fast=False}}{}
+Tricubic interpolating spline with forced edge derivative equal zero
+conditions.  It assumes a cartesian grid.
+
+Create a new Spline instance.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{z} --
+1-dimensional float.
+Values of the positions of the 1st
+Dimension of f. Must be monotonic without duplicates.
+
+\item {} 
+\textbf{y} --
+1-dimensional float.
+Values of the positions of the 2nd
+dimension of f. Must be monotonic without duplicates.
+
+\item {} 
+\textbf{x} --
+1-dimensional float.
+Values of the positions of the 3rd
+dimension of f. Must be monotonic without duplicates.
+
+\item {} 
+\textbf{f} --
+3-dimensional float array.
+f{[}z,y,x{]}. NaN and Inf will
+affect interpolation in 4x4x4 space about its value.
+
+\end{itemize}
+
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{regular} --
+Boolean.
+If the grid is known to be regular, forces
+matrix-based fast evaluation of interpolation.
+
+\item {} 
+\textbf{fast} --
+Boolean
+Outdated input to test the indexing performance of the c
+code vs internal python handling.
+
+\end{itemize}
+
+\item[{Raises }] \leavevmode\begin{itemize}
+\item {} 
+\code{ValueError} -- 
+If any of the dimensions do not match specified f dim
+
+\item {} 
+\code{ValueError} -- 
+If x,y, or z are not monotonic
+
+\end{itemize}
+
+\end{description}\end{quote}
+\paragraph{Examples}
+
+temp
+\index{ev() (eqtools.trispline.Spline method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.trispline.Spline.ev}\pysiglinewithargsret{\bfcode{ev}}{\emph{z1}, \emph{y1}, \emph{x1}}{}
+evaluates tricubic spline at point (x1,y1,z1) which is f{[}z1,y1,x1{]}.
+Data is grouped into the grid voxels so as to reuse calculated spline
+coefficents, thus speeding evaluation.  It is recommended that it is
+evaluated outside of for loops to best utilize this feature.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{z1} --
+float or 1-dimensional float
+Position in z dimension. (First dimension of 3d valued grid)
+
+\item {} 
+\textbf{y1} --
+float or 1-dimensional float
+Position in y dimension. (Second dimension of 3d valued grid)
+
+\item {} 
+\textbf{x1} --
+float or 1-dimensional float
+Position in x dimension. (Third dimension of 3d valued grid)
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\emph{val} --
+The interpolated value at (x1,y1,z1).
+
+\item[{Raises }] \leavevmode
+\code{ValueError} -- 
+If any of the dimensions exceed the evaluation boundary
+of the grid
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{RectBivariateSpline (class in eqtools.trispline)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.trispline.RectBivariateSpline}\pysiglinewithargsret{\strong{class }\code{eqtools.trispline.}\bfcode{RectBivariateSpline}}{\emph{x, y, z, bbox={[}None, None, None, None{]}, kx=3, ky=3, s=0, bounds\_error=True, fill\_value=nan}}{}
+Bases: \code{scipy.interpolate.fitpack2.RectBivariateSpline}
+
+the lack of a graceful bounds error causes the fortran to fail hard. This masks the
+scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
+such that it will not fail in use for EqTools
+\index{ev() (eqtools.trispline.RectBivariateSpline method)}
+
+\begin{fulllineitems}
+\phantomsection\label{eqtools:eqtools.trispline.RectBivariateSpline.ev}\pysiglinewithargsret{\bfcode{ev}}{\emph{xi}, \emph{yi}}{}
+Evaluate the rectBiVariateSpline at (xi,yi).  (x,y)values are
+checked for being in the bounds of the interpolated data.
+\begin{quote}\begin{description}
+\item[{Parameters }] \leavevmode\begin{itemize}
+\item {} 
+\textbf{xi} --
+float array
+input x dimensional values
+
+\item {} 
+\textbf{yi} --
+float array
+input x dimensional values
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+
+\emph{val} --
+float array
+\begin{quote}
+
+evaluated spline at points (x{[}i{]}, y{[}i{]}), i=0,...,len(x)-1
+\end{quote}
+
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+
 
 \chapter{Indices and tables}
 \label{index:indices-and-tables}\begin{itemize}
@@ -5944,7 +6513,9 @@ pseudo-private name.
 \item {\texttt{eqtools.EFIT}}, \pageref{eqtools:module-eqtools.EFIT}
 \item {\texttt{eqtools.eqdskreader}}, \pageref{eqtools:module-eqtools.eqdskreader}
 \item {\texttt{eqtools.FromArrays}}, \pageref{eqtools:module-eqtools.FromArrays}
+\item {\texttt{eqtools.NSTXEFIT}}, \pageref{eqtools:module-eqtools.NSTXEFIT}
 \item {\texttt{eqtools.pfilereader}}, \pageref{eqtools:module-eqtools.pfilereader}
+\item {\texttt{eqtools.trispline}}, \pageref{eqtools:module-eqtools.trispline}
 \end{theindex}
 
 \renewcommand{\indexname}{Index}

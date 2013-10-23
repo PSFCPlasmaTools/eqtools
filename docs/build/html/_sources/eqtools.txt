@@ -33,6 +33,14 @@ eqtools Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`NSTXEFIT` Module
+----------------------
+
+.. automodule:: eqtools.NSTXEFIT
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`afilereader` Module
 -------------------------
 
