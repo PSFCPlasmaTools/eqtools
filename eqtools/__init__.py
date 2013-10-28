@@ -24,3 +24,4 @@ from .EFIT import *
 from .CModEFIT import *
 from .NSTXEFIT import *
 from .eqdskreader import *
+from .pfilereader import *
