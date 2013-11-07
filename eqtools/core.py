@@ -1255,6 +1255,7 @@ class Equilibrium(object):
         except KeyError:
             length_unit = 1
         
+        # TODO: I think this will cause an issue when used with the rho keyword!
         unit_factor = self._getLengthConversionFactor('m', length_unit)
         
         return unit_factor * self._RZ2Quan(self._getRmidSpline, *args, **kwargs)
@@ -1775,6 +1776,7 @@ class Equilibrium(object):
                 self.getTimeBase()) that were used for nearest-neighbor
                 interpolation. Only returned if return_t is True.
         """
+        # TODO: This keyword popping doesn’t look quite right...needs to be fixed or documented.
         return_t = kwargs.get('return_t', False)
         kwargs['return_t'] = True
         kind = kwargs.pop('kind', 'cubic')
@@ -1784,6 +1786,8 @@ class Equilibrium(object):
         kwargs['return_t'] = return_t
         kwargs.pop('length_unit', 1)
         kwargs.pop('make_grid',False)
+        
+        kwargs['rho'] = rho
         # TODO: This technically computes the time indices twice. Is there are
         # good compromise to get the best of both worlds (nice calling of
         # _psinorm2Quan AND no recompute)?
