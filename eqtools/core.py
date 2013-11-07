@@ -1776,7 +1776,7 @@ class Equilibrium(object):
                 self.getTimeBase()) that were used for nearest-neighbor
                 interpolation. Only returned if return_t is True.
         """
-        # TODO: This keyword popping doesn’t look quite right...needs to be fixed or documented.
+        # TODO: This keyword popping doesn't look quite right...needs to be fixed or documented.
         return_t = kwargs.get('return_t', False)
         kwargs['return_t'] = True
         kind = kwargs.pop('kind', 'cubic')
