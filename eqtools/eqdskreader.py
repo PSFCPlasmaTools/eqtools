@@ -1907,10 +1907,10 @@ class EqdskReader(Equilibrium):
         ax.set_title(self._gfilename)
 
         if fill:
-            ax.contourf(rGrid,zGrid,psiRZ,50)
-            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid')
+            ax.contourf(rGrid,zGrid,psiRZ,50,zorder=2)
+            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid',zorder=3)
         else:
-            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2)
+            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2,zorder=2)
         ax.plot(RLCFS,ZLCFS,'r',linewidth=3)
 
         # generate graphical mask for limiter wall
@@ -1925,11 +1925,12 @@ class EqdskReader(Equilibrium):
         path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
         patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
         patch = ax.add_patch(patch)
+        patch.set_zorder(4)
         
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
 
-        ax.plot(Rlim,Zlim,'k',linewidth=3)
+        ax.plot(Rlim,Zlim,'k',linewidth=3,zorder=5)
         fig.show()
 
 
