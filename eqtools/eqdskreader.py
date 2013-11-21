@@ -1267,10 +1267,14 @@ class EqdskReader(Equilibrium):
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'],length_unit)
         return unit_factor * self._ZLCFS.copy()
         
-    def remapLCFS(self):
+    def remapLCFS(self,mask=True):
         """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
-        of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
-        restricting the contour to the closed plasma surface and the divertor legs.
+        of psinorm=1 surface.
+
+        Kwargs:
+            mask: Boolean.
+                Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+                Set False to draw full contour of psi = psiLCFS.
         """
         if not _has_plt:
             raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
@@ -1283,23 +1287,33 @@ class EqdskReader(Equilibrium):
         psiRZ = self.getFluxGrid()
         R = self.getRGrid()
         Z = self.getZGrid()
-        psiLCFS = self.getFluxLCFS()
+        psiLCFS = -1.0 * self.getCurrentSign() * self.getFluxLCFS()
         
         fig = plt.figure()  # generate a dummy plotting window to dump contour into; will be deleted later
         cs = plt.contour(R,Z,psiRZ[0],psiLCFS)   # calculates psi= psiLCFS contour
-        path = cs.collections[0].get_paths()[0]
-        v = path.vertices
-        RLCFS = v[:,0]
-        ZLCFS = v[:,1]
+
+        paths = cs.collections[0].get_paths()
+        RLCFS = []
+        ZLCFS = []
+        for path in paths:
+            v = path.vertices
+            RLCFS.extend(v[:,0])
+            ZLCFS.extend(v[:,1])
+            RLCFS.append(scipy.nan)
+            ZLCFS.append(scipy.nan)
+        RLCFS = scipy.array(RLCFS)
+        ZLCFS = scipy.array(ZLCFS)
         
         # generate masking array
-        mask = scipy.array([False for i in range(len(RLCFS))])
-        for i,x in enumerate(RLCFS):
-            y = ZLCFS[i]
-            mask[i] = inPolygon(Rlim,Zlim,x,y)
-            
-        RLCFS = RLCFS[mask]
-        ZLCFS = ZLCFS[mask]
+        if mask:
+            maskarr = scipy.array([False for i in range(len(RLCFS))])
+            for i,x in enumerate(RLCFS):
+                y = ZLCFS[i]
+                maskarr[i] = inPolygon(Rlim,Zlim,x,y)
+                
+            RLCFS = RLCFS[maskarr]
+            ZLCFS = ZLCFS[maskarr]
+
         npts = len(RLCFS)
         self._RLCFS = RLCFS.reshape((npts,1))
         self._ZLCFS = ZLCFS.reshape((npts,1))
@@ -1882,8 +1896,16 @@ class EqdskReader(Equilibrium):
         """
         return self.getMachineCrossSection()
         
-    def plotFlux(self,fill=True):
+    def plotFlux(self,fill=True,mask=True):
         """streamlined plotting of flux contours directly from psi grid
+
+        Kwargs:
+            fill: Boolean.
+                Default True.  Set True to plot filled contours of flux delineated by black outlines.
+                Set False to instead plot color-coded line contours on a blank background.
+            mask: Boolean.
+                Default True.  Set True to draw a clipping mask based on the limiter outline for the flux contours.
+                Set False to draw the full RZ grid.
         """
         plt.ion()
 
@@ -1914,21 +1936,22 @@ class EqdskReader(Equilibrium):
         ax.plot(RLCFS,ZLCFS,'r',linewidth=3)
 
         # generate graphical mask for limiter wall
-        xlim = ax.get_xlim()
-        ylim = ax.get_ylim()
-        bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
-        poly_verts = [(Rlim[i],Zlim[i]) for i in range(len(Rlim) - 1, -1, -1)]
-        
-        bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
-        poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
-        
-        path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
-        patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
-        patch = ax.add_patch(patch)
-        patch.set_zorder(4)
-        
-        ax.set_xlim(xlim)
-        ax.set_ylim(ylim)
+        if mask:
+            xlim = ax.get_xlim()
+            ylim = ax.get_ylim()
+            bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
+            poly_verts = [(Rlim[i],Zlim[i]) for i in range(len(Rlim) - 1, -1, -1)]
+            
+            bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
+            poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
+            
+            path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
+            patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
+            patch = ax.add_patch(patch)
+            patch.set_zorder(4)
+            
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
 
         ax.plot(Rlim,Zlim,'k',linewidth=3,zorder=5)
         fig.show()

@@ -396,10 +396,15 @@ class EFITTree(Equilibrium):
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
         return unit_factor * self._ZLCFS.copy()
         
-    def remapLCFS(self):
+    def remapLCFS(self,mask=True):
         """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
         of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
         restricting the contour to the closed plasma surface and the divertor legs.
+
+        Kwargs:
+            mask: Boolean.
+                Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+                Set False to draw full contour of psi = psiLCFS.
         """
         if not _has_plt:
             raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
@@ -409,32 +414,35 @@ class EFITTree(Equilibrium):
         except:
             raise ValueError("Limiter outline (self.getMachineCrossSection) must be available.")
             
-        psiRZ = self.getFluxGrid()
+        psiRZ = self.getFluxGrid()  # [nt,nZ,nR]
         R = self.getRGrid()
         Z = self.getZGrid()
-        psiLCFS = self.getFluxLCFS()
-        
-        fig = plt.figure()  # generate a dummy plotting window to dump contour into; will be deleted later
-        cs = plt.contour(R,Z,psiRZ,[psiLCFS])   # calculates psi= psiLCFS contour
-        path = cs.collections[0].get_paths()[0]
-        v = path.vertices
-        RLCFS = v[:,0]
-        ZLCFS = v[:,1]
-        
-        # generate masking array
-        mask = scipy.array([[False for j in range(len(self.getTimeBase()))] for i in range(len(RLCFS))])
+        psiLCFS = -1.0 * self.getCurrentSign() * self.getFluxLCFS()
+
+        RLCFS = []
+        ZLCFS = []
+        fig = plt.figure()
         for i in range(len(self.getTimeBase())):
-            for j in range(len(RLCFS)):
-                x = RLCFS[j]
-                y = ZLCFS[j]
-                mask[j,i] = inPolygon(Rlim,Zlim,x,y)
-            
-        # this will probably break...
-        self._RLCFS = RLCFS[mask]
-        self._ZLCFS = ZLCFS[mask]        
-        
-        # cleanup
-        del fig
+            cs = plt.contour(R,Z,psiRZ[i],psiLCFS)
+            paths = cs.collections[0].get_paths()
+            RLCFS_frame = []
+            ZLCFS_frame = []
+            for path in paths:
+                v = path.vertices
+                RLCFS_frame.extend(v[:,0])
+                ZLCFS_frame.extend(v[:,1])
+                RLCFS_frame.append(scipy.nan)
+                ZLCFS_frame.append(scipy.nan)
+            RLCFS_frame = scipy.array(RLCFS_frame)
+            ZLCFS_frame = scipy.array(ZLCFS_frame)
+
+            print i
+            print RLCFS_frame
+            print ZLCFS_frame
+
+        #cleanup
+        plt.clf()
+        #plt.close(fig)
 
     def getFluxPres(self):
         """returns pressure at flux surface [psi,t]
