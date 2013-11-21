@@ -396,14 +396,14 @@ class EFITTree(Equilibrium):
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
         return unit_factor * self._ZLCFS.copy()
         
-    def remapLCFS(self,mask=True):
+    def remapLCFS(self,mask=False):
         """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
         of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
         restricting the contour to the closed plasma surface and the divertor legs.
 
         Kwargs:
             mask: Boolean.
-                Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+                Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).
                 Set False to draw full contour of psi = psiLCFS.
         """
         if not _has_plt:
@@ -413,17 +413,21 @@ class EFITTree(Equilibrium):
             Rlim,Zlim = self.getMachineCrossSection()
         except:
             raise ValueError("Limiter outline (self.getMachineCrossSection) must be available.")
+
+        plt.ioff()
             
         psiRZ = self.getFluxGrid()  # [nt,nZ,nR]
         R = self.getRGrid()
         Z = self.getZGrid()
         psiLCFS = -1.0 * self.getCurrentSign() * self.getFluxLCFS()
 
-        RLCFS = []
-        ZLCFS = []
+        RLCFS_stores = []
+        ZLCFS_stores = []
+        maxlen = 0
+        nt = len(self.getTimeBase())
         fig = plt.figure()
-        for i in range(len(self.getTimeBase())):
-            cs = plt.contour(R,Z,psiRZ[i],psiLCFS)
+        for i in range(nt):
+            cs = plt.contour(R,Z,psiRZ[i],[psiLCFS[i]])
             paths = cs.collections[0].get_paths()
             RLCFS_frame = []
             ZLCFS_frame = []
@@ -436,13 +440,45 @@ class EFITTree(Equilibrium):
             RLCFS_frame = scipy.array(RLCFS_frame)
             ZLCFS_frame = scipy.array(ZLCFS_frame)
 
-            print i
-            print RLCFS_frame
-            print ZLCFS_frame
+            # generate masking array to vessel
+            if mask:
+                maskarr = scipy.array([False for i in range(len(RLCFS_frame))])
+                for i,x in enumerate(RLCFS_frame):
+                    y = ZLCFS_frame[i]
+                    maskarr[i] = inPolygon(Rlim,Zlim,x,y)
 
-        #cleanup
+                RLCFS_frame = RLCFS_frame[maskarr]
+                ZLCFS_frame = ZLCFS_frame[maskarr]
+
+            if len(RLCFS_frame) > maxlen:
+                maxlen = len(RLCFS_frame)
+            RLCFS_stores.append(RLCFS_frame)
+            ZLCFS_stores.append(ZLCFS_frame)
+
+        RLCFS = scipy.zeros((maxlen,nt))
+        ZLCFS = scipy.zeros((maxlen,nt))
+        for i in range(nt):
+            RLCFS_frame = RLCFS_stores[i]
+            ZLCFS_frame = ZLCFS_stores[i]
+            ni = len(RLCFS_frame)
+            RLCFS[0:ni,i] = RLCFS_frame
+            ZLCFS[0:ni,i] = ZLCFS_frame
+
+        # store final values
+        self._RLCFS = RLCFS
+        self._ZLCFS = ZLCFS
+
+        # set default unit parameters, based on RZ grid
+        rUnit = self._defaultUnits['_rGrid']
+        zUnit = self._defaultUnits['_zGrid']
+        self._defaultUnits['_RLCFS'] = rUnit
+        self._defaultUnits['_ZLCFS'] = zUnit
+
+        # cleanup
+        plt.ion()
         plt.clf()
-        #plt.close(fig)
+        plt.close(fig)
+        plt.ioff()
 
     def getFluxPres(self):
         """returns pressure at flux surface [psi,t]

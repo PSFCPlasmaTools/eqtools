@@ -45,6 +45,8 @@ try:
     import matplotlib.pyplot as plt
     import matplotlib.widgets as mplw
     import matplotlib.gridspec as mplgs
+    import matplotlib.patches as mpatches
+    import matplotlib.path as mpath
 except Exception:
     warnings.warn("WARNING: matplotlib modules could not be loaded -- plotting "
                   "will not be available.",
@@ -3142,7 +3144,7 @@ class Equilibrium(object):
         """
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
 
-    def plotFlux(self,fill=False):
+    def plotFlux(self,fill=True,mask=True):
         """Plots flux contours directly from psi grid.
         
         Kwargs:
@@ -3150,8 +3152,6 @@ class Equilibrium(object):
                 Set True to plot filled contours.  Set False (default) to plot white-background
                 color contours.
         """
-        
-        plt.ion()
         
         try:
             psiRZ = self.getFluxGrid()
@@ -3192,8 +3192,22 @@ class Equilibrium(object):
         psi.set_aspect('equal')
         timeSliderSub = fluxPlot.add_subplot(gs[1,0])
         title = fluxPlot.suptitle('')
-        
-        # code here to generate mask for psiRZ?
+
+        # dummy plot to get x,ylims
+        psi.contour(rGrid,zGrid,psiRZ[0],1)
+
+        # generate graphical mask for limiter wall
+        if mask:
+            xlim = psi.get_xlim()
+            ylim = psi.get_ylim()
+            bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
+            poly_verts = [(limx[i],limy[i]) for i in range(len(limx) - 1, -1, -1)]
+
+            bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
+            poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
+
+            path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
+            patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
 
         def updateTime(val):
             psi.clear()
@@ -3203,22 +3217,29 @@ class Equilibrium(object):
             psi.set_xlabel('$R$ [m]')
             psi.set_ylabel('$Z$ [m]')
             if macx is not None:
-                psi.plot(macx,macy,'k',linewidth=3)
+                psi.plot(macx,macy,'k',linewidth=3,zorder=5)
             elif limx is not None:
-                psi.plot(limx,limy,'k',linewidth=3)
-            mask = scipy.where(RLCFS[:,t_idx] > 0.0)
-            RLCFSframe = RLCFS[mask[0],t_idx]
-            ZLCFSframe = ZLCFS[mask[0],t_idx]
-            psi.plot(RLCFSframe,ZLCFSframe,'r',linewidth=3)
+                psi.plot(limx,limy,'k',linewidth=3,zorder=5)
+            # catch NaNs separating disjoint sections of R,ZLCFS in mask
+            maskarr = scipy.where(scipy.logical_or(RLCFS[:,t_idx] > 0.0,scipy.isnan(RLCFS[:,t_idx])))
+            RLCFSframe = RLCFS[maskarr[0],t_idx]
+            ZLCFSframe = ZLCFS[maskarr[0],t_idx]
+            psi.plot(RLCFSframe,ZLCFSframe,'r',linewidth=3,zorder=3)
             if fill:
-                psi.contourf(rGrid,zGrid,psiRZ[t_idx],50)
-                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid')
+                psi.contourf(rGrid,zGrid,psiRZ[t_idx],50,zorder=2)
+                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid',zorder=3)
             else:
-                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,linestyles='solid')
+                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,linestyles='solid',zorder=2)
+            if mask:
+                patchdraw = psi.add_patch(patch)
+                patchdraw.set_zorder(4)
             fluxPlot.canvas.draw()
 
         timeSlider = mplw.Slider(timeSliderSub,'t index',0,len(t)-1,valinit=0,valfmt="%d")
         timeSlider.on_changed(updateTime)
         updateTime(0)
+
+        plt.ion()
+        fluxPlot.show()
 
         fluxPlot.canvas.mpl_connect('key_press_event', lambda evt: arrowRespond(timeSlider, evt))

@@ -1267,13 +1267,13 @@ class EqdskReader(Equilibrium):
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'],length_unit)
         return unit_factor * self._ZLCFS.copy()
         
-    def remapLCFS(self,mask=True):
+    def remapLCFS(self,mask=False):
         """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
         of psinorm=1 surface.
 
         Kwargs:
             mask: Boolean.
-                Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+                Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).
                 Set False to draw full contour of psi = psiLCFS.
         """
         if not _has_plt:
@@ -1283,6 +1283,8 @@ class EqdskReader(Equilibrium):
             Rlim,Zlim = self.getMachineCrossSection()
         except:
             raise ValueError("Limiter outline in self.getMachineCrossSection must be available.")
+
+        plt.ioff()
             
         psiRZ = self.getFluxGrid()
         R = self.getRGrid()
@@ -1319,8 +1321,10 @@ class EqdskReader(Equilibrium):
         self._ZLCFS = ZLCFS.reshape((npts,1))
         
         # cleanup
+        plt.ion()
         plt.clf()
         plt.close(fig)
+        plt.ioff()
 
     def getFluxVol(self):
         #returns volume contained within a flux surface as function of psi, volp(psi,t)
