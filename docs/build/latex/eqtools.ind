@@ -34,7 +34,7 @@
   \item eqtools.EFIT (module), \hyperpage{4}
   \item eqtools.eqdskreader (module), \hyperpage{35}
   \item eqtools.FromArrays (module), \hyperpage{9}
-  \item eqtools.NSTXEFIT (module), \hyperpage{9}
+  \item eqtools.NSTXEFIT (module), \hyperpage{10}
   \item eqtools.pfilereader (module), \hyperpage{49}
   \item eqtools.trispline (module), \hyperpage{49}
   \item Equilibrium (class in eqtools.core), \hyperpage{13}
@@ -96,7 +96,7 @@
   \item getEnergy() (eqtools.eqdskreader.EqdskReader method), \hyperpage{48}
   \item getFields() (eqtools.core.Equilibrium method), \hyperpage{33}
   \item getFields() (eqtools.EFIT.EFITTree method), \hyperpage{7}
-  \item getFields() (eqtools.eqdskreader.EqdskReader method), \hyperpage{46}
+  \item getFields() (eqtools.eqdskreader.EqdskReader method), \hyperpage{47}
   \item getFluxAxis() (eqtools.core.Equilibrium method), \hyperpage{30}
   \item getFluxAxis() (eqtools.EFIT.EFITTree method), \hyperpage{6}
   \item getFluxAxis() (eqtools.eqdskreader.EqdskReader method), \hyperpage{44}
@@ -116,7 +116,7 @@
   \item getFluxVol() (eqtools.eqdskreader.EqdskReader method), \hyperpage{45}
   \item getFluxVol() (eqtools.NSTXEFIT.NSTXEFITTree method), \hyperpage{10}
   \item getGeometry() (eqtools.core.Equilibrium method), \hyperpage{32}
-  \item getGeometry() (eqtools.EFIT.EFITTree method), \hyperpage{6}
+  \item getGeometry() (eqtools.EFIT.EFITTree method), \hyperpage{7}
   \item getGeometry() (eqtools.eqdskreader.EqdskReader method), \hyperpage{46}
   \item getInfo() (eqtools.core.Equilibrium method), \hyperpage{30}
   \item getInfo() (eqtools.EFIT.EFITTree method), \hyperpage{5}
@@ -193,7 +193,7 @@
   \item getRmidPsi() (eqtools.core.Equilibrium method), \hyperpage{31}
   \item getRmidPsi() (eqtools.EFIT.EFITTree method), \hyperpage{6}
   \item getRmidPsi() (eqtools.eqdskreader.EqdskReader method), \hyperpage{45}
-  \item getRmidPsi() (eqtools.NSTXEFIT.NSTXEFITTree method), \hyperpage{10}
+  \item getRmidPsi() (eqtools.NSTXEFIT.NSTXEFITTree method), \hyperpage{11}
   \item getShaping() (eqtools.core.Equilibrium method), \hyperpage{31}
   \item getShaping() (eqtools.EFIT.EFITTree method), \hyperpage{6}
   \item getShaping() (eqtools.eqdskreader.EqdskReader method), \hyperpage{45}
@@ -210,7 +210,7 @@
   \item getVolLCFS() (eqtools.core.Equilibrium method), \hyperpage{31}
   \item getVolLCFS() (eqtools.EFIT.EFITTree method), \hyperpage{6}
   \item getVolLCFS() (eqtools.eqdskreader.EqdskReader method), \hyperpage{45}
-  \item getVolLCFS() (eqtools.NSTXEFIT.NSTXEFITTree method), \hyperpage{10}
+  \item getVolLCFS() (eqtools.NSTXEFIT.NSTXEFITTree method), \hyperpage{11}
   \item getWbdot() (eqtools.core.Equilibrium method), \hyperpage{34}
   \item getWbdot() (eqtools.EFIT.EFITTree method), \hyperpage{8}
   \item getWbdot() (eqtools.eqdskreader.EqdskReader method), \hyperpage{48}
@@ -238,7 +238,7 @@
 
   \indexspace
   \bigletter N
-  \item NSTXEFITTree (class in eqtools.NSTXEFIT), \hyperpage{9}
+  \item NSTXEFITTree (class in eqtools.NSTXEFIT), \hyperpage{10}
   \item NSTXEFITTreeProp (class in eqtools.NSTXEFIT), \hyperpage{11}
 
   \indexspace

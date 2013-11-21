@@ -29,7 +29,7 @@
 \indexentry{getAreaLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{6}
 \indexentry{getAOut() (eqtools.EFIT.EFITTree method)|hyperpage}{6}
 \indexentry{getRmidOut() (eqtools.EFIT.EFITTree method)|hyperpage}{6}
-\indexentry{getGeometry() (eqtools.EFIT.EFITTree method)|hyperpage}{6}
+\indexentry{getGeometry() (eqtools.EFIT.EFITTree method)|hyperpage}{7}
 \indexentry{getQProfile() (eqtools.EFIT.EFITTree method)|hyperpage}{7}
 \indexentry{getQ0() (eqtools.EFIT.EFITTree method)|hyperpage}{7}
 \indexentry{getQ95() (eqtools.EFIT.EFITTree method)|hyperpage}{7}
@@ -72,12 +72,12 @@
 \indexentry{getRGrid() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{9}
 \indexentry{getZGrid() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{9}
 \indexentry{getQProfile() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{9}
-\indexentry{eqtools.NSTXEFIT (module)|hyperpage}{9}
-\indexentry{NSTXEFITTree (class in eqtools.NSTXEFIT)|hyperpage}{9}
+\indexentry{eqtools.NSTXEFIT (module)|hyperpage}{10}
+\indexentry{NSTXEFITTree (class in eqtools.NSTXEFIT)|hyperpage}{10}
 \indexentry{getFluxGrid() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{10}
 \indexentry{getFluxVol() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{10}
-\indexentry{getRmidPsi() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{10}
-\indexentry{getVolLCFS() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{10}
+\indexentry{getRmidPsi() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{11}
+\indexentry{getVolLCFS() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{11}
 \indexentry{rz2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{11}
 \indexentry{psinorm2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{11}
 \indexentry{NSTXEFITTreeProp (class in eqtools.NSTXEFIT)|hyperpage}{11}
@@ -211,7 +211,7 @@
 \indexentry{getBtVac() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{46}
 \indexentry{getBtPla() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{46}
 \indexentry{getBpAvg() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{46}
-\indexentry{getFields() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{46}
+\indexentry{getFields() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{47}
 \indexentry{getIpCalc() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{47}
 \indexentry{getIpMeas() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{47}
 \indexentry{getJp() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{47}

@@ -269,7 +269,7 @@ class Equilibrium(object):
     
     Create a new Equilibrium instance.
     
-    Kwargs:
+    Keyword Args:
         length_unit: String.
             Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
@@ -382,7 +382,7 @@ class Equilibrium(object):
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             return_t: Boolean.
                 Set to True to return a tuple of (psi, time_idxs),
                 where time_idxs is the array of time indices actually used in
@@ -552,7 +552,7 @@ class Equilibrium(object):
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             return_t: Boolean.
                 Set to True to return a tuple of (psinorm,
                 time_idxs), where time_idxs is the array of time indices
@@ -716,7 +716,7 @@ class Equilibrium(object):
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             return_t: Boolean.
                 Set to True to return a tuple of (phinorm,
                 time_idxs), where time_idxs is the array of time indices
@@ -852,7 +852,7 @@ class Equilibrium(object):
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             return_t: Boolean.
                 Set to True to return a tuple of (volnorm,
                 time_idxs), where time_idxs is the array of time indices
@@ -996,7 +996,7 @@ class Equilibrium(object):
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             return_t: Boolean.
                 Set to True to return a tuple of (volnorm,
                 time_idxs), where time_idxs is the array of time indices
@@ -1142,7 +1142,7 @@ class Equilibrium(object):
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             return_t: Boolean.
                 Set to True to return a tuple of (R_mid,
                 time_idxs), where time_idxs is the array of time indices
@@ -1281,7 +1281,7 @@ class Equilibrium(object):
                 for all of the elements of psi_norm. If neither t nor psi_norm
                 are scalars, t must have the same shape as psi_norm.
         
-        Kwargs:
+        Keyword Args:
             each_t: Boolean.
                 When True, the elements in `R` and `Z` (or the meshgrid thereof
                 if `make_grid` is True) are evaluated at each value in `t`. If
@@ -1395,7 +1395,7 @@ class Equilibrium(object):
                 for all of the elements of psi_norm. If neither t nor psi_norm
                 are scalars, t must have the same shape as psi_norm.
         
-        Kwargs:
+        Keyword Args:
             each_t: Boolean.
                 When True, the elements in `R` and `Z` (or the meshgrid thereof
                 if `make_grid` is True) are evaluated at each value in `t`. If
@@ -1480,7 +1480,7 @@ class Equilibrium(object):
                 for all of the elements of psi_norm. If neither t nor psi_norm
                 are scalars, t must have the same shape as psi_norm.
         
-        Kwargs:
+        Keyword Args:
             each_t: Boolean.
                 When True, the elements in `R` and `Z` (or the meshgrid thereof
                 if `make_grid` is True) are evaluated at each value in `t`. If
@@ -1565,7 +1565,7 @@ class Equilibrium(object):
             t: Array or scalar float. Representative time array that psi_norm
                 and time_idxs was formed from (used to determine output shape).
         
-        Kwargs:
+        Keyword Args:
             each_t: Boolean.
                 When True, the elements in `psi_norm` are evaluated at each
                 value in `t`. If True, `t` must have only one dimension (or be
@@ -1711,7 +1711,7 @@ class Equilibrium(object):
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             each_t: Boolean.
                 When True, the elements in `R` and `Z` (or the meshgrid thereof
                 if `make_grid` is True) are evaluated at each value in `t`. If
@@ -1852,7 +1852,7 @@ class Equilibrium(object):
                     raised if the user puts in a completely inconsistent
                     specification such as length_unit='m^3' or length_unit='m^1'.
         
-        Kwargs:
+        Keyword Args:
             default: String, int or None. The default unit to use in cases
                 where start or end is 'default'. If default is None, an int, or 
                 'default', then the value given for start is used. (A circular
@@ -1968,7 +1968,7 @@ class Equilibrium(object):
                 array-like and `make_grid` is True, `t` must have shape
                 (len(Z), len(R)).
         
-        Kwargs:
+        Keyword Args:
             make_grid: Boolean.
                 Set to True to pass `R` and `Z` through :py:func:`meshgrid`
                 before evaluating. If this is set to True, `R` and `Z` must each
@@ -2264,7 +2264,7 @@ class Equilibrium(object):
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
-        Kwargs:
+        Keyword Args:
             kind: String or non-negative int. Specifies the type of interpolation
                 to be performed in getting from psinorm to phinorm. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
@@ -2330,7 +2330,7 @@ class Equilibrium(object):
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
-        Kwargs:
+        Keyword Args:
             kind: String or non-negative int. Specifies the type of interpolation
                 to be performed in getting from psinorm to volnorm. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
@@ -2397,7 +2397,7 @@ class Equilibrium(object):
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
-        Kwargs:
+        Keyword Args:
             kind: String or non-negative int. Specifies the type of interpolation
                 to be performed in getting from psinorm to R_mid. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
@@ -2467,7 +2467,7 @@ class Equilibrium(object):
         
         Only used if the instance was created with keyword tspline=True.
         
-        Kwargs:
+        Keyword Args:
             kind: String or non-negative int. Specifies the type of interpolation
                 to be performed in getting from t to psi0. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
@@ -2495,7 +2495,7 @@ class Equilibrium(object):
         
         Only used if the instance was created with keyword tspline=True.
         
-        Kwargs:
+        Keyword Args:
             kind: String or non-negative int. Specifies the type of interpolation
                 to be performed in getting from t to psi_a. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
@@ -2523,7 +2523,7 @@ class Equilibrium(object):
         
         Only used if the instance was created with keyword tspline=True.
         
-        Kwargs:
+        Keyword Args:
             length_unit: String or 1. Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
                     'm'         meters
@@ -2567,7 +2567,7 @@ class Equilibrium(object):
         Generated for completeness of the core position calculation when using
         tspline = True
         
-        Kwargs:
+        Keyword Args:
             length_unit: String or 1. Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
                     'm'         meters
@@ -2610,7 +2610,7 @@ class Equilibrium(object):
         
         Only used if the instance was created with keyword tspline=True.
         
-        Kwargs:
+        Keyword Args:
             length_unit: String or 1. Length unit that R_out is returned in. If
                 a string is given, it must be a valid unit specifier:
                     'm'         meters
@@ -3147,7 +3147,7 @@ class Equilibrium(object):
     def plotFlux(self,fill=True,mask=True):
         """Plots flux contours directly from psi grid.
         
-        Kwargs:
+        Keyword Args:
             fill: Boolean.
                 Set True to plot filled contours.  Set False (default) to plot white-background
                 color contours.

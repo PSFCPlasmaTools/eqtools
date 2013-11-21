@@ -59,7 +59,7 @@ class CModEFITTree(EFITTree):
         shot: (long) int
             C-Mod shot index (long)
     
-    Kwargs:
+    Keyword Args:
         tree: str
             Optional input for EFIT tree, defaults to 'ANALYSIS'
             (i.e., EFIT data are under \\analysis::top.efit.results).

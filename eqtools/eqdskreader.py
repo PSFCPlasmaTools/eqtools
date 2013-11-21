@@ -66,7 +66,7 @@ class EqdskReader(Equilibrium):
     are set, the explicit g-file and a-file paths override the auto-generated filenames from
     the shot and time.
 
-    Kwargs:
+    Keyword Args:
         shot: Int.
             Shot index.
         time: Int.
@@ -649,7 +649,7 @@ class EqdskReader(Equilibrium):
                 Slot for time input for consistent syntax with Equilibrium.rz2psi.
                 will return dummy value for time if input in EqdskReader.
 
-        Kwargs:
+        Keyword Args:
             make_grid: Boolean.
                 Set to True to pass R and Z through meshgrid
                 before evaluating. If this is set to True, R and Z must each
@@ -715,7 +715,7 @@ class EqdskReader(Equilibrium):
                 Slot for time input for consistent syntax with Equilibrium.rz2psinorm.
                 will return dummy value for time if input in EqdskReader.
 
-        Kwargs:
+        Keyword Args:
             sqrt: Boolean.
                 Set to True to return the square root of normalized
                 flux. Only the square root of positive psi_norm values is taken.
@@ -798,7 +798,7 @@ class EqdskReader(Equilibrium):
                 Slot for time input for consistent syntax with Equilibrium.rz2phinorm.
                 will return dummy value for time if input in EqdskReader.
 
-        Kwargs:
+        Keyword Args:
             sqrt: Boolean.
                 Set to True to return the square root of normalized
                 flux. Only the square root of positive phi_norm values is taken.
@@ -908,7 +908,7 @@ class EqdskReader(Equilibrium):
                 unless the make_grid keyword is set. If the make_grid keyword 
                 is True, Z must have shape (len_Z,).
         
-        Kwargs:
+        Keyword Args:
             t: indeterminant.
                 Provides duck typing for inclusion of t values. Passed t values
                 either as an Arg or Kwarg are neglected.
@@ -1010,7 +1010,7 @@ class EqdskReader(Equilibrium):
                 make_grid keyword is set. If the make_grid keyword is True, Z 
                 must have shape (len_Z,).
         
-        Kwargs:
+        Keyword Args:
             t: indeterminant.
                 Provides duck typing for inclusion of t values. Passed t values
                 either as an Arg or Kwarg are neglected.
@@ -1097,7 +1097,7 @@ class EqdskReader(Equilibrium):
                 Values of the normalized
                 poloidal flux to map to midplane radius.
 
-        Kwargs:
+        Keyword Args:
             t: indeterminant.
                 Provides duck typing for inclusion of t values. Passed t values
                 either as an Arg or Kwarg are neglected.
@@ -1172,7 +1172,7 @@ class EqdskReader(Equilibrium):
                 Values of the normalized
                 poloidal flux to map to normalized toroidal flux.
         
-        Kwargs:
+        Keyword Args:
             t: indeterminant.
                 Provides duck typing for inclusion of t values. Passed t values
                 either as an Arg or Kwarg are neglected.
@@ -1271,7 +1271,7 @@ class EqdskReader(Equilibrium):
         """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
         of psinorm=1 surface.
 
-        Kwargs:
+        Keyword Args:
             mask: Boolean.
                 Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).
                 Set False to draw full contour of psi = psiLCFS.
@@ -1474,7 +1474,7 @@ class EqdskReader(Equilibrium):
         Returns:
             namedtuple containing [Rmag,Zmag,AreaLCFS,aOut,RmidOut]
 
-        Kwargs:
+        Keyword Args:
             length_unit: TODO
 
         Raises:
@@ -1903,7 +1903,7 @@ class EqdskReader(Equilibrium):
     def plotFlux(self,fill=True,mask=True):
         """streamlined plotting of flux contours directly from psi grid
 
-        Kwargs:
+        Keyword Args:
             fill: Boolean.
                 Default True.  Set True to plot filled contours of flux delineated by black outlines.
                 Set False to instead plot color-coded line contours on a blank background.

@@ -6,7 +6,7 @@
 \contentsline {subsection}{\numberline {2.1.2}\texttt {CModEFIT} Module}{3}{subsection.2.1.2}
 \contentsline {subsection}{\numberline {2.1.3}\texttt {EFIT} Module}{4}{subsection.2.1.3}
 \contentsline {subsection}{\numberline {2.1.4}\texttt {FromArrays} Module}{9}{subsection.2.1.4}
-\contentsline {subsection}{\numberline {2.1.5}\texttt {NSTXEFIT} Module}{9}{subsection.2.1.5}
+\contentsline {subsection}{\numberline {2.1.5}\texttt {NSTXEFIT} Module}{10}{subsection.2.1.5}
 \contentsline {subsection}{\numberline {2.1.6}\texttt {afilereader} Module}{11}{subsection.2.1.6}
 \contentsline {subsection}{\numberline {2.1.7}\texttt {core} Module}{12}{subsection.2.1.7}
 \contentsline {paragraph}{Examples}{15}{paragraph*.94}

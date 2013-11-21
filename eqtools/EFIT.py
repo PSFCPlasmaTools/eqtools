@@ -70,7 +70,7 @@ class EFITTree(Equilibrium):
         root: str
             Root path for EFIT data in MDSplus tree.
     
-    Kwargs:
+    Keyword Args:
         length_unit: String.
             Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
@@ -401,7 +401,7 @@ class EFITTree(Equilibrium):
         of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
         restricting the contour to the closed plasma surface and the divertor legs.
 
-        Kwargs:
+        Keyword Args:
             mask: Boolean.
                 Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).
                 Set False to draw full contour of psi = psiLCFS.
