@@ -59,7 +59,7 @@ class NSTXEFITTree(EFITTree):
         shot: (long) int
             NSTX shot index (long)
     
-    Kwargs:
+    Keyword Args:
         tree: str
             Optional input for EFIT tree, defaults to 'EFIT01'
             (i.e., EFIT data are under \\EFIT01::top.results).

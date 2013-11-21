@@ -13,7 +13,7 @@
 \hypersetup{bookmarksdepth=3}
 
 \title{eqtools Documentation}
-\date{October 23, 2013}
+\date{November 21, 2013}
 \release{0.0}
 \author{Mark Chilenski, Ian Faust and John Walk}
 \newcommand{\sphinxlogo}{}
@@ -574,10 +574,18 @@ returns Z-values of LCFS position {[}t,n{]}
 \index{remapLCFS() (eqtools.EFIT.EFITTree method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.remapLCFS}\pysiglinewithargsret{\bfcode{remapLCFS}}{}{}
+\phantomsection\label{eqtools:eqtools.EFIT.EFITTree.remapLCFS}\pysiglinewithargsret{\bfcode{remapLCFS}}{\emph{mask=True}}{}
 Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
 of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
 restricting the contour to the closed plasma surface and the divertor legs.
+\begin{quote}\begin{description}
+\item[{Keyword Arguments}] \leavevmode
+\textbf{mask} --
+Boolean.
+Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+Set False to draw full contour of psi = psiLCFS.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -5533,10 +5541,17 @@ Returns array of Z-values of LCFS
 \index{remapLCFS() (eqtools.eqdskreader.EqdskReader method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.remapLCFS}\pysiglinewithargsret{\bfcode{remapLCFS}}{}{}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.remapLCFS}\pysiglinewithargsret{\bfcode{remapLCFS}}{\emph{mask=True}}{}
 Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
-of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
-restricting the contour to the closed plasma surface and the divertor legs.
+of psinorm=1 surface.
+\begin{quote}\begin{description}
+\item[{Keyword Arguments}] \leavevmode
+\textbf{mask} --
+Boolean.
+Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+Set False to draw full contour of psi = psiLCFS.
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 
@@ -6215,8 +6230,25 @@ Absent additional data (not found in eqdsks) simply returns self.getMachineCross
 \index{plotFlux() (eqtools.eqdskreader.EqdskReader method)}
 
 \begin{fulllineitems}
-\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{\emph{fill=True}}{}
+\phantomsection\label{eqtools:eqtools.eqdskreader.EqdskReader.plotFlux}\pysiglinewithargsret{\bfcode{plotFlux}}{\emph{fill=True}, \emph{mask=True}}{}
 streamlined plotting of flux contours directly from psi grid
+\begin{quote}\begin{description}
+\item[{Keyword Arguments}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{fill} --
+Boolean.
+Default True.  Set True to plot filled contours of flux delineated by black outlines.
+Set False to instead plot color-coded line contours on a blank background.
+
+\item {} 
+\textbf{mask} --
+Boolean.
+Default True.  Set True to draw a clipping mask based on the limiter outline for the flux contours.
+Set False to draw the full RZ grid.
+
+\end{itemize}
+
+\end{description}\end{quote}
 
 \end{fulllineitems}
 

@@ -41,7 +41,7 @@ class ArrayEquilibrium(Equilibrium):
             Flux surface volumes evaluated at S values of psinorm from 0 to 1,
             given at M times.
     
-    Kwargs:
+    Keyword Args:
         length_unit: String.
             Base unit for any quantity whose dimensions are length to any power.
             Default is 'm'. Valid options are:

@@ -412,10 +412,22 @@ increasing. Default is False (use slower, safer method).</p>
 
 <dl class="method">
 <dt id="eqtools.EFIT.EFITTree.remapLCFS">
-<tt class="descname">remapLCFS</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.EFIT.EFITTree.remapLCFS" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">remapLCFS</tt><big>(</big><em>mask=True</em><big>)</big><a class="headerlink" href="#eqtools.EFIT.EFITTree.remapLCFS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
 of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
 restricting the contour to the closed plasma surface and the divertor legs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><strong>mask</strong> &#8211;
+Boolean.
+Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+Set False to draw full contour of psi = psiLCFS.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -4434,10 +4446,21 @@ values are all the same:</p>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.remapLCFS">
-<tt class="descname">remapLCFS</tt><big>(</big><big>)</big><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.remapLCFS" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">remapLCFS</tt><big>(</big><em>mask=True</em><big>)</big><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.remapLCFS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
-of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
-restricting the contour to the closed plasma surface and the divertor legs.</p>
+of psinorm=1 surface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><strong>mask</strong> &#8211;
+Boolean.
+Default True.  Set True to mask LCFS path to limiter outline (using inPolygon).
+Set False to draw full contour of psi = psiLCFS.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -5134,8 +5157,27 @@ raised if no attribute is found.</td>
 
 <dl class="method">
 <dt id="eqtools.eqdskreader.EqdskReader.plotFlux">
-<tt class="descname">plotFlux</tt><big>(</big><em>fill=True</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.plotFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.plotFlux" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">plotFlux</tt><big>(</big><em>fill=True</em>, <em>mask=True</em><big>)</big><a class="reference internal" href="_modules/eqtools/eqdskreader.html#EqdskReader.plotFlux"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#eqtools.eqdskreader.EqdskReader.plotFlux" title="Permalink to this definition">¶</a></dt>
 <dd><p>streamlined plotting of flux contours directly from psi grid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><ul class="first last simple">
+<li><strong>fill</strong> &#8211;
+Boolean.
+Default True.  Set True to plot filled contours of flux delineated by black outlines.
+Set False to instead plot color-coded line contours on a blank background.</li>
+<li><strong>mask</strong> &#8211;
+Boolean.
+Default True.  Set True to draw a clipping mask based on the limiter outline for the flux contours.
+Set False to draw the full RZ grid.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>

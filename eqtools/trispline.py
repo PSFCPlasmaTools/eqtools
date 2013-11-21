@@ -49,7 +49,7 @@ class Spline():
             f[z,y,x]. NaN and Inf will
             affect interpolation in 4x4x4 space about its value.
     
-    Kwargs:
+    Keyword Args:
         regular: Boolean.
             If the grid is known to be regular, forces
             matrix-based fast evaluation of interpolation.
@@ -206,7 +206,7 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
         z: array_like
             2-D array of data with shape (x.size,y.size).
 
-    Kwargs:
+    Keyword Args:
         bbox: 1 dimensional float
             Sequence of length 4 specifying the boundary of the rectangular
             approximation domain.  By default,

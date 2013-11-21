@@ -50,7 +50,7 @@ class PFileReader(object):
         pfile: String.
             Path to ASCII p-file to be loaded.
 
-    Kwargs:
+    Keyword Args:
         verbose: Boolean.
             Option to print message on object creation listing available data
             parameters. Defaults to True. 
