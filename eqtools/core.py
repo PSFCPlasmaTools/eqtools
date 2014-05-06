@@ -975,6 +975,8 @@ class Equilibrium(object):
                     psinorm Normalized poloidal flux
                     phinorm Normalized toroidal flux
                     volnorm Normalized volume
+                    Rmid    Midplane major radius
+                    r/a     Normalized minor radius
                     ======= ========================
                 
                 Additionally, each valid option may be prepended with 'sqrt'
@@ -1114,6 +1116,11 @@ class Equilibrium(object):
             return self.rz2phinorm(*args, **kwargs)
         elif method == 'volnorm':
             return self.rz2volnorm(*args, **kwargs)
+        elif method == 'Rmid':
+            return self.rz2rmid(*args, **kwargs)
+        elif method == 'r/a':
+            kwargs['rho'] = True
+            return self.rz2rmid(*args, **kwargs)
         else:
             raise ValueError("rz2rho: Unsupported normalized coordinate method '%s'!" % method)
 
