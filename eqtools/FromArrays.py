@@ -114,6 +114,8 @@ class ArrayEquilibrium(Equilibrium):
         self._defaultUnits['_rmag'] = 'm'
         self._defaultUnits['_zmag'] = 'm'
         self._defaultUnits['_RmidLCFS'] = 'm'
+        self._defaultUnits['_RLCFS'] = 'm'
+        self._defaultUnits['_ZLCFS'] = 'm'
         
         super(ArrayEquilibrium, self).__init__(**kwargs)
     
@@ -179,3 +181,12 @@ class ArrayEquilibrium(Equilibrium):
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidLCFS'], length_unit)
         return unit_factor * self._RmidLCFS.copy()
+    
+    def getRLCFS(self, length_unit=1):
+        TODO
+    
+    def getZLCFS(self, length_unit=1):
+        TODO
+    
+    def getCurrentSign(self):
+        return 1

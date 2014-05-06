@@ -976,7 +976,9 @@ class Equilibrium(object):
                     phinorm Normalized toroidal flux
                     volnorm Normalized volume
                     ======= ========================
-                    
+                
+                Additionally, each valid option may be prepended with 'sqrt'
+                to return the square root of the desired normalized unit.
             R: Array-like or scalar float.
                 Values of the radial coordinate to
                 map to normalized coordinate. If R and Z are both scalar values,
@@ -1101,7 +1103,11 @@ class Equilibrium(object):
             
                 psi_mat = Eq_instance.rz2rho('psinorm', R, Z, 0.2, make_grid=True)
         """
-
+        
+        if method.startswith('sqrt'):
+            kwargs['sqrt'] = True
+            method = method[4:]
+        
         if method == 'psinorm':
             return self.rz2psinorm(*args, **kwargs)
         elif method == 'phinorm':
