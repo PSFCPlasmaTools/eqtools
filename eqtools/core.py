@@ -1395,6 +1395,7 @@ class Equilibrium(object):
         """
         
         # TODO: Is it worth storing this spline?
+        # TODO: This doesn't handle each_t properly!
         Z_mid = scipy.interpolate.interp1d(self.getTimeBase(),
                                            self.getMagZ(),
                                            kind='nearest' if not self._tricubic else 'cubic')(t)
