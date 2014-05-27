@@ -221,7 +221,26 @@ class NSTXEFITTree(EFITTree):
                 raise ValueError('data retrieval failed.')
         return self._psiRZ.copy()
         
-        
+    def getMachineCrossSection(self):
+        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.
+            Returns:    
+            The requested data.
+        """
+        if self._Rlimiter is None or self._Zlimiter is None:
+            try:
+                limitr = self._MDSTree.getNode(self._root+self._gfile+':limitr').data()
+                xlim = self._MDSTree.getNode(self._root+self._gfile+':rlim').data()
+                ylim = self._MDSTree.getNode(self._root+self._gfile+':zlim').data()
+                npts = len(xlim)
+                
+                if npts < limitr:
+                    raise ValueError("Dimensions inconsistent in limiter array lengths.")
+                    
+                self._Rlimiter = xlim[0][0:limitr]
+                self._Zlimiter = ylim[0][0:limitr]
+            except (TreeException, AttributeError):
+                raise ValueError("data retrieval failed.")
+        return (self._Rlimiter,self._Zlimiter)        
 
     def getFluxVol(self): 
         """
