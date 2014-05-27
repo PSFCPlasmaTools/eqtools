@@ -229,16 +229,16 @@ class NSTXEFITTree(EFITTree):
         """
         if self._Rlimiter is None or self._Zlimiter is None:
             try:
-                limitr = self._MDSTree.getNode(self._root+self._gfile+':limitr').data()
-                xlim = self._MDSTree.getNode(self._root+self._gfile+':rlim').data()
-                ylim = self._MDSTree.getNode(self._root+self._gfile+':zlim').data()
+                limitr = self._MDSTree.getNode(self._root+self._gfile+':limitr').data()[0]
+                xlim = self._MDSTree.getNode(self._root+self._gfile+':rlim').data()[0]
+                ylim = self._MDSTree.getNode(self._root+self._gfile+':zlim').data()[0]
                 npts = len(xlim)
                 
                 if npts < limitr:
                     raise ValueError("Dimensions inconsistent in limiter array lengths.")
                     
-                self._Rlimiter = xlim[0][0:limitr]
-                self._Zlimiter = ylim[0][0:limitr]
+                self._Rlimiter = xlim[0:limitr]
+                self._Zlimiter = ylim[0:limitr]
             except (TreeException, AttributeError):
                 raise ValueError("data retrieval failed.")
         return (self._Rlimiter,self._Zlimiter)        
