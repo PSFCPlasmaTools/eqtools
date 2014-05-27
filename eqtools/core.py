@@ -329,8 +329,7 @@ class Equilibrium(object):
                 # than indexes for interpolation.
                 self._psiOfPsi0Spline = {}
                 self._psiOfLCFSSpline = {}
-                # MagR and RmidOut only used for rho (r/a) calculations
-                self._MagRSpline = {}
+                # RmidOut only used for rho (r/a) calculations
                 self._RmidOutSpline = {}
             
         # These are indexes of splines, and become higher dimensional splines
@@ -339,7 +338,8 @@ class Equilibrium(object):
         self._phiNormSpline = {}
         self._volNormSpline = {}
         self._RmidSpline = {}
-        
+        self._MagRSpline = {}
+        self._MagZSpline = {}
     
     def __str__(self):
         """String representation of this instance.
