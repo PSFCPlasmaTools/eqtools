@@ -338,8 +338,8 @@ class Equilibrium(object):
         self._phiNormSpline = {}
         self._volNormSpline = {}
         self._RmidSpline = {}
-        self._MagRSpline = {}
-        self._MagZSpline = {}
+        self._magRSpline = {}
+        self._magZSpline = {}
     
     def __str__(self):
         """String representation of this instance.
@@ -2822,18 +2822,18 @@ class Equilibrium(object):
         Returns:
             scipy.interpolate.interp1d to convert from t to R_mid.
         """
-        if self._MagRSpline:
-            return self._MagRSpline
+        if self._magRSpline:
+            return self._magRSpline
         else:
             if kind == 'nearest' and self._tricubic:
                 kind = 'cubic'
 
-            self._MagRSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+            self._magRSpline = scipy.interpolate.interp1d(self.getTimeBase(),
                                                           self.getMagR(length_unit=length_unit),
                                                           kind=kind,
                                                           bounds_error=False)
 
-            return self._MagRSpline
+            return self._magRSpline
 
     def getMagZSpline(self, length_unit=1, kind='nearest'):
         """Gets the univariate spline to interpolate Z_mag as a function of time.
@@ -2869,18 +2869,18 @@ class Equilibrium(object):
         Returns:
             scipy.interpolate.interp1d to convert from t to R_mid.
         """
-        if self._MagZSpline:
-            return self._MagZSpline
+        if self._magZSpline:
+            return self._magZSpline
         else:
             if kind == 'nearest' and self._tricubic:
                 kind = 'cubic'
 
-            self._MagZSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+            self._magZSpline = scipy.interpolate.interp1d(self.getTimeBase(),
                                                           self.getMagZ(length_unit=length_unit),
                                                           kind=kind,
                                                           bounds_error=False)
 
-            return self._MagZSpline
+            return self._magZSpline
 
     def _getRmidOutSpline(self, length_unit=1, kind='cubic'):
         """Gets the univariate spline to interpolate R_out as a function of time.
