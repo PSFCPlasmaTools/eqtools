@@ -223,7 +223,8 @@ class NSTXEFITTree(EFITTree):
         
     def getMachineCrossSection(self):
         """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.
-            Returns:    
+
+        Returns:    
             The requested data.
         """
         if self._Rlimiter is None or self._Zlimiter is None:
