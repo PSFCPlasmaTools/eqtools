@@ -1931,7 +1931,7 @@ class Equilibrium(object):
         else:
             quan_norm = spline_func(time_idxs).ev(psi_norm, time_idxs) #time_idxs is set to None
             if rho:
-                magR = self._getMagRSpline(length_unit='m')(time_idxs)
+                magR = self.getMagRSpline(length_unit='m')(time_idxs)
                 quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(time_idxs) - magR)
 
         # Restore original shape:
@@ -2792,7 +2792,7 @@ class Equilibrium(object):
                                                                bounds_error=False)
             return self._psiOfLCFSSpline
 
-    def _getMagRSpline(self, length_unit=1, kind='cubic'):
+    def getMagRSpline(self, length_unit=1, kind='nearest'):
         """Gets the univariate spline to interpolate R_mag as a function of time.
         
         Only used if the instance was created with keyword tspline=True.
@@ -2828,6 +2828,9 @@ class Equilibrium(object):
         if self._MagRSpline:
             return self._MagRSpline
         else:
+            if kind == 'nearest' and self._tricubic:
+                kind = 'cubic'
+
             self._MagRSpline = scipy.interpolate.interp1d(self.getTimeBase(),
                                                           self.getMagR(length_unit=length_unit),
                                                           kind=kind,
@@ -2835,7 +2838,7 @@ class Equilibrium(object):
 
             return self._MagRSpline
 
-    def _getMagZSpline(self, length_unit=1, kind='cubic'):
+    def getMagZSpline(self, length_unit=1, kind='nearest'):
         """Gets the univariate spline to interpolate Z_mag as a function of time.
         
         Generated for completeness of the core position calculation when using
@@ -2872,6 +2875,9 @@ class Equilibrium(object):
         if self._MagZSpline:
             return self._MagZSpline
         else:
+            if kind == 'nearest' and self._tricubic:
+                kind = 'cubic'
+
             self._MagZSpline = scipy.interpolate.interp1d(self.getTimeBase(),
                                                           self.getMagZ(length_unit=length_unit),
                                                           kind=kind,
