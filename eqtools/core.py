@@ -1953,16 +1953,13 @@ class Equilibrium(object):
                 quan_norm = scipy.zeros(psi_norm.shape)
                 for k in xrange(0, len(quan_norm)):
                     quan_norm[k] = spline_func(time_idxs[k], kind=kind)(psi_norm[k])
-                    if rho:
-                        quan_norm[k] = ((quan_norm[k] - self.getMagR(length_unit='m')[time_idxs[k]])
-                                        / (self.getRmidOut(length_unit='m')[time_idxs[k]]
-                                           - self.getMagR(length_unit='m')[time_idxs[k]]))
         else:
-            quan_norm = spline_func(time_idxs).ev(psi_norm, time_idxs) #time_idxs is set to None
-            if rho:
-                magR = self.getMagRSpline(length_unit='m')(time_idxs)
-                quan_norm = (quan_norm - magR)/(self._getRmidOutSpline(length_unit='m')(time_idxs) - magR)
-
+            quan_norm = spline_func(time_idxs).ev(psi_norm, time_idxs)
+        
+        # Convert to r/a if needed:
+        if rho:
+            quan_norm = self._rmid2roa(quan_norm, time_idxs)
+        
         # Restore original shape:
         quan_norm = scipy.reshape(quan_norm, original_shape)
  
@@ -1980,7 +1977,77 @@ class Equilibrium(object):
             return (out, time_idxs)
         else:
             return out
+    
+    def _rmid2roa(self, R_mid, time_idxs):
+        r"""Covert the given R_mid at the given time_idxs to r/a.
+        
+        If you want to use a different definition of r/a, you should override
+        this function and `_roa2rmid`.
+        
+        The definition used here is
+        
+        .. math::
+            
+            r/a = \frac{R_{mid} - R_0}{R_a - R_0} = \frac{R_{mid} - R_0}{a}
+        
+        Args:
+            R_mid: Array or scalar float. Values of outboard midplane major
+                radius to evaluate r/a at.
+            time_idxs: Array, same shape as `R_mid`. If :py:attr:`self._tricubic`
+                is True, this should be an array of the time points to evaluate
+                at. Otherwise, this should be an array of the time INDICES in
+                :py:meth:`getTimeBase` to evaluate at.
+        
+        Returns:
+            roa: Array with the same shape as `R_mid` and `time_idxs`. The
+                normalized minor radius at the given `R_mid`, `t` points.
+        """
+        # Get necessary quantities at the relevant times:
+        if not self._tricubic:
+            magR = self.getMagR(length_unit='m')[time_idxs]
+            Rout = self.getRmidOut(length_unit='m')[time_idxs]
+        else:
+            magR = self.getMagRSpline(length_unit='m')(time_idxs)
+            Rout = self._getRmidOutSpline(length_unit='m')(time_idxs)
+        
+        # Compute r/a according to our definition:
+        return (R_mid - magR) / (Rout - magR)
 
+    def _roa2rmid(self, roa, time_idxs):
+        r"""Covert the given r/a at the given time_idxs to R_mid.
+        
+        If you want to use a different definition of r/a, you should override
+        this function and `_rmid2roa`.
+        
+        The definition used here is
+        
+        .. math::
+            
+            r/a = \frac{R_{mid} - R_0}{R_a - R_0} = \frac{R_{mid} - R_0}{a}
+        
+        Args:
+            roa: Array or scalar float. Values of normalized minor radius to
+                evaluate R_mid at.
+            time_idxs: Array, same shape as `roa`. If :py:attr:`self._tricubic`
+                is True, this should be an array of the time points to evaluate
+                at. Otherwise, this should be an array of the time INDICES in
+                :py:meth:`getTimeBase` to evaluate at.
+        
+        Returns:
+            R_mid: Array with the same shape as `roa` and `time_idxs`. The
+                mapped midplane major radius at the given `roa`, `t` points.
+        """
+        # Get necessary quantities at the relevant times:
+        if not self._tricubic:
+            magR = self.getMagR(length_unit='m')[time_idxs]
+            Rout = self.getRmidOut(length_unit='m')[time_idxs]
+        else:
+            magR = self.getMagRSpline(length_unit='m')(time_idxs)
+            Rout = self._getRmidOutSpline(length_unit='m')(time_idxs)
+        
+        # Compute R_mid according to our definition:
+        return roa * (Rout - magR) + Rout
+    
     def _RZ2Quan(self, spline_func, R, Z, t, **kwargs):
         """Convert RZ to a given quantity.
         
