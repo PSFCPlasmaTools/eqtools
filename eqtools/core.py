@@ -1395,10 +1395,41 @@ class Equilibrium(object):
                 psi_arr = Eq_instance.rmid2rho('psinorm', [0.6, 0.5], [0.2, 0.3], each_t=False)
         """
         
-        # TODO: Is it worth storing this spline?
-        # TODO: This doesn't handle each_t properly!
         Z_mid = self.getMagZSpline()(t)
-
+        
+        if kwargs.get('each_t', True):
+            # Need to override the default in _processRZt, since we are doing
+            # the shaping here:
+            kwargs['each_t'] = False
+            try:
+                iter(t)
+            except TypeError:
+                # For a single t, there will only be a single value of Z_mid and
+                # we only need to make it have the same shape as R_mid. Note
+                # that ones_like appears to be clever enough to handle the case
+                # of a scalar R_mid.
+                Z_mid = Z_mid * scipy.ones_like(R_mid)
+            else:
+                # For multiple t, we need to repeat R_mid for every t, then
+                # repeat the corresponding Z_mid that many times for each such
+                # entry.
+                t = scipy.asarray(t)
+                if t.ndim != 1:
+                    raise ValueError("rmid2rho: When using the each_t keyword, "
+                                     "t must have only one dimension.")
+                R_mid = scipy.tile(
+                    R_mid,
+                    scipy.concatenate(([len(t),], scipy.ones_like(scipy.shape(R_mid))))
+                )
+                # TODO: Is there a clever way to do this without a loop?
+                Z_mid_temp = scipy.ones_like(R_mid)
+                t_temp = scipy.ones_like(R_mid)
+                for k in xrange(0, len(Z_mid)):
+                    Z_mid_temp[k] *= Z_mid[k]
+                    t_temp[k] *= t[k]
+                Z_mid = Z_mid_temp
+                t = t_temp
+        
         return self.rz2rho(method, R_mid, Z_mid, t, **kwargs)
     
     def psinorm2rmid(self, psi_norm, t, **kwargs):
