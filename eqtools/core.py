@@ -23,6 +23,7 @@ import scipy
 import scipy.interpolate
 import scipy.integrate
 import re
+import filewriter
 
 import warnings
 
@@ -5208,6 +5209,16 @@ class Equilibrium(object):
         stored by default in data files e.g. g-eqdsk files.
         """
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
+
+    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, tunit='ms', title='EQTOOLS'):
+        writefile.gfile(self,
+                        time,
+                        nw=nw,
+                        nh=nh,
+                        shot=shot,
+                        name=name,
+                        tunit=tunit,
+                        title=title)
 
     def plotFlux(self,fill=True,mask=True):
         """Plots flux contours directly from psi grid.
