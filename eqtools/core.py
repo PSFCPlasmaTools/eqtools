@@ -342,6 +342,8 @@ class Equilibrium(object):
         self._magZSpline = {}
         self._RmidOutSpline = {}
         self._RmidToPsiNormSpline = {}
+        self._phiNormToPsiNormSpline = {}
+        self._volNormToPsiNormSpline = {}
     
     def __str__(self):
         """String representation of this instance.
@@ -517,7 +519,8 @@ class Equilibrium(object):
         else:
             return out
 
-    def rz2psinorm(self, R, Z, t, return_t=False, sqrt=False, make_grid=False, each_t=True, length_unit=1):
+    def rz2psinorm(self, R, Z, t, return_t=False, sqrt=False, make_grid=False,
+                   each_t=True, length_unit=1):
         r"""Calculates the normalized poloidal flux at the given (R, Z, t).
         
         Uses the definition:
@@ -1625,6 +1628,220 @@ class Equilibrium(object):
         """
         return self._psinorm2Quan(self._getRmidToPsiNormSpline, R_mid, t, check_space=True, **kwargs)
     
+    def rmid2phinorm(self, *args, **kwargs):
+        r"""Calculates the normalized toroidal flux.
+        
+        Uses the definitions:
+        
+        .. math::
+        
+            \texttt{phi} &= \int q(\psi)\,d\psi
+            
+            \texttt{phi\_norm} &= \frac{\phi}{\phi(a)}
+            
+        This is based on the IDL version efit_rz2rho.pro by Steve Wolfe.
+
+        If tspline is False for this Equilibrium instance, uses
+        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+        Z. Finds the nearest time slices to those given: nearest-neighbor
+        interpolation in time. Otherwise, uses the tricubic package to perform
+        a trivariate interpolation in space and time.
+        
+        Args:
+            R_mid: Array-like or scalar float.
+                Values of the mapped midplane major radius to map to normalized
+                toroidal flux.
+            t: Array-like or single value.
+                If t is a single value, it is used for all of the elements of
+                R_mid. If t is array-like it must have the same dimensions as
+                R_mid.
+        
+        Keyword Args:
+            return_t: Boolean.
+                Set to True to return a tuple of (phinorm,
+                time_idxs), where time_idxs is the array of time indices
+                actually used in evaluating phinorm with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return phinorm).
+            sqrt: Boolean.
+                Set to True to return the square root of normalized
+                flux. Only the square root of positive phi_norm values is taken.
+                Negative values are replaced with zeros, consistent with Steve
+                Wolfe's IDL implementation efit_rz2rho.pro. Default is False
+                (return phinorm).
+            each_t: Boolean.
+                When True, the elements in `R_mid` are evaluated at each value
+                in `t`. If True, `t` must have only one dimension (or be a
+                scalar). If False, `t` must match the shape of `R_mid` or be a
+                scalar. Default is True (evaluate ALL `R_mid` at each element in
+                `t`).
+            kind: String or non-negative int.
+                Specifies the type of interpolation
+                to be performed in getting from psinorm to phinorm. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+            length_unit: String or 1.
+                Length unit that R_mid is being given in. If a string is given,
+                it must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R_mid given in meters).
+            
+        Returns:
+            phinorm or (phinorm, time_idxs)
+            
+            * **phinorm** - Array or scalar float. If all of the input arguments are
+              scalar, then a scalar is returned. Otherwise, a scipy Array
+              instance is returned. Has same shape as R_mid.
+            * **time_idxs** - Array with same shape as phinorm. The indices (in
+              the timebase returned by :py:meth:`getTimeBase`) that were used
+              for nearest-neighbor interpolation. Only returned if return_t is
+              True.
+        
+        Examples:
+            All assume that Eq_instance is a valid instance of the appropriate
+            extension of the Equilibrium abstract class.
+
+            Find single phinorm value at R_mid=0.6m, t=0.26s::
+            
+                phi_val = Eq_instance.rmid2phinorm(0.6, 0.26)
+        
+            Find phinorm values at R_mid points 0.6m and 0.8m at the single time
+            t=0.26s::
+            
+                phi_arr = Eq_instance.rmid2phinorm([0.6, 0.8], 0.26)
+
+            Find phinorm values at R_mid point 0.6m at times t=[0.2s, 0.3s]::
+            
+                phi_arr = Eq_instance.rmid2phinorm(0.6, [0.2, 0.3])
+
+            Find phinorm values at (R, t) points (0.6m, 0.2s) and (0.5m, 0.3s)::
+            
+                phi_arr = Eq_instance.rmid2phinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
+        return self._Rmid2Quan(self._getPhiNormSpline, *args, **kwargs)
+    
+    def rmid2volnorm(self, *args, **kwargs):
+        """Calculates the normalized flux surface volume.
+        
+        Based on the IDL version efit_rz2rho.pro by Steve Wolfe.
+        
+        If tspline is False for this Equilibrium instance, uses
+        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+        Z. Finds the nearest time slices to those given: nearest-neighbor
+        interpolation in time. Otherwise, uses the tricubic package to perform
+        a trivariate interpolation in space and time.
+        
+        Args:
+            R_mid: Array-like or scalar float.
+                Values of the mapped midplane major radius to map to normalized
+                toroidal flux.
+            t: Array-like or single value.
+                If t is a single value, it is used for all of the elements of
+                R_mid. If t is array-like it must have the same dimensions as
+                R_mid.
+        
+        Keyword Args:
+            return_t: Boolean.
+                Set to True to return a tuple of (volnorm, time_idxs), where
+                time_idxs is the array of time indices actually used in
+                evaluating volnorm with nearest-neighbor interpolation. (This is
+                mostly present as an internal helper.) Default is False (only
+                return volnorm).
+            sqrt: Boolean.
+                Set to True to return the square root of normalized
+                volume. Only the square root of positive volnorm values is
+                taken. Negative values are replaced with zeros, consistent with
+                Steve Wolfe's IDL implementation efit_rz2rho.pro. Default is
+                False (return volnorm).
+            each_t: Boolean.
+                When True, the elements in `R_mid` are evaluated at each value
+                in `t`. If True, `t` must have only one dimension (or be a
+                scalar). If False, `t` must match the shape of `R_mid` or be a
+                scalar. Default is True (evaluate ALL `R_mid` at each element in
+                `t`).
+            kind: String or non-negative int.
+                Specifies the type of interpolation
+                to be performed in getting from psinorm to volnorm. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+            length_unit: String or 1.
+                Length unit that R_mid is being given in. If a string is given,
+                it must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R_mid given in meters).
+            
+        Returns:
+            volnorm or (volnorm, time_idxs)
+            
+            * **volnorm** - Array or scalar float. If all of the input arguments
+              are scalar, then a scalar is returned. Otherwise, a scipy Array
+              instance is returned. Has the same shape as R_mid.
+            * **time_idxs** - Array with same shape as volnorm. The indices (in
+              self.getTimeBase()) that were used for nearest-neighbor
+              interpolation. Only returned if return_t is True.
+        
+        Examples:
+            All assume that Eq_instance is a valid instance of the appropriate
+            extension of the Equilibrium abstract class.
+
+            Find single volnorm value at R_mid=0.6m, t=0.26s::
+            
+                psi_val = Eq_instance.rmid2volnorm(0.6, 0.26)
+
+            Find volnorm values at R_mid points 0.6m and 0.8m at the single time
+            t=0.26s::
+            
+                vol_arr = Eq_instance.rmid2volnorm([0.6, 0.8], 0.26)
+
+            Find volnorm values at R_mid points 0.6m at times t=[0.2s, 0.3s]::
+            
+                vol_arr = Eq_instance.rmid2volnorm(0.6, [0.2, 0.3])
+
+            Find volnorm values at (R_mid, t) points (0.6m, 0.2s) and (0.5m, 0.3s)::
+            
+                vol_arr = Eq_instance.rmid2volnorm([0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
+
+        return self._Rmid2Quan(self._getVolNormSpline, *args, **kwargs)
+    
     def rmid2rho(self, method, R_mid, t, **kwargs):
         """Convert the passed (R_mid, t) coordinates into one of several normalized coordinates.
         
@@ -1750,6 +1967,8 @@ class Equilibrium(object):
             return self.rmid2psinorm(R_mid, t, **kwargs)
         elif method == 'roa':
             return self.rmid2roa(R_mid, t, **kwargs)
+        elif method == 'phinorm':
+            return self.rmid2phinorm(R_mid, t, **kwargs)
         else:
             # Default back to the old kuldge that wastes time in rz2psi:
             # TODO: This doesn't handle length units properly!
@@ -1916,6 +2135,151 @@ class Equilibrium(object):
             return (out, time_idxs)
         else:
             return out
+    
+    def roa2psinorm(self, *args, **kwargs):
+        # TODO: Document!
+        return self.roa2rho('psinorm', *args, **kwargs)
+    
+    def roa2phinorm(self, *args, **kwargs):
+        # TODO: Document!
+        return self.roa2rho('phinorm', *args, **kwargs)
+    
+    def roa2volnorm(self, *args, **kwargs):
+        # TODO: Document!
+        return self.roa2rho('volnorm', *args, **kwargs)
+    
+    def roa2rho(self, method, *args, **kwargs):
+        """Convert the passed (r/a, t) coordinates into one of several normalized coordinates.
+        
+        If tspline is False for this Equilibrium instance, uses
+        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+        Z. Finds the nearest time slices to those given: nearest-neighbor
+        interpolation in time. Otherwise, uses the tricubic package to perform
+        a trivariate interpolation in space and time.
+        
+        Args:
+            method: String.
+                Indicates which normalized coordinates to use.
+                Valid options are:
+                
+                    ======= ========================
+                    psinorm Normalized poloidal flux
+                    phinorm Normalized toroidal flux
+                    volnorm Normalized volume
+                    Rmid    Midplane major radius
+                    r/a     Normalized minor radius
+                    ======= ========================
+                
+                Additionally, each valid option may be prepended with 'sqrt'
+                to return the square root of the desired normalized unit.
+            roa: Array-like or scalar float.
+                Values of the midplane normalized minor radial coordinate to
+                map to normalized coordinate.
+            t: Array-like or single value.
+                If t is a single value, it is used for all of the elements of
+                roa. If t is array-like the it must have the same dimensions
+                as roa.
+        
+        Keyword Args:
+            return_t: Boolean.
+                Set to True to return a tuple of (`rho`, `time_idxs`), where
+                `time_idxs` is the array of time indices actually used in
+                evaluating `rho` with nearest-neighbor interpolation. (This is
+                mostly present as an internal helper.) Default is False (only
+                return `rho`).
+            sqrt: Boolean.
+                Set to True to return the square root of `rho`. Only the square
+                root of positive values is taken. Negative values are replaced
+                with zeros, consistent with Steve Wolfe's IDL implementation
+                efit_rz2rho.pro. Default is False (return `rho` itself).
+            each_t: Boolean.
+                When True, the elements in `roa` are evaluated at each value
+                in `t`. If True, `t` must have only one dimension (or be a
+                scalar). If False, `t` must match the shape of `roa` or be a
+                scalar. Default is True (evaluate ALL `roa` at each element in
+                `t`).
+            kind (phinorm and volnorm only): String or non-negative int.
+                Specifies the type of interpolation to be performed in getting
+                from psinorm to phinorm or volnorm. This is passed to
+                scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+            length_unit: String or 1.
+                Length unit that `R_mid` is returned in. If a string is given, it
+                must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (`R_mid` returned in meters).
+            
+        Returns:
+            `rho` or (`rho`, `time_idxs`)
+            
+            * **rho** - Array or scalar float. If all of the input arguments are
+              scalar, then a scalar is returned. Otherwise, a scipy Array
+              instance is returned.
+            * **time_idxs** - Array with same shape as `rho`. The indices (in
+              self.getTimeBase()) that were used for nearest-neighbor
+              interpolation. Only returned if `return_t` is True.
+        
+        Raises:
+            ValueError: If method is not one of the supported values.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the `Equilibrium` abstract class.
+
+            Find single psinorm value at r/a=0.6, t=0.26s::
+            
+                psi_val = Eq_instance.roa2rho('psinorm', 0.6, 0.26)
+
+            Find psinorm values at r/a points 0.6 and 0.8 at the
+            single time t=0.26s::
+            
+                psi_arr = Eq_instance.roa2rho('psinorm', [0.6, 0.8], 0.26)
+
+            Find psinorm values at r/a of 0.6 at times t=[0.2s, 0.3s]::
+            
+                psi_arr = Eq_instance.roa2rho('psinorm', 0.6, [0.2, 0.3])
+
+            Find psinorm values at (r/a, t) points (0.6, 0.2s) and (0.5, 0.3s)::
+            
+                psi_arr = Eq_instance.roa2rho('psinorm', [0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
+        if method == 'Rmid':
+            return self.roa2rmid(*args, **kwargs)
+        else:
+            return_t = kwargs.get('return_t', False)
+            kwargs['return_t'] = True
+        
+            # Not used by roa2rmid:
+            kind = kwargs.pop('kind', 'cubic')
+
+            R_mid, time_idxs = self.roa2rmid(*args, **kwargs)
+        
+            kwargs['return_t'] = return_t
+            kwargs['kind'] = kind
+            kwargs['time_idxs'] = time_idxs
+            # TODO: This technically computes the time indices twice. Is there are
+            # good compromise to get the best of both worlds (nice calling of
+            # _psinorm2Quan AND no recompute)?
+            return self.rmid2rho(method, *args, **kwargs)
     
     def psinorm2rmid(self, psi_norm, t, **kwargs):
         """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
@@ -2439,7 +2803,182 @@ class Equilibrium(object):
             return self.psinorm2rmid(*args, **kwargs)
         else:
             raise ValueError("psinorm2rho: Unsupported normalized coordinate method '%s'!" % method)
+    
+    def phinorm2psinorm(self, phinorm, t, **kwargs):
+        """Calculates the normalized poloidal flux corresponding to the passed phinorm (normalized toroidal flux) values.
+
+        If tspline is False for this Equilibrium instance, uses
+        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+        Z. Finds the nearest time slices to those given: nearest-neighbor
+        interpolation in time. Otherwise, uses the tricubic package to perform
+        a trivariate interpolation in space and time.
+    
+        Args:
+            phinorm: Array-like or scalar float.
+                Values of normalized toroidal flux to map to normalized poloidal
+                flux. If `phinorm` is a scalar, it is used as the value for all
+                of the values in `t`.
+            t: Array-like or single value.
+                If `t` is a single value, it is used for all of the elements of
+                `phinorm`. If neither `t` nor `phinorm` are scalars, `t` must
+                have the same shape as `phinorm`.
+    
+        Keyword Args:
+            each_t: Boolean.
+                When True, the elements in `phinorm` are evaluated at each
+                value in `t`. If True, `t` must have only one dimension (or be
+                a scalar). If False, `t` must match the shape of `phinorm` or
+                be a scalar. Default is True (evaluate ALL `phinorm` at each
+                element in `t`).
+            return_t: Boolean.
+                Set to True to return a tuple of (`psinorm`, `time_idxs`), where 
+                `time_idxs` is the array of time indices actually used in
+                evaluating `psinorm` with nearest-neighbor interpolation. (This
+                is mostly present as an internal helper.) Default is False (only
+                return `psinorm`).
+            kind: String or non-negative int.
+                Specifies the type of interpolation to be performed in getting
+                from `phinorm` to `psinorm`. This is passed to
+                scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            `psinorm` or (`psinorm`, `time_idxs`)
+        
+            * **psinorm** - Array or scalar float. If all of the input arguments
+              are scalar, then a scalar is returned. Otherwise, a scipy Array
+              instance is returned. `psinorm` will have the same shape as `t` and
+              `phinorm` (or whichever one is Array-like).
+            * **time_idxs** - Array with same shape as `phinorm`. The indices (in
+              the timebase returned by :py:meth:`getTimeBase`) that were used
+              for nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+    
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the `Equilibrium` abstract class.
+
+            Find single psinorm value for phinorm=0.7, t=0.26s::
+        
+                psinorm_val = Eq_instance.phinorm2psinorm(0.7, 0.26)
             
+            Find psinorm values at phinorm values of 0.5 and 0.7 at the single time
+            t=0.26s::
+        
+                psinorm_arr = Eq_instance.phinorm2psinorm([0.5, 0.7], 0.26)
+
+            Find psinorm values at phinorm=0.5 at times t=[0.2s, 0.3s]::
+        
+                psinorm_arr = Eq_instance.phinorm2psinorm(0.5, [0.2, 0.3])
+
+            Find psinorm values at (phinorm, t) points (0.6, 0.2s) and (0.5, 0.3s)::
+        
+                psinorm_arr = Eq_instance.phinorm2psinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
+        return self._psinorm2Quan(self._getPhiNormToPsiNormSpline, phinorm, t, **kwargs)
+    
+    def phinorm2volnorm(self, *args, **kwargs):
+        # TODO: Documentation!
+        return self._phinorm2Quan(self._getVolNormSpline, *args, **kwargs)
+    
+    def phinorm2rmid(self, *args, **kwargs):
+        # TODO: Documentation!
+        # Convert units from meters to desired target but keep units consistent
+        # with rho keyword:
+        if kwargs.get('rho', False):
+            unit_factor = 1
+        else:
+            unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
+        
+        return unit_factor * self._phinorm2Quan(
+            self._getRmidSpline,
+            *args,
+            **kwargs
+        )
+    
+    def phinorm2roa(self, phi_norm, t, **kwargs):
+        # TODO: Documentation!
+        kwargs['rho'] = True
+        return self._phinorm2Quan(
+            self._getRmidSpline,
+            phi_norm,
+            t,
+            **kwargs
+        )
+    
+    def phinorm2rho(self, method, *args, **kwargs):
+        # TODO: Documentation!
+        
+        if method.startswith('sqrt'):
+            kwargs['sqrt'] = True
+            method = method[4:]
+        
+        if method == 'psinorm':
+            return self.phinorm2psinorm(*args, **kwargs)
+        elif method == 'volnorm':
+            return self.phinorm2volnorm(*args, **kwargs)
+        elif method == 'Rmid':
+            return self.phinorm2rmid(*args, **kwargs)
+        elif method == 'r/a':
+            return self.phinorm2roa(*args, **kwargs)
+        else:
+            raise ValueError("phinorm2rho: Unsupported normalized coordinate method '%s'!" % method)
+    
+    def volnorm2psinorm(self, phinorm, t, **kwargs):
+        # TODO: Documentation!
+        return self._psinorm2Quan(self._getVolNormToPsiNormSpline, phinorm, t, **kwargs)
+    
+    def volnorm2phinorm(self, *args, **kwargs):
+        # TODO: Documentation!
+        return self._volNorm2Quan(self._getPhiNormSpline, *args, **kwargs)
+    
+    def volnorm2rmid(self, *args, **kwargs):
+        # TODO: Documentation!
+        # Convert units from meters to desired target but keep units consistent
+        # with rho keyword:
+        if kwargs.get('rho', False):
+            unit_factor = 1
+        else:
+            unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
+        
+        return unit_factor * self._volNorm2Quan(
+            self._getRmidSpline,
+            *args,
+            **kwargs
+        )
+    
+    def volnorm2roa(self, *args, **kwargs):
+        # TODO: Documentation!
+        kwargs['rho'] = True
+        return self._volNorm2Quan(
+            self._getRmidSpline,
+            *args,
+            **kwargs
+        )
+    
+    def volnorm2rho(self, method, *args, **kwargs):
+        # TODO: Documentation!
+        
+        if method.startswith('sqrt'):
+            kwargs['sqrt'] = True
+            method = method[4:]
+        
+        if method == 'psinorm':
+            return self.volnorm2psinorm(*args, **kwargs)
+        elif method == 'phinorm':
+            return self.volnorm2phinorm(*args, **kwargs)
+        elif method == 'Rmid':
+            return self.volnorm2rmid(*args, **kwargs)
+        elif method == 'r/a':
+            return self.volnorm2roa(*args, **kwargs)
+        else:
+            raise ValueError("volnorm2rho: Unsupported normalized coordinate method '%s'!" % method)
+    
     ###########################
     # Backend Mapping Drivers #
     ###########################
@@ -2743,14 +3282,18 @@ class Equilibrium(object):
                 self.getTimeBase()) that were used for nearest-neighbor
                 interpolation. Only returned if return_t is True.
         """
-        # TODO: This keyword popping doesn't look quite right...needs to be fixed or documented.
         return_t = kwargs.get('return_t', False)
         kwargs['return_t'] = True
+        
+        # Not used by rz2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
 
         psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
+        
         kwargs['return_t'] = return_t
+        
+        # Not used by _psinorm2Quan
         kwargs.pop('length_unit', 1)
         kwargs.pop('make_grid', False)
         
@@ -2764,7 +3307,274 @@ class Equilibrium(object):
                                   time_idxs=time_idxs,
                                   kind=kind,
                                   **kwargs)
+    
+    def _Rmid2Quan(self, spline_func, R_mid, t, **kwargs):
+        """Convert R_mid to a given quantity.
+        
+        Utility function for converting R, Z coordinates to a variety of things
+        that are interpolated from something measured on a uniform normalized
+        flux grid, in particular phi_norm and vol_norm.
+        
+        If tspline is False for this Equilibrium instance, uses
+        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+        Z. Finds the nearest time slices to those given: nearest-neighbor
+        interpolation in time. Otherwise, uses the tricubic package to perform
+        a trivariate interpolation in space and time.
+        
+        Args:
+            spline_func: Function which returns a 1d spline for the quantity
+                you want to convert into as a function of psi_norm given a
+                time index.
+            R_mid: Array-like or scalar float. Values of the radial coordinate to
+                map to Quan.
+            t: Array-like or single value. If t is a single value, it is used
+                for all of the elements of R_mid. If t is array-like it must
+                have the same dimensions as R_mid.
+        
+        Keyword Args:
+            each_t: Boolean.
+                When True, the elements in `R` and `Z` (or the meshgrid thereof
+                if `make_grid` is True) are evaluated at each value in `t`. If
+                True, `t` must have only one dimension (or be a scalar). If
+                False, `t` must match the shape of `R` and `Z` (or their
+                meshgrid if `make_grid` is True) or be a scalar. Default is True
+                (evaluate ALL `R`, `Z` at each element in `t`).
+            return_t: Boolean. Set to True to return a tuple of (Quan,
+                time_idxs), where time_idxs is the array of time indices
+                actually used in evaluating R_mid with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return Quan).
+            sqrt: Boolean. Set to True to return the square root of Quan. Only
+                the square root of positive values is taken. Negative values
+                are replaced with zeros, consistent with Steve Wolfe's IDL
+                implementation efit_rz2rho.pro. Default is False (return Quan
+                itself).
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from psinorm to Quan. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+            length_unit: String or 1. Length unit that R and Z are being given
+                in. If a string is given, it must be a valid unit specifier:
+                    'm'         meters
+                    'cm'        centimeters
+                    'mm'        millimeters
+                    'in'        inches
+                    'ft'        feet
+                    'yd'        yards
+                    'smoot'     smoots
+                    'cubit'     cubits
+                    'hand'      hands
+                    'default'   meters
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R_mid given in meters). Note that this factor is
+                ONLY applied to the inputs in this function -- if Quan needs to
+                be corrected, it must be done in the calling function.
+        
+        Returns:
+            Quan: Array or scalar float. If all of the input arguments are
+                scalar, then a scalar is returned. Otherwise, a scipy Array
+                instance is returned. Has the same shape as R_mid.
+            time_idxs: Array with same shape as Quan. The indices (in
+                self.getTimeBase()) that were used for nearest-neighbor
+                interpolation. Only returned if return_t is True.
+        """
+        return_t = kwargs.get('return_t', False)
+        kwargs['return_t'] = True
+        
+        # Not used by rmid2psinorm:
+        kind = kwargs.pop('kind', 'cubic')
+        rho = kwargs.pop('rho', False)
 
+        psi_norm, time_idxs = self.rmid2psinorm(R_mid, t, **kwargs)
+        
+        kwargs['return_t'] = return_t
+        
+        # Not used by _psinorm2Quan
+        kwargs.pop('length_unit', 1)
+        kwargs.pop('make_grid', False)
+        
+        kwargs['rho'] = rho
+        # TODO: This technically computes the time indices twice. Is there are
+        # good compromise to get the best of both worlds (nice calling of
+        # _psinorm2Quan AND no recompute)?
+        return self._psinorm2Quan(spline_func,
+                                  psi_norm,
+                                  t,
+                                  time_idxs=time_idxs,
+                                  kind=kind,
+                                  **kwargs)
+    
+    def _phiNorm2Quan(self, spline_func, phinorm, t, **kwargs):
+        """Convert phinorm to a given quantity.
+        
+        Utility function for converting phinorm coordinates to a variety of things
+        that are interpolated from something measured on a uniform normalized
+        flux grid, in particular psi_norm and vol_norm.
+        
+        If tspline is False for this Equilibrium instance, uses
+        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+        Z. Finds the nearest time slices to those given: nearest-neighbor
+        interpolation in time. Otherwise, uses the tricubic package to perform
+        a trivariate interpolation in space and time.
+        
+        Args:
+            spline_func: Function which returns a 1d spline for the quantity
+                you want to convert into as a function of psi_norm given a
+                time index.
+            phinorm: Array-like or scalar float. Values of the normalized
+                toroidal flux to map to `Quan`.
+            t: Array-like or single value. If `t` is a single value, it is used
+                for all of the elements of `phinorm`. If `t` is array-like it
+                must have the same dimensions as `phinorm`.
+        
+        Keyword Args:
+            each_t: Boolean.
+                When True, the elements in `phinorm` are evaluated at each value
+                in `t`. If True, `t` must have only one dimension (or be a
+                scalar). If False, `t` must match the shape of `phinorm` or be a
+                scalar. Default is True (evaluate ALL `phinorm` at each element
+                in `t`).
+            return_t: Boolean. Set to True to return a tuple of (`Quan`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `phinorm` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `Quan`).
+            sqrt: Boolean. Set to True to return the square root of `Quan`. Only
+                the square root of positive values is taken. Negative values
+                are replaced with zeros, consistent with Steve Wolfe's IDL
+                implementation efit_rz2rho.pro. Default is False (return Quan
+                itself).
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from `psinorm` to `Quan`. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            Quan: Array or scalar float. If all of the input arguments are
+                scalar, then a scalar is returned. Otherwise, a scipy Array
+                instance is returned. Has the same shape as `phinorm`.
+            time_idxs: Array with same shape as `Quan`. The indices (in
+                self.getTimeBase()) that were used for nearest-neighbor
+                interpolation. Only returned if `return_t` is True.
+        """
+        return_t = kwargs.get('return_t', False)
+        kwargs['return_t'] = True
+        
+        # Not used by phinorm2psinorm:
+        kind = kwargs.pop('kind', 'cubic')
+        rho = kwargs.pop('rho', False)
+
+        psi_norm, time_idxs = self.phinorm2psinorm(phinorm, t, **kwargs)
+        
+        kwargs['return_t'] = return_t
+        kwargs['rho'] = rho
+        kwargs['kind'] = kind
+        
+        # Not used by _psinorm2Quan
+        kwargs.pop('length_unit', 1)
+        
+        # TODO: This technically computes the time indices twice. Is there are
+        # good compromise to get the best of both worlds (nice calling of
+        # _psinorm2Quan AND no recompute)?
+        return self._psinorm2Quan(spline_func,
+                                  psi_norm,
+                                  t,
+                                  time_idxs=time_idxs,
+                                  **kwargs)
+    
+    def _volNorm2Quan(self, spline_func, volnorm, t, **kwargs):
+        """Convert volnorm to a given quantity.
+        
+        Utility function for converting volnorm coordinates to a variety of things
+        that are interpolated from something measured on a uniform normalized
+        flux grid, in particular psi_norm and phi_norm.
+        
+        If tspline is False for this Equilibrium instance, uses
+        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
+        Z. Finds the nearest time slices to those given: nearest-neighbor
+        interpolation in time. Otherwise, uses the tricubic package to perform
+        a trivariate interpolation in space and time.
+        
+        Args:
+            spline_func: Function which returns a 1d spline for the quantity
+                you want to convert into as a function of psi_norm given a
+                time index.
+            volnorm: Array-like or scalar float. Values of the normalized
+                volume to map to `Quan`.
+            t: Array-like or single value. If `t` is a single value, it is used
+                for all of the elements of `volnorm`. If `t` is array-like it
+                must have the same dimensions as `volnorm`.
+        
+        Keyword Args:
+            each_t: Boolean.
+                When True, the elements in `volnorm` are evaluated at each value
+                in `t`. If True, `t` must have only one dimension (or be a
+                scalar). If False, `t` must match the shape of `volnorm` or be a
+                scalar. Default is True (evaluate ALL `volnorm` at each element
+                in `t`).
+            return_t: Boolean. Set to True to return a tuple of (`Quan`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `phinorm` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `Quan`).
+            sqrt: Boolean. Set to True to return the square root of `Quan`. Only
+                the square root of positive values is taken. Negative values
+                are replaced with zeros, consistent with Steve Wolfe's IDL
+                implementation efit_rz2rho.pro. Default is False (return Quan
+                itself).
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from `volnorm` to `Quan`. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            Quan: Array or scalar float. If all of the input arguments are
+                scalar, then a scalar is returned. Otherwise, a scipy Array
+                instance is returned. Has the same shape as `volnorm`.
+            time_idxs: Array with same shape as `Quan`. The indices (in
+                self.getTimeBase()) that were used for nearest-neighbor
+                interpolation. Only returned if `return_t` is True.
+        """
+        return_t = kwargs.get('return_t', False)
+        kwargs['return_t'] = True
+        
+        # Not used by phinorm2psinorm:
+        kind = kwargs.pop('kind', 'cubic')
+        rho = kwargs.pop('rho', False)
+
+        psi_norm, time_idxs = self.volnorm2psinorm(volnorm, t, **kwargs)
+        
+        kwargs['return_t'] = return_t
+        kwargs['rho'] = rho
+        kwargs['kind'] = kind
+        
+        # Not used by _psinorm2Quan
+        kwargs.pop('length_unit', 1)
+        
+        # TODO: This technically computes the time indices twice. Is there are
+        # good compromise to get the best of both worlds (nice calling of
+        # _psinorm2Quan AND no recompute)?
+        return self._psinorm2Quan(spline_func,
+                                  psi_norm,
+                                  t,
+                                  time_idxs=time_idxs,
+                                  **kwargs)
+    
     ####################
     # Helper Functions #
     ####################
@@ -3283,7 +4093,85 @@ class Equilibrium(object):
                                                                     phi_norm_meas,
                                                                     bounds_error = False)
                 return self._phiNormSpline
-                                                                        
+    
+    def _getPhiNormToPsiNormSpline(self, idx, kind='cubic'):
+        """Get spline to convert phinorm to psinorm.
+        
+        Returns the spline object corresponding to the passed time index idx,
+        generating it if it does not already exist.
+        
+        Args:
+            idx: Scalar int. The time index to retrieve the flux spline for.
+                This is ASSUMED to be a valid index for the first dimension of
+                self.getFluxGrid(), otherwise an IndexError will be raised.
+        
+        Keyword Args:
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from psinorm to phinorm. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
+                on whether or not the instance was created with the tspline
+                keyword.
+        """
+        if not self._tricubic:
+            try:
+                return self._phiNormToPsiNormSpline[idx][kind]
+            except KeyError:
+                # Insert zero at beginning because older versions of cumtrapz don't
+                # support the initial keyword to make the initial value zero:
+                phi_norm_meas = scipy.insert(
+                    scipy.integrate.cumtrapz(self.getQProfile()[:, idx]),
+                    0,
+                    0
+                )
+                phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
+
+                spline = scipy.interpolate.interp1d(
+                    phi_norm_meas,
+                    scipy.linspace(0, 1, len(phi_norm_meas)),
+                    kind=kind,
+                    bounds_error=False
+                )
+                try:
+                    self._phiNormToPsiNormSpline[idx][kind] = spline
+                except KeyError:
+                    self._phiNormToPsiNormSpline[idx] = {kind: spline}
+                return self._phiNormToPsiNormSpline[idx][kind]
+        else:
+            if self._phiNormToPsiNormSpline:
+                return self._phiNormToPsiNormSpline
+            else:
+                # Insert zero at beginning because older versions of cumtrapz don't
+                # support the initial keyword to make the initial value zero:
+                phi_norm_meas = scipy.insert(
+                    scipy.integrate.cumtrapz(self.getQProfile(), axis=0),
+                    0,
+                    0,
+                    axis=0
+                )
+                phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
+                # TODO: Ian, did I do this right?
+                # I had to take out the bounds error...
+                t_grid, psinorm_grid = scipy.meshgrid(
+                    self.getTimeBase(),
+                    scipy.linspace(0, 1, len(phi_norm_meas[:, 0]))
+                )
+                self._phiNormToPsiNormSpline = scipy.interpolate.SmoothBivariateSpline(
+                    phi_norm_meas.ravel(),
+                    t_grid.ravel(),
+                    psinorm_grid.ravel(),
+                    # bounds_error = False
+                )
+                return self._phiNormToPsiNormSpline
+    
     def _getVolNormSpline(self, idx, kind='cubic'):
         """Get spline to convert psinorm to volnorm.
         
@@ -3339,6 +4227,73 @@ class Equilibrium(object):
                                                                     vol_norm_meas,
                                                                     bounds_error = False)
                 return self._volNormSpline
+    
+    def _getVolNormToPsiNormSpline(self, idx, kind='cubic'):
+        """Get spline to convert volnorm to psinorm.
+        
+        Returns the spline object corresponding to the passed time index idx,
+        generating it if it does not already exist.
+        
+        Args:
+            idx: Scalar int. The time index to retrieve the flux spline for.
+                This is ASSUMED to be a valid index for the first dimension of
+                self.getFluxGrid(), otherwise an IndexError will be raised.
+        
+        Keyword Args:
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from psinorm to volnorm. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
+                on whether or not the instance was created with the tspline
+                keyword.
+        """
+        if not self._tricubic:
+            try:
+                return self._volNormToPsiNormSpline[idx][kind]
+            except KeyError:
+                vol_norm_meas = self.getFluxVol()[:, idx]
+                vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
+                
+                spline = scipy.interpolate.interp1d(
+                    vol_norm_meas,
+                    scipy.linspace(0, 1, len(vol_norm_meas)),
+                    kind=kind,
+                    bounds_error=False
+                )
+                try:
+                    self._volNormToPsiNormSpline[idx][kind] = spline
+                except KeyError:
+                    self._volNormToPsiNormSpline[idx] = {kind: spline}
+                return self._volNormToPsiNormSpline[idx][kind]
+        else:
+            #BiSpline for time variant interpolation
+            if self._volNormToPsiNormSpline:
+                return self._volNormToPsiNormSpline
+            else:
+                vol_norm_meas = self.getFluxVol()
+                vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
+                
+                t_grid, psinorm_grid = scipy.meshgrid(
+                    self.getTimeBase(),
+                    scipy.linspace(0, 1, len(vol_norm_meas[:, 0]))
+                )
+                # TODO: Ian, did I do this right?
+                # I had to take out the bounds error...
+                self._volNormToPsiNormSpline = scipy.interpolate.SmoothBivariateSpline(
+                    vol_norm_meas.ravel(),
+                    t_grid.ravel(),
+                    psinorm_grid.ravel(),
+                    # bounds_error = False
+                )
+                return self._volNormToPsiNormSpline
                                                                         
     def _getRmidSpline(self, idx, kind='cubic'):
         """Returns the spline object corresponding to the passed time index idx,
@@ -3409,8 +4364,8 @@ class Equilibrium(object):
             else:
                 resample_factor = 3 * len(self.getRGrid(length_unit='m'))
 
-            #generate timebase and R_grid through a meshgrid
-                t,R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
+                # generate timebase and R_grid through a meshgrid
+                t, R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
                 Z_grid = scipy.dot(scipy.ones((resample_factor,1)),
                                    scipy.atleast_2d(self.getMagZ(length_unit='m')))
 
@@ -3421,9 +4376,11 @@ class Equilibrium(object):
 
                 psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
                     
-                self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(psi_norm_on_grid.flatten(),
-                                                                           t.flatten(),
-                                                                           R_grid.flatten())
+                self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(
+                    psi_norm_on_grid.flatten(),
+                    t.flatten(),
+                    R_grid.flatten()
+                )
             
                 return self._RmidSpline
     
@@ -3508,10 +4465,12 @@ class Equilibrium(object):
 
                 psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
                     
-                self._RmidToPsiNormSpline = scipy.interpolate.SmoothBivariateSpline(R_grid.flatten(),
-                                                                           t.flatten(),
-                                                                           psi_norm_on_grid.flatten())
-            
+                self._RmidToPsiNormSpline = scipy.interpolate.SmoothBivariateSpline(
+                    R_grid.flatten(),
+                    t.flatten(),
+                    psi_norm_on_grid.flatten()
+                )
+                
                 return self._RmidToPsiNormSpline
 
     def _getPsi0Spline(self, kind='cubic'):
