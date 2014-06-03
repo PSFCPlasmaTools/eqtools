@@ -193,7 +193,7 @@ class EqdskReader(Equilibrium):
             tunits = timestring.split(time)[1]
             timeConvertDict = {'ms':1./1000.,'s':1.}
             self._time = scipy.array([float(time)*timeConvertDict[tunits]]) # returns time in seconds as array
-            self._defaulUnits['_time'] = 's'
+            self._defaultUnits['_time'] = 's'
             
             # next line - construction values for RZ grid
             line = next(reader)[0]

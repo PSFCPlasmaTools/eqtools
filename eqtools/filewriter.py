@@ -37,6 +37,13 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
 
     gfile =open(name, 'wb')
     gfile.write(header)
+    print(fmt([obj.getRGrid()[-1]-obj.getRGrid()[0],
+                     obj.getZGrid()[-1]-obj.getZGrid()[0],
+                     0.,
+                     obj.getRGrid()[0],
+                     obj.getZGrid()[-1]/2.+obj.getZGrid()[0]/2.]))
+
+
     gfile.write(fmt([obj.getRGrid()[-1]-obj.getRGrid()[0],
                      obj.getZGrid()[-1]-obj.getZGrid()[0],
                      0.,
@@ -74,19 +81,16 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
     
 def fmt(val):
     try:
-        temp = '0{ 0.9E}'.format(val*10)
-        out =''.join([temp[1],temp[0],temp[4],temp[2],temp[4:]])
+        temp = '0{: 0.9E}'.format(val*10)
+        out =''.join([temp[1],temp[0],temp[3],temp[2],temp[4:]])
     except ValueError:
-        out = []
-        temp = []
+        out = ''
         idx = 0
         for i in val:
-            temp += fmt(i)
+            out += fmt(i)
             idx += 1
-            if idx ==5:
-                temp+='\n'
-                out += [temp[:]]
+            if (idx == 5):
+                out+='\n'
                 idx = 0
-                temp = []
 
     return out
