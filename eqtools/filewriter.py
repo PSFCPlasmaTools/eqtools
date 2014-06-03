@@ -35,42 +35,43 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
 
     print(header)
 
-    gfile =open(name, 'wb')
-    gfile.write(header)
+    gfiler =open(name, 'wb')
+    gfiler.write(header)
     print(fmt([obj.getRGrid()[-1]-obj.getRGrid()[0],
-                     obj.getZGrid()[-1]-obj.getZGrid()[0],
-                     0.,
-                     obj.getRGrid()[0],
-                     obj.getZGrid()[-1]/2.+obj.getZGrid()[0]/2.]))
+               obj.getZGrid()[-1]-obj.getZGrid()[0],
+               0.,
+               obj.getRGrid()[0],
+               obj.getZGrid()[-1]/2.+obj.getZGrid()[0]/2.]))
 
-
-    gfile.write(fmt([obj.getRGrid()[-1]-obj.getRGrid()[0],
-                     obj.getZGrid()[-1]-obj.getZGrid()[0],
-                     0.,
-                     obj.getRGrid()[0],
-                     obj.getZGrid()[-1]/2.+obj.getZGrid()[0]/2.]))
-    gfile.write(fmt([obj.getMagRSpline(tin),
-                     obj.getMagZSpline(tin),
-                     obj.getPsi0Spline(tin),
-                     obj.getPsiLCFSSpline(tin),
-                     0.]))
-    gfile.write(fmt([obj.getIpCalc(tin),
-                     obj.getPsi0Spline(tin),
-                     0.,
-                     obj.getMagRSpline(tin),
-                     0.]))
-    gfile.write(fmt([obj.getMagZSpline(tin),
-                     0.,
-                     obj.getPsiLCFSSpline(tin),
-                     0.,
-                     0.,
-                     0.]))
-    gfile.write(fmt([obj.getMagZSpline(tin),
-                     0.,
-                     obj.getPsiLCFSSpline(tin),
-                     0.,
-                     0.,
-                     0.]))
+    
+    gfiler.write(fmt([obj.getRGrid()[-1]-obj.getRGrid()[0],
+                      obj.getZGrid()[-1]-obj.getZGrid()[0],
+                      0.,
+                      obj.getRGrid()[0],
+                      obj.getZGrid()[-1]/2.+obj.getZGrid()[0]/2.]))
+    gfiler.write(fmt([obj.getMagRSpline()(tin),
+                      obj.getMagZSpline()(tin),
+                      obj.getPsi0Spline()(tin),
+                      obj.getPsiLCFSSpline()(tin),
+                      0.]))
+   # gfiler.write(fmt([obj.getIpCalc(tin),
+   #                   obj.getPsi0Spline(tin),
+   #                   0.,
+   #                   obj.getMagRSpline(tin),
+   #                   0.]))
+    gfiler.write(fmt([obj.getMagZSpline()(tin),
+                      0.,
+                      obj.getPsiLCFSSpline()(tin),
+                      0.,
+                      0.,
+                      0.]))
+    gfiler.write(fmt([obj.getMagZSpline()(tin),
+                      0.,
+                      obj.getPsiLCFSSpline()(tin),
+                      0.,
+                      0.,
+                      0.]))
+    gfiler.close()
 
     #dump = [obj.getFpol().flatten(),
     #        obj.getFluxPres().flatten(),
