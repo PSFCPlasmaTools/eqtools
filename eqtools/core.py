@@ -358,6 +358,32 @@ class Equilibrium(object):
     # Mapping routines #
     ####################
     
+    def rho2rho(self, origin, destination, *args, **kwargs):
+        # TODO: Documentation!
+        
+        if origin.startswith('sqrt'):
+            args[0] == scipy.asarray(args[0])**2
+            origin = origin[4:]
+        
+        if destination.startswith('sqrt'):
+            kwargs['sqrt'] = True
+            destination = destination[4:]
+        
+        if origin == 'RZ':
+            return self.rz2rho(destination, *args, **kwargs)
+        elif origin == 'Rmid':
+            return self.rmid2rho(destination, *args, **kwargs)
+        elif origin == 'r/a':
+            return self.roa2rho(destination, *args, **kwargs)
+        elif origin == 'psinorm':
+            return self.psinorm2rho(destination, *args, **kwargs)
+        elif origin == 'phinorm':
+            return self.phinorm2rho(destination, *args, **kwargs)
+        elif origin == 'volnorm':
+            return self.volnorm2rho(destination, *args, **kwargs)
+        else:
+            raise ValueError("rho2rho: Unsupported origin coordinate method '%s'!" % origin)
+    
     def rz2psi(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
         """Converts the passed R, Z, t arrays to psi values.
 
@@ -1966,15 +1992,17 @@ class Equilibrium(object):
         
         if method == 'psinorm':
             return self.rmid2psinorm(R_mid, t, **kwargs)
-        elif method == 'roa':
+        elif method == 'r/a':
             return self.rmid2roa(R_mid, t, **kwargs)
         elif method == 'phinorm':
             return self.rmid2phinorm(R_mid, t, **kwargs)
+        elif method == 'volnorm':
+            return self.rmid2volnorm(R_mid, t, **kwargs)
         else:
             # Default back to the old kuldge that wastes time in rz2psi:
             # TODO: This doesn't handle length units properly!
             Z_mid = self.getMagZSpline()(t)
-        
+            
             if kwargs.get('each_t', True):
                 # Need to override the default in _processRZt, since we are doing
                 # the shaping here:
@@ -2007,7 +2035,7 @@ class Equilibrium(object):
                         t_temp[k] *= t[k]
                     Z_mid = Z_mid_temp
                     t = t_temp
-        
+                    
             return self.rz2rho(method, R_mid, Z_mid, t, **kwargs)
     
     def roa2rmid(self, roa, t, each_t=True, return_t=False, time_idxs=None, length_unit=1):
@@ -2271,11 +2299,13 @@ class Equilibrium(object):
         
             # Not used by roa2rmid:
             kind = kwargs.pop('kind', 'cubic')
+            sqrt = kwargs.pop('sqrt', False)
 
             R_mid, time_idxs = self.roa2rmid(*args, **kwargs)
         
             kwargs['return_t'] = return_t
             kwargs['kind'] = kind
+            kwargs['sqrt'] = sqrt
             kwargs['time_idxs'] = time_idxs
             # TODO: This technically computes the time indices twice. Is there are
             # good compromise to get the best of both worlds (nice calling of
@@ -3393,21 +3423,21 @@ class Equilibrium(object):
 
         psi_norm, time_idxs = self.rmid2psinorm(R_mid, t, **kwargs)
         
+        kwargs['time_idxs'] = time_idxs
+        kwargs['kind'] = kind
         kwargs['return_t'] = return_t
+        kwargs['rho'] = rho
         
         # Not used by _psinorm2Quan
         kwargs.pop('length_unit', 1)
         kwargs.pop('make_grid', False)
         
-        kwargs['rho'] = rho
         # TODO: This technically computes the time indices twice. Is there are
         # good compromise to get the best of both worlds (nice calling of
         # _psinorm2Quan AND no recompute)?
         return self._psinorm2Quan(spline_func,
                                   psi_norm,
                                   t,
-                                  time_idxs=time_idxs,
-                                  kind=kind,
                                   **kwargs)
     
     def _phiNorm2Quan(self, spline_func, phinorm, t, **kwargs):
