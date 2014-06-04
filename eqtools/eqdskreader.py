@@ -1907,7 +1907,7 @@ class EqdskReader(Equilibrium):
     ####################
     
     def getMagRSpline(self):
-         _interp1d(self.getMagR)
+        _interp1d(self.getMagR)
         return None
 
     def getMagZSpline(self):
