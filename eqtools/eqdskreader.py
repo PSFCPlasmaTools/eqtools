@@ -1989,11 +1989,11 @@ class EqdskReader(Equilibrium):
 class _interp1d(object):
     """ class to hide interp1d objects """
 
-   def __init__(self, function):
-       self._func = function
+    def __init__(self, function):
+        self._func = function
 
-   def __eval__(self, *args, **kwargs):
-       return function(**kwargs)
+    def __eval__(self, *args, **kwargs):
+        return function(**kwargs)
 
 
 
