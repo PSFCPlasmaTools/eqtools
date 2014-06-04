@@ -397,7 +397,7 @@ class Equilibrium(object):
                 as `rho`, unless the `each_t` keyword is in effect.
         
         Keyword Args:
-            sqrt: Boolean.
+            sqrt (Boolean):
                 Set to True to return the square root of `rho`. Only the square
                 root of positive values is taken. Negative values are replaced
                 with zeros, consistent with Steve Wolfe's IDL implementation
