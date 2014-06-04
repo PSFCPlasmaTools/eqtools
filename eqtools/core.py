@@ -16,17 +16,17 @@
 # You should have received a copy of the GNU General Public License
 # along with eqtools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides the core classes for eqtools, including the base Equilibrium class.
+"""This module provides the core classes for :py:mod:`eqtools`, including the
+base :py:class:`Equilibrium` class.
 """
+
+import filewriter
 
 import scipy
 import scipy.interpolate
 import scipy.integrate
 import re
-import filewriter
-
 import warnings
-
 
 class ModuleWarning(Warning):
     """Warning class to notify the user of unavailable modules.
@@ -53,6 +53,7 @@ except Exception:
                   "will not be available.",
                   ModuleWarning)
 
+
 class PropertyAccessMixin(object):
     """Mixin to implement access of getter methods through a property-type
     interface without the need to apply a decorator to every property.
@@ -77,11 +78,11 @@ class PropertyAccessMixin(object):
         
         Args:
             name: String.
-                Name of the attribute to retrieve. If the instance
-                has an attribute with this name, the attribute is returned. If
-                the instance does not have an attribute with this name but does
-                have a method called 'get'+name, this method is called and the
-                result is returned.
+                Name of the attribute to retrieve. If the instance has an
+                attribute with this name, the attribute is returned. If the
+                instance does not have an attribute with this name but does have
+                a method called 'get'+name, this method is called and the result
+                is returned.
         
         Returns:
             The value of the attribute requested.
@@ -95,17 +96,17 @@ class PropertyAccessMixin(object):
             try:
                 return super(Equilibrium, self).__getattribute__('get'+name)()
             except AttributeError:
-                raise AttributeError("%(class)s object has no attribute '%(n)s'"
-                                     " or method 'get%(n)s'"
-                                      % {'class': self.__class__.__name__,
-                                         'n': name})
+                raise AttributeError(
+                    "%(class)s object has no attribute '%(n)s' or method 'get%(n)s'"
+                    % {'class': self.__class__.__name__, 'n': name}
+                )
 
     def __setattr__(self, name, value):
         """Set an attribute.
         
         Raises AttributeError if the object already has a method get[name], as
         creation of such an attribute would interfere with the automatic
-        property generation in __getattribute__.
+        property generation in :py:meth:`__getattribute__`.
         
         Args:
             name: String.
@@ -117,11 +118,11 @@ class PropertyAccessMixin(object):
             AttributeError: If a method called 'get'+name already exists.
         """
         if hasattr(self, 'get'+name):
-            raise AttributeError("%(class)s object already has getter method "
-                                 "'get%(n)s', creating attribute '%(n)s' will"
-                                 " conflict with automatic property generation."
-                                 % {'class': self.__class__.__name__,
-                                    'n': name})
+            raise AttributeError(
+                "%(class)s object already has getter method 'get%(n)s', creating "
+                "attribute '%(n)s' will conflict with automatic property "
+                "generation." % {'class': self.__class__.__name__, 'n': name}
+            )
         else:
             super(Equilibrium, self).__setattr__(name, value)
 
@@ -212,15 +213,16 @@ _length_conversion = {'m': {'m': 1.0,
                                'hand': 1.0}}
 
 
-def inPolygon(polyx,polyy,pointx,pointy):
+def inPolygon(polyx, polyy, pointx, pointy):
     """Function calculating whether a given point is within a 2D polygon.
 
-    Given an array of X,Y coordinates describing a 2D polygon, checks whether
-    a point given by x,y coordinates lies within the polygon.  Operates via a
-    ray-casting approach - the function projects a semi-infinite ray parallel to the
-    positive horizontal axis, and counts how many edges of the polygon this ray intersects.
-    For a simply-connected polygon, this determines whether the point is inside (even number
-    of crossings) or outside (odd number of crossings) the polygon, by the Jordan Curve Theorem.
+    Given an array of X,Y coordinates describing a 2D polygon, checks whether a
+    point given by x,y coordinates lies within the polygon. Operates via a
+    ray-casting approach - the function projects a semi-infinite ray parallel to
+    the positive horizontal axis, and counts how many edges of the polygon this
+    ray intersects. For a simply-connected polygon, this determines whether the
+    point is inside (even number of crossings) or outside (odd number of
+    crossings) the polygon, by the Jordan Curve Theorem.
 
     Args:
         polyx: Array-like.
@@ -258,17 +260,15 @@ def inPolygon(polyx,polyy,pointx,pointy):
 class Equilibrium(object):
     """Abstract class of data handling object for magnetic reconstruction outputs.
     
-    Defines the mapping routines and method fingerprints necessary.
-    Each variable or set of variables is recovered with a corresponding
-    getter method. Essential data for mapping are pulled on initialization
-    (psirz grid, for example) to frontload timing overhead. Additional data
-    are pulled at the first request and stored for subsequent usage.
+    Defines the mapping routines and method fingerprints necessary. Each
+    variable or set of variables is recovered with a corresponding getter method.
+    Essential data for mapping are pulled on initialization (psirz grid, for
+    example) to frontload overhead. Additional data are pulled at the first
+    request and stored for subsequent usage.
 
     .. note:: This abstract class should not be used directly. Device- and code-
-        specific subclasses are set up to account for inter-device/-code differences
-        in data storage.
-    
-    Create a new Equilibrium instance.
+        specific subclasses are set up to account for inter-device/-code
+        differences in data storage.
     
     Keyword Args:
         length_unit: String.
@@ -290,35 +290,35 @@ class Equilibrium(object):
             
             Default is 'm' (all units taken and returned in meters).
         tspline: Boolean.
-            Sets whether or not interpolation in time is
-            performed using a tricubic spline or nearest-neighbor
-            interpolation. Tricubic spline interpolation requires at least
-            four complete equilibria at different times. It is also assumed
-            that they are functionally correlated, and that parameters do
-            not vary out of their boundaries (derivative = 0 boundary
-            condition). Default is False (use nearest neighbor interpolation).
+            Sets whether or not interpolation in time is performed using a
+            tricubic spline or nearest-neighbor interpolation. Tricubic spline
+            interpolation requires at least four complete equilibria at
+            different times. It is also assumed that they are functionally
+            correlated, and that parameters do not vary out of their boundaries
+            (derivative = 0 boundary condition). Default is False (use nearest-
+            neighbor interpolation).
         monotonic: Boolean.
-            Sets whether or not the "monotonic" form of time window
-            finding is used. If True, the timebase must be monotonically
-            increasing. Default is False (use slower, safer method).
+            Sets whether or not the "monotonic" form of time window finding is
+            used. If True, the timebase must be monotonically increasing. Default
+            is False (use slower, safer method).
         verbose: Boolean.
-            Allows or blocks console readout during operation.  Defaults to True,
-            displaying useful information for the user.  Set to False for quiet
+            Allows or blocks console readout during operation. Defaults to True,
+            displaying useful information for the user. Set to False for quiet
             usage or to avoid console clutter for multiple instances.
     
     Raises:
-        ValueError: If length_unit is not a valid unit specifier.
-        ValueError: If tspline is True by module trispline did not load
+        ValueError: If `length_unit` is not a valid unit specifier.
+        ValueError: If `tspline` is True but module trispline did not load
             successfully.
     """
-    def __init__(self, length_unit='m', tspline=False, monotonic=False,verbose=True):
+    def __init__(self, length_unit='m', tspline=False, monotonic=False, verbose=True):
         if length_unit != 'default' and not (length_unit in _length_conversion):
             raise ValueError("Unit '%s' not a valid unit specifier!" % length_unit)
         else:
             self._length_unit = length_unit
         
         self._tricubic = bool(tspline)
-        self._monotonic = bool(monotonic)  # assumes timebase is monotonically increasing
+        self._monotonic = bool(monotonic)
         self._verbose = bool(verbose)
         
         if self._tricubic:
@@ -330,8 +330,6 @@ class Equilibrium(object):
                 # than indexes for interpolation.
                 self._psiOfPsi0Spline = {}
                 self._psiOfLCFSSpline = {}
-                # RmidOut only used for rho (r/a) calculations
-                self._RmidOutSpline = {}
             
         # These are indexes of splines, and become higher dimensional splines
         # with the setting of the tspline keyword.
@@ -359,7 +357,127 @@ class Equilibrium(object):
     ####################
     
     def rho2rho(self, origin, destination, *args, **kwargs):
-        # TODO: Documentation!
+        """Convert from one coordinate to another.
+        
+        Args:
+            origin: String.
+                Indicates which normalized coordinates the data are given in.
+                Valid options are:
+                
+                    ======= ========================
+                    RZ      R,Z coordinates
+                    psinorm Normalized poloidal flux
+                    phinorm Normalized toroidal flux
+                    volnorm Normalized volume
+                    Rmid    Midplane major radius
+                    r/a     Normalized minor radius
+                    ======= ========================
+                
+                Additionally, each valid option may be prepended with 'sqrt'
+                to specify the square root of the desired unit.
+            destination: String.
+                Indicates which normalized coordinates to convert to. Valid
+                options are:
+                
+                    ======= ========================
+                    psinorm Normalized poloidal flux
+                    phinorm Normalized toroidal flux
+                    volnorm Normalized volume
+                    Rmid    Midplane major radius
+                    r/a     Normalized minor radius
+                    ======= ========================
+                
+                Additionally, each valid option may be prepended with 'sqrt'
+                to specify the square root of the desired unit.
+            rho or R, Z: Array-like or scalar float.
+                Values of the starting coordinate to map to the new coordinate.
+            t: Array-like or single value.
+                If `t` is a single value, it is used for all of the elements of
+                `rho`. If `t` is array-like the it must have the same dimensions
+                as `rho`, unless the `each_t` keyword is in effect.
+        
+        Keyword Args:
+            sqrt: Boolean.
+                Set to True to return the square root of `rho`. Only the square
+                root of positive values is taken. Negative values are replaced
+                with zeros, consistent with Steve Wolfe's IDL implementation
+                efit_rz2rho.pro. Default is False (return `rho` itself).
+            each_t: Boolean.
+                When True, the elements in `rho` are evaluated at each value
+                in `t`. If True, `t` must have only one dimension (or be a
+                scalar). If False, `t` must match the shape of `rho` or be a
+                scalar. Default is True (evaluate ALL `rho` at each element in
+                `t`).
+            length_unit: String or 1.
+                Length unit that quantities are given/returned in, as applicable.
+                If a string is given, it must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (use meters).
+            kind: String or non-negative int.
+                Specifies the type of interpolation to be performed in getting
+                from psinorm to phinorm or volnorm. This is passed to
+                scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+            return_t: Boolean.
+                Set to True to return a tuple of (`rho`, `time_idxs`), where
+                `time_idxs` is the array of time indices actually used in
+                evaluating `rho` with nearest-neighbor interpolation. (This is
+                mostly present as an internal helper.) Default is False (only
+                return `rho`).
+            
+        Returns:
+            `rho` or (`rho`, `time_idxs`)
+            
+            * **rho** - Array or scalar float. If all of the input arguments are
+              scalar, then a scalar is returned. Otherwise, a scipy Array
+              instance is returned.
+            * **time_idxs** - Array with same shape as `rho`. The indices (in
+              :py:meth:`self.getTimeBase`) that were used for nearest-neighbor
+              interpolation. Only returned if `return_t` is True.
+        
+        Raises:
+            ValueError: If method is not one of the supported values.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the `Equilibrium` abstract class.
+
+            Find single psinorm value at r/a=0.6, t=0.26s::
+            
+                psi_val = Eq_instance.rho2rho('r/a', 'psinorm', 0.6, 0.26)
+
+            Find psinorm values at r/a points 0.6 and 0.8 at the
+            single time t=0.26s::
+            
+                psi_arr = Eq_instance.rho2rho('r/a', 'psinorm', [0.6, 0.8], 0.26)
+
+            Find psinorm values at r/a of 0.6 at times t=[0.2s, 0.3s]::
+            
+                psi_arr = Eq_instance.rho2rho('r/a', 'psinorm', 0.6, [0.2, 0.3])
+
+            Find psinorm values at (r/a, t) points (0.6, 0.2s) and (0.5, 0.3s)::
+            
+                psi_arr = Eq_instance.rho2rho('r/a', 'psinorm', [0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
         
         if origin.startswith('sqrt'):
             args[0] == scipy.asarray(args[0])**2
