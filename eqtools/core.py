@@ -2009,39 +2009,25 @@ class Equilibrium(object):
             return self.rz2rho(method, R_mid, Z_mid, t, **kwargs)
     
     def roa2rmid(self, roa, t, each_t=True, return_t=False, time_idxs=None, length_unit=1):
-        """Convert the passed (r/a, t) coordinates into R_mid.
-        
-        If tspline is False for this Equilibrium instance, uses
-        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
-        Z. Finds the nearest time slices to those given: nearest-neighbor
-        interpolation in time. Otherwise, uses the tricubic package to perform
-        a trivariate interpolation in space and time.
+        """Convert the passed (r/a, t) coordinates into Rmid.
         
         Args:
-            roa: Array-like or scalar float.
-                Values of normalized minor radius to map to outboard midplane
-                major radius.
-            t: Array-like or single value.
-                If t is a single value, it is used for all of the elements of
-                roa. If t is array-like the it must have the same dimensions
-                as roa.
+            roa (Array-like or scalar float): Values of the normalized minor
+                radius to map to Rmid.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `roa`. If the `each_t` keyword is True, then `t` must be scalar
+                or have exactly one dimension. If the `each_t` keyword is False,
+                `t` must have the same shape as `roa`.
         
         Keyword Args:
-            return_t: Boolean.
-                Set to True to return a tuple of (R_mid, time_idxs), where
-                time_idxs is the array of time indices actually used in
-                evaluating R_mid with nearest-neighbor interpolation. (This is
-                mostly present as an internal helper.) Default is False (only
-                return R_mid).
-            each_t: Boolean.
-                When True, the elements in `roa` are evaluated at each value
-                in `t`. If True, `t` must have only one dimension (or be a
-                scalar). If False, `t` must match the shape of `roa` or be a
-                scalar. Default is True (evaluate ALL `roa` at each element
-                in `t`).
-            length_unit: String or 1.
-                Length unit that R_mid is returned in. If a string is given,
-                it must be a valid unit specifier:
+            each_t (Boolean): When True, the elements in `roa` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `roa`
+                or be a scalar. Default is True (evaluate ALL `roa` at EACH
+                element in `t`).
+            length_unit (String or 1): Length unit that `Rmid` is returned in.
+                If a string is given, it must be a valid unit specifier:
                 
                     ===========  ===========
                     'm'          meters
@@ -2057,24 +2043,27 @@ class Equilibrium(object):
                     ===========  ===========
                 
                 If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (R_mid returned in meters).
-            
-        Returns:
-            R_mid or (R_mid, time_idxs)
-            
-            * **R_mid** - Array or scalar float. If all of the input arguments
-              are scalar, then a scalar is returned. Otherwise, a scipy Array
-              instance is returned.
-            * **time_idxs** - Array with same shape as R_mid. The indices (in
-              self.getTimeBase()) that were used for nearest-neighbor
-              interpolation. Only returned if return_t is True.
+                value is 1 (use meters).
+            return_t (Boolean): Set to True to return a tuple of (`rho`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `rho` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `rho`).            
         
-        Raises:
-            ValueError: If method is not one of the supported values.
+        Returns:
+            `Rmid` or (`Rmid`, `time_idxs`)
+        
+            * **Rmid** (`Array or scalar float`) - The converted coordinates. If
+              all of the input arguments are scalar, then a scalar is returned.
+              Otherwise, a scipy Array is returned.
+            * **time_idxs** (Array with same shape as `Rmid`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
         
         Examples:
-            All assume that Eq_instance is a valid instance of the appropriate
-            extension of the Equilibrium abstract class.
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
 
             Find single R_mid value at r/a=0.6, t=0.26s::
             
@@ -2136,29 +2125,229 @@ class Equilibrium(object):
             return out
     
     def roa2psinorm(self, *args, **kwargs):
-        # TODO: Document!
+        """Convert the passed (r/a, t) coordinates into psinorm.
+        
+        Args:
+            roa (Array-like or scalar float): Values of the normalized minor
+                radius to map to psinorm.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `roa`. If the `each_t` keyword is True, then `t` must be scalar
+                or have exactly one dimension. If the `each_t` keyword is False,
+                `t` must have the same shape as `roa`.
+        
+        Keyword Args:
+            sqrt (Boolean): Set to True to return the square root of psinorm. 
+                Only the square root of positive values is taken. Negative 
+                values are replaced with zeros, consistent with Steve Wolfe's
+                IDL implementation efit_rz2rho.pro. Default is False.
+            each_t (Boolean): When True, the elements in `roa` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `roa`
+                or be a scalar. Default is True (evaluate ALL `roa` at EACH
+                element in `t`).
+            kind (String or non-negative int): Specifies the type of
+                interpolation to be performed in getting from Rmid to
+                psinorm and psinorm to volnorm or phinorm. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for :py:class:`interp1d` for more
+                details. Default value is 'cubic' (3rd order spline
+                interpolation). On some builds of scipy, this can cause problems,
+                in which case you should try 'linear' until you can rebuild your
+                scipy install.            
+            return_t (Boolean): Set to True to return a tuple of (`rho`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `rho` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `rho`).
+                
+        Returns:
+            `psinorm` or (`psinorm`, `time_idxs`)
+        
+            * **psinorm** (`Array or scalar float`) - The converted coordinates. If
+              all of the input arguments are scalar, then a scalar is returned.
+              Otherwise, a scipy Array is returned.
+            * **time_idxs** (Array with same shape as `psinorm`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
+
+            Find single psinorm value at r/a=0.6, t=0.26s::
+            
+                psinorm_val = Eq_instance.roa2psinorm(0.6, 0.26)
+
+            Find psinorm values at r/a points 0.6 and 0.8 at the
+            single time t=0.26s.::
+            
+                psinorm_arr = Eq_instance.roa2psinorm([0.6, 0.8], 0.26)
+
+            Find psinorm values at r/a of 0.6 at times t=[0.2s, 0.3s]::
+            
+                psinorm_arr = Eq_instance.roa2psinorm(0.6, [0.2, 0.3])
+
+            Find psinorm values at (roa, t) points (0.6, 0.2s) and (0.5, 0.3s)::
+            
+                psinorm_arr = Eq_instance.roa2psinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
         return self.roa2rho('psinorm', *args, **kwargs)
     
     def roa2phinorm(self, *args, **kwargs):
-        # TODO: Document!
+        """Convert the passed (r/a, t) coordinates into phinorm.
+        
+        Args:
+            roa (Array-like or scalar float): Values of the normalized minor
+                radius to map to phinorm.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `roa`. If the `each_t` keyword is True, then `t` must be scalar
+                or have exactly one dimension. If the `each_t` keyword is False,
+                `t` must have the same shape as `roa`.
+        
+        Keyword Args:
+            sqrt (Boolean): Set to True to return the square root of phinorm. 
+                Only the square root of positive values is taken. Negative 
+                values are replaced with zeros, consistent with Steve Wolfe's
+                IDL implementation efit_rz2rho.pro. Default is False.
+            each_t (Boolean): When True, the elements in `roa` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `roa`
+                or be a scalar. Default is True (evaluate ALL `roa` at EACH
+                element in `t`).
+            kind (String or non-negative int): Specifies the type of
+                interpolation to be performed in getting from Rmid to
+                psinorm and psinorm to volnorm or phinorm. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for :py:class:`interp1d` for more
+                details. Default value is 'cubic' (3rd order spline
+                interpolation). On some builds of scipy, this can cause problems,
+                in which case you should try 'linear' until you can rebuild your
+                scipy install.            
+            return_t (Boolean): Set to True to return a tuple of (`rho`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `rho` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `rho`).
+                
+        Returns:
+            `phinorm` or (`phinorm`, `time_idxs`)
+        
+            * **phinorm** (`Array or scalar float`) - The converted coordinates. If
+              all of the input arguments are scalar, then a scalar is returned.
+              Otherwise, a scipy Array is returned.
+            * **time_idxs** (Array with same shape as `phinorm`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
+
+            Find single phinorm value at r/a=0.6, t=0.26s::
+            
+                phinorm_val = Eq_instance.roa2phinorm(0.6, 0.26)
+
+            Find phinorm values at r/a points 0.6 and 0.8 at the
+            single time t=0.26s.::
+            
+                phinorm_arr = Eq_instance.roa2phinorm([0.6, 0.8], 0.26)
+
+            Find phinorm values at r/a of 0.6 at times t=[0.2s, 0.3s]::
+            
+                phinorm_arr = Eq_instance.roa2phinorm(0.6, [0.2, 0.3])
+
+            Find phinorm values at (roa, t) points (0.6, 0.2s) and (0.5, 0.3s)::
+            
+                phinorm_arr = Eq_instance.roa2phinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
         return self.roa2rho('phinorm', *args, **kwargs)
     
     def roa2volnorm(self, *args, **kwargs):
-        # TODO: Document!
+        """Convert the passed (r/a, t) coordinates into volnorm.
+        
+        Args:
+            roa (Array-like or scalar float): Values of the normalized minor
+                radius to map to volnorm.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `roa`. If the `each_t` keyword is True, then `t` must be scalar
+                or have exactly one dimension. If the `each_t` keyword is False,
+                `t` must have the same shape as `roa`.
+        
+        Keyword Args:
+            sqrt (Boolean): Set to True to return the square root of volnorm. 
+                Only the square root of positive values is taken. Negative 
+                values are replaced with zeros, consistent with Steve Wolfe's
+                IDL implementation efit_rz2rho.pro. Default is False.
+            each_t (Boolean): When True, the elements in `roa` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `roa`
+                or be a scalar. Default is True (evaluate ALL `roa` at EACH
+                element in `t`).
+            kind (String or non-negative int): Specifies the type of
+                interpolation to be performed in getting from Rmid to
+                psinorm and psinorm to volnorm or phinorm. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for :py:class:`interp1d` for more
+                details. Default value is 'cubic' (3rd order spline
+                interpolation). On some builds of scipy, this can cause problems,
+                in which case you should try 'linear' until you can rebuild your
+                scipy install.            
+            return_t (Boolean): Set to True to return a tuple of (`rho`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `rho` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `rho`).
+                
+        Returns:
+            `volnorm` or (`volnorm`, `time_idxs`)
+        
+            * **volnorm** (`Array or scalar float`) - The converted coordinates. If
+              all of the input arguments are scalar, then a scalar is returned.
+              Otherwise, a scipy Array is returned.
+            * **time_idxs** (Array with same shape as `volnorm`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
+
+            Find single volnorm value at r/a=0.6, t=0.26s::
+            
+                volnorm_val = Eq_instance.roa2volnorm(0.6, 0.26)
+
+            Find volnorm values at r/a points 0.6 and 0.8 at the
+            single time t=0.26s.::
+            
+                volnorm_arr = Eq_instance.roa2volnorm([0.6, 0.8], 0.26)
+
+            Find volnorm values at r/a of 0.6 at times t=[0.2s, 0.3s]::
+            
+                volnorm_arr = Eq_instance.roa2volnorm(0.6, [0.2, 0.3])
+
+            Find volnorm values at (roa, t) points (0.6, 0.2s) and (0.5, 0.3s)::
+            
+                volnorm_arr = Eq_instance.roa2volnorm([0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
         return self.roa2rho('volnorm', *args, **kwargs)
     
     def roa2rho(self, method, *args, **kwargs):
-        """Convert the passed (r/a, t) coordinates into one of several normalized coordinates.
-        
-        If tspline is False for this Equilibrium instance, uses
-        scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
-        Z. Finds the nearest time slices to those given: nearest-neighbor
-        interpolation in time. Otherwise, uses the tricubic package to perform
-        a trivariate interpolation in space and time.
+        """Convert the passed (r/a, t) coordinates into one of several coordinates.
         
         Args:
-            method: String.
-                Indicates which normalized coordinates to use.
+            method (String): Indicates which coordinates to convert to.
                 Valid options are:
                 
                     ======= ========================
@@ -2166,50 +2355,30 @@ class Equilibrium(object):
                     phinorm Normalized toroidal flux
                     volnorm Normalized volume
                     Rmid    Midplane major radius
-                    r/a     Normalized minor radius
                     ======= ========================
                 
                 Additionally, each valid option may be prepended with 'sqrt'
-                to return the square root of the desired normalized unit.
-            roa: Array-like or scalar float.
-                Values of the midplane normalized minor radial coordinate to
-                map to normalized coordinate.
-            t: Array-like or single value.
-                If t is a single value, it is used for all of the elements of
-                roa. If t is array-like the it must have the same dimensions
-                as roa.
+                to specify the square root of the desired unit.
+            roa (Array-like or scalar float): Values of the normalized minor
+                radius to map to rho.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `roa`. If the `each_t` keyword is True, then `t` must be scalar
+                or have exactly one dimension. If the `each_t` keyword is False,
+                `t` must have the same shape as `roa`.
         
         Keyword Args:
-            return_t: Boolean.
-                Set to True to return a tuple of (`rho`, `time_idxs`), where
-                `time_idxs` is the array of time indices actually used in
-                evaluating `rho` with nearest-neighbor interpolation. (This is
-                mostly present as an internal helper.) Default is False (only
-                return `rho`).
-            sqrt: Boolean.
-                Set to True to return the square root of `rho`. Only the square
-                root of positive values is taken. Negative values are replaced
-                with zeros, consistent with Steve Wolfe's IDL implementation
-                efit_rz2rho.pro. Default is False (return `rho` itself).
-            each_t: Boolean.
-                When True, the elements in `roa` are evaluated at each value
-                in `t`. If True, `t` must have only one dimension (or be a
-                scalar). If False, `t` must match the shape of `roa` or be a
-                scalar. Default is True (evaluate ALL `roa` at each element in
-                `t`).
-            kind (phinorm and volnorm only): String or non-negative int.
-                Specifies the type of interpolation to be performed in getting
-                from psinorm to phinorm or volnorm. This is passed to
-                scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1.
-                Length unit that `R_mid` is returned in. If a string is given, it
-                must be a valid unit specifier:
+            sqrt (Boolean): Set to True to return the square root of rho. 
+                Only the square root of positive values is taken. Negative 
+                values are replaced with zeros, consistent with Steve Wolfe's
+                IDL implementation efit_rz2rho.pro. Default is False.
+            each_t (Boolean): When True, the elements in `roa` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `roa`
+                or be a scalar. Default is True (evaluate ALL `roa` at EACH
+                element in `t`).
+            length_unit (String or 1): Length unit that `Rmid` is returned in.
+                If a string is given, it must be a valid unit specifier:
                 
                     ===========  ===========
                     'm'          meters
@@ -2225,24 +2394,38 @@ class Equilibrium(object):
                     ===========  ===========
                 
                 If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (`R_mid` returned in meters).
+                value is 1 (use meters).
+            kind (String or non-negative int): Specifies the type of
+                interpolation to be performed in getting from Rmid to
+                psinorm and psinorm to volnorm or phinorm. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for :py:class:`interp1d` for more
+                details. Default value is 'cubic' (3rd order spline
+                interpolation). On some builds of scipy, this can cause problems,
+                in which case you should try 'linear' until you can rebuild your
+                scipy install.            
+            return_t (Boolean): Set to True to return a tuple of (`rho`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `rho` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `rho`).
             
         Returns:
             `rho` or (`rho`, `time_idxs`)
-            
-            * **rho** - Array or scalar float. If all of the input arguments are
-              scalar, then a scalar is returned. Otherwise, a scipy Array
-              instance is returned.
-            * **time_idxs** - Array with same shape as `rho`. The indices (in
-              self.getTimeBase()) that were used for nearest-neighbor
-              interpolation. Only returned if `return_t` is True.
         
-        Raises:
-            ValueError: If method is not one of the supported values.
+            * **rho** (`Array or scalar float`) - The converted coordinates. If
+              all of the input arguments are scalar, then a scalar is returned.
+              Otherwise, a scipy Array is returned.
+            * **time_idxs** (Array with same shape as `rho`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
         
         Examples:
             All assume that `Eq_instance` is a valid instance of the appropriate
-            extension of the `Equilibrium` abstract class.
+            extension of the :py:class:`Equilibrium` abstract class.
 
             Find single psinorm value at r/a=0.6, t=0.26s::
             
@@ -2283,7 +2466,7 @@ class Equilibrium(object):
             return self.rmid2rho(method, *args, **kwargs)
     
     def psinorm2rmid(self, psi_norm, t, **kwargs):
-        """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
+        """Calculates the outboard R_mid location corresponding to the passed psinorm (normalized poloidal flux) values.
         
         If tspline is False for this Equilibrium instance, uses
         scipy.interpolate.RectBivariateSpline to interpolate in terms of R and
