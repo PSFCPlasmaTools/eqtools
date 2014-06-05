@@ -79,12 +79,11 @@ class PropertyAccessMixin(object):
         'property' for each getter method.
         
         Args:
-            name (String):
-                Name of the attribute to retrieve. If the instance has an
-                attribute with this name, the attribute is returned. If the
-                instance does not have an attribute with this name but does have
-                a method called 'get'+name, this method is called and the result
-                is returned.
+            name (String): Name of the attribute to retrieve. If the instance
+                has an attribute with this name, the attribute is returned. If
+                the instance does not have an attribute with this name but does
+                have a method called 'get'+name, this method is called and the
+                result is returned.
         
         Returns:
             The value of the attribute requested.
@@ -126,9 +125,9 @@ class PropertyAccessMixin(object):
         else:
             super(Equilibrium, self).__setattr__(name, value)
 
-"""The following is a dictionary to implement length unit conversions. The
-first key is the unit are converting FROM, the second the unit you are
-converting TO. Supports: m, cm, mm, in, ft, yd, smoot, cubit, hand
+"""The following is a dictionary to implement length unit conversions. The first
+key is the unit are converting FROM, the second the unit you are converting TO.
+Supports: m, cm, mm, in, ft, yd, smoot, cubit, hand
 """
 _length_conversion = {'m': {'m': 1.0,
                             'cm': 100.0,
@@ -225,18 +224,14 @@ def inPolygon(polyx, polyy, pointx, pointy):
     crossings) the polygon, by the Jordan Curve Theorem.
 
     Args:
-        polyx (Array-like):
-            Array of x-coordinates of the vertices of the polygon.
-        polyy (Array-like):
-            Array of y-coordinates of the vertices of the polygon.
-        pointx (Int or float):
-            x-coordinate of test point.
-        pointy (Int or float):
-            y-coordinate of test point.
+        polyx (Array-like): Array of x-coordinates of the vertices of the polygon.
+        polyy (Array-like): Array of y-coordinates of the vertices of the polygon.
+        pointx (Int or float): x-coordinate of test point.
+        pointy (Int or float): y-coordinate of test point.
 
     Returns:
-        result (Boolean):
-            True/False result for whether the point is contained within the polygon.
+        result (Boolean): True/False result for whether the point is contained
+            within the polygon.
     """
     #generator function for "lines" - pairs of (x,y) coords describing each edge of the polygon.
     def lines():
