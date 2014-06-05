@@ -339,9 +339,9 @@ class Equilibrium(object):
         """String representation of this instance.
         
         Returns:
-            String describing this object.
+            (String): String describing this object.
         """
-        return 'This is an abstract class.  Please use machine-specific subclass.'
+        return 'This is an abstract class. Please use machine-specific subclass.'
     
     ####################
     # Mapping routines #
@@ -351,9 +351,8 @@ class Equilibrium(object):
         """Convert from one coordinate to another.
         
         Args:
-            origin: String.
-                Indicates which normalized coordinates the data are given in.
-                Valid options are:
+            origin (String): Indicates which normalized coordinates the data are
+                given in. Valid options are:
                 
                     ======= ========================
                     RZ      R,Z coordinates
@@ -366,9 +365,8 @@ class Equilibrium(object):
                 
                 Additionally, each valid option may be prepended with 'sqrt'
                 to specify the square root of the desired unit.
-            destination: String.
-                Indicates which normalized coordinates to convert to. Valid
-                options are:
+            destination (String): Indicates which normalized coordinates to
+                convert to. Valid options are:
                 
                     ======= ========================
                     psinorm Normalized poloidal flux
@@ -380,28 +378,30 @@ class Equilibrium(object):
                 
                 Additionally, each valid option may be prepended with 'sqrt'
                 to specify the square root of the desired unit.
-            rho or R, Z: Array-like or scalar float.
+            rho (Array-like or scalar float):
                 Values of the starting coordinate to map to the new coordinate.
-            t: Array-like or single value.
+                Will be two arguments `R`, `Z` if `origin` is 'RZ'.
+            t (Array-like or scalar float):
                 If `t` is a single value, it is used for all of the elements of
-                `rho`. If `t` is array-like the it must have the same dimensions
-                as `rho`, unless the `each_t` keyword is in effect.
+                `rho`. If `t` is array-like then it must have the same
+                dimensions as `rho`, unless the `each_t` keyword is in effect.
         
         Keyword Args:
-            sqrt (Boolean):
-                Set to True to return the square root of `rho`. Only the square
-                root of positive values is taken. Negative values are replaced
-                with zeros, consistent with Steve Wolfe's IDL implementation
-                efit_rz2rho.pro. Default is False (return `rho` itself).
-            each_t: Boolean.
-                When True, the elements in `rho` are evaluated at each value
-                in `t`. If True, `t` must have only one dimension (or be a
-                scalar). If False, `t` must match the shape of `rho` or be a
-                scalar. Default is True (evaluate ALL `rho` at each element in
+            sqrt (Boolean): Set to True to return the square root of `rho`. Only
+                the square root of positive values is taken. Negative values are
+                replaced with zeros, consistent with Steve Wolfe's IDL
+                implementation efit_rz2rho.pro. Default is False.
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid when `destination` is Rmid. Default is False
+                (return major radius, Rmid).
+            each_t (Boolean): When True, the elements in `rho` are evaluated at
+                each value in `t`. If True, `t` must have only one dimension (or
+                be a scalar). If False, `t` must match the shape of `rho` or be
+                a scalar. Default is True (evaluate ALL `rho` at EACH element in
                 `t`).
-            length_unit: String or 1.
-                Length unit that quantities are given/returned in, as applicable.
-                If a string is given, it must be a valid unit specifier:
+            length_unit (String or 1): Length unit that quantities are
+                given/returned in, as applicable. If a string is given, it must
+                be a valid unit specifier:
                 
                     ===========  ===========
                     'm'          meters
@@ -418,33 +418,36 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind: String or non-negative int.
-                Specifies the type of interpolation to be performed in getting
-                from psinorm to phinorm or volnorm. This is passed to
-                scipy.interpolate.interp1d. Valid options are:
+            kind (String or non-negative int): Specifies the type of
+                interpolation to be performed in getting from psinorm to phinorm
+                or volnorm. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
-            return_t: Boolean.
-                Set to True to return a tuple of (`rho`, `time_idxs`), where
-                `time_idxs` is the array of time indices actually used in
-                evaluating `rho` with nearest-neighbor interpolation. (This is
-                mostly present as an internal helper.) Default is False (only
-                return `rho`).
+                to use. See the documentation for :py:class:`interp1d` for more
+                details. Default value is 'cubic' (3rd order spline
+                interpolation). On some builds of scipy, this can cause problems,
+                in which case you should try 'linear' until you can rebuild your
+                scipy install.
+            return_t (Boolean): Set to True to return a tuple of (`rho`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `rho` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `rho`).
             
         Returns:
-            `rho` or (`rho`, `time_idxs`)
-            
-            * **rho** - Array or scalar float. If all of the input arguments are
-              scalar, then a scalar is returned. Otherwise, a scipy Array
-              instance is returned.
-            * **time_idxs** - Array with same shape as `rho`. The indices (in
-              :py:meth:`self.getTimeBase`) that were used for nearest-neighbor
-              interpolation. Only returned if `return_t` is True.
+            rho (Array or scalar float): Converted coordinate.
+            time_idxs (Array or scalar float): Same shape as `rho`. Time indices used. Only returned if `return_t` is True.
         
+        `rho` or (`rho`, `time_idxs`)
+        
+        * **rho** - Array or scalar float. If all of the input arguments are
+          scalar, then a scalar is returned. Otherwise, a scipy Array
+          instance is returned.
+        * **time_idxs** - Array with same shape as `rho`. The indices (in
+          :py:meth:`self.getTimeBase`) that were used for nearest-neighbor
+          interpolation. Only returned if `return_t` is True.
+    
         Raises:
             ValueError: If method is not one of the supported values.
         
