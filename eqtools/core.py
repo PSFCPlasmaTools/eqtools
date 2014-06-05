@@ -393,9 +393,6 @@ class Equilibrium(object):
                 the square root of positive values is taken. Negative values are
                 replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid when `destination` is Rmid. Default is False
-                (return major radius, Rmid).
             each_t (Boolean): When True, the elements in `rho` are evaluated at
                 each value in `t`. If True, `t` must have only one dimension (or
                 be a scalar). If False, `t` must match the shape of `rho` or be
@@ -406,6 +403,9 @@ class Equilibrium(object):
                 before evaluating. If this is set to True, `R` and `Z` must each
                 only have a single dimension, but can have different lengths.
                 Default is False (do not form meshgrid).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid when `destination` is Rmid. Default is False
+                (return major radius, Rmid).            
             length_unit (String or 1): Length unit that quantities are
                 given/returned in, as applicable. If a string is given, it must
                 be a valid unit specifier:
@@ -1070,8 +1070,6 @@ class Equilibrium(object):
                 Only the square root of positive values is taken. Negative 
                 values are replaced with zeros, consistent with Steve Wolfe's
                 IDL implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid. Default is False (return major radius, Rmid).
             each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
                 at each value in `t`. If True, `t` must have only one dimension
                 (or be a scalar). If False, `t` must match the shape of `R` and
@@ -1082,6 +1080,8 @@ class Equilibrium(object):
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).            
             length_unit (String or 1): Length unit that `R`, `Z` are given in,
                 AND that `Rmid` is returned in. If a string is given, it must
                 be a valid unit specifier:
@@ -1337,9 +1337,6 @@ class Equilibrium(object):
                 Only the square root of positive values is taken. Negative 
                 values are replaced with zeros, consistent with Steve Wolfe's
                 IDL implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid when `destination` is Rmid. Default is False
-                (return major radius, Rmid).
             each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
                 at each value in `t`. If True, `t` must have only one dimension
                 (or be a scalar). If False, `t` must match the shape of `R` and
@@ -1350,6 +1347,9 @@ class Equilibrium(object):
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid when `destination` is Rmid. Default is False
+                (return major radius, Rmid).            
             length_unit (String or 1): Length unit that `R`, `Z` are given in,
                 AND that `Rmid` is returned in. If a string is given, it must
                 be a valid unit specifier:
@@ -2482,13 +2482,13 @@ class Equilibrium(object):
                 the square root of positive values is taken. Negative values are
                 replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid. Default is False (return major radius, Rmid).
             each_t (Boolean): When True, the elements in `psi_norm` are evaluated at
                 each value in `t`. If True, `t` must have only one dimension (or
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).            
             length_unit (String or 1): Length unit that `Rmid` is returned in.
                 If a string is given, it must be a valid unit specifier:
                 
@@ -2820,13 +2820,13 @@ class Equilibrium(object):
                 the square root of positive values is taken. Negative values are
                 replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid. Default is False (return major radius, Rmid).
             each_t (Boolean): When True, the elements in `psi_norm` are evaluated at
                 each value in `t`. If True, `t` must have only one dimension (or
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).            
             length_unit (String or 1): Length unit that `Rmid` is returned in.
                 If a string is given, it must be a valid unit specifier:
                 
@@ -3077,13 +3077,13 @@ class Equilibrium(object):
                 Only the square root of positive values is taken. Negative 
                 values are replaced with zeros, consistent with Steve Wolfe's
                 IDL implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid. Default is False (return major radius, Rmid).            
             each_t (Boolean): When True, the elements in `phinorm` are evaluated 
                 at each value in `t`. If True, `t` must have only one dimension
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).                        
             length_unit (String or 1): Length unit that `Rmid` is returned in.
                 If a string is given, it must be a valid unit specifier:
                 
@@ -3267,13 +3267,13 @@ class Equilibrium(object):
                 the square root of positive values is taken. Negative values are
                 replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid. Default is False (return major radius, Rmid).
             each_t (Boolean): When True, the elements in `phinorm` are evaluated at
                 each value in `t`. If True, `t` must have only one dimension (or
                 be a scalar). If False, `t` must match the shape of `phinorm` or be
                 a scalar. Default is True (evaluate ALL `phinorm` at EACH element in
                 `t`).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).            
             length_unit (String or 1): Length unit that `Rmid` is returned in.
                 If a string is given, it must be a valid unit specifier:
                 
@@ -3523,13 +3523,13 @@ class Equilibrium(object):
                 Only the square root of positive values is taken. Negative 
                 values are replaced with zeros, consistent with Steve Wolfe's
                 IDL implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid. Default is False (return major radius, Rmid).            
             each_t (Boolean): When True, the elements in `volnorm` are evaluated 
                 at each value in `t`. If True, `t` must have only one dimension
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).                        
             length_unit (String or 1): Length unit that `Rmid` is returned in.
                 If a string is given, it must be a valid unit specifier:
                 
@@ -3709,13 +3709,13 @@ class Equilibrium(object):
                 the square root of positive values is taken. Negative values are
                 replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False.
-            rho (Boolean): Set to True to return r/a (normalized minor radius)
-                instead of Rmid. Default is False (return major radius, Rmid).
             each_t (Boolean): When True, the elements in `volnorm` are evaluated at
                 each value in `t`. If True, `t` must have only one dimension (or
                 be a scalar). If False, `t` must match the shape of `volnorm` or be
                 a scalar. Default is True (evaluate ALL `volnorm` at EACH element in
                 `t`).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).            
             length_unit (String or 1): Length unit that `Rmid` is returned in.
                 If a string is given, it must be a valid unit specifier:
                 
