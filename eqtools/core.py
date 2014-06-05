@@ -339,7 +339,7 @@ class Equilibrium(object):
         """String representation of this instance.
         
         Returns:
-            (String): String describing this object.
+            string (String): String describing this object.
         """
         return 'This is an abstract class. Please use machine-specific subclass.'
     
