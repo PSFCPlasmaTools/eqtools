@@ -77,7 +77,7 @@ class PropertyAccessMixin(object):
         each getter method.
         
         Args:
-            name: String.
+            name (String):
                 Name of the attribute to retrieve. If the instance has an
                 attribute with this name, the attribute is returned. If the
                 instance does not have an attribute with this name but does have
@@ -109,9 +109,9 @@ class PropertyAccessMixin(object):
         property generation in :py:meth:`__getattribute__`.
         
         Args:
-            name: String.
+            name (String):
                 Name of the attribute to set.
-            value: Object.
+            value (Object):
                 Value to set the attribute to.
         
         Raises:
@@ -225,17 +225,17 @@ def inPolygon(polyx, polyy, pointx, pointy):
     crossings) the polygon, by the Jordan Curve Theorem.
 
     Args:
-        polyx: Array-like.
+        polyx (Array-like):
             Array of x-coordinates of the vertices of the polygon.
-        polyy: Array-like.
+        polyy (Array-like):
             Array of y-coordinates of the vertices of the polygon.
-        pointx: Int or float.
+        pointx (Int or float):
             x-coordinate of test point.
-        pointy: Int or float.
+        pointy (Int or float):
             y-coordinate of test point.
 
     Returns:
-        result: Boolean.
+        result (Boolean):
             True/False result for whether the point is contained within the polygon.
     """
     #generator function for "lines" - pairs of (x,y) coords describing each edge of the polygon.
@@ -271,7 +271,7 @@ class Equilibrium(object):
         differences in data storage.
     
     Keyword Args:
-        length_unit: String.
+        length_unit (String):
             Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
             
@@ -289,7 +289,7 @@ class Equilibrium(object):
                 ===========  ===========================================================================================
             
             Default is 'm' (all units taken and returned in meters).
-        tspline: Boolean.
+        tspline (Boolean):
             Sets whether or not interpolation in time is performed using a
             tricubic spline or nearest-neighbor interpolation. Tricubic spline
             interpolation requires at least four complete equilibria at
@@ -3183,7 +3183,7 @@ class Equilibrium(object):
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            time_idxs: Array with same shape as `psi_norm` or None.
+            time_idxs (Array with same shape as `psi_norm` or None):
                 The time indices to use (as computed by _processRZt). Default
                 is None (compute time indices in method).
         
@@ -3274,9 +3274,11 @@ class Equilibrium(object):
             r/a = \frac{R_{mid} - R_0}{R_a - R_0} = \frac{R_{mid} - R_0}{a}
         
         Args:
-            R_mid: Array or scalar float. Values of outboard midplane major
+            R_mid (Array or scalar float):
+                Values of outboard midplane major
                 radius to evaluate r/a at.
-            time_idxs: Array, same shape as `R_mid`. If :py:attr:`self._tricubic`
+            time_idxs (Array, same shape as `R_mid`):
+                If :py:attr:`self._tricubic`
                 is True, this should be an array of the time points to evaluate
                 at. Otherwise, this should be an array of the time INDICES in
                 :py:meth:`getTimeBase` to evaluate at.
@@ -3309,9 +3311,10 @@ class Equilibrium(object):
             r/a = \frac{R_{mid} - R_0}{R_a - R_0} = \frac{R_{mid} - R_0}{a}
         
         Args:
-            roa: Array or scalar float. Values of normalized minor radius to
-                evaluate R_mid at.
-            time_idxs: Array, same shape as `roa`. If :py:attr:`self._tricubic`
+            roa (Array or scalar float):
+                Values of normalized minor radius to evaluate R_mid at.
+            time_idxs (Array, same shape as `roa`):
+                If :py:attr:`self._tricubic`
                 is True, this should be an array of the time points to evaluate
                 at. Otherwise, this should be an array of the time INDICES in
                 :py:meth:`getTimeBase` to evaluate at.
@@ -3345,44 +3348,51 @@ class Equilibrium(object):
         a trivariate interpolation in space and time.
         
         Args:
-            spline_func: Function which returns a 1d spline for the quantity
+            spline_func (callable):
+                Function which returns a 1d spline for the quantity
                 you want to convert into as a function of psi_norm given a
                 time index.
-            R: Array-like or scalar float. Values of the radial coordinate to
+            R (Array-like or scalar float):
+                Values of the radial coordinate to
                 map to Quan. If R and Z are both scalar values, they are used
                 as the coordinate pair for all of the values in t. Must have
                 the same shape as Z unless the make_grid keyword is set. If the
                 make_grid keyword is True, R must have shape (len_R,).
-            Z: Array-like or scalar float. Values of the vertical coordinate to
+            Z (Array-like or scalar float):
+                Values of the vertical coordinate to
                 map to Quan. If R and Z are both scalar values, they are used
                 as the coordinate pair for all of the values in t. Must have
                 the same shape as R unless the make_grid keyword is set. If the
                 make_grid keyword is True, Z must have shape (len_Z,).
-            t: Array-like or single value. If t is a single value, it is used
+            t (Array-like or single value):
+                If t is a single value, it is used
                 for all of the elements of R, Z. If t is array-like and the
                 make_grid keyword is False, t must have the same dimensions as
                 R and Z. If t is array-like and the make_grid keyword is True,
                 t must have shape (len(Z), len(R)).
         
         Keyword Args:
-            each_t: Boolean.
+            each_t (Boolean):
                 When True, the elements in `R` and `Z` (or the meshgrid thereof
                 if `make_grid` is True) are evaluated at each value in `t`. If
                 True, `t` must have only one dimension (or be a scalar). If
                 False, `t` must match the shape of `R` and `Z` (or their
                 meshgrid if `make_grid` is True) or be a scalar. Default is True
                 (evaluate ALL `R`, `Z` at each element in `t`).
-            return_t: Boolean. Set to True to return a tuple of (Quan,
+            return_t (Boolean):
+                Set to True to return a tuple of (Quan,
                 time_idxs), where time_idxs is the array of time indices
                 actually used in evaluating R_mid with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return Quan).
-            sqrt: Boolean. Set to True to return the square root of Quan. Only
+            sqrt (Boolean):
+                Set to True to return the square root of Quan. Only
                 the square root of positive values is taken. Negative values
                 are replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False (return Quan
                 itself).
-            make_grid: Boolean. Set to True to pass R and Z through meshgrid
+            make_grid (Boolean):
+                Set to True to pass R and Z through meshgrid
                 before evaluating. If this is set to True, R and Z must each
                 only have a single dimension, but can have different lengths.
                 When using this option, it is highly recommended to only pass
@@ -3391,11 +3401,13 @@ class Equilibrium(object):
                 same shape as the resulting meshgrid, and each element in the
                 returned psi array will be at the corresponding time in the t
                 array. Default is False (do not form meshgrid).
-            rho: Boolean. Set to True to return r/a (normalized minor radius)
+            rho (Boolean):
+                Set to True to return r/a (normalized minor radius)
                 instead of R_mid. Default is False (return major radius, R_mid).
                 Note that this will have unexpected results if spline_func
                 returns anything other than R_mid.
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from psinorm to Quan. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -3404,7 +3416,8 @@ class Equilibrium(object):
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1. Length unit that R and Z are being given
+            length_unit (String or 1):
+                Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
                     'm'         meters
                     'cm'        centimeters
@@ -3471,34 +3484,39 @@ class Equilibrium(object):
         a trivariate interpolation in space and time.
         
         Args:
-            spline_func: Function which returns a 1d spline for the quantity
+            spline_func (callable):
+                Function which returns a 1d spline for the quantity
                 you want to convert into as a function of psi_norm given a
                 time index.
-            R_mid: Array-like or scalar float. Values of the radial coordinate to
-                map to Quan.
-            t: Array-like or single value. If t is a single value, it is used
+            R_mid (Array-like or scalar float):
+                Values of the radial coordinate to map to Quan.
+            t (Array-like or single value):
+                If t is a single value, it is used
                 for all of the elements of R_mid. If t is array-like it must
                 have the same dimensions as R_mid.
         
         Keyword Args:
-            each_t: Boolean.
+            each_t (Boolean):
                 When True, the elements in `R` and `Z` (or the meshgrid thereof
                 if `make_grid` is True) are evaluated at each value in `t`. If
                 True, `t` must have only one dimension (or be a scalar). If
                 False, `t` must match the shape of `R` and `Z` (or their
                 meshgrid if `make_grid` is True) or be a scalar. Default is True
                 (evaluate ALL `R`, `Z` at each element in `t`).
-            return_t: Boolean. Set to True to return a tuple of (Quan,
+            return_t (Boolean):
+                Set to True to return a tuple of (Quan,
                 time_idxs), where time_idxs is the array of time indices
                 actually used in evaluating R_mid with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return Quan).
-            sqrt: Boolean. Set to True to return the square root of Quan. Only
+            sqrt (Boolean):
+                Set to True to return the square root of Quan. Only
                 the square root of positive values is taken. Negative values
                 are replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False (return Quan
                 itself).
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from psinorm to Quan. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -3507,7 +3525,8 @@ class Equilibrium(object):
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1. Length unit that R and Z are being given
+            length_unit (String or 1):
+                Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
                     'm'         meters
                     'cm'        centimeters
@@ -3572,33 +3591,38 @@ class Equilibrium(object):
         a trivariate interpolation in space and time.
         
         Args:
-            spline_func: Function which returns a 1d spline for the quantity
+            spline_func (callable):
+                Function which returns a 1d spline for the quantity
                 you want to convert into as a function of psi_norm given a
                 time index.
-            phinorm: Array-like or scalar float. Values of the normalized
-                toroidal flux to map to `Quan`.
-            t: Array-like or single value. If `t` is a single value, it is used
+            phinorm (Array-like or scalar float):
+                Values of the normalized toroidal flux to map to `Quan`.
+            t (Array-like or single value):
+                If `t` is a single value, it is used
                 for all of the elements of `phinorm`. If `t` is array-like it
                 must have the same dimensions as `phinorm`.
         
         Keyword Args:
-            each_t: Boolean.
+            each_t (Boolean):
                 When True, the elements in `phinorm` are evaluated at each value
                 in `t`. If True, `t` must have only one dimension (or be a
                 scalar). If False, `t` must match the shape of `phinorm` or be a
                 scalar. Default is True (evaluate ALL `phinorm` at each element
                 in `t`).
-            return_t: Boolean. Set to True to return a tuple of (`Quan`,
+            return_t (Boolean):
+                Set to True to return a tuple of (`Quan`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `phinorm` with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return `Quan`).
-            sqrt: Boolean. Set to True to return the square root of `Quan`. Only
+            sqrt (Boolean):
+                Set to True to return the square root of `Quan`. Only
                 the square root of positive values is taken. Negative values
                 are replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False (return Quan
                 itself).
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from `psinorm` to `Quan`. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -3655,33 +3679,37 @@ class Equilibrium(object):
         a trivariate interpolation in space and time.
         
         Args:
-            spline_func: Function which returns a 1d spline for the quantity
+            spline_func (callable): Function which returns a 1d spline for the quantity
                 you want to convert into as a function of psi_norm given a
                 time index.
-            volnorm: Array-like or scalar float. Values of the normalized
-                volume to map to `Quan`.
-            t: Array-like or single value. If `t` is a single value, it is used
+            volnorm (Array-like or scalar float):
+                Values of the normalized volume to map to `Quan`.
+            t (Array-like or single value):
+                If `t` is a single value, it is used
                 for all of the elements of `volnorm`. If `t` is array-like it
                 must have the same dimensions as `volnorm`.
         
         Keyword Args:
-            each_t: Boolean.
+            each_t (Boolean):
                 When True, the elements in `volnorm` are evaluated at each value
                 in `t`. If True, `t` must have only one dimension (or be a
                 scalar). If False, `t` must match the shape of `volnorm` or be a
                 scalar. Default is True (evaluate ALL `volnorm` at each element
                 in `t`).
-            return_t: Boolean. Set to True to return a tuple of (`Quan`,
+            return_t (Boolean):
+                Set to True to return a tuple of (`Quan`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `phinorm` with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return `Quan`).
-            sqrt: Boolean. Set to True to return the square root of `Quan`. Only
+            sqrt (Boolean):
+                Set to True to return the square root of `Quan`. Only
                 the square root of positive values is taken. Negative values
                 are replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False (return Quan
                 itself).
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from `volnorm` to `Quan`. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -3749,7 +3777,8 @@ class Equilibrium(object):
             'hand'      hands
         
         Args:
-            start: String, int or None. Starting unit for the conversion.
+            start (String, int or None):
+                Starting unit for the conversion.
                 - If None, uses the unit specified when the instance was created.
                 - If start is an int, the starting unit is taken to be the unit
                     specified when the instance was created raised to that power.
@@ -3759,7 +3788,8 @@ class Equilibrium(object):
                     a complete unit string (i.e., not None, not an int and not
                     'default').
                 - Otherwise, start must be a valid unit specifier as given above.
-            end: String, int or None. Target (ending) unit for the conversion.
+            end (String, int or None):
+                Target (ending) unit for the conversion.
                 - If None, uses the unit specified when the instance was created.
                 - If end is an int, the target unit is taken to be the unit
                     specified when the instance was created raised to that power.
@@ -3777,7 +3807,8 @@ class Equilibrium(object):
                     specification such as length_unit='m^3' or length_unit='m^1'.
         
         Keyword Args:
-            default: String, int or None. The default unit to use in cases
+            default (String, int or None):
+                The default unit to use in cases
                 where start or end is 'default'. If default is None, an int, or 
                 'default', then the value given for start is used. (A circular
                 definition is prevented for cases in which start is default by
@@ -3873,19 +3904,19 @@ class Equilibrium(object):
         Finds list of nearest-neighbor time indices.
         
         Args:
-            R: Array-like or scalar float.
+            R (Array-like or scalar float):
                 Values of the radial coordinate. If `R` and `Z` are both scalar
                 values, they are used as the coordinate pair for all of the
                 values in `t`. Must have the same shape as `Z` unless the
                 `make_grid` keyword is True. If `make_grid` is True, `R` must
                 have only one dimension (or be a scalar).
-            Z: Array-like or scalar float.
+            Z (Array-like or scalar float):
                 Values of the vertical coordinate. If `R` and `Z` are both
                 scalar values, they are used as the coordinate pair for all of
                 the values in `t`. Must have the same shape as `R` unless the
                 `make_grid` keyword is True. If `make_grid` is True, `Z` must
                 have only one dimension.
-            t: Array-like or single value.
+            t (Array-like or single value):
                 If `t` is a single value, it is used for all of the elements of
                 `R`, `Z`. If `t` is array-like and `make_grid` is False, `t`
                 must have the same dimensions as `R` and `Z`. If `t` is
@@ -3893,22 +3924,22 @@ class Equilibrium(object):
                 (len(Z), len(R)).
         
         Keyword Args:
-            make_grid: Boolean.
+            make_grid (Boolean):
                 Set to True to pass `R` and `Z` through :py:func:`meshgrid`
                 before evaluating. If this is set to True, `R` and `Z` must each
                 only have a single dimension, but can have different lengths.
                 Default is False (do not form meshgrid).
-            each_t: Boolean.
+            each_t (Boolean):
                 When True, the elements in `R` and `Z` (or the meshgrid thereof
                 if `make_grid` is True) are evaluated at each value in `t`. If
                 True, `t` must have only one dimension (or be a scalar). If
                 False, `t` must match the shape of `R` and `Z` (or their
                 meshgrid if `make_grid` is True) or be a scalar. Default is True
                 (evaluate ALL `R`, `Z` at each element in `t`).
-            check_space: Boolean.
+            check_space (Boolean):
                 If True, `R` and `Z` are converted to meters and checked against
                 the extents of the spatial grid.
-            length_unit: String or 1.
+            length_unit (String or 1):
                 Length unit that `R` and `Z` are being given in. If a string is
                 given, it must be a valid unit specifier:
                 
@@ -4069,8 +4100,10 @@ class Equilibrium(object):
         this instance's getRGrid() and getZGrid() are monotonically increasing.
         
         Args:
-            R: Array. Radial coordinate to check. Must have the same size as Z.
-            Z: Array. Vertical coordinate to check. Must have the same size as R.
+            R (Array):
+                Radial coordinate to check. Must have the same size as Z.
+            Z (Array)
+                Vertical coordinate to check. Must have the same size as R.
         
         Returns:
             good_points: Boolean array. True where points are within the bounds
@@ -4110,8 +4143,10 @@ class Equilibrium(object):
         between the points in v and a.
         
         Args:
-            v: Array. Input values to match to nearest neighbors in a.
-            a: Array. Given values to match against.
+            v (Array):
+                Input values to match to nearest neighbors in a.
+            a (Array):
+                Given values to match against.
         
         Returns:
             Indices in a of the nearest values to each value in v. Has the same
@@ -4139,7 +4174,8 @@ class Equilibrium(object):
         keyword tspline=False.
         
         Args:
-            idx: Scalar int. The time index to retrieve the flux spline for.
+            idx (Scalar int):
+                The time index to retrieve the flux spline for.
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
@@ -4185,12 +4221,14 @@ class Equilibrium(object):
         generating it if it does not already exist.
         
         Args:
-            idx: Scalar int. The time index to retrieve the flux spline for.
+            idx (Scalar int):
+                The time index to retrieve the flux spline for.
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from psinorm to phinorm. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4250,12 +4288,14 @@ class Equilibrium(object):
         generating it if it does not already exist.
         
         Args:
-            idx: Scalar int. The time index to retrieve the flux spline for.
+            idx (Scalar int):
+                The time index to retrieve the flux spline for.
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from psinorm to phinorm. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4328,12 +4368,14 @@ class Equilibrium(object):
         generating it if it does not already exist.
         
         Args:
-            idx: Scalar int. The time index to retrieve the flux spline for.
+            idx (Scalar int):
+                The time index to retrieve the flux spline for.
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from psinorm to volnorm. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4384,12 +4426,14 @@ class Equilibrium(object):
         generating it if it does not already exist.
         
         Args:
-            idx: Scalar int. The time index to retrieve the flux spline for.
+            idx (Scalar int):
+                The time index to retrieve the flux spline for.
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from psinorm to volnorm. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4462,12 +4506,14 @@ class Equilibrium(object):
         functions to whatever the user wants.
         
         Args:
-            idx: Scalar int. The time index to retrieve the flux spline for.
+            idx (Scalar int):
+                The time index to retrieve the flux spline for.
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from psinorm to R_mid. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4551,12 +4597,14 @@ class Equilibrium(object):
         functions to whatever the user wants.
         
         Args:
-            idx: Scalar int. The time index to retrieve the flux spline for.
+            idx (Scalar int):
+                The time index to retrieve the flux spline for.
                 This is ASSUMED to be a valid index for the first dimension of
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from R_mid to psinorm. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4628,7 +4676,8 @@ class Equilibrium(object):
         Only used if the instance was created with keyword tspline=True.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from t to psi0. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4656,7 +4705,8 @@ class Equilibrium(object):
         Only used if the instance was created with keyword tspline=True.
         
         Keyword Args:
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from t to psi_a. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4684,7 +4734,8 @@ class Equilibrium(object):
         Only used if the instance was created with keyword tspline=True.
         
         Keyword Args:
-            length_unit: String or 1. Length unit that R_mag is returned in. If
+            length_unit (String or 1):
+                Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
                     'm'         meters
                     'cm'        centimeters
@@ -4698,7 +4749,8 @@ class Equilibrium(object):
                     'default'   meters
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from t to R_mag. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4740,7 +4792,8 @@ class Equilibrium(object):
         tspline = True
         
         Keyword Args:
-            length_unit: String or 1. Length unit that R_mag is returned in. If
+            length_unit (String or 1):
+                Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
                     'm'         meters
                     'cm'        centimeters
@@ -4754,7 +4807,8 @@ class Equilibrium(object):
                     'default'   meters
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from t to R_mag. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4798,7 +4852,8 @@ class Equilibrium(object):
         tspline = True
         
         Keyword Args:
-            length_unit: String or 1. Length unit that R_mag is returned in. If
+            length_unit (String or 1):
+                Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
                     'm'         meters
                     'cm'        centimeters
@@ -4812,7 +4867,8 @@ class Equilibrium(object):
                     'default'   meters
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
-            kind: String or non-negative int. Specifies the type of interpolation
+            kind (String or non-negative int):
+                Specifies the type of interpolation
                 to be performed in getting from t to R_mag. This is
                 passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
@@ -4849,6 +4905,49 @@ class Equilibrium(object):
 
             return self._RmidOutSpline
     
+
+    def _getRmidOutSpline(self, length_unit=1, kind='cubic'):
+        """Gets the univariate spline to interpolate R_out as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Keyword Args:
+            length_unit: String or 1. Length unit that R_out is returned in. If
+                a string is given, it must be a valid unit specifier:
+                    'm'         meters
+                    'cm'        centimeters
+                    'mm'        millimeters
+                    'in'        inches
+                    'ft'        feet
+                    'yd'        yards
+                    'smoot'     smoots
+                    'cubit'     cubits
+                    'hand'      hands
+                    'default'   meters
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R_out returned in meters).
+            kind: String or non-negative int. Specifies the type of interpolation
+                to be performed in getting from t to R_out. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to R_out.
+        """
+        if self._RmidOutSpline:
+            return self._RmidOutSpline
+        else:
+            self._RmidOutSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                             self.getRmidOut(length_unit=length_unit),
+                                                             kind=kind,
+                                                             bounds_error=False)
+            return self._RmidOutSpline
+
     def getInfo(self):
         """
         Abstract method.  See child classes for implementation.
@@ -5360,7 +5459,7 @@ class Equilibrium(object):
         """Plots flux contours directly from psi grid.
         
         Keyword Args:
-            fill: Boolean.
+            fill (Boolean):
                 Set True to plot filled contours.  Set False (default) to plot white-background
                 color contours.
         """
