@@ -111,10 +111,8 @@ class PropertyAccessMixin(object):
         automatic property generation in :py:meth:`__getattribute__`.
         
         Args:
-            name (String):
-                Name of the attribute to set.
-            value (Object):
-                Value to set the attribute to.
+            name (String): Name of the attribute to set.
+            value (Object): Value to set the attribute to.
         
         Raises:
             AttributeError: If a method called 'get'+name already exists.
