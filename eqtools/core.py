@@ -5018,14 +5018,14 @@ class Equilibrium(object):
         """
         raise NotImplementedError()
 
-   def getF(self):
+    def getF(self):
         """
         Abstract method.  See child classes for implementation.
         
         Returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [psi,t]
         """
         raise NotImplementedError()
-
+    
     def getFluxPres(self):
         """
         Abstract method.  See child classes for implementation.
