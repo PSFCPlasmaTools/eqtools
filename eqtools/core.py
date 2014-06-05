@@ -4693,10 +4693,22 @@ class Equilibrium(object):
         if self._psiOfPsi0Spline:
             return self._psiOfPsi0Spline
         else:
-            self._psiOfPsi0Spline = scipy.interpolate.interp1d(self.getTimeBase(),
-                                                               self.getFluxAxis(),
-                                                               kind=kind,
-                                                               bounds_error=False)
+
+            try:
+                self._psiOfPsi0Spline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                                   self.getFluxAxis(),
+                                                                   kind=kind,
+                                                                   bounds_error=False)
+            except ValueError:
+                # created to allow for single time (such as gfiles) to properly call this method
+                kind = 'zero'
+                fill_value = self.getFluxAxis()
+                self._psiOfPsi0Spline = scipy.interpolate.interp1d([0.],[0.],
+                                                                   kind=kind,
+                                                                   bounds_error=False,
+                                                                   fill_value=fill_value)
+          
+                
             return self._psiOfPsi0Spline
 
     def _getLCFSPsiSpline(self, kind='cubic'):
@@ -4722,10 +4734,21 @@ class Equilibrium(object):
         if self._psiOfLCFSSpline:
             return self._psiOfLCFSSpline
         else:
-            self._psiOfLCFSSpline = scipy.interpolate.interp1d(self.getTimeBase(),
-                                                               self.getFluxLCFS(),
-                                                               kind=kind,
-                                                               bounds_error=False)
+            try:
+                self._psiOfLCFSSpline = scipy.interpolate.interp1d(self.getTimeBase(),
+                                                                   self.getFluxLCFS(),
+                                                                   kind=kind,
+                                                                   bounds_error=False)
+            except ValueError:
+                # created to allow for single time (such as gfiles) to properly call this method
+                kind = 'zero'
+                fill_value = self.getFluxLCFS()
+                self._psiOfLCFSSpline = scipy.interpolate.interp1d([0.],[0.],
+                                                                   kind=kind,
+                                                                   bounds_error=False,
+                                                                   fill_value=fill_value)
+          
+
             return self._psiOfLCFSSpline
 
     def getMagRSpline(self, length_unit=1, kind='nearest'):
@@ -4837,7 +4860,7 @@ class Equilibrium(object):
                 # created to allow for single time (such as gfiles) to properly call this method
                 kind = 'zero'
                 fill_value = self.getMagZ(length_unit=length_unit)
-                self._magRSpline = scipy.interpolate.interp1d([0.],[0.],
+                self._magZSpline = scipy.interpolate.interp1d([0.],[0.],
                                                               kind=kind,
                                                               bounds_error=False,
                                                               fill_value=fill_value)
