@@ -3815,60 +3815,59 @@ class Equilibrium(object):
         and the relevant time indices.
         
         Args:
-            spline_func: Function which returns a 1d spline for the quantity
-                you want to convert into as a function of psi_norm given a
-                time index.
-            psi_norm: Array or scalar float. psi_norm values to evaluate at.
-            time_idxs: Array or scalar float. Time indices for each of the
-                psi_norm values. Shape must match that of psi_norm.
-            x: Array or scalar float. Representative spatial array that
-                psi_norm and time_idxs was formed from (used to determine
-                output shape).
-            t: Array or scalar float. Representative time array that psi_norm
-                and time_idxs was formed from (used to determine output shape).
+            spline_func (callable): Function which returns a 1d spline for the 
+                quantity you want to convert into as a function of `psi_norm`
+                given a time index.
+            psi_norm (Array or scalar float): `psi_norm` values to evaluate at.
+            time_idxs (Array or scalar float): Time indices for each of the
+                `psi_norm` values. Shape must match that of `psi_norm`.
+            t: Array or scalar float. Representative time array that `psi_norm`
+                and `time_idxs` was formed from (used to determine output shape).
         
         Keyword Args:
-            each_t: Boolean.
-                When True, the elements in `psi_norm` are evaluated at each
-                value in `t`. If True, `t` must have only one dimension (or be
-                a scalar). If False, `t` must match the shape of `psi_norm` or
-                be a scalar. Default is True (evaluate ALL `psi_norm` at each
-                element in `t`).
-            return_t: Boolean. Set to True to return a tuple of (Quan,
-                time_idxs), where time_idxs is the array of time indices
-                actually used in evaluating Quan with nearest-neighbor
+            each_t (Boolean): When True, the elements in `psi_norm` are evaluated at
+                each value in `t`. If True, `t` must have only one dimension (or
+                be a scalar). If False, `t` must match the shape of `psi_norm` or be
+                a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
+                `t`).
+            return_t (Boolean): Set to True to return a tuple of (`rho`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `rho` with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
-                Default is False (only return Quan).
-            sqrt: Boolean. Set to True to return the square root of the quantity
-                obtained from spline_func. Only the square root of positive
-                values is taken. Negative values are replaced with zeros,
-                consistent with Steve Wolfe's IDL implementation efit_rz2rho.pro.
-                Default is False (return Quan itself).
-            rho: Boolean. Set to True to return r/a (normalized minor radius)
-                instead of R_mid. Default is False (return major radius, R_mid).
-                Note that this will have unexpected results if spline_func
+                Default is False (only return `rho`).
+            sqrt (Boolean): Set to True to return the square root of `rho`. Only
+                the square root of positive values is taken. Negative values are
+                replaced with zeros, consistent with Steve Wolfe's IDL
+                implementation efit_rz2rho.pro. Default is False.
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of Rmid. Default is False (return major radius, Rmid).            
+                Note that this will have unexpected results if `spline_func`
                 returns anything other than R_mid.
-            kind: String or non-negative int. Specifies the type of interpolation
-                to be performed in getting from psinorm to Quan. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+            kind (String or non-negative int): Specifies the type of
+                interpolation to be performed in getting from psinorm to
+                `rho`. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+                to use. See the documentation for :py:class:`interp1d` for more
+                details. Default value is 'cubic' (3rd order spline
+                interpolation). On some builds of scipy, this can cause problems,
+                in which case you should try 'linear' until you can rebuild your
+                scipy install.
             time_idxs (Array with same shape as `psi_norm` or None):
-                The time indices to use (as computed by _processRZt). Default
-                is None (compute time indices in method).
+                The time indices to use (as computed by :py:meth:`_processRZt`).
+                Default is None (compute time indices in method).
         
         Returns:
-            Quan: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. Quan will have the same shape as t and
-                psi_norm (or whichever one is Array-like).
-            time_idxs: Array with same shape as Quan. The indices (in
-                self.getTimeBase()) that were used for nearest-neighbor
-                interpolation. Only returned if return_t is True.
+            (`rho`, `time_idxs`)
+            
+            * **rho** (`Array or scalar float`) - The converted quantity. If
+              all of the input arguments are scalar, then a scalar is returned.
+              Otherwise, a scipy Array is returned.
+            * **time_idxs** (Array with same shape as `rho`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
         """
  
         if time_idxs is None:
@@ -3936,10 +3935,10 @@ class Equilibrium(object):
             return out
     
     def _rmid2roa(self, R_mid, time_idxs):
-        r"""Covert the given R_mid at the given time_idxs to r/a.
+        r"""Covert the given `R_mid` at the given `time_idxs` to r/a.
         
         If you want to use a different definition of r/a, you should override
-        this function and `_roa2rmid`.
+        this function and :py:meth:`_roa2rmid`.
         
         The definition used here is
         
@@ -3948,18 +3947,15 @@ class Equilibrium(object):
             r/a = \frac{R_{mid} - R_0}{R_a - R_0} = \frac{R_{mid} - R_0}{a}
         
         Args:
-            R_mid (Array or scalar float):
-                Values of outboard midplane major
+            R_mid (Array or scalar float): Values of outboard midplane major
                 radius to evaluate r/a at.
-            time_idxs (Array, same shape as `R_mid`):
-                If :py:attr:`self._tricubic`
+            time_idxs (Array, same shape as `R_mid`): If :py:attr:`self._tricubic`
                 is True, this should be an array of the time points to evaluate
                 at. Otherwise, this should be an array of the time INDICES in
                 :py:meth:`getTimeBase` to evaluate at.
         
         Returns:
-            roa: Array with the same shape as `R_mid` and `time_idxs`. The
-                normalized minor radius at the given `R_mid`, `t` points.
+            roa (Array): Same shape as `R_mid` and `time_idxs`. The normalized minor radius at the given `R_mid`, `t` points.
         """
         # Get necessary quantities at the relevant times:
         if not self._tricubic:
@@ -3976,7 +3972,7 @@ class Equilibrium(object):
         r"""Covert the given r/a at the given time_idxs to R_mid.
         
         If you want to use a different definition of r/a, you should override
-        this function and `_rmid2roa`.
+        this function and :py:meth:`_rmid2roa`.
         
         The definition used here is
         
@@ -3985,17 +3981,15 @@ class Equilibrium(object):
             r/a = \frac{R_{mid} - R_0}{R_a - R_0} = \frac{R_{mid} - R_0}{a}
         
         Args:
-            roa (Array or scalar float):
-                Values of normalized minor radius to evaluate R_mid at.
-            time_idxs (Array, same shape as `roa`):
-                If :py:attr:`self._tricubic`
+            roa (Array or scalar float): Values of normalized minor radius to
+                evaluate R_mid at.
+            time_idxs (Array, same shape as `roa`): If :py:attr:`self._tricubic`
                 is True, this should be an array of the time points to evaluate
                 at. Otherwise, this should be an array of the time INDICES in
                 :py:meth:`getTimeBase` to evaluate at.
         
         Returns:
-            R_mid: Array with the same shape as `roa` and `time_idxs`. The
-                mapped midplane major radius at the given `roa`, `t` points.
+            R_mid (Array): Same shape as `roa` and `time_idxs`. The mapped midplane major radius at the given `roa`, `t` points.
         """
         # Get necessary quantities at the relevant times:
         if not self._tricubic:
@@ -4022,24 +4016,20 @@ class Equilibrium(object):
         a trivariate interpolation in space and time.
         
         Args:
-            spline_func (callable):
-                Function which returns a 1d spline for the quantity
-                you want to convert into as a function of psi_norm given a
-                time index.
-            R (Array-like or scalar float):
-                Values of the radial coordinate to
+            spline_func (callable): Function which returns a 1d spline for the
+                quantity you want to convert into as a function of psi_norm
+                given a time index.
+            R (Array-like or scalar float): Values of the radial coordinate to
                 map to Quan. If R and Z are both scalar values, they are used
                 as the coordinate pair for all of the values in t. Must have
                 the same shape as Z unless the make_grid keyword is set. If the
                 make_grid keyword is True, R must have shape (len_R,).
-            Z (Array-like or scalar float):
-                Values of the vertical coordinate to
+            Z (Array-like or scalar float): Values of the vertical coordinate to
                 map to Quan. If R and Z are both scalar values, they are used
                 as the coordinate pair for all of the values in t. Must have
                 the same shape as R unless the make_grid keyword is set. If the
                 make_grid keyword is True, Z must have shape (len_Z,).
-            t (Array-like or single value):
-                If t is a single value, it is used
+            t (Array-like or single value): If t is a single value, it is used
                 for all of the elements of R, Z. If t is array-like and the
                 make_grid keyword is False, t must have the same dimensions as
                 R and Z. If t is array-like and the make_grid keyword is True,
@@ -4093,6 +4083,8 @@ class Equilibrium(object):
             length_unit (String or 1):
                 Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
+                
+                    =========== ===========
                     'm'         meters
                     'cm'        centimeters
                     'mm'        millimeters
@@ -4103,6 +4095,8 @@ class Equilibrium(object):
                     'cubit'     cubits
                     'hand'      hands
                     'default'   meters
+                    =========== ===========
+                    
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters). Note that this factor is
                 ONLY applied to the inputs in this function -- if Quan needs to
