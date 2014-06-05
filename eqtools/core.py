@@ -311,16 +311,6 @@ class Equilibrium(object):
         self._tricubic = bool(tspline)
         self._monotonic = bool(monotonic)
         self._verbose = bool(verbose)
-        
-        if self._tricubic:
-            if not _has_trispline:
-                raise ValueError("trispline module did NOT load, so argument "
-                                 "tspline=True is invalid!")
-            else:
-                # variables that are purely time dependent require splines rather
-                # than indexes for interpolation.
-                self._psiOfPsi0Spline = {}
-                self._psiOfLCFSSpline = {}
             
         # These are indexes of splines, and become higher dimensional splines
         # with the setting of the tspline keyword.
@@ -331,6 +321,8 @@ class Equilibrium(object):
         self._magRSpline = {}
         self._magZSpline = {}
         self._RmidOutSpline = {}
+        self._psiOfPsi0Spline = {}
+        self._psiOfLCFSSpline = {}
         self._RmidToPsiNormSpline = {}
         self._phiNormToPsiNormSpline = {}
         self._volNormToPsiNormSpline = {}
@@ -5587,10 +5579,10 @@ class Equilibrium(object):
                 # created to allow for single time (such as gfiles) to properly call this method
                 kind = 'zero'
                 fill_value = self.getRmidOut(length_unit=length_unit)
-                self._magRSpline = scipy.interpolate.interp1d([0.],[0.],
-                                                              kind=kind,
-                                                              bounds_error=False,
-                                                              fill_value=fill_value)
+                self._RmidOutSpline = scipy.interpolate.interp1d([0.],[0.],
+                                                                 kind=kind,
+                                                                 bounds_error=False,
+                                                                 fill_value=fill_value)
                 
 
 
