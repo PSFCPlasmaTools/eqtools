@@ -248,6 +248,7 @@ class EqdskReader(Equilibrium):
                 for val in line:
                     self._fpol.append(float(val))
             self._fpol = scipy.array(self._fpol).reshape((nw,1))
+            self._defaultUnits('_fpol') = 'T m'
 
             # and likewise for pressure
             self._fluxPres = []
@@ -268,6 +269,7 @@ class EqdskReader(Equilibrium):
                 for val in line:
                     self._ffprim.append(float(val))
             self._ffprim = scipy.array(self._ffprim).reshape((nw,1))
+            self._defaultUnits('_ffprim') = 'T^2 m'
 
             self._pprime = []
             for i in range(nrows):
@@ -276,6 +278,7 @@ class EqdskReader(Equilibrium):
                 for val in line:
                     self._pprime.append(float(val))
             self._pprime = scipy.array(self._pprime).reshape((nw,1))
+            self._defaultUnits('_pprime') = 'J/m^2'
 
             # read the 2d [nw,nh] array for psiRZ
             # start by reading nw x nh points into 1D array,
@@ -1982,19 +1985,3 @@ class EqdskReader(Equilibrium):
 
         ax.plot(Rlim,Zlim,'k',linewidth=3,zorder=5)
         fig.show()
-
-
-
-
-class _interp1d(object):
-    """ class to hide interp1d objects """
-
-    def __init__(self, function):
-        self._func = function
-
-    def __eval__(self, *args, **kwargs):
-        return function(**kwargs)
-
-
-
-

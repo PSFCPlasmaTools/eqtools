@@ -480,6 +480,18 @@ class EFITTree(Equilibrium):
         plt.close(fig)
         plt.ioff()
 
+    def getF(self):
+        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [psi,t]
+        """
+        if self._fpol is None:
+            try:
+                fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
+                self._fpol = fNode.data()
+                self._defaultUnits['_fpol'] = fNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._fpol.copy()
+
     def getFluxPres(self):
         """returns pressure at flux surface [psi,t]
         """
@@ -491,6 +503,30 @@ class EFITTree(Equilibrium):
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
+
+    def getFFPrime(self):
+        """returns FF' function used for grad-shafranov solutions [psi,t]
+        """
+        if self._ffprim is None:
+            try:
+                FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
+                self._ffprim = FFPrimeNode.data()
+                self._defaultUnits['_pprim'] = FFPrimeNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._ffprim.copy()
+
+    def getPPrime(self):
+        """returns plasma pressure gradient as a function of psi [psi,t]
+        """
+        if self._pprim is None:
+            try:
+                pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
+                self._pprim = pPrimeNode.data()
+                self._defaultUnits['_pprim'] = pPrimeNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._pprim.copy()
 
     def getElongation(self):
         """returns LCFS elongation [t]

@@ -5018,12 +5018,36 @@ class Equilibrium(object):
         """
         raise NotImplementedError()
 
+   def getF(self):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [psi,t]
+        """
+        raise NotImplementedError()
+
     def getFluxPres(self):
         """
         Abstract method.  See child classes for implementation.
         
         Returns calculated pressure profile [psi,t].
         Psi assumed to be evenly-spaced grid on [0,1]
+        """
+        raise NotImplementedError()
+
+    def getFFPrime(self):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns FF' function used for grad-shafranov solutions [psi,t]
+        """
+        raise NotImplementedError()
+
+    def getPPrime(self):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns plasma pressure gradient as a function of psi [psi,t]
         """
         raise NotImplementedError()
 
