@@ -49,8 +49,8 @@ try:
     import matplotlib.patches as mpatches
     import matplotlib.path as mpath
 except Exception:
-    warnings.warn("WARNING: matplotlib modules could not be loaded -- plotting "
-                  "will not be available.",
+    warnings.warn("matplotlib modules could not be loaded -- plotting will not "
+                  "be available.",
                   ModuleWarning)
 
 
@@ -58,23 +58,25 @@ class PropertyAccessMixin(object):
     """Mixin to implement access of getter methods through a property-type
     interface without the need to apply a decorator to every property.
     
-    For any getter obj.getSomething(), the call obj.Something will work.
+    For any getter `obj.getSomething()`, the call `obj.Something` will do the
+    same thing.
     
-    This is accomplished by overriding __getattribute__ such that if an
-    attribute ATTR does not exist it then attempts to call self.getATTR(). If
-    self.getATTR() does not exist, an AttributeError will be raised as usual.
+    This is accomplished by overriding :py:meth:`__getattribute__` such that if
+    an attribute `ATTR` does not exist it then attempts to call `self.getATTR()`.
+    If `self.getATTR()` does not exist, an :py:class:`AttributeError` will be
+    raised as usual.
     
-    Also overrides __setattr__ such that it will raise an AttributeError when
-    attempting to write an attribute ATTR for which there is already a method
-    getATTR.
+    Also overrides :py:meth:`__setattr__` such that it will raise an
+    :py:class:`AttributeError` when attempting to write an attribute `ATTR` for
+    which there is already a method `getATTR`.
     """
     def __getattribute__(self, name):
         """Get an attribute.
         
         Tries to get attribute as-written. If this fails, tries to call the
-        method get<name> with no arguments. If this fails, raises
-        AttributeError. This effectively generates a Python 'property' for
-        each getter method.
+        method `get<name>` with no arguments. If this fails, raises
+        :py:class:`AttributeError`. This effectively generates a Python
+        'property' for each getter method.
         
         Args:
             name (String):
@@ -104,9 +106,9 @@ class PropertyAccessMixin(object):
     def __setattr__(self, name, value):
         """Set an attribute.
         
-        Raises AttributeError if the object already has a method get[name], as
-        creation of such an attribute would interfere with the automatic
-        property generation in :py:meth:`__getattribute__`.
+        Raises :py:class:`AttributeError` if the object already has a method
+        'get'+name, as creation of such an attribute would interfere with the
+        automatic property generation in :py:meth:`__getattribute__`.
         
         Args:
             name (String):
