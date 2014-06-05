@@ -1904,28 +1904,6 @@ class EqdskReader(Equilibrium):
         """
         return self.getMachineCrossSection()
 
-
-    ####################
-    # spline overwrite #
-    ####################
-    
-    def getMagRSpline(self):
-        _interp1d(self.getMagR)
-        return None
-
-    def getMagZSpline(self):
-        return None
-
-    def getPsi0Spline(self):
-        return None
-
-    def getPsiLCFSSpline(self):
-        return None
-
-    ####################
-    # spline overwrite #
-    ####################
-        
     def plotFlux(self,fill=True,mask=True):
         """streamlined plotting of flux contours directly from psi grid
 
