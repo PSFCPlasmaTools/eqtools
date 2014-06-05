@@ -124,8 +124,11 @@ class EFITTree(Equilibrium):
         
         #initialize None for non-essential data
 
-        #flux-surface pressure
+        #grad-shafranov related parameters
+        self._fpol = None
         self._fluxPres = None                                                #pressure on flux surface (psi,t)
+        self._ffprim = None
+        self._pprim = None
 
         #fields
         self._btaxp = None                                                   #Bt on-axis, with plasma (t)
@@ -511,7 +514,7 @@ class EFITTree(Equilibrium):
             try:
                 FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
                 self._ffprim = FFPrimeNode.data()
-                self._defaultUnits['_pprim'] = FFPrimeNode.units
+                self._defaultUnits['_ffprim'] = FFPrimeNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._ffprim.copy()
