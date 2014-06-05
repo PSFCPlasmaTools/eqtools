@@ -4904,49 +4904,6 @@ class Equilibrium(object):
 
 
             return self._RmidOutSpline
-    
-
-    def _getRmidOutSpline(self, length_unit=1, kind='cubic'):
-        """Gets the univariate spline to interpolate R_out as a function of time.
-        
-        Only used if the instance was created with keyword tspline=True.
-        
-        Keyword Args:
-            length_unit: String or 1. Length unit that R_out is returned in. If
-                a string is given, it must be a valid unit specifier:
-                    'm'         meters
-                    'cm'        centimeters
-                    'mm'        millimeters
-                    'in'        inches
-                    'ft'        feet
-                    'yd'        yards
-                    'smoot'     smoots
-                    'cubit'     cubits
-                    'hand'      hands
-                    'default'   meters
-                If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (R_out returned in meters).
-            kind: String or non-negative int. Specifies the type of interpolation
-                to be performed in getting from t to R_out. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
-        
-        Returns:
-            scipy.interpolate.interp1d to convert from t to R_out.
-        """
-        if self._RmidOutSpline:
-            return self._RmidOutSpline
-        else:
-            self._RmidOutSpline = scipy.interpolate.interp1d(self.getTimeBase(),
-                                                             self.getRmidOut(length_unit=length_unit),
-                                                             kind=kind,
-                                                             bounds_error=False)
-            return self._RmidOutSpline
 
     def getInfo(self):
         """
