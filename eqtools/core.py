@@ -230,8 +230,7 @@ def inPolygon(polyx, polyy, pointx, pointy):
         pointy (Int or float): y-coordinate of test point.
 
     Returns:
-        result (Boolean): True/False result for whether the point is contained
-            within the polygon.
+        result (Boolean): True/False result for whether the point is contained within the polygon.
     """
     #generator function for "lines" - pairs of (x,y) coords describing each edge of the polygon.
     def lines():
@@ -266,8 +265,7 @@ class Equilibrium(object):
         differences in data storage.
     
     Keyword Args:
-        length_unit (String):
-            Sets the base unit used for any quantity whose
+        length_unit (String): Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
             
                 ===========  ===========================================================================================
@@ -284,22 +282,20 @@ class Equilibrium(object):
                 ===========  ===========================================================================================
             
             Default is 'm' (all units taken and returned in meters).
-        tspline (Boolean):
-            Sets whether or not interpolation in time is performed using a
-            tricubic spline or nearest-neighbor interpolation. Tricubic spline
-            interpolation requires at least four complete equilibria at
-            different times. It is also assumed that they are functionally
-            correlated, and that parameters do not vary out of their boundaries
-            (derivative = 0 boundary condition). Default is False (use nearest-
-            neighbor interpolation).
-        monotonic: Boolean.
-            Sets whether or not the "monotonic" form of time window finding is
-            used. If True, the timebase must be monotonically increasing. Default
-            is False (use slower, safer method).
-        verbose: Boolean.
-            Allows or blocks console readout during operation. Defaults to True,
-            displaying useful information for the user. Set to False for quiet
-            usage or to avoid console clutter for multiple instances.
+        tspline (Boolean): Sets whether or not interpolation in time is
+            performed using a tricubic spline or nearest-neighbor interpolation.
+            Tricubic spline interpolation requires at least four complete
+            equilibria at different times. It is also assumed that they are
+            functionally correlated, and that parameters do not vary out of
+            their boundaries (derivative = 0 boundary condition). Default is
+            False (use nearest-neighbor interpolation).
+        monotonic (Boolean): Sets whether or not the "monotonic" form of time
+            window finding is used. If True, the timebase must be monotonically
+            increasing. Default is False (use slower, safer method).
+        verbose (Boolean): Allows or blocks console readout during operation.
+            Defaults to True, displaying useful information for the user. Set to
+            False for quiet usage or to avoid console clutter for multiple
+            instances.
     
     Raises:
         ValueError: If `length_unit` is not a valid unit specifier.
