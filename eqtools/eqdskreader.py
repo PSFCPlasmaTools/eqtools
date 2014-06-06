@@ -247,7 +247,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._fpol.append(float(val))
-            self._fpol = scipy.array(self._fpol).reshape((nw,1))
+            self._fpol = scipy.array(self._fpol).reshape((1,nw))
             self._defaultUnits['_fpol'] = 'T m'
 
             # and likewise for pressure
@@ -257,7 +257,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._fluxPres.append(float(val))
-            self._fluxPres = scipy.array(self._fluxPres).reshape((nw,1))
+            self._fluxPres = scipy.array(self._fluxPres).reshape((1,nw))
             self._defaultUnits['_fluxPres'] = 'Pa'
 
             # geqdsk written as negative for positive plasma current
@@ -268,7 +268,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._ffprim.append(float(val))
-            self._ffprim = scipy.array(self._ffprim).reshape((nw,1))
+            self._ffprim = scipy.array(self._ffprim).reshape((1,nw))
             self._defaultUnits['_ffprim'] = 'T^2 m'
 
             self._pprime = []
@@ -277,7 +277,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._pprime.append(float(val))
-            self._pprime = scipy.array(self._pprime).reshape((nw,1))
+            self._pprime = scipy.array(self._pprime).reshape((1,nw))
             self._defaultUnits['_pprime'] = 'J/m^2'
 
             # read the 2d [nw,nh] array for psiRZ
@@ -308,7 +308,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall('-?\d\.\d*[eE][-+]\d*',line)
                 for val in line:
                     self._qpsi.append(float(val))
-            self._qpsi = scipy.array(self._qpsi).reshape((nw,1))
+            self._qpsi = scipy.array(self._qpsi).reshape((1,nw))
 
             # read nbbbs, limitr
             line = next(reader)[0].split()
@@ -377,7 +377,7 @@ class EqdskReader(Equilibrium):
                         line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                         for val in line:
                             self._preswp.append(float(val))
-                    self._preswp = scipy.array(self._preswp).reshape((nw,1))
+                    self._preswp = scipy.array(self._preswp).reshape((1,nw))
                 else:
                     self._presw = scipy.atleast_2d(scipy.array([0]))
                     self._preswp = scipy.atleast_2d(scipy.array([0]))
@@ -393,7 +393,7 @@ class EqdskReader(Equilibrium):
                         line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                         for val in line:
                             self._dmion.append(float(val))
-                    self._dmion = scipy.array(self._dmion).reshape((nw,1))
+                    self._dmion = scipy.array(self._dmion).reshape((1,nw))
                 else:
                     self._dmion = scipy.atleast_2d(scipy.array([0]))
 
@@ -407,7 +407,7 @@ class EqdskReader(Equilibrium):
                     line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                     for val in line:
                         self._rhovn.append(float(val))
-                self._rhovn = scipy.array(self._rhovn).reshape((nw,1))
+                self._rhovn = scipy.array(self._rhovn).reshape((1,nw))
 
                 # read keecur; if >0 read workk
                 line = gfile.readline.split()
@@ -419,7 +419,7 @@ class EqdskReader(Equilibrium):
                         line = re.findall('-?\d.\d*[eE][-+]\d*',line)
                         for val in line:
                             self._workk.append(float(val))
-                    self._workk = scipy.array(self._workk).reshape((nw,1))
+                    self._workk = scipy.array(self._workk).reshape((1,nw))
                 else:
                     self._workk = scipy.atleast_2d(scipy.array([0]))
             except:
@@ -1356,10 +1356,25 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('RmidPsi not read from a/g-files.')
 
+    def getF(self):
+         """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [psi,t]
+        """       
+         return self._fpol.copy()
+    
     def getFluxPres(self):
         """Returns pressure on flux surface p(psi)
         """
         return self._fluxPres.copy()
+
+    def getFFPrime(self):
+        """returns FF' function used for grad-shafranov solutions [psi,t]
+        """
+        return self._ffprim.copy()
+
+    def getPPrime(self): 
+        """returns plasma pressure gradient as a function of psi [psi,t]
+        """
+        return self._pprime.copy()
 
     def getElongation(self):
         """Returns elongation of LCFS.

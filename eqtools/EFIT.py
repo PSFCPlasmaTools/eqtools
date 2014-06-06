@@ -128,7 +128,7 @@ class EFITTree(Equilibrium):
         self._fpol = None
         self._fluxPres = None                                                #pressure on flux surface (psi,t)
         self._ffprim = None
-        self._pprim = None
+        self._pprime = None
 
         #fields
         self._btaxp = None                                                   #Bt on-axis, with plasma (t)
@@ -522,14 +522,14 @@ class EFITTree(Equilibrium):
     def getPPrime(self):
         """returns plasma pressure gradient as a function of psi [psi,t]
         """
-        if self._pprim is None:
+        if self._pprime is None:
             try:
                 pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
-                self._pprim = pPrimeNode.data()
-                self._defaultUnits['_pprim'] = pPrimeNode.units
+                self._pprime = pPrimeNode.data()
+                self._defaultUnits['_pprime'] = pPrimeNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
-        return self._pprim.copy()
+        return self._pprime.copy()
 
     def getElongation(self):
         """returns LCFS elongation [t]
