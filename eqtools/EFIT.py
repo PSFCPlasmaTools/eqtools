@@ -484,48 +484,48 @@ class EFITTree(Equilibrium):
         plt.ioff()
 
     def getF(self):
-        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [psi,t]
+        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [t,psi]
         """
         if self._fpol is None:
             try:
                 fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
-                self._fpol = fNode.data()
+                self._fpol = fNode.data().T
                 self._defaultUnits['_fpol'] = fNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._fpol.copy()
 
     def getFluxPres(self):
-        """returns pressure at flux surface [psi,t]
+        """returns pressure at flux surface [t,psi]
         """
         if self._fluxPres is None:
             try:
                 fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
-                self._fluxPres = fluxPresNode.data()
+                self._fluxPres = fluxPresNode.data().T
                 self._defaultUnits['_fluxPres'] = fluxPresNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
 
     def getFFPrime(self):
-        """returns FF' function used for grad-shafranov solutions [psi,t]
+        """returns FF' function used for grad-shafranov solutions [t,psi]
         """
         if self._ffprim is None:
             try:
                 FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
-                self._ffprim = FFPrimeNode.data()
+                self._ffprim = FFPrimeNode.data().T
                 self._defaultUnits['_ffprim'] = FFPrimeNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._ffprim.copy()
 
     def getPPrime(self):
-        """returns plasma pressure gradient as a function of psi [psi,t]
+        """returns plasma pressure gradient as a function of psi [t,psi]
         """
         if self._pprime is None:
             try:
                 pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
-                self._pprime = pPrimeNode.data()
+                self._pprime = pPrimeNode.data().T
                 self._defaultUnits['_pprime'] = pPrimeNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
