@@ -118,11 +118,16 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                                           scipy.atleast_2d(obj.getQProfile())[idx],
                                           kind='nearest',
                                           bounds_error=False)
+        
+        
+    
+        gfiler.write(_fmt(temp(pts1).ravel())) 
+        
     else:
         temp = scipy.interpolate.RectBivariateSpline(obj.getTimeBase(),
                                                      pts0,
                                                      scipy.atleast_2d(obj.getQProfile()))
-        
+    
         gfiler.write(_fmt(temp.ev(tempt,pts1).ravel())) 
     
     # find plasma boundary
