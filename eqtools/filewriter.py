@@ -63,7 +63,7 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                                           bounds_error=False)
         Ip = temp(tin)
     else:
-        idx = obj._getNearestIdx(obj.getTimeBase(),tin)
+        idx = obj._getNearestIdx(tin,obj.getTimeBase())
         Ip = obj.getIpCalc()[idx]
                                           
     gfiler.write(_fmt([Ip,
@@ -95,6 +95,18 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                                               bounds_error=False)
             gfiler.write(_fmt(temp(pts1).ravel()))
 
+    else:
+        tempt = tin*scipy.ones(pts1.shape)
+        for i in [obj.getF(),
+                  obj.getFluxPres(),
+                  obj.getFFPrime(),
+                  obj.getPPrime()]:
+
+            temp = scipy.interpolate.RectBivariateSpline(obj.getTimeBase(),
+                                                         pts0,
+                                                         scipy.atleast_2d(i))
+            gfiler.write(_fmt(temp.ev(tempt,pts1).ravel()))
+
 
     psiRZ = -1*obj.getCurrentSign()*obj.rz2psi(rgrid2,
                                                zgrid2,
@@ -106,11 +118,12 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                                           scipy.atleast_2d(obj.getQProfile())[idx],
                                           kind='nearest',
                                           bounds_error=False)
-
-
-        gfiler.write(_fmt(temp(pts1).ravel()))
-
-    
+    else:
+        temp = scipy.interpolate.RectBivariateSpline(obj.getTimeBase(),
+                                                     pts0,
+                                                     scipy.atleast_2d(obj.getQProfile()))
+        
+        gfiler.write(_fmt(temp.ev(tempt,pts1).ravel())) 
     
     # find plasma boundary
     out = findLCFS(rgrid,
@@ -124,7 +137,7 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
     #write boundary
     lim = scipy.array(obj.getMachineCrossSection()).T
 
-    gfiler.write('  '+int(len(out))+'   '+int(len(lim))+'\n')
+    gfiler.write('  '+str(int(len(out)))+'   '+str(int(len(lim)))+'\n')
 
     gfiler.write(_fmt(out.ravel()))
     
@@ -155,7 +168,6 @@ def findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
         for j in xrange(len(temp)-1):
             if (scipy.sign(temp[j+1]) != sign): 
                 sign = scipy.sign(temp[j+1])
-                print(thetvals[idx],thetvals[j+1],j+2-idx)
                 #only write data if the jump at the last point is well resolved
                 if (j+2-idx > 2):#abs(thetvals[idx]-thetvals[j+1]) < 7*scipy.pi/4) and 
                     splines += [scipy.interpolate.interp1d(thetvals[idx:j+2],
