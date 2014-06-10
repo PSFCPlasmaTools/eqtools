@@ -6109,7 +6109,7 @@ class Equilibrium(object):
         """
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
 
-    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, tunit='ms', title='EQTOOLS'):
+    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, tunit='ms', title='EQTOOLS', nbbbs=100):
         filewriter.gfile(self,
                          time,
                          nw=nw,
@@ -6117,7 +6117,8 @@ class Equilibrium(object):
                          shot=shot,
                          name=name,
                          tunit=tunit,
-                         title=title)
+                         title=title,
+                         nbbbs=nbbbs)
 
     def plotFlux(self,fill=True,mask=True):
         """Plots flux contours directly from psi grid.
