@@ -5054,7 +5054,7 @@ class Equilibrium(object):
             try:
                 return self._volNormSpline[idx][kind]
             except KeyError:
-                vol_norm_meas = self.getFluxVol()[:, idx]
+                vol_norm_meas = self.getFluxVol()[idx]
                 vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
 
                 spline = scipy.interpolate.interp1d(scipy.linspace(0, 1, len(vol_norm_meas)),
@@ -5073,8 +5073,8 @@ class Equilibrium(object):
             else:
                 vol_norm_meas = self.getFluxVol()
                 vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
-                self._volNormSpline = trispline.RectBivariateSpline(scipy.linspace(0, 1, len(vol_norm_meas[:,0])),
-                                                                    self.getTimeBase(),
+                self._volNormSpline = trispline.RectBivariateSpline(self.getTimeBase(),
+                                                                    scipy.linspace(0, 1, len(vol_norm_meas[:,0])),
                                                                     vol_norm_meas,
                                                                     bounds_error = False)
                 return self._volNormSpline
@@ -5112,7 +5112,7 @@ class Equilibrium(object):
             try:
                 return self._volNormToPsiNormSpline[idx][kind]
             except KeyError:
-                vol_norm_meas = self.getFluxVol()[:, idx]
+                vol_norm_meas = self.getFluxVol()[idx]
                 vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
                 
                 spline = scipy.interpolate.interp1d(
@@ -5141,8 +5141,8 @@ class Equilibrium(object):
                 # TODO: Ian, did I do this right?
                 # I had to take out the bounds error...
                 self._volNormToPsiNormSpline = scipy.interpolate.SmoothBivariateSpline(
-                    vol_norm_meas.ravel(),
                     t_grid.ravel(),
+                    vol_norm_meas.ravel(),
                     psinorm_grid.ravel(),
                     # bounds_error = False
                 )
@@ -5232,8 +5232,8 @@ class Equilibrium(object):
                 psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
                     
                 self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(
-                    psi_norm_on_grid.flatten(),
                     t.flatten(),
+                    psi_norm_on_grid.flatten(),
                     R_grid.flatten()
                 )
             
@@ -5323,8 +5323,8 @@ class Equilibrium(object):
                 psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
                     
                 self._RmidToPsiNormSpline = scipy.interpolate.SmoothBivariateSpline(
+                    t.flatten(),                   
                     R_grid.flatten(),
-                    t.flatten(),
                     psi_norm_on_grid.flatten()
                 )
                 
