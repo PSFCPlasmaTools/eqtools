@@ -3902,7 +3902,7 @@ class Equilibrium(object):
                 for k in xrange(0, len(quan_norm)):
                     quan_norm[k] = spline_func(time_idxs[k], kind=kind)(psi_norm[k])
         else:
-            quan_norm = spline_func(time_idxs).ev(psi_norm, time_idxs)
+            quan_norm = spline_func(time_idxs).ev(time_idxs, psi_norm)
         
         # Convert to r/a if needed:
         if rho:
@@ -4910,7 +4910,7 @@ class Equilibrium(object):
                 # Insert zero at beginning because older versions of cumtrapz don't
                 # support the initial keyword to make the initial value zero:
                 phi_norm_meas = scipy.insert(
-                    scipy.integrate.cumtrapz(self.getQProfile()[:, idx]),
+                    scipy.integrate.cumtrapz(self.getQProfile()[idx]),
                     0,
                     0
                 )
@@ -4933,10 +4933,10 @@ class Equilibrium(object):
             else:
                 # Insert zero at beginning because older versions of cumtrapz don't
                 # support the initial keyword to make the initial value zero:
-                phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile(),axis=0), 0, 0, axis=0)
+                phi_norm_meas = scipy.insert(scipy.integrate.cumtrapz(self.getQProfile(),axis=1), 0, 0, axis=1)
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
-                self._phiNormSpline = trispline.RectBivariateSpline(scipy.linspace(0, 1, len(phi_norm_meas[:,0])),
-                                                                    self.getTimeBase(),
+                self._phiNormSpline = trispline.RectBivariateSpline(self.getTimeBase(),
+                                                                    scipy.linspace(0, 1, len(phi_norm_meas[:,0])),
                                                                     phi_norm_meas,
                                                                     bounds_error = False)
                 return self._phiNormSpline
@@ -4977,7 +4977,7 @@ class Equilibrium(object):
                 # Insert zero at beginning because older versions of cumtrapz don't
                 # support the initial keyword to make the initial value zero:
                 phi_norm_meas = scipy.insert(
-                    scipy.integrate.cumtrapz(self.getQProfile()[:, idx]),
+                    scipy.integrate.cumtrapz(self.getQProfile()[idx]),
                     0,
                     0
                 )
@@ -5001,10 +5001,10 @@ class Equilibrium(object):
                 # Insert zero at beginning because older versions of cumtrapz don't
                 # support the initial keyword to make the initial value zero:
                 phi_norm_meas = scipy.insert(
-                    scipy.integrate.cumtrapz(self.getQProfile(), axis=0),
+                    scipy.integrate.cumtrapz(self.getQProfile(), axis=1),
                     0,
                     0,
-                    axis=0
+                    axis=1
                 )
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
                 # TODO: Ian, did I do this right?
@@ -5014,8 +5014,8 @@ class Equilibrium(object):
                     scipy.linspace(0, 1, len(phi_norm_meas[:, 0]))
                 )
                 self._phiNormToPsiNormSpline = scipy.interpolate.SmoothBivariateSpline(
+                    t_grid.ravel(),  
                     phi_norm_meas.ravel(),
-                    t_grid.ravel(),
                     psinorm_grid.ravel(),
                     # bounds_error = False
                 )
