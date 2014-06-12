@@ -1,83 +1,94 @@
-eqtools Package
+eqtools package
 ===============
 
-:mod:`eqtools` Package
-----------------------
+Submodules
+----------
 
-.. automodule:: eqtools.__init__
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`CModEFIT` Module
-----------------------
+eqtools.CModEFIT module
+-----------------------
 
 .. automodule:: eqtools.CModEFIT
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`EFIT` Module
-------------------
+eqtools.EFIT module
+-------------------
 
 .. automodule:: eqtools.EFIT
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`FromArrays` Module
-------------------------
+eqtools.FromArrays module
+-------------------------
 
 .. automodule:: eqtools.FromArrays
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`NSTXEFIT` Module
-----------------------
+eqtools.NSTXEFIT module
+-----------------------
 
 .. automodule:: eqtools.NSTXEFIT
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`afilereader` Module
--------------------------
+eqtools.afilereader module
+--------------------------
 
 .. automodule:: eqtools.afilereader
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`core` Module
-------------------
+eqtools.core module
+-------------------
 
 .. automodule:: eqtools.core
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`eqdskreader` Module
--------------------------
+eqtools.eqdskreader module
+--------------------------
 
 .. automodule:: eqtools.eqdskreader
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`pfilereader` Module
+eqtools.filewriter module
 -------------------------
+
+.. automodule:: eqtools.filewriter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eqtools.pfilereader module
+--------------------------
 
 .. automodule:: eqtools.pfilereader
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`trispline` Module
------------------------
+eqtools.trispline module
+------------------------
 
 .. automodule:: eqtools.trispline
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: eqtools
+    :members:
+    :undoc-members:
+    :show-inheritance:
