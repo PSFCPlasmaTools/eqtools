@@ -17,7 +17,8 @@
 #    along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2013 Ian C. Faust
-""" This module provides interface to the tricubic spline interpolator.  It also contains an enhanced bivariate spline which generates bounds errors.
+""" This module provides interface to the tricubic spline interpolator. It also
+contains an enhanced bivariate spline which generates bounds errors.
 """
 
 
@@ -33,34 +34,27 @@ class Spline():
     Create a new Spline instance.
 
     Args:
-        z: 1-dimensional float.
-            Values of the positions of the 1st
+        z (1-dimensional float array): Values of the positions of the 1st
             Dimension of f. Must be monotonic without duplicates.
 
-        y: 1-dimensional float.
-            Values of the positions of the 2nd
+        y (1-dimensional float array): Values of the positions of the 2nd
             dimension of f. Must be monotonic without duplicates.
 
-        x: 1-dimensional float.
-            Values of the positions of the 3rd
+        x (1-dimensional float array): Values of the positions of the 3rd
             dimension of f. Must be monotonic without duplicates.
 
-        f: 3-dimensional float array.
-            f[z,y,x]. NaN and Inf will
-            affect interpolation in 4x4x4 space about its value.
+        f (3-dimensional float array): f[z,y,x]. NaN and Inf will hamper
+            performance and affect interpolation in 4x4x4 space about its value.
     
     Keyword Args:
-        regular: Boolean.
-            If the grid is known to be regular, forces
+        regular (Boolean): If the grid is known to be regular, forces 
             matrix-based fast evaluation of interpolation.
             
-        fast: Boolean
-            Outdated input to test the indexing performance of the c
-            code vs internal python handling.
+        fast (Boolean): Outdated input to test the indexing performance of the
+            c code vs internal python handling.
     
     Raises:
         ValueError: If any of the dimensions do not match specified f dim
-        
         ValueError: If x,y, or z are not monotonic
         
     Examples:
@@ -119,26 +113,32 @@ class Spline():
 
     def ev(self, z1, y1, x1):
         """evaluates tricubic spline at point (x1,y1,z1) which is f[z1,y1,x1].
-        Data is grouped into the grid voxels so as to reuse calculated spline
-        coefficents, thus speeding evaluation.  It is recommended that it is
-        evaluated outside of for loops to best utilize this feature.
 
         Args:
-            z1: float or 1-dimensional float
+            z1 (scalar float or 1-dimensional float):
                 Position in z dimension. (First dimension of 3d valued grid)
 
-            y1: float or 1-dimensional float
+            y1 (scalar float or 1-dimensional float):
                 Position in y dimension. (Second dimension of 3d valued grid)
 
-            x1: float or 1-dimensional float
+            x1 (scalar float or 1-dimensional float):
                 Position in x dimension. (Third dimension of 3d valued grid)
 
         Returns:
-            val: The interpolated value at (x1,y1,z1).
+            `val`
+
+            * **val** (`array or scalar float`) - The interpolated value at 
+            (x1,y1,z1).
             
         Raises:
             ValueError: If any of the dimensions exceed the evaluation boundary
                 of the grid
+
+        Examples:
+            Data is grouped into the grid voxels so as to reuse calculated 
+                spline coefficents, thus speeding evaluation.  It is
+                recommended that it is evaluated outside of for loops to best
+                utilize this feature.
         """
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
@@ -185,41 +185,32 @@ class Spline():
 
 
 class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
-    """the lack of a graceful bounds error causes the fortran to fail hard. This masks the 
-    scipy.interpolate.RectBivariateSpline with a proper bound checker and value filler
-    such that it will not fail in use for EqTools
-    """
-    """
-    Bivariate spline approximation over a rectangular mesh. The lack of a graceful bounds
-    error causes the fortran to fail hard. This masks the scipy.interpolate.RectBivariateSpline
-    with a proper bound checker and value filler such that it will not fail in use for EqTools
-
+    """the lack of a graceful bounds error causes the fortran to fail hard. 
+    This masks scipy.interpolate.RectBivariateSpline with a proper bound
+    checker and value filler such that it will not fail in use for EqTools
+ 
     Can be used for both smoothing and interpolating data.
 
     Args:
-        x: 1 dimensional float
+        x (1-dimensional float array):
             1-D array of coordinates in monotonically increasing order.
 
-        y: 1 dimensional float
+        y (1-dimensional float array):
             1-D array of coordinates in monotonically increasing order.
 
-        z: array_like
+        z (2-dimensional float array):
             2-D array of data with shape (x.size,y.size).
 
     Keyword Args:
-        bbox: 1 dimensional float
-            Sequence of length 4 specifying the boundary of the rectangular
-            approximation domain.  By default,
+        bbox (1-dimensional float): Sequence of length 4 specifying the
+            boundary of the rectangular approximation domain.  By default,
             ``bbox=[min(x,tx),max(x,tx), min(y,ty),max(y,ty)]``.
         
-        kx: integer
-            Degrees of the bivariate spline. Default is 3.
+        kx (integer): Degrees of the bivariate spline. Default is 3.
         
-        ky: integer
-            Degrees of the bivariate spline. Default is 3.
+        ky (integer): Degrees of the bivariate spline. Default is 3.
 
-        s : float
-            Positive smoothing factor defined for estimation condition:
+        s (float): Positive smoothing factor defined for estimation condition,
             ``sum((w[i]*(z[i]-s(x[i], y[i])))**2, axis=0) <= s``
             Default is ``s=0``, which is for interpolation.
     """
@@ -236,13 +227,13 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
         """Check the inputs for being in the bounds of the interpolated data.
 
         Args:
-            x_new: array
+            x_new (float array):
 
-            y_new: array
+            y_new (float array):
 
         Returns:
-            out_of_bounds: bool array
-               The mask on x_new and y_new of values that are NOT of bounds.
+            out_of_bounds (Boolean array): The mask on x_new and y_new of
+                values that are NOT of bounds.
         """
         below_bounds_x = x_new < self._xlim[0]
         above_bounds_x = x_new > self._xlim[1]
@@ -274,15 +265,13 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
            checked for being in the bounds of the interpolated data.
 
         Args:
-            xi: float array
-                input x dimensional values 
+            xi (float array): input x dimensional values 
 
-            yi: float array
-                input x dimensional values 
+            yi (float array): input x dimensional values 
 
         Returns:
-            val: float array
-               evaluated spline at points (x[i], y[i]), i=0,...,len(x)-1
+            val (float array): evaluated spline at points 
+                (x[i], y[i]), i=0,...,len(x)-1
         """
         idx = self._check_bounds(xi, yi)
         print(idx)
