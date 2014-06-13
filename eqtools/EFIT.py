@@ -128,7 +128,7 @@ class EFITTree(Equilibrium):
         self._fpol = None
         self._fluxPres = None                                                #pressure on flux surface (psi,t)
         self._ffprim = None
-        self._pprime = None
+        self._pprime = None                                                  #pressure derivative on flux surface (t,psi)
 
         #fields
         self._btaxp = None                                                   #Bt on-axis, with plasma (t)
@@ -194,7 +194,7 @@ class EFITTree(Equilibrium):
         self._zGrid = None                                                   #EFIT Z-axis (t)
         self._psiLCFS = None                                                 #flux at LCFS (t)
         self._psiAxis = None                                                 #flux at magnetic axis (t)
-        self._fluxVol = None                                                 #volume within flux surface (psi,t)
+        self._fluxVol = None                                                 #volume within flux surface (t,psi)
         self._volLCFS = None                                                 #volume within LCFS (t)
         self._qpsi = None                                                    #q profile (psi,t)
         self._RmidPsi = None                                                 #max major radius of flux surface (t,psi)
@@ -257,7 +257,7 @@ class EFITTree(Equilibrium):
             try:
                 timeNode = self._MDSTree.getNode(self._root+self._afile+':time')
                 self._time = timeNode.data()
-                self._defaultUnits['_time'] = timeNode.units
+                self._defaultUnits['_time'] = str(timeNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._time.copy()
@@ -325,12 +325,12 @@ class EFITTree(Equilibrium):
         return self._psiLCFS.copy()
 
     def getFluxVol(self, length_unit=3):
-        """returns volume within flux surface [psi,t]
+        """returns volume within flux surface [t,psi]
         """
         if self._fluxVol is None:
             try:
                 fluxVolNode = self._MDSTree.getNode(self._root+'fitout:volp')
-                self._fluxVol = fluxVolNode.data()
+                self._fluxVol = fluxVolNode.data().T
                 # Units aren't properly stored in the tree for this one!
                 if fluxVolNode.units != ' ':
                     self._defaultUnits['_fluxVol'] = fluxVolNode.units
@@ -671,12 +671,12 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getQProfile(self):
-        """returns safety factor q [psi,t]
+        """returns safety factor q [t,psi]
         """
         if self._qpsi is None:
             try:
                 qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
-                self._qpsi = qpsiNode.data()
+                self._qpsi = qpsiNode.data().T
                 self._defaultUnits['_qpsi'] = qpsiNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
