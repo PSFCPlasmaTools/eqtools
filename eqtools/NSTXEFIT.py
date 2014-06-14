@@ -277,6 +277,18 @@ class NSTXEFITTree(EFITTree):
             warnings.filterwarnings("ignore",category=RuntimeWarning)
             return unit_factor * self._RmidPsi.copy()
         
+    def getIpCalc(self):
+        """returns EFIT-calculated plasma current [t]
+        """
+        if self._IpCalc is None:
+            try:
+                IpCalcNode = self._MDSTree.getNode(self._root+self._gfile+':cpasma')
+                self._IpCalc = IpCalcNode.data()
+                self._defaultUnits['_IpCalc'] = IpCalcNode.units
+            except (TreeException,AttributeError):
+                raise ValueError('data retrieval failed.')
+        return self._IpCalc.copy()
+
         
     def getVolLCFS(self, length_unit=3):
         """returns volume within LCFS [t]
