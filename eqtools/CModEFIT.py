@@ -109,6 +109,9 @@ class CModEFITTree(EFITTree):
             root = '\\'+tree+'::top.results.'
 
         super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, gfile=gfile, afile=afile, tspline=tspline, monotonic=monotonic)
+        
+        self.getFluxVol() #getFluxVol is called due to wide use on C-Mod
+
     
     def getMachineCrossSectionFull(self):
         """Pulls C-Mod cross-section data from tree, converts to plottable

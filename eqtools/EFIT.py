@@ -205,7 +205,6 @@ class EFITTree(Equilibrium):
         self.getFluxGrid() # loads _psiRZ, _rGrid and _zGrid at once.
         self.getFluxLCFS()
         self.getFluxAxis()
-        self.getFluxVol()
         self.getVolLCFS()
         self.getQProfile()
         self.getRmidPsi()
