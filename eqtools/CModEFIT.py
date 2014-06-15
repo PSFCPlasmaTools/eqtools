@@ -112,7 +112,7 @@ class CModEFITTree(EFITTree):
         
         self.getFluxVol() #getFluxVol is called due to wide use on C-Mod
 
- def getFluxVol(self, length_unit=3):
+    def getFluxVol(self, length_unit=3):
         """returns volume within flux surface [t,psi]
         """
         if self._fluxVol is None:
@@ -130,7 +130,7 @@ class CModEFITTree(EFITTree):
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
         return unit_factor * self._fluxVol.copy()
 
- def getRmidPsi(self, length_unit=1):
+    def getRmidPsi(self, length_unit=1):
         """returns maximum major radius of each flux surface [t,psi]
         """
         if self._RmidPsi is None:
@@ -159,7 +159,6 @@ class CModEFITTree(EFITTree):
                 raise ValueError('data retrieval failed.')
         return self._fpol.copy()
     
-
     def getFluxPres(self):
         """returns pressure at flux surface [t,psi]
         """
