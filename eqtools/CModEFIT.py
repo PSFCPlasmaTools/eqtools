@@ -112,7 +112,102 @@ class CModEFITTree(EFITTree):
         
         self.getFluxVol() #getFluxVol is called due to wide use on C-Mod
 
+ def getFluxVol(self, length_unit=3):
+        """returns volume within flux surface [t,psi]
+        """
+        if self._fluxVol is None:
+            try:
+                fluxVolNode = self._MDSTree.getNode(self._root+'fitout:volp')
+                self._fluxVol = fluxVolNode.data().T
+                # Units aren't properly stored in the tree for this one!
+                if fluxVolNode.units != ' ':
+                    self._defaultUnits['_fluxVol'] = fluxVolNode.units
+                else:
+                    self._defaultUnits['_fluxVol'] = 'm^3'
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        # Default units are m^3, but aren't stored in the tree!
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
+        return unit_factor * self._fluxVol.copy()
+
+ def getRmidPsi(self, length_unit=1):
+        """returns maximum major radius of each flux surface [t,psi]
+        """
+        if self._RmidPsi is None:
+            try:
+                RmidPsiNode = self._MDSTree.getNode(self._root+'fitout:rpres')
+                self._RmidPsi = RmidPsiNode.data().T
+                # Units aren't properly stored in the tree for this one!
+                if RmidPsiNode.units != ' ':
+                    self._defaultUnits['_RmidPsi'] = RmidPsiNode.units
+                else:
+                    self._defaultUnits['_RmidPsi'] = 'm'
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
+        return unit_factor * self._RmidPsi.copy()
+
+    def getF(self):
+        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [t,psi]
+        """
+        if self._fpol is None:
+            try:
+                fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
+                self._fpol = fNode.data().T
+                self._defaultUnits['_fpol'] = fNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._fpol.copy()
     
+
+    def getFluxPres(self):
+        """returns pressure at flux surface [t,psi]
+        """
+        if self._fluxPres is None:
+            try:
+                fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
+                self._fluxPres = fluxPresNode.data().T
+                self._defaultUnits['_fluxPres'] = fluxPresNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._fluxPres.copy()
+
+    def getFFPrime(self):
+        """returns FF' function used for grad-shafranov solutions [t,psi]
+        """
+        if self._ffprim is None:
+            try:
+                FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
+                self._ffprim = FFPrimeNode.data().T
+                self._defaultUnits['_ffprim'] = FFPrimeNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._ffprim.copy()
+
+    def getPPrime(self):
+        """returns plasma pressure gradient as a function of psi [t,psi]
+        """
+        if self._pprime is None:
+            try:
+                pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
+                self._pprime = pPrimeNode.data().T
+                self._defaultUnits['_pprime'] = pPrimeNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._pprime.copy()
+
+    def getQProfile(self):
+        """returns safety factor q [t,psi]
+        """
+        if self._qpsi is None:
+            try:
+                qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
+                self._qpsi = qpsiNode.data().T
+                self._defaultUnits['_qpsi'] = qpsiNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        return self._qpsi.copy()
+
     def getMachineCrossSectionFull(self):
         """Pulls C-Mod cross-section data from tree, converts to plottable
         vector format for use in other plotting routines

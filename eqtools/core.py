@@ -48,7 +48,7 @@ try:
     import filewriter
 except Exception:
     warnings.warn("matplotlib modules could not be loaded -- plotting and gfile"
-                  "writing will not be available.",
+                  " writing will not be available.",
                   ModuleWarning)
 
 

@@ -206,7 +206,7 @@ class EFITTree(Equilibrium):
         self.getFluxLCFS()
         self.getFluxAxis()
         self.getVolLCFS()
-        self.getQProfile()
+        self.getQProile()
         self.getRmidPsi()
         
     def __str__(self):
@@ -329,7 +329,7 @@ class EFITTree(Equilibrium):
         if self._fluxVol is None:
             try:
                 fluxVolNode = self._MDSTree.getNode(self._root+'fitout:volp')
-                self._fluxVol = fluxVolNode.data().T
+                self._fluxVol = fluxVolNode.data()
                 # Units aren't properly stored in the tree for this one!
                 if fluxVolNode.units != ' ':
                     self._defaultUnits['_fluxVol'] = fluxVolNode.units
@@ -488,7 +488,7 @@ class EFITTree(Equilibrium):
         if self._fpol is None:
             try:
                 fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
-                self._fpol = fNode.data().T
+                self._fpol = fNode.data()
                 self._defaultUnits['_fpol'] = fNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -500,7 +500,7 @@ class EFITTree(Equilibrium):
         if self._fluxPres is None:
             try:
                 fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
-                self._fluxPres = fluxPresNode.data().T
+                self._fluxPres = fluxPresNode.data()
                 self._defaultUnits['_fluxPres'] = fluxPresNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -512,7 +512,7 @@ class EFITTree(Equilibrium):
         if self._ffprim is None:
             try:
                 FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
-                self._ffprim = FFPrimeNode.data().T
+                self._ffprim = FFPrimeNode.data()
                 self._defaultUnits['_ffprim'] = FFPrimeNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -524,7 +524,7 @@ class EFITTree(Equilibrium):
         if self._pprime is None:
             try:
                 pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
-                self._pprime = pPrimeNode.data().T
+                self._pprime = pPrimeNode.data()
                 self._defaultUnits['_pprime'] = pPrimeNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -566,7 +566,7 @@ class EFITTree(Equilibrium):
                 raise ValueError('data retrieval failed.')
         return self._dlower.copy()
 
-    def getShaping(self):
+    def getSlhaping(self):
         """pulls LCFS elongation and upper/lower triangularity
         
         Returns:
@@ -675,7 +675,7 @@ class EFITTree(Equilibrium):
         if self._qpsi is None:
             try:
                 qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
-                self._qpsi = qpsiNode.data().T
+                self._qpsi = qpsiNode.data()
                 self._defaultUnits['_qpsi'] = qpsiNode.units
             except TreeException:
                 raise ValueError('data retrieval failed.')
