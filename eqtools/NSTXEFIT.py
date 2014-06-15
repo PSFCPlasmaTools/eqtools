@@ -108,8 +108,14 @@ class NSTXEFITTree(EFITTree):
             print("ERROR: MDSplus module did not load properly. Exception is below:")
             raise _e_MDS
 
-        super(NSTXEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, tspline=tspline, monotonic=monotonic)
-        
+        super(NSTXEFITTree, self).__init__(shot,
+                                           tree,
+                                           root,
+                                           length_unit=length_unit,
+                                           gfile=gfile,
+                                           afile=afile,
+                                           tspline=tspline,
+                                           monotonic=monotonic)
         
     def getFluxGrid(self):
         """returns EFIT flux grid, [t,z,r]
