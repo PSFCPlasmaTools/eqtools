@@ -26,4 +26,3 @@ from .NSTXEFIT import *
 from .eqdskreader import *
 from .pfilereader import *
 from .FromArrays import *
-from .filewriter import *
