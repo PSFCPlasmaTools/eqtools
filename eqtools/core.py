@@ -19,9 +19,6 @@
 """This module provides the core classes for :py:mod:`eqtools`, including the
 base :py:class:`Equilibrium` class.
 """
-
-import filewriter
-
 import scipy
 import scipy.interpolate
 import scipy.integrate
@@ -48,9 +45,10 @@ try:
     import matplotlib.gridspec as mplgs
     import matplotlib.patches as mpatches
     import matplotlib.path as mpath
+    import filewriter
 except Exception:
-    warnings.warn("matplotlib modules could not be loaded -- plotting will not "
-                  "be available.",
+    warnings.warn("matplotlib modules could not be loaded -- plotting and gfile"
+                  "writing will not be available.",
                   ModuleWarning)
 
 
