@@ -324,6 +324,7 @@ class Equilibrium(object):
         self._RmidToPsiNormSpline = {}
         self._phiNormToPsiNormSpline = {}
         self._volNormToPsiNormSpline = {}
+        self._AOutSpline = {}
     
     def __str__(self):
         """String representation of this instance.
@@ -5585,6 +5586,70 @@ class Equilibrium(object):
 
 
             return self._RmidOutSpline
+    
+    def getAOutSpline(self, length_unit=1, kind='nearest'):
+        """Gets the univariate spline to interpolate a_out as a function of time.
+        
+        Keyword Args:
+            length_unit (String or 1):
+                Length unit that a_out is returned in. If
+                a string is given, it must be a valid unit specifier:
+                
+                    ==========  ===========
+                    'm'         meters
+                    'cm'        centimeters
+                    'mm'        millimeters
+                    'in'        inches
+                    'ft'        feet
+                    'yd'        yards
+                    'smoot'     smoots
+                    'cubit'     cubits
+                    'hand'      hands
+                    'default'   meters
+                    ==========  ===========
+                    
+                If `length_unit` is 1 or None, meters are assumed. The default
+                value is 1 (a_out returned in meters).
+            kind (String or non-negative int):
+                Specifies the type of interpolation
+                to be performed in getting from t to a_out. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to a_out.
+        """
+        if self._AOutSpline:
+            return self._AOutSpline
+        else:
+            if kind == 'nearest' and self._tricubic:
+                kind = 'cubic'
+
+            try:
+                self._AOutSpline = scipy.interpolate.interp1d(
+                    self.getTimeBase(),
+                    self.getAOut(length_unit=length_unit),
+                    kind=kind,
+                    bounds_error=False
+                )
+            except ValueError:
+                # created to allow for single time (such as gfiles) to properly call this method
+                kind = 'zero'
+                fill_value = self.getAOut(length_unit=length_unit)
+                self._RmidOutSpline = scipy.interpolate.interp1d(
+                    [0.],
+                    [0.],
+                    kind=kind,
+                    bounds_error=False,
+                    fill_value=fill_value
+                )
+            
+            return self._AOutSpline
 
     def getInfo(self):
         """

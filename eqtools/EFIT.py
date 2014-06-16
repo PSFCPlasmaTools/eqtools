@@ -206,7 +206,7 @@ class EFITTree(Equilibrium):
         self.getFluxLCFS()
         self.getFluxAxis()
         self.getVolLCFS()
-        self.getQProile()
+        self.getQProfile()
         self.getRmidPsi()
         
     def __str__(self):
