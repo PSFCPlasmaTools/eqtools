@@ -152,6 +152,8 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
             
 
 def findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
+    ang = scipy.linspace(-scipy.pi,scipy.pi,nbbbs)
+
     plt.ioff()  
     fig = plt.figure()
     cs = plt.contour(rgrid,
@@ -165,37 +167,42 @@ def findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
         # turn points into polar coordinates about the plasma center
         rvals = scipy.sqrt((temp[:,0] - rcent)**2 + (temp[:,1] - zcent)**2)
         thetvals = scipy.arctan2(temp[:,1] - zcent,temp[:,0] - rcent)
-       
+ 
         # find all monotonic sections of contour line in r,theta space
         temp = scipy.diff(thetvals)
         idx = 0
         sign = scipy.sign(temp[0])
         for j in xrange(len(temp)-1):
+            
             if (scipy.sign(temp[j+1]) != sign): 
                 sign = scipy.sign(temp[j+1])
                 #only write data if the jump at the last point is well resolved
-                if (j+2-idx > 2):#abs(thetvals[idx]-thetvals[j+1]) < 7*scipy.pi/4) and 
-                    splines += [scipy.interpolate.interp1d(thetvals[idx:j+2],
-                                                           rvals[idx:j+2],
+
+                if (j+2-idx > 2):#abs(thetvals[idx]-thetvals[j+1]) < 7*scipy.pi/4) and
+                    plt.plot(thetvals[idx:j+2],rvals[idx:j+2],'o')
+                    sortang = scipy.argsort(thetvals[idx:j+2])
+                    splines += [scipy.interpolate.interp1d(thetvals[sortang+idx],
+                                                           rvals[sortang+idx],
                                                            kind='linear',
                                                            bounds_error=False,
                                                            fill_value=scipy.inf)]
                 idx = j+1
- 
-        splines += [scipy.interpolate.interp1d(thetvals[idx:len(thetvals)],
-                                               rvals[idx:len(thetvals)],
-                                               kind='linear',
-                                               bounds_error=False,
-                                               fill_value=scipy.inf)]
-    
+
+        if (len(thetvals) - idx > 2):
+            plt.plot(thetvals[idx:],rvals[idx:],'o')
+            sortang = scipy.argsort(thetvals[idx:])
+            splines += [scipy.interpolate.interp1d(thetvals[sortang+idx],
+                                                   rvals[sortang+idx],
+                                                   kind='linear',
+                                                   bounds_error=False,
+                                                   fill_value=scipy.inf)]
 
     # construct a set of angles about the center, and use the splines
     # to find the closest part of the contour to the center at that
     # angle, this is the LCFS, store value. If no value is found, store
     # an infite value, which is then tossed out.
-
     outr = scipy.empty((nbbbs,))
-    ang = scipy.linspace(-scipy.pi,scipy.pi,nbbbs)
+
     for i in xrange(nbbbs):
         temp = scipy.inf
         for j in splines:
