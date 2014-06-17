@@ -1919,6 +1919,20 @@ class EqdskReader(Equilibrium):
         """
         return self.getMachineCrossSection()
 
+    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, tunit='ms', title='EQTOOLS', nbbbs=100):
+
+        if time is None:
+            time = self.getTimeBase()
+
+        super(EqdskReader,self).gfile(time,
+                                      nw=nw,
+                                      nh=nh,
+                                      shot=shot,
+                                      name=name,
+                                      tunit=tunit,
+                                      title=title,
+                                      nbbbs=nbbbs)
+
     def plotFlux(self,fill=True,mask=True):
         """streamlined plotting of flux contours directly from psi grid
 

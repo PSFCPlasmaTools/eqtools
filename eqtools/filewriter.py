@@ -159,7 +159,7 @@ def findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
     cs = plt.contour(rgrid,
                      zgrid,
                      psiRZ,
-                     [psiLCFS]) 
+                     scipy.atleast_1d(psiLCFS)) 
     
     splines = []
     for i in cs.collections[0].get_paths():
