@@ -207,6 +207,33 @@ class CModEFITTree(EFITTree):
                 raise ValueError('data retrieval failed.')
         return self._qpsi.copy()
 
+    def getRLCFS(self, length_unit=1):
+        """returns R-values of LCFS position [t,n]
+        """
+        if self._RLCFS is None:
+            try:
+                RLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':rbbbs')
+                self._RLCFS = RLCFSNode.data().T
+                self._defaultUnits['_RLCFS'] = RLCFSNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
+        return unit_factor * self._RLCFS.copy()
+
+    def getZLCFS(self, length_unit=1):
+        """returns Z-values of LCFS position [t,n]
+        """
+        if self._ZLCFS is None:
+            try:
+                ZLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':zbbbs')
+                self._ZLCFS = ZLCFSNode.data().T
+                self._defaultUnits['_ZLCFS'] = ZLCFSNode.units
+            except TreeException:
+                raise ValueError('data retrieval failed.')
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
+        return unit_factor * self._ZLCFS.copy()
+        
+
     def getMachineCrossSectionFull(self):
         """Pulls C-Mod cross-section data from tree, converts to plottable
         vector format for use in other plotting routines

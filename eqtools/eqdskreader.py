@@ -328,8 +328,8 @@ class EqdskReader(Equilibrium):
                 for val in line:
                     bbbs.append(float(val))
             bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='F')
-            self._RLCFS = bbbs[0,:].reshape((nbbbs,1))
-            self._ZLCFS = bbbs[1,:].reshape((nbbbs,1))
+            self._RLCFS = bbbs[0]
+            self._ZLCFS = bbbs[1]
             self._defaultUnits['_RLCFS'] = 'm'
             self._defaultUnits['_ZLCFS'] = 'm'
 

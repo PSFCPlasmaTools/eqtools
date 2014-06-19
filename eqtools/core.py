@@ -6260,9 +6260,9 @@ class Equilibrium(object):
             elif limx is not None:
                 psi.plot(limx,limy,'k',linewidth=3,zorder=5)
             # catch NaNs separating disjoint sections of R,ZLCFS in mask
-            maskarr = scipy.where(scipy.logical_or(RLCFS[:,t_idx] > 0.0,scipy.isnan(RLCFS[:,t_idx])))
-            RLCFSframe = RLCFS[maskarr[0],t_idx]
-            ZLCFSframe = ZLCFS[maskarr[0],t_idx]
+            maskarr = scipy.where(scipy.logical_or(RLCFS[t_idx] > 0.0,scipy.isnan(RLCFS[t_idx])))
+            RLCFSframe = RLCFS[t_idx,maskarr[0]]
+            ZLCFSframe = ZLCFS[t_idx,maskarr[0]]
             psi.plot(RLCFSframe,ZLCFSframe,'r',linewidth=3,zorder=3)
             if fill:
                 psi.contourf(rGrid,zGrid,psiRZ[t_idx],50,zorder=2)

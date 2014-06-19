@@ -457,14 +457,14 @@ class EFITTree(Equilibrium):
             RLCFS_stores.append(RLCFS_frame)
             ZLCFS_stores.append(ZLCFS_frame)
 
-        RLCFS = scipy.zeros((maxlen,nt))
-        ZLCFS = scipy.zeros((maxlen,nt))
+        RLCFS = scipy.zeros((nt,maxlen))
+        ZLCFS = scipy.zeros((nt,maxlen))
         for i in range(nt):
             RLCFS_frame = RLCFS_stores[i]
             ZLCFS_frame = ZLCFS_stores[i]
             ni = len(RLCFS_frame)
-            RLCFS[0:ni,i] = RLCFS_frame
-            ZLCFS[0:ni,i] = ZLCFS_frame
+            RLCFS[i,0:ni] = RLCFS_frame
+            ZLCFS[i,0:ni] = ZLCFS_frame
 
         # store final values
         self._RLCFS = RLCFS

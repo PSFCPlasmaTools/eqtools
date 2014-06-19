@@ -161,7 +161,7 @@ class NSTXEFITTree(EFITTree):
         
         Returns volume within flux surface [psi,t]
         """
-        raise NotImplementedError()
+        super(EFITTree,self).getFluxVol()
         
         
     def getRmidPsi(self, length_unit=1):
@@ -215,7 +215,14 @@ class NSTXEFITTree(EFITTree):
         # Default units should be 'cm^3':
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
         return unit_factor * self._volLCFS.copy()
+ 
+    def getJp(self):
+        """
+        Not implemented in NSTXEFIT tree.
 
+        returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]
+        """
+        super(EFITTree,self).getJp()
 
     def rz2volnorm(self,*args,**kwargs):
         """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
