@@ -328,8 +328,8 @@ class EqdskReader(Equilibrium):
                 for val in line:
                     bbbs.append(float(val))
             bbbs = scipy.array(bbbs).reshape((2,nbbbs),order='F')
-            self._RLCFS = bbbs[0]
-            self._ZLCFS = bbbs[1]
+            self._RLCFS = bbbs[0].reshape((1,nbbbs))
+            self._ZLCFS = bbbs[1].reshape((1,nbbbs))
             self._defaultUnits['_RLCFS'] = 'm'
             self._defaultUnits['_ZLCFS'] = 'm'
 
@@ -1951,8 +1951,8 @@ class EqdskReader(Equilibrium):
             rGrid = self.getRGrid()
             zGrid = self.getZGrid()
 
-            RLCFS = self.getRLCFS()[:,0]
-            ZLCFS = self.getZLCFS()[:,0]
+            RLCFS = self.getRLCFS()[0]
+            ZLCFS = self.getZLCFS()[0]
 
             Rlim,Zlim = self.getMachineCrossSection()
         except ValueError:
