@@ -102,7 +102,7 @@ class CModEFITTree(EFITTree):
             window finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
-    def __init__(self, shot, tree='ANALYSIS', length_unit='m', gfile='g_eqdsk', afile='a_eqdsk', tspline=False, monotonic=False):
+    def __init__(self, shot, tree='ANALYSIS', length_unit='m', gfile='g_eqdsk', afile='a_eqdsk', tspline=False, monotonic=True):
         if tree.upper() == 'ANALYSIS':
             root = '\\analysis::top.efit.results.'
         else:

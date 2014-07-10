@@ -300,7 +300,7 @@ class Equilibrium(object):
         ValueError: If `tspline` is True but module trispline did not load
             successfully.
     """
-    def __init__(self, length_unit='m', tspline=False, monotonic=False, verbose=True):
+    def __init__(self, length_unit='m', tspline=False, monotonic=True, verbose=True):
         if length_unit != 'default' and not (length_unit in _length_conversion):
             raise ValueError("Unit '%s' not a valid unit specifier!" % length_unit)
         else:
