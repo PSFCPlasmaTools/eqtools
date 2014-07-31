@@ -470,7 +470,8 @@ class Equilibrium(object):
         """
         
         if origin.startswith('sqrt'):
-            args[0] == scipy.asarray(args[0])**2
+            args = list(args)
+            args[0] = scipy.asarray(args[0])**2
             origin = origin[4:]
         
         if destination.startswith('sqrt'):
@@ -2102,7 +2103,7 @@ class Equilibrium(object):
         # Restore original shape:
         R_mid = scipy.reshape(R_mid, original_shape)
  
-        out = roa
+        out = R_mid
 
         if single_val:
             out = out[0]
@@ -2438,22 +2439,7 @@ class Equilibrium(object):
         if method == 'Rmid':
             return self.roa2rmid(*args, **kwargs)
         else:
-            return_t = kwargs.get('return_t', False)
-            kwargs['return_t'] = True
-        
-            # Not used by roa2rmid:
-            kind = kwargs.pop('kind', 'cubic')
-            sqrt = kwargs.pop('sqrt', False)
-
-            R_mid, time_idxs = self.roa2rmid(*args, **kwargs)
-        
-            kwargs['return_t'] = return_t
-            kwargs['kind'] = kind
-            kwargs['sqrt'] = sqrt
-            kwargs['time_idxs'] = time_idxs
-            # TODO: This technically computes the time indices twice. Is there are
-            # good compromise to get the best of both worlds (nice calling of
-            # _psinorm2Quan AND no recompute)?
+            kwargs['convert_roa'] = True
             return self.rmid2rho(method, *args, **kwargs)
     
     def psinorm2rmid(self, psi_norm, t, **kwargs):
@@ -3495,7 +3481,7 @@ class Equilibrium(object):
         
                 phinorm_arr = Eq_instance.volnorm2phinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
-        return self._volNorm2Quan(self._getPhiNormSpline, *args, **kwargs)
+        return self._volnorm2Quan(self._getPhiNormSpline, *args, **kwargs)
     
     def volnorm2rmid(self, *args, **kwargs):
         """Calculates the mapped outboard midplane major radius corresponding to the passed volnorm (normalized flux surface volume) values.
@@ -3595,7 +3581,7 @@ class Equilibrium(object):
         else:
             unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
         
-        return unit_factor * self._volNorm2Quan(self._getRmidSpline, *args, **kwargs)
+        return unit_factor * self._volnorm2Quan(self._getRmidSpline, *args, **kwargs)
     
     def volnorm2roa(self, *args, **kwargs):
         """Calculates the normalized minor radius corresponding to the passed volnorm (normalized flux surface volume) values.
@@ -3669,7 +3655,7 @@ class Equilibrium(object):
                 roa_arr = Eq_instance.volnorm2roa([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
         kwargs['rho'] = True
-        return self._volNorm2Quan(self._getRmidSpline, *args, **kwargs)
+        return self._volnorm2Quan(self._getRmidSpline, *args, **kwargs)
     
     def volnorm2rho(self, method, *args, **kwargs):
         """Convert the passed (volnorm, t) coordinates into one of several coordinates.
@@ -3799,7 +3785,8 @@ class Equilibrium(object):
 
     def _psinorm2Quan(self, spline_func, psi_norm, t, each_t=True, return_t=False,
                       sqrt=False, rho=False, kind='cubic', time_idxs=None,
-                      check_space=False, convert_only=True, length_unit=1):
+                      check_space=False, convert_only=True, length_unit=1,
+                      convert_roa=False):
         """Convert psinorm to a given quantity.
         
         Utility function for computing a variety of quantities given psi_norm
@@ -3848,6 +3835,9 @@ class Equilibrium(object):
             time_idxs (Array with same shape as `psi_norm` or None):
                 The time indices to use (as computed by :py:meth:`_processRZt`).
                 Default is None (compute time indices in method).
+            convert_roa (Boolean): When True, it is assumed that `psi_norm` is
+                actually given as r/a and should be converted to Rmid before
+                being passed to the spline for conversion. Default is False.
         
         Returns:
             (`rho`, `time_idxs`)
@@ -3891,7 +3881,10 @@ class Equilibrium(object):
             
             # TODO: This might waste more time than it saves with long time_idxs:
             single_time = (len(scipy.unique(time_idxs)) == 1)
-
+        
+        if convert_roa:
+            psi_norm = self._roa2rmid(psi_norm, time_idxs)
+        
         if not self._tricubic:
             if single_time:
                 quan_norm = spline_func(time_idxs[0], kind=kind)(psi_norm)
@@ -3991,7 +3984,7 @@ class Equilibrium(object):
             Rout = self.getRmidOutSpline(length_unit='m')(time_idxs)
         
         # Compute R_mid according to our definition:
-        return roa * (Rout - magR) + Rout
+        return roa * (Rout - magR) + magR
     
     def _RZ2Quan(self, spline_func, R, Z, t, **kwargs):
         """Convert RZ to a given quantity.
@@ -4219,6 +4212,8 @@ class Equilibrium(object):
 
         psi_norm, time_idxs = self.rmid2psinorm(R_mid, t, **kwargs)
         
+        kwargs.pop('convert_roa', False)
+        
         kwargs['time_idxs'] = time_idxs
         kwargs['kind'] = kind
         kwargs['return_t'] = return_t
@@ -4236,7 +4231,7 @@ class Equilibrium(object):
                                   t,
                                   **kwargs)
     
-    def _phiNorm2Quan(self, spline_func, phinorm, t, **kwargs):
+    def _phinorm2Quan(self, spline_func, phinorm, t, **kwargs):
         """Convert phinorm to a given quantity.
         
         Utility function for converting phinorm coordinates to a variety of things
@@ -4324,7 +4319,7 @@ class Equilibrium(object):
                                   time_idxs=time_idxs,
                                   **kwargs)
     
-    def _volNorm2Quan(self, spline_func, volnorm, t, **kwargs):
+    def _volnorm2Quan(self, spline_func, volnorm, t, **kwargs):
         """Convert volnorm to a given quantity.
         
         Utility function for converting volnorm coordinates to a variety of things
