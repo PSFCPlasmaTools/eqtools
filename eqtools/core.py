@@ -5281,18 +5281,24 @@ class Equilibrium(object):
                 # flux grid to avoid 1d interpolation problems in the core. The
                 # bivariate spline seems to be a little more robust in this respect.
                 resample_factor = 3
-                R_grid = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                        self.getRGrid(length_unit='m')[-1],
-                                        resample_factor * len(self.getRGrid(length_unit='m')))
+                R_grid = scipy.linspace(
+                    # self.getMagR(length_unit='m')[idx],
+                    self.getRGrid(length_unit='m')[0],
+                    self.getRGrid(length_unit='m')[-1],
+                    resample_factor * len(self.getRGrid(length_unit='m'))
+                )
 
-                psi_norm_on_grid = self.rz2psinorm(R_grid,
-                                                   self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
-                                                   self.getTimeBase()[idx])
+                psi_norm_on_grid = self.rz2psinorm(
+                    R_grid,
+                    self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
+                    self.getTimeBase()[idx])
 
-                spline = scipy.interpolate.interp1d(R_grid,
-                                                    psi_norm_on_grid,
-                                                    kind=kind,
-                                                    bounds_error=False)
+                spline = scipy.interpolate.interp1d(
+                    R_grid,
+                    psi_norm_on_grid,
+                    kind=kind,
+                    bounds_error=False
+                )
                 try:
                     self._RmidToPsiNormSpline[idx][kind] = spline
                 except KeyError:
@@ -5305,14 +5311,22 @@ class Equilibrium(object):
                 resample_factor = 3 * len(self.getRGrid(length_unit='m'))
 
                 #generate timebase and R_grid through a meshgrid
-                t, R_grid = scipy.meshgrid(self.getTimeBase(), scipy.zeros((resample_factor,)))
-                Z_grid = scipy.dot(scipy.ones((resample_factor, 1)),
-                                   scipy.atleast_2d(self.getMagZ(length_unit='m')))
+                t, R_grid = scipy.meshgrid(
+                    self.getTimeBase(),
+                    scipy.zeros((resample_factor,))
+                )
+                Z_grid = scipy.dot(
+                    scipy.ones((resample_factor, 1)),
+                    scipy.atleast_2d(self.getMagZ(length_unit='m'))
+                )
 
                 for idx in scipy.arange(self.getTimeBase().size):
-                    R_grid[:, idx] = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                                   self.getRGrid(length_unit='m')[-1],
-                                                   resample_factor)
+                    # TODO: This can be done much more efficiently!
+                    R_grid[:, idx] = scipy.linspace(
+                        self.getRGrid(length_unit='m')[0],
+                        self.getRGrid(length_unit='m')[-1],
+                        resample_factor
+                    )
 
                 psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
                     
