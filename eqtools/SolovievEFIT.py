@@ -25,6 +25,7 @@ Classes:
 """
 
 import scipy
+from collections import namedtuple
 from .core import Equilibrium, ModuleWarning, inPolygon
 
 import warnings
@@ -37,11 +38,28 @@ except:
                   "use pyplot will not work.",ModuleWarning)
     _has_plt = False
 
-class SolovievEFIT(Equilibrium):
-    """Equilibrium class working with analytic Soloviev equilibria.
+class CircSolovievEFIT(Equilibrium):
+    """Equilibrium class working with analytic Soloviev equilibria, restricted
+    to a circular cross-section.
 
     Generates Soloviev equilibrium from scalar-parameter inputs, provides
-    mapping routines for use in synthetic-diagnostic or equilibrium testing
-    purposes.
+    mapping routines for use in equilibrium testing purposes.
     """
     def __init__(self):
+        pass
+        # define/calculate psiRZ
+
+    def __str__(self):
+        """string formatting for CircSolovievEFIT class.
+        """
+        pass
+
+    def getInfo(self):
+        """returns namedtuple of equilibrium information
+        """
+        pass
+
+    def getFluxGrid(self):
+        """returns flux grid, [R,Z]
+        """
+        return self.psiRZ.copy()
