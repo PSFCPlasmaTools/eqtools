@@ -17,7 +17,7 @@
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
 """This module provides a class for constructing an :py:class:`Equilibrium` object
-built on the analytic Soloviev equilibrium for testing and synthetic-diagnostic purposes.
+built on the analytic Soloviev equilibrium for testing purposes.
 
 Classes:
     SolvievEFIT: class inheriting :py:class:`Equilibrium` for generation of and
@@ -45,21 +45,38 @@ class CircSolovievEFIT(Equilibrium):
     Generates Soloviev equilibrium from scalar-parameter inputs, provides
     mapping routines for use in equilibrium testing purposes.
     """
-    def __init__(self):
-        pass
-        # define/calculate psiRZ
+    def __init__(self,R,a,B0,Ip,betat,length_unit='m'):
+        # instantiate superclass, forcing time splining to false (no time variation
+        # in equilibrium)
+        super(CircSolovievEFIT,self}).__init__(length_unit=length_unit,tspline=False)
+
+        self._defaultUnits = {}
+
+        self._R = R
+        self._defaultUnits['_R'] = 'm'
+        self._a = a
+        self._defaultUnits['_a'] = 'm'
+        self._B0 = B0
+        self._defaultUnits['_B'] = 'T'
+        self._Ip = Ip
+        self._defaultUnits['_Ip'] = 'MA'
+        self._betat = betat
+
 
     def __str__(self):
         """string formatting for CircSolovievEFIT class.
         """
-        pass
+        datadict = {'R':self._R,'a':self._a,'Ip':self_Ip,'Bt':self_B0,'betat':self_betat}
+        return "Circular Soloviev equilibrium with R = %(R)s, a = %(a)s,"+\
+        " Ip = %(Ip)f, Bt = %(Bt)f, betat = %(betat)f" % datadict
 
     def getInfo(self):
         """returns namedtuple of equilibrium information
         """
-        pass
+        data = namedtuple('Info',['R','a','Ip','B0','betat'])
+        return data(R=self._R,a=self._a,Ip=self._Ip,B0=self._B0,betat=self_betat)
 
     def getFluxGrid(self):
         """returns flux grid, [R,Z]
         """
-        return self.psiRZ.copy()
+        pass
