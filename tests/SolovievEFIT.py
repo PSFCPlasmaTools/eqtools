@@ -26,7 +26,7 @@ Classes:
 
 import scipy
 from collections import namedtuple
-from .core import Equilibrium, ModuleWarning, inPolygon
+from eqtools.core import Equilibrium, ModuleWarning, inPolygon
 
 import warnings
 
@@ -48,7 +48,7 @@ class CircSolovievEFIT(Equilibrium):
     def __init__(self,R,a,B0,Ip,betat,length_unit='m'):
         # instantiate superclass, forcing time splining to false (no time variation
         # in equilibrium)
-        super(CircSolovievEFIT,self}).__init__(length_unit=length_unit,tspline=False)
+        super(CircSolovievEFIT,self).__init__(length_unit=length_unit,tspline=False)
 
         self._defaultUnits = {}
 
@@ -61,6 +61,10 @@ class CircSolovievEFIT(Equilibrium):
         self._Ip = Ip
         self._defaultUnits['_Ip'] = 'MA'
         self._betat = betat
+
+        # flux definitions
+        self._psiLCFS = 0.0
+        self._psi0 = self.rz2psi_analytic(self._R,0.0)
 
 
     def __str__(self):
@@ -128,6 +132,50 @@ class CircSolovievEFIT(Equilibrium):
 
         psi = A/4. * (r**2 - self._a**2) + C/8. * (r**2 - self._a**2) * r * scipy.cos(theta)
 
+    def rz2psinorm_analytic(self,R,Z,length_unit='m'):
+        """Calculates normalized poloidal flux at given (R,Z)
+
+        Uses the definition:
+
+        .. math::
+        
+            \texttt{psi\_norm} = \frac{\psi - \psi(0)}{\psi(a) - \psi(0)}
+
+        Args:
+            R: Array-like or scalar float.
+                Values of radial coordinate to map to psinorm.
+            Z: Array-like or scalar float.
+                Values of vertical coordinate to map to psinorm.
+
+        Keyword Args:
+            length_unit (String or 1): Length unit that `R`, `Z` are given in.
+                If a string is given, it must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (use meters).
+
+        Returns:
+            psinorm: Array-like or scalar float.
+                normalized poloidal flux.
+        """
+        psi = self.rz2psi_analytic(R,Z,length_unit=length_unit)
+        psinorm = (psi - self._psi0) / (self._psiLCFS - self._psi0)
+
+        return psinorm
+
     def rz2psi(self,R,Z,*args,**kwargs):
         """Converts passed, R,Z arrays to psi values.
         
@@ -184,5 +232,94 @@ class CircSolovievEFIT(Equilibrium):
                 shape as well. If the make_grid keyword was True then psi has
                 shape (len(Z), len(R)).
         """
-        t = self.getTimeBase()[0]
-        return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
+        t = 0.0
+        return super(CircSolovievEFIT,self).rz2psi(R,Z,t,**kwargs)
+
+    def rz2psinorm(self,R,Z,*args,**kwargs):
+        """Calculates the normalized poloidal flux at the given (R,Z).
+        Wrapper for Equilibrium.rz2psinorm masking out timebase dependence.
+
+        Uses the definition:
+        psi_norm = (psi - psi(0)) / (psi(a) - psi(0))
+
+        Args:
+            R: Array-like or scalar float.
+                Values of the radial coordinate to
+                map to normalized poloidal flux. If R and Z are both scalar
+                values, they are used as the coordinate pair for all of the
+                values in t. Must have the same shape as Z unless the make_grid
+                keyword is set. If the make_grid keyword is True, R must have
+                shape (len_R,).
+            Z: Array-like or scalar float.
+                Values of the vertical coordinate to
+                map to normalized poloidal flux. If R and Z are both scalar
+                values, they are used as the coordinate pair for all of the
+                values in t. Must have the same shape as R unless the make_grid
+                keyword is set. If the make_grid keyword is True, Z must have
+                shape (len_Z,).
+            *args:
+                Slot for time input for consistent syntax with Equilibrium.rz2psinorm.
+                will return dummy value for time if input in EqdskReader.
+
+        Keyword Args:
+            sqrt: Boolean.
+                Set to True to return the square root of normalized
+                flux. Only the square root of positive psi_norm values is taken.
+                Negative values are replaced with zeros, consistent with Steve
+                Wolfe's IDL implementation efit_rz2rho.pro. Default is False
+                (return psinorm).
+            make_grid: Boolean.
+                Set to True to pass R and Z through meshgrid
+                before evaluating. If this is set to True, R and Z must each
+                only have a single dimension, but can have different lengths.
+                Default is False (do not form meshgrid).
+            length_unit: String or 1.
+                Length unit that R and Z are being given
+                in. If a string is given, it must be a valid unit specifier:
+                
+                ===========  ===========
+                'm'          meters
+                'cm'         centimeters
+                'mm'         millimeters
+                'in'         inches
+                'ft'         feet
+                'yd'         yards
+                'smoot'      smoots
+                'cubit'      cubits
+                'hand'       hands
+                'default'    meters
+                ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (R and Z given in meters).
+            **kwargs:
+                Other keywords passed to Equilibrium.rz2psinorm are valid,
+                but will return dummy values (i.e. for timebase keywords)
+
+        Returns:
+            psinorm: Array or scalar float. If all of the input arguments are
+                scalar, then a scalar is returned. Otherwise, a scipy Array
+                instance is returned. If R and Z both have the same shape then
+                psinorm has this shape as well. If the make_grid keyword was
+                True then psinorm has shape (len(Z), len(R)).
+
+        Examples:
+            All assume that Eq_instance is a valid instance EqdskReader:
+
+            Find single psinorm value at R=0.6m, Z=0.0m::
+            
+                psi_val = Eq_instance.rz2psinorm(0.6, 0)
+
+            Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).
+            Note that the Z vector must be fully specified,
+            even if the values are all the same::
+            
+                psi_arr = Eq_instance.rz2psinorm([0.6, 0.8], [0, 0])
+
+            Find psinorm values on grid defined by 1D vector of radial positions R
+            and 1D vector of vertical positions Z::
+            
+                psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
+        """
+        t = 0.0
+        return super(CircSolovievEFIT,self).rz2psinorm(R,Z,t,**kwargs)
