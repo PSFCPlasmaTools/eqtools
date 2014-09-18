@@ -66,6 +66,12 @@ class CircSolovievEFIT(Equilibrium):
         self._psiLCFS = 0.0
         self._psi0 = self.rz2psi_analytic(self._R,0.0)
 
+        # RZ grid
+        self._rGrid = scipy.linspace(R-1.25*a,R+1.25*a,257)
+        self._zGrid = scipy.linspace(-1.25*a,1.25*a,257)
+        rzg = scipy.meshgrid(self._rGrid,self._zGrid)
+        
+
 
     def __str__(self):
         """string formatting for CircSolovievEFIT class.
@@ -323,3 +329,105 @@ class CircSolovievEFIT(Equilibrium):
         """
         t = 0.0
         return super(CircSolovievEFIT,self).rz2psinorm(R,Z,t,**kwargs)
+
+    def rho2rho(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rz2phinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rz2volnorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rz2rmid(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rz2roa(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rz2rho(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rmid2roa(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rmid2psinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rmid2phinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rmid2volnorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def rmid2rho(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def roa2rmid(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def roa2psinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def roa2phinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def roa2volnorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def roa2rho(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def psinorm2rmid(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def psinorm2roa(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def psinorm2volnorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def psinorm2phinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def psinorm2rho(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def phinorm2psinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def phinorm2volnorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def phinorm2rmid(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def phinorm2roa(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def phinorm2rho(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def volnorm2psinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def volnorm2phinorm(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def volnorm2rmid(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def volnorm2roa(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def volnorm2rho(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def getNearestIdx(self,*args,**kwargs):
+        raise NotImplementedError("method not defined for Soloviev testing module")
+
+    def getTimeBase(self):
+        return scipy.array([0.0])
+
+    def getFluxGrid(self):
+        return self._psiRZ.copy()
