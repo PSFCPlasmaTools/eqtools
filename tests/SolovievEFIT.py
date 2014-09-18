@@ -57,43 +57,47 @@ class CircSolovievEFIT(Equilibrium):
         self._a = a
         self._defaultUnits['_a'] = 'm'
         self._B0 = B0
-        self._defaultUnits['_B'] = 'T'
+        self._defaultUnits['_B0'] = 'T'
         self._Ip = Ip
         self._defaultUnits['_Ip'] = 'MA'
         self._betat = betat
 
+        self._qstar = (4.*scipy.pi*1.e-7) * R * Ip / (2.*scipy.pi * a**2 * B0)
+
         # flux definitions
         self._psiLCFS = 0.0
-        self._psi0 = self.rz2psi_analytic(self._R,0.0)
+        self._psi0 = -0.5 * self._B0 * self._a**2 / self._qstar
 
         # RZ grid
         self._rGrid = scipy.linspace(R-1.25*a,R+1.25*a,257)
+        self._defaultUnits['_rGrid'] = 'm'
         self._zGrid = scipy.linspace(-1.25*a,1.25*a,257)
-        rzg = scipy.meshgrid(self._rGrid,self._zGrid)
+        self._defaultUnits['_zGrid'] = 'm'
         
 
 
     def __str__(self):
         """string formatting for CircSolovievEFIT class.
         """
-        datadict = {'R':self._R,'a':self._a,'Ip':self_Ip,'Bt':self_B0,'betat':self_betat}
-        return "Circular Soloviev equilibrium with R = %(R)s, a = %(a)s,"+\
-        " Ip = %(Ip)f, Bt = %(Bt)f, betat = %(betat)f" % datadict
+        datadict = {'R':self._R,'a':self._a,'Ip':self._Ip,'Bt':self._B0,
+                    'betat':self._betat}
+        return ("Circular Soloviev equilibrium with R = %(R)s, a = %(a)s,"
+        " Ip = %(Ip)f, Bt = %(Bt)f, betat = %(betat)f" % datadict)
 
     def getInfo(self):
         """returns namedtuple of equilibrium information
         """
         data = namedtuple('Info',['R','a','Ip','B0','betat'])
-        return data(R=self._R,a=self._a,Ip=self._Ip,B0=self._B0,betat=self_betat)
+        return data(R=self._R,a=self._a,Ip=self._Ip,B0=self._B0,betat=self._betat)
 
-    def _RZtortheta(self,R,Z):
+    def _RZtortheta(self,R,Z,make_grid=False):
         """converts input RZ coordinates to polar cross-section
         """
         r = scipy.sqrt((R - self._R)**2 + (Z)**2)
-        theta = scipy.arctan(Z/(R - self._R))
+        theta = scipy.arctan2(Z,(R - self._R))
         return (r,theta)
 
-    def rz2psi_analytic(self,R,Z,length_unit='m'):
+    def rz2psi_analytic(self,R,Z,length_unit='m',make_grid=False):
         """analytic formulation for flux calculation in Soloviev equilibrium.
 
         Args:
@@ -130,15 +134,20 @@ class CircSolovievEFIT(Equilibrium):
                 shape as well. If the make_grid keyword was True then psi has
                 shape (len(Z), len(R)).
         """
-        qstar = (4.*scipy.pi*1.e-7) * self._R * self._Ip / (2.*scipy.pi * self._a**2 * self._B0)
-        A = 2.* self._B0 * qstar
+        (R,Z,t,idx,oshape,single_val,single_time) = self._processRZt(R,Z,0.0,make_grid=make_grid,each_t=False,check_space=False)
+
+        print R,R.shape
+        print Z,Z.shape
+
+        A = 2.* self._B0 / self._qstar
         C = 8. * self._R * self._B0**2 * self._betat / (self._a**2 * A)
 
         (r,theta) = self._RZtortheta(R,Z)
 
         psi = A/4. * (r**2 - self._a**2) + C/8. * (r**2 - self._a**2) * r * scipy.cos(theta)
+        return psi
 
-    def rz2psinorm_analytic(self,R,Z,length_unit='m'):
+    def rz2psinorm_analytic(self,R,Z,length_unit='m',make_grid=False):
         """Calculates normalized poloidal flux at given (R,Z)
 
         Uses the definition:
@@ -177,7 +186,7 @@ class CircSolovievEFIT(Equilibrium):
             psinorm: Array-like or scalar float.
                 normalized poloidal flux.
         """
-        psi = self.rz2psi_analytic(R,Z,length_unit=length_unit)
+        psi = self.rz2psi_analytic(R,Z,length_unit=length_unit,make_grid=make_grid)
         psinorm = (psi - self._psi0) / (self._psiLCFS - self._psi0)
 
         return psinorm
@@ -431,3 +440,9 @@ class CircSolovievEFIT(Equilibrium):
 
     def getFluxGrid(self):
         return self._psiRZ.copy()
+
+    def getRGrid(self,length_unit=1):
+        return self._rGrid.copy()
+
+    def getZGrid(self,length_unit=1):
+        return self._zGrid.copy()
