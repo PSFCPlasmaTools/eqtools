@@ -44,8 +44,36 @@ class CircSolovievEFIT(Equilibrium):
 
     Generates Soloviev equilibrium from scalar-parameter inputs, provides
     mapping routines for use in equilibrium testing purposes.
+
+    Args:
+        R (float): major radius of model equilibrium.
+        a (float): minor radius of model equilibrium.
+        B0 (float): on-axis toroidal field of model equilibrium.
+        Ip (float): plasma current of model equilibrium.
+        betat (float): volume-averaged toroidal beta of model equilibrium.
+
+    Keyword Args:
+        length_unit (String): Sets the base unit used for any quantity whose
+            dimensions are length to any power. Valid options are:
+            
+                ===========  ===========================================================================================
+                'm'          meters
+                'cm'         centimeters
+                'mm'         millimeters
+                'in'         inches
+                'ft'         feet
+                'yd'         yards
+                'smoot'      smoots
+                'cubit'      cubits
+                'hand'       hands
+                'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
+                ===========  ===========================================================================================
+            
+            Default is 'm' (all units taken and returned in meters).
+        npts (int): grid size of model equilibrium reconstruction.
+            Default is npts=257 (257x257 RZ grid)
     """
-    def __init__(self,R,a,B0,Ip,betat,length_unit='m'):
+    def __init__(self,R,a,B0,Ip,betat,length_unit='m',npts=257):
         # instantiate superclass, forcing time splining to false (no time variation
         # in equilibrium)
         super(CircSolovievEFIT,self).__init__(length_unit=length_unit,tspline=False)
@@ -53,14 +81,15 @@ class CircSolovievEFIT(Equilibrium):
         self._defaultUnits = {}
 
         self._R = R
-        self._defaultUnits['_R'] = 'm'
+        self._defaultUnits['_R'] = length_unit
         self._a = a
-        self._defaultUnits['_a'] = 'm'
+        self._defaultUnits['_a'] = length_unit
         self._B0 = B0
         self._defaultUnits['_B0'] = 'T'
         self._Ip = Ip
         self._defaultUnits['_Ip'] = 'MA'
         self._betat = betat
+        self._npts = npts
 
         self._qstar = (4.*scipy.pi*1.e-7) * R * Ip / (2.*scipy.pi * a**2 * B0)
 
@@ -69,10 +98,10 @@ class CircSolovievEFIT(Equilibrium):
         self._psi0 = -0.5 * self._B0 * self._a**2 / self._qstar
 
         # RZ grid
-        self._rGrid = scipy.linspace(R-1.25*a,R+1.25*a,257)
-        self._defaultUnits['_rGrid'] = 'm'
-        self._zGrid = scipy.linspace(-1.25*a,1.25*a,257)
-        self._defaultUnits['_zGrid'] = 'm'
+        self._rGrid = scipy.linspace(R-1.25*a,R+1.25*a,self._npts)
+        self._defaultUnits['_rGrid'] = length_unit
+        self._zGrid = scipy.linspace(-1.25*a,1.25*a,self._npts)
+        self._defaultUnits['_zGrid'] = length_unit
         
 
 
