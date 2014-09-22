@@ -29,7 +29,9 @@ import _tricub
 
 class Spline():
     """Tricubic interpolating spline with forced edge derivative equal zero
-    conditions.  It assumes a cartesian grid.
+    conditions.  It assumes a cartesian grid.  The ordering of f[z,y,x] is
+    extremely important for the proper evaluation of the spline.  It assumes
+    that f is in C order.
     
     Create a new Spline instance.
 
@@ -58,7 +60,18 @@ class Spline():
         ValueError: If x,y, or z are not monotonic
         
     Examples:
-        temp
+        All assume that `x`, `y`, `z`, and `f` are valid instances of the appropriate
+        numpy arrays which take independent variables x,y,z and create numpy array
+        f. `x1`, `y1`, and `z1` are numpy arrays which data f is to be interpolated.
+            
+        Generate a Trispline instance map with data x, y, z and f::
+            
+            map = Spline(z, y, x, f)
+    
+        Evaluate Trispline instance map at x1, y1, z1::
+            
+            output = map.ev(z1, y1, x1)
+    
     """
     def __init__(self, z, y, x, f, regular=True, fast=False):
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
@@ -134,11 +147,6 @@ class Spline():
             ValueError: If any of the dimensions exceed the evaluation boundary
                 of the grid
 
-        Examples:
-            Data is grouped into the grid voxels so as to reuse calculated 
-                spline coefficents, thus speeding evaluation.  It is
-                recommended that it is evaluated outside of for loops to best
-                utilize this feature.
         """
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
