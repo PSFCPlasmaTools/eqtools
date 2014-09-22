@@ -56,6 +56,14 @@ This will return a 4-by-3 array: one row for each time, one column for each loca
 
 This will return a two-element array with the Rmid values for (psinorm=0.3, t=1.0) and (psinorm=0.35, t=1.1).
 
+For programmatically mapping between coordinates, the :py:meth:`~eqtools.core.Equilibrium.rho2rho` method is quite useful. To map from outboard midplane major radius to normalized flux surface volume, you can simply call::
+
+    e.rho2rho('Rmid', 'volnorm', 0.75, 1.0)
+
+Finally, to get a look at the flux surfaces, simply run::
+
+    e.plotFlux()
+
 Package Reference
 -----------------
 
