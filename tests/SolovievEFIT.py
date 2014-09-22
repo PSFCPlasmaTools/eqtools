@@ -91,19 +91,22 @@ class CircSolovievEFIT(Equilibrium):
         self._betat = betat
         self._npts = npts
 
-        self._qstar = (4.*scipy.pi*1.e-7) * R * Ip / (2.*scipy.pi * a**2 * B0)
+        self._currentSign = -1 if Ip > 0 else 1
+        self._qstar = (2.*scipy.pi * a**2 * B0) / (4.*scipy.pi*1.e-1) * R * Ip
 
         # flux definitions
-        self._psiLCFS = 0.0
+        self._psiLCFS = scipy.array([0.0])
         self._psi0 = -0.5 * self._B0 * self._a**2 / self._qstar
+        self._psi0 = scipy.array([self._psi0])
 
         # RZ grid
         self._rGrid = scipy.linspace(R-1.25*a,R+1.25*a,self._npts)
         self._defaultUnits['_rGrid'] = length_unit
         self._zGrid = scipy.linspace(-1.25*a,1.25*a,self._npts)
         self._defaultUnits['_zGrid'] = length_unit
-        
 
+        self._psiRZ = self.rz2psi_analytic(self._rGrid,self._zGrid,length_unit=length_unit,make_grid=True)        
+        self._psiRZ = scipy.reshape(self._psiRZ,(1,npts,npts))
 
     def __str__(self):
         """string formatting for CircSolovievEFIT class.
@@ -116,12 +119,58 @@ class CircSolovievEFIT(Equilibrium):
     def getInfo(self):
         """returns namedtuple of equilibrium information
         """
-        data = namedtuple('Info',['R','a','Ip','B0','betat'])
-        return data(R=self._R,a=self._a,Ip=self._Ip,B0=self._B0,betat=self._betat)
+        data = namedtuple('Info',['R','a','Ip','B0','betat','npts'])
+        return data(R=self._R,a=self._a,Ip=self._Ip,B0=self._B0,betat=self._betat,npts=self._npts)
+
+    ####################
+    # mapping routines #
+    ####################
 
     def _RZtortheta(self,R,Z,make_grid=False):
-        """converts input RZ coordinates to polar cross-section
+        """converts input RZ coordinates to polar cross-section coordinates.
+
+        Args:
+            R (Array-like or scalar float): 
+                Values of the radial coordinate.  If `R` and `Z` are both scalar
+                values, they are used as the coordinate pair for all of the
+                values in `t`. Must have the same shape as `Z` unless the
+                `make_grid` keyword is True. If `make_grid` is True, `R` must
+                have only one dimension (or be a scalar).
+            Z (Array-like or scalar float):
+                Values of the vertical coordinate. If `R` and `Z` are both
+                scalar values, they are used as the coordinate pair for all of
+                the values in `t`. Must have the same shape as `R` unless the
+                `make_grid` keyword is True. If `make_grid` is True, `Z` must
+                have only one dimension.
+
+        Keyword Args:
+            make_grid (Boolean):
+                Set to True to pass `R` and `Z` through :py:func:`meshgrid`
+                before evaluating. If this is set to True, `R` and `Z` must each
+                only have a single dimension, but can have different lengths.
+                Default is False (do not form meshgrid).
+
+        Returns:
+            Tuple of:
+
+            * **r** - array with same dimension as `R`, `Z` of minor-radius values
+            * **theta** - array with same dimension as `R`, `Z` of polar angle values
         """
+        (R,
+        Z,
+        t,
+        idx,
+        oshape,
+        single_val,
+        single_time) = self._processRZt(R,Z,0.0,
+                                        make_grid=make_grid,
+                                        each_t=True,
+                                        check_space=False)
+
+        R = scipy.reshape(R,oshape)
+        Z = scipy.reshape(Z,oshape)
+        t = scipy.reshape(t,oshape)
+
         r = scipy.sqrt((R - self._R)**2 + (Z)**2)
         theta = scipy.arctan2(Z,(R - self._R))
         return (r,theta)
@@ -163,15 +212,10 @@ class CircSolovievEFIT(Equilibrium):
                 shape as well. If the make_grid keyword was True then psi has
                 shape (len(Z), len(R)).
         """
-        (R,Z,t,idx,oshape,single_val,single_time) = self._processRZt(R,Z,0.0,make_grid=make_grid,each_t=False,check_space=False)
-
-        print R,R.shape
-        print Z,Z.shape
-
         A = 2.* self._B0 / self._qstar
         C = 8. * self._R * self._B0**2 * self._betat / (self._a**2 * A)
 
-        (r,theta) = self._RZtortheta(R,Z)
+        (r,theta) = self._RZtortheta(R,Z,make_grid=make_grid)
 
         psi = A/4. * (r**2 - self._a**2) + C/8. * (r**2 - self._a**2) * r * scipy.cos(theta)
         return psi
@@ -216,7 +260,7 @@ class CircSolovievEFIT(Equilibrium):
                 normalized poloidal flux.
         """
         psi = self.rz2psi_analytic(R,Z,length_unit=length_unit,make_grid=make_grid)
-        psinorm = (psi - self._psi0) / (self._psiLCFS - self._psi0)
+        psinorm = (psi - self._psi0[0]) / (self._psiLCFS[0] - self._psi0[0])
 
         return psinorm
 
@@ -464,14 +508,77 @@ class CircSolovievEFIT(Equilibrium):
     def getNearestIdx(self,*args,**kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
+    #################
+    # data handlers #
+    #################
+
     def getTimeBase(self):
         return scipy.array([0.0])
+
+    def getCurrentSign(self):
+        """Returns the sign of the current, for flux mapping.  Note - inverted from intuitive, due to Soloviev formalism.
+        """
+        return self._currentSign
 
     def getFluxGrid(self):
         return self._psiRZ.copy()
 
     def getRGrid(self,length_unit=1):
-        return self._rGrid.copy()
+        """Returns model equilibrium grid R-axis [r]
+        """
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],length_unit)
+        return unit_factor * self._rGrid.copy()
 
     def getZGrid(self,length_unit=1):
-        return self._zGrid.copy()
+        """Returns model equilibrium grid Z-axis [z]
+        """
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],length_unit)
+        return unit_factor * self._zGrid.copy()
+
+    def getFluxAxis(self):
+        """Returns psi on magnetic axis (float)
+        """
+        return self._psi0
+
+    def getFluxLCFS(self):
+        """Returns psi on the LCFS (float)
+        """
+        return self._psiLCFS
+
+    ####################
+    # plot equilibrium #
+    ####################
+
+    def plotFlux(self,fill=True):
+        """Plots flux contours directly from psi grid.
+
+        Keyword Args:
+            fill (Boolean):
+                Set True to plot filled contours.  Set False (default) to plot white-background color contours.
+        """
+        if not _has_plt:
+            raise ImportError("Cannot plot without matplotlib package installed.")
+
+        data = {'R':self._R,'eps':self._a/self._R,'Ip':self._Ip,'Bt':self._B0,'beta':self._betat,'npts':self._npts}
+
+        plt.ion()
+
+        psiRZ = self.getFluxGrid()[0,:,:]
+        rGrid = self.getRGrid(length_unit='m')
+        zGrid = self.getZGrid(length_unit='m')
+
+        fig = plt.figure(figsize=(8,8))
+        ax = fig.add_subplot(111)
+        ax.set_xlabel('$R$ (m)')
+        ax.set_ylabel('$Z$ (m)')
+        ax.set_title("$R = $%(R).2f, $\\varepsilon = $%(eps).2f, $I_p = $%(Ip).2f, "
+                     "$B_T = $%(Bt).2f, $\\beta_t = $%(beta).2f, n = %(npts)i" % data)
+
+        if fill:
+            ax.contourf(rGrid,zGrid,psiRZ,50,zorder=2)
+        else:
+            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2,zorder=2)
+
+        circ = plt.Circle((self._R,0.0),self._a,ec='r',fc='none',linewidth=3,zorder=3)
+        ax.add_patch(circ)
+        ax.plot(self._R,0.0,'rx',markersize=10,zorder=3)
