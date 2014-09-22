@@ -115,14 +115,14 @@ class Spline():
         """evaluates tricubic spline at point (x1,y1,z1) which is f[z1,y1,x1].
 
         Args:
-            z1 (scalar float or 1-dimensional float):
-                Position in z dimension. (First dimension of 3d valued grid)
+            z1 (scalar float or 1-dimensional float): Position in z dimension.
+               This is the first dimension of 3d-valued grid.
 
-            y1 (scalar float or 1-dimensional float):
-                Position in y dimension. (Second dimension of 3d valued grid)
+            y1 (scalar float or 1-dimensional float): Position in y dimension.
+               This is the second dimension of 3d-valued grid.
 
-            x1 (scalar float or 1-dimensional float):
-                Position in x dimension. (Third dimension of 3d valued grid)
+            x1 (scalar float or 1-dimensional float): Position in x dimension. 
+               This is the third dimension of 3d-valued grid.
 
         Returns:
             `val`

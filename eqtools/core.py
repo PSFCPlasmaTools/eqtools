@@ -6182,6 +6182,49 @@ class Equilibrium(object):
         raise NotImplementedError("function to return machine cross-section not implemented for this class yet!")
 
     def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, tunit='ms', title='EQTOOLS', nbbbs=100):
+        """Generates an EFIT gfile with gfile naming convention
+                  
+        Keyword Args:
+            time (scalar float): Time of equilibrium to
+                generate the gfile from. This will use the specified
+                spline functionality to do so. Allows for it to be 
+                unspecified for single-time-frame equilibria.
+            nw (scalar integer): Number of points in R.
+                R is the major radius, and describes the 'width' of the 
+                gfile.
+            nh (scalar integer): Number of points in Z. In cylindrical
+                coordinates Z is the height, and nh describes the 'height' 
+                of the gfile.
+            shot (scalar integer): The shot numer of the equilibrium.
+                Used to help generate the gfile name if unspecified.
+            name (String): Name of the gfile.  If unspecified, will follow
+                standard gfile naming convention (g+shot.time) under current
+                python operating directory.  This allows for it to be saved
+                in other directories, etc.
+            tunit (String): Specified unit for tin. It can only be 'ms' for
+                milliseconds or 's' for seconds.
+            title (String): Title of the gfile on the first line. Name cannot
+                exceed 10 digits. This is so that the style of the first line
+                is preserved.
+            nbbbs (scalar integer): Number of points to define the plasma 
+                seperatrix within the gfile.  The points are defined equally
+                spaced in angle about the plasma center.  This will cause the 
+                x-point to be poorly defined.
+
+        Raises:
+            ValueError: If title is longer than 10 characters.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class (example
+            shot number of 1001).
+            
+            Generate a gfile at t=0.26s, output of g1001.26::
+            
+                Eq_instance.gfile(.26)
+            
+        """
+
         filewriter.gfile(self,
                          time,
                          nw=nw,
