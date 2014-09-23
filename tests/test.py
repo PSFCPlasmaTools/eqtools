@@ -35,7 +35,7 @@ plt.ion()
 # we'll use a volume-averaged toroidal beta of 0.2 as well.
 # leave default length unit in meters, and use a 257x257 grid (default)
 
-equil = sefit.CircSolovievEFIT(0.69,0.22,5.4,1.0,0.2)
+equil = sefit.CircSolovievEFIT(0.69,0.22,5.4,1.0,0.2,npts=20)
 
 # show off our nice equilibrium!
 equil.plotFlux(False)
@@ -46,11 +46,49 @@ equil.plotFlux(False)
 # defined RZ grid in equil, so it's equidistant from each of its
 # nearest-neighbor points for the interpolation.
 
-rGrid = equil.getRGrid()
-zGrid = equil.getZGrid()
+# gets axes for psiRZ in equil
+R = equil.getRGrid()
+Z = equil.getZGrid()
+rGrid,zGrid = scipy.meshgrid(R,Z)
 
+# construct face points as meshgrid
+rFace,zFace = scipy.meshgrid((R[:-1]+R[1:])/2.,(Z[:-1]+Z[1:])/2.)
+print rFace.shape
 
+# plot illustration
+fig = plt.figure(figsize=(8,8))
+ax = fig.add_subplot(111)
+ax.plot(rGrid,zGrid,'ob',markersize=5)
+ax.plot(rFace,zFace,'or',markersize=5)
 
+# calculate fluxes!
+psi_analytic = equil.rz2psi_analytic(rFace,zFace)
+psi_numerical = equil.rz2psi(rFace,zFace)
+
+fig2 = plt.figure(figsize=(10,8))
+ax2 = fig2.add_subplot(111)
+ax2.set_xlabel('$R$ (m)')
+ax2.set_ylabel('$Z$ (m)')
+ax2.set_title("$(\\psi_{analytic} - \\psi_{numerical})/\\psi_{analytic}$, %i x %i grid" % (equil._npts,equil._npts))
+cf = ax2.contourf(rFace,zFace,(psi_analytic-psi_numerical)/psi_analytic,50,zorder=2)
+cb = plt.colorbar(cf)
+circ = plt.Circle((equil._R,0.0),equil._a,ec='r',fc='none',linewidth=3,zorder=3)
+ax2.add_patch(circ)
+ax2.plot(equil._R,0.0,'rx',markersize=10,zorder=3)
+
+fig3,(ax3,ax4) = plt.subplots(1,2,sharey=True,figsize=(16,8))
+ax3.contourf(rFace,zFace,psi_analytic,50)
+ax4.contourf(rFace,zFace,psi_numerical,50)
+fig3.subplots_adjust(wspace=0)
+ax3.set_xlabel('$R$ (m)')
+ax4.set_xlabel('$R$ (m)')
+ax3.set_ylabel('$Z$ (m)')
+ax3.set_title('analytic calculation')
+ax4.set_title('numerical calculation')
+
+fig4 = plt.figure(figsize=(8,8))
+ax5 = fig4.add_subplot(111)
+ax5.contour(rGrid,zGrid,equil.rz2psi(rGrid,zGrid),50)
 
 
 

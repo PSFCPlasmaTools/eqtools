@@ -20,7 +20,7 @@
 built on the analytic Soloviev equilibrium for testing purposes.
 
 Classes:
-    SolvievEFIT: class inheriting :py:class:`Equilibrium` for generation of and
+    CircSolvievEFIT: class inheriting :py:class:`Equilibrium` for generation of and
     mapping routines using the Soloviev solution to the Grad-Shafranov equation.
 """
 
@@ -105,7 +105,7 @@ class CircSolovievEFIT(Equilibrium):
         self._zGrid = scipy.linspace(-1.25*a,1.25*a,self._npts)
         self._defaultUnits['_zGrid'] = length_unit
 
-        self._psiRZ = self.rz2psi_analytic(self._rGrid,self._zGrid,length_unit=length_unit,make_grid=True)        
+        self._psiRZ = self.rz2psi_analytic(self._rGrid,self._zGrid,length_unit=length_unit,make_grid=True)
         self._psiRZ = scipy.reshape(self._psiRZ,(1,npts,npts))
 
     def __str__(self):
@@ -169,7 +169,6 @@ class CircSolovievEFIT(Equilibrium):
 
         R = scipy.reshape(R,oshape)
         Z = scipy.reshape(Z,oshape)
-        t = scipy.reshape(t,oshape)
 
         r = scipy.sqrt((R - self._R)**2 + (Z)**2)
         theta = scipy.arctan2(Z,(R - self._R))
