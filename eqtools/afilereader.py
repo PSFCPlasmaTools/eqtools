@@ -29,7 +29,7 @@ Classes:
 import numpy as np
 import re
 import csv
-
+import warnings
 
 class AFileReader(object):
     """
@@ -432,7 +432,9 @@ class AFileReader(object):
                 self._efittype = line[-1]   # tag for EFIT type ('MAG','KINETIC',etc)
 
             except:
-                print('Old-style a-file.  Some parameters are depreciated.')
+                warnings.warn('Old-style a-file.'
+                              '  Some parameters are depreciated.',
+                              UserWarning)
                 self._fexpan = None
                 self._qqmin = None
                 self._chigamt = None
