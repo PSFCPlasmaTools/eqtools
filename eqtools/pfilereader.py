@@ -17,7 +17,7 @@
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This module contains the PFileReader class, a lightweight data
+This module contains the :py:class:`PFileReader` class, a lightweight data
 handler for p-file (radial profile) datasets.
 
 Classes:
@@ -33,27 +33,26 @@ from collections import namedtuple
 
 
 class PFileReader(object):
-    """
-    Class to read ASCII p-file (profile data storage) into lightweight, user-friendly data structure.  
+    """Class to read ASCII p-file (profile data storage) into lightweight, 
+    user-friendly data structure.  
 
     P-files store data blocks containing the following: a header with parameter
-    name, parameter units, x-axis units, and number of data points, followed by values of
-    axis x, parameter y, and derivative dy/dx.  Each parameter block is read into a
-    namedtuple storing ['name','npts','units','xunits','x','y','dydx'], with each namedtuple
-    stored as an attribute of the PFileReader instance.  This gracefully handles variable
-    formats of p-files (differing versions of p-files will have different parameters stored).
-    Data blocks are accessed as attributes in a copy-safe manner.
+    name, parameter units, x-axis units, and number of data points, followed by 
+    values of axis x, parameter y, and derivative dy/dx.  Each parameter block 
+    is read into a namedtuple storing ['name','npts','units','xunits','x','y',
+    'dydx'], with each namedtuple stored as an attribute of the PFileReader 
+    instance.  This gracefully handles variable formats of p-files (differing 
+    versions of p-files will have different parameters stored).  Data blocks 
+    are accessed as attributes in a copy-safe manner.
     
     Creates instance of PFileReader.
 
     Args:
-        pfile: String.
-            Path to ASCII p-file to be loaded.
+        pfile (String): Path to ASCII p-file to be loaded.
 
     Keyword Args:
-        verbose: Boolean.
-            Option to print message on object creation listing available data
-            parameters. Defaults to True. 
+        verbose (Boolean): Option to print message on object creation 
+            listing available data parameters. Defaults to True. 
     """
     def __init__(self,pfile,verbose=True):
         self._pfile = pfile
@@ -65,12 +64,14 @@ class PFileReader(object):
             reader = csv.reader(readfile,dia,delimiter=' ')
 
             # define data structure as named tuple for storing parameter values
-            data = namedtuple('DataStruct',['name','npts','units','xunits','x','y','dydx'])
+            data = namedtuple('DataStruct',
+                             ['name','npts','units','xunits','x','y','dydx'])
 
             # iterate through lines of file, checking for a header line; 
-            # at each header, read the next npts lines of data into appropriate arrays.
-            # continue until no headerline is found (throws StopIteration).  Populate list
-            # of params with available variables.
+            # at each header, read the next npts lines of data into 
+            # appropriate arrays.
+            # continue until no headerline is found (throws StopIteration).  
+            # Populate list of params with available variables.
             while True:
                 try:
                     headerline = next(reader)
@@ -97,7 +98,13 @@ class PFileReader(object):
                 gradval = np.array(gradval)
 
                 # collate into storage structure
-                vars(self)['_'+param] = data(name=param,npts=npts,units=units,xunits=abscis,x=x,y=val,dydx=gradval)
+                vars(self)['_'+param] = data(name=param,
+                                             npts=npts,
+                                             units=units,
+                                             xunits=abscis,
+                                             x=x,
+                                             y=val,
+                                             dydx=gradval)
                 self._params.append(param)
 
         if verbose:
@@ -119,15 +126,17 @@ class PFileReader(object):
         return mes
 
     def __getattribute__(self, name):
-        """Copy-safe attribute retrieval method overriding default object.__getattribute__.
+        """Copy-safe attribute retrieval method overriding default 
+        object.__getattribute__.
 
-        Tries to retrieve attribute as-written (first check for default object attributes).
-        If that fails, looks for pseudo-private attributes, marked by preceding underscore,
-        to retrieve data blocks.  If this fails, raise AttributeError.
+        Tries to retrieve attribute as-written (first check for default object 
+        attributes).  If that fails, looks for pseudo-private attributes, marked
+        by preceding underscore, to retrieve data blocks.  If this fails, 
+        raise AttributeError.
 
         Args:
-            name: String.
-                Name (without leading underscore for data variables) of attribute.
+            name (String): Name (without leading underscore for data variables)
+            of attribute.
 
         Raises:
             AttributeError: if no attribute can be found.
@@ -145,23 +154,23 @@ class PFileReader(object):
                 raise AttributeError('No attribute "%s" found' % name)
 
     def __setattr__(self, name, value):
-        """Copy-safe attribute setting method overriding default object.__setattr__.
+        """Copy-safe attribute setting method overriding default 
+        object.__setattr__.
 
         Raises error if object already has attribute _{name} for input name,
-        as such an attribute would interfere with automatic property generation in
-        __getattribute__.
+        as such an attribute would interfere with automatic property generation 
+        in __getattribute__.
 
         Args:
-            name: String.
-                Attribute name.
+            name (String): Attribute name.
 
         Raises:
             AttributeError: if attempting to create attribute with protected
                 pseudo-private name.
         """
         if hasattr(self, '_'+name):
-            raise AttributeError("PFileReader object already has data attribute "
-                                 "'_%(n)s', creating attribute '%(n)s' will"
+            raise AttributeError("PFileReader object already has data attribute"
+                                 " '_%(n)s', creating attribute '%(n)s' will"
                                  " conflict with automatic property generation."
                                  % {'n': name})
         else:
