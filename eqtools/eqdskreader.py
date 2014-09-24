@@ -645,28 +645,29 @@ class EqdskReader(Equilibrium):
     def rz2psi(self,R,Z,*args,**kwargs):
         """Converts passed, R,Z arrays to psi values.
         
-        Wrapper for Equilibrium.rz2psi masking out timebase dependence.
+        Wrapper for :py:meth:`Equilibrium.rz2psi` removing timebase dependence.
 
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
-                map to poloidal flux. If the make_grid keyword is True, R must 
-                have shape (len_R,).
+                map to poloidal flux. If the `make_grid` keyword is True, `R` 
+                must have shape (`len_R`,).
             Z (Array-like or scalar float): Values of the vertical coordinate to
-                map to poloidal flux. Must have the same shape as R unless the 
-                make_grid keyword is set. If the make_grid keyword is True, Z 
-                must have shape (len_Z,).
+                map to poloidal flux. Must have the same shape as `R` unless the 
+                `make_grid` keyword is set. If the make_grid keyword is True, 
+                `Z` must have shape (`len_Z`,).
             *args:
                 Slot for time input for consistent syntax with 
-                Equilibrium.rz2psi.  Will return dummy value for time if input 
-                in EqdskReader.
+                :py:meth:`Equilibrium.rz2psi`.  Will return dummy value for time
+                if input in :py:class:`EqdskReader`.
 
         Keyword Args:
-            make_grid (Boolean): Set to True to pass R and Z through meshgrid
-                before evaluating. If this is set to True, R and Z must each
-                only have a single dimension, but can have different lengths.
-                Default is False (do not form meshgrid).
-            length_unit (String or 1): Length unit that R and Z are being given
-                in. If a string is given, it must be a valid unit specifier:
+            make_grid (Boolean): Set to True to pass `R` and `Z` through 
+                meshgrid before evaluating. If this is set to True, `R` and `Z`
+                must each only have a single dimension, but can have different 
+                lengths.  Default is False (do not form meshgrid).
+            length_unit (String or 1): Length unit that `R` and `Z` are being 
+                given in. If a string is given, it must be a valid unit 
+                specifier:
                 
                 ===========  ===========
                 'm'          meters
@@ -682,18 +683,18 @@ class EqdskReader(Equilibrium):
                 ===========  ===========
                 
                 If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (R and Z given in meters).
+                value is 1 (`R` and `Z` given in meters).
             **kwargs:
-                Other keywords (i.e., return_t) to rz2psi are valid
-                (necessary for proper inheritance and usage in other mapping 
-                routines) but will return dummy values.
+                Other keywords (i.e., `return_t`) to :py:class:`rz2psi` are 
+                valid (necessary for proper inheritance and usage in other 
+                mapping routines) but will return dummy values.
 
         Returns:
-            `psi` (`Array or scalar float`): If all of the input arguments are 
+            `psi` (Array or scalar float): If all of the input arguments are 
                 scalar, then a scalar is returned. Otherwise, a scipy Array 
-                instance is returned. If R and Z both have the same shape then 
-                psi has this shape as well. If the make_grid keyword was True 
-                then psi has shape (len(Z), len(R)).
+                instance is returned. If `R` and `Z` both have the same shape 
+                then psi has this shape as well. If the make_grid keyword was 
+                True then psi has shape (`len(Z)`, `len(R)`).
         """
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
