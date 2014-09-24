@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-This module contains the EqdskReader class, which creates Equilibrium class
+"""This module contains the EqdskReader class, which creates Equilibrium class
 functionality for equilibria stored in eqdsk files from EFIT(a- and g-files).
 
 Classes:
@@ -58,40 +57,45 @@ class EqdskReader(Equilibrium):
     autodetected based on user shot and time selection), storing as object
     attributes for usage in Equilibrium mapping methods.
 
-    Calling structure - user may call class with shot and time (ms) values, set by keywords
-    (or positional placement allows calling without explicit keyword syntax).  EqdskReader
-    then attempts to construct filenames from the shot/time, of the form 'g[shot].[time]' and
-    'a[shot].[time]'.  Alternately, the user may skip this input and explicitly set paths to
-    the g- and/or a-files, using the gfile and afile keyword arguments.  If both types of calls
-    are set, the explicit g-file and a-file paths override the auto-generated filenames from
-    the shot and time.
+    Calling structure - user may call class with shot and time (ms) values, set 
+    by keywords (or positional placement allows calling without explicit keyword
+    syntax).  EqdskReader then attempts to construct filenames from the 
+    shot/time, of the form 'g[shot].[time]' and 'a[shot].[time]'.  Alternately, 
+    the user may skip this input and explicitly set paths to the g- and/or 
+    a-files, using the gfile and afile keyword arguments.  If both types of 
+    calls are set, the explicit g-file and a-file paths override the 
+    auto-generated filenames from the shot and time.
 
     Keyword Args:
-        shot: Int.
-            Shot index.
-        time: Int.
-            Time index (typically ms).  Shot and Time used to autogenerate filenames.
-        gfile: String.
-            Manually selects ASCII file for equilibrium read.
-        afile: String.
-            Manually selects ASCII file for time-history read.
-        length_unit: String. 
-            Flag setting length unit for equilibrium scales.
+        shot (Integer): Shot index.
+        time (Integer): Time index (typically ms).  Shot and Time used to 
+            autogenerate filenames.
+        gfile (String): Manually selects ASCII file for equilibrium read.
+        afile (String): Manually selects ASCII file for time-history read.
+        length_unit (String): Flag setting length unit for equilibrium scales.
             Defaults to 'm' for lengths in meters.
-        verbose: Boolean. 
-            When set to False, suppresses terminal outputs during CSV read.
-            Defaults to True (prints terminal output).
+        verbose (Boolean): When set to False, suppresses terminal outputs during
+            CSV read.  Defaults to True (prints terminal output).
 
     Raises:
         IOError: if both name/shot and explicit filenames are not set.
-        ValueError: if the g-file cannot be found, or if multiple valid g/a-files are found.
+        ValueError: if the g-file cannot be found, or if multiple valid 
+            g/a-files are found.
     """
-    def __init__(self,shot=None,time=None,gfile=None,afile=None,length_unit='m',verbose=True):
-        # instantiate superclass, forcing time splining to false (eqdsk only contains single time slice)
+    def __init__(self,
+                 shot=None,
+                 time=None,
+                 gfile=None,
+                 afile=None,
+                 length_unit='m',
+                 verbose=True):
+        # instantiate superclass, forcing time splining to false 
+        # (eqdsk only contains single time slice)
         super(EqdskReader,self).__init__(length_unit=length_unit,tspline=False)
         self._verbose = bool(verbose)
 
-        # dict to store default units of length-scale parameters, used by core._getLengthConversionFactor
+        # dict to store default units of length-scale parameters, 
+        # used by core._getLengthConversionFactor
         self._defaultUnits = {}
 
         # parse shot and time inputs into standard naming convention
@@ -100,7 +104,8 @@ class EqdskReader(Equilibrium):
                 timestring = '0'*(5-len(str(time))) + str(time)
             elif len(str(time)) > 5:
                 timestring = str(time)[-5:]
-                warnings.warn("Time window string greater than 5 digits.  Masking to last 5 digits. "
+                warnings.warn("Time window string greater than 5 digits.  "
+                              "Masking to last 5 digits. "
                               "If this does not match the selected EQ files, "
                               "please use explicit filename inputs.",
                               RuntimeWarning)
@@ -113,7 +118,8 @@ class EqdskReader(Equilibrium):
         if name is None and gfile is None:
             raise IOError('must specify shot/time or filenames.')
 
-        # if explicit filename for g-file is not set, check current directory for files matching name
+        # if explicit filename for g-file is not set, check current directory 
+        # for files matching name
         # if multiple valid files or no files are found, trigger ValueError
         if gfile is None:   #attempt to generate filename
             if verbose:
@@ -124,9 +130,9 @@ class EqdskReader(Equilibrium):
                 if verbose:
                     print('File found: '+self._gfilename)
             elif len(gcurrfiles) > 1:
-                raise ValueError("Multiple valid g-files detected in directory. "
-                                  "Please select a file with explicit "
-                                  "input or clean directory.")
+                raise ValueError("Multiple valid g-files detected in directory."
+                                 " Please select a file with explicit"
+                                 " input or clean directory.")
             else:   # no files found
                 raise ValueError("No valid g-files detected in directory. "
                                   "Please select a file with explicit input or "
@@ -134,17 +140,18 @@ class EqdskReader(Equilibrium):
         else:   # check that given file is in directory
             gcurrfiles = glob.glob(gfile)
             if len(gcurrfiles) < 1:
-                raise ValueError("No g-file with the given name detected in directory. "
-                                  "Please ensure the file is in the active directory or "
-                                  "that you have supplied the correct name.")
+                raise ValueError("No g-file with the given name detected in "
+                                 "directory.  Please ensure the file is in the "
+                                 "active directory or that you have supplied "
+                                 "the correct name.")
             else:
                 self._gfilename = gfile
 
-        # and likewise for a-file name.  However, we can operate at reduced capacity
-        # without the a-file.  If no file with explicitly-input name is found, or 
-        # multiple valid files (with no explicit input) are found, raise ValueError.
-        # otherwise (no autogenerated files found) set hasafile flag false and 
-        # nonfatally warn user.
+        # and likewise for a-file name.  However, we can operate at reduced 
+        # capacity without the a-file.  If no file with explicitly-input name 
+        # is found, or multiple valid files (with no explicit input) are found, 
+        # raise ValueError.  Otherwise (no autogenerated files found) set 
+        # hasafile flag false and nonfatally warn user.
         if afile is None:
             if name is not None:
                 if verbose:
@@ -155,9 +162,9 @@ class EqdskReader(Equilibrium):
                     if verbose:
                         print('File found: '+self._afilename)
                 elif len(acurrfiles) > 1:
-                    raise ValueError("Multiple valid a-files detected in directory. "
-                                  "Please select a file with explicit "
-                                  "input or clean directory.")
+                    raise ValueError("Multiple valid a-files detected in "
+                                  "directory.  Please select a file with "
+                                  "explicit input or clean directory.")
                 else:   # no files found
                     warnings.warn("No valid a-files detected in directory. "
                                   "Please select a file with explicit input or "
@@ -169,9 +176,10 @@ class EqdskReader(Equilibrium):
         else:   # check that given file is in directory
             acurrfiles = glob.glob(afile)
             if len(acurrfiles) < 1:
-                raise ValueError("No a-file with the given name detected in directory. "
-                                 "Please ensure the file is in the active directory or "
-                                 "that you have supplied the correct name.")
+                raise ValueError("No a-file with the given name detected in "
+                                 "directory.  Please ensure the file is in the "
+                                 "active directory or that you have supplied "
+                                 "the correct name.")
             else:
                 self._afilename = afile
 
@@ -564,12 +572,12 @@ class EqdskReader(Equilibrium):
         return data(shot=shot,time=time,nr=nr,nz=nz,efittype=efittype)
 
     def readAFile(self,afile):
-        """Reads a-file (scalar time-history data) to pull additional equilibrium data
-        not found in g-file, populates remaining data (initialized as None) in object.
+        """Reads a-file (scalar time-history data) to pull additional 
+        equilibrium data not found in g-file, populates remaining data 
+        (initialized as None) in object.
 
         Args:
-            afile: String.
-                Path to ASCII a-file.
+            afile (String): Path to ASCII a-file.
 
         Raises:
             IOError: If afile is not found.
@@ -640,27 +648,24 @@ class EqdskReader(Equilibrium):
         Wrapper for Equilibrium.rz2psi masking out timebase dependence.
 
         Args:
-            R: Array-like or scalar float.
-                Values of the radial coordinate to
+            R (Array-like or scalar float): Values of the radial coordinate to
                 map to poloidal flux. If the make_grid keyword is True, R must 
                 have shape (len_R,).
-            Z: Array-like or scalar float.
-                Values of the vertical coordinate to
+            Z (Array-like or scalar float): Values of the vertical coordinate to
                 map to poloidal flux. Must have the same shape as R unless the 
                 make_grid keyword is set. If the make_grid keyword is True, Z 
                 must have shape (len_Z,).
             *args:
-                Slot for time input for consistent syntax with Equilibrium.rz2psi.
-                will return dummy value for time if input in EqdskReader.
+                Slot for time input for consistent syntax with 
+                Equilibrium.rz2psi.  Will return dummy value for time if input 
+                in EqdskReader.
 
         Keyword Args:
-            make_grid: Boolean.
-                Set to True to pass R and Z through meshgrid
+            make_grid (Boolean): Set to True to pass R and Z through meshgrid
                 before evaluating. If this is set to True, R and Z must each
                 only have a single dimension, but can have different lengths.
                 Default is False (do not form meshgrid).
-            length_unit: String or 1.
-                Length unit that R and Z are being given
+            length_unit (String or 1): Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
                 
                 ===========  ===========
@@ -680,15 +685,15 @@ class EqdskReader(Equilibrium):
                 value is 1 (R and Z given in meters).
             **kwargs:
                 Other keywords (i.e., return_t) to rz2psi are valid
-                (necessary for proper inheritance and usage in other mapping routines)
-                but will return dummy values.
+                (necessary for proper inheritance and usage in other mapping 
+                routines) but will return dummy values.
 
         Returns:
-            psi: Array or scalar float. If all of the input arguments are scalar,
-                then a scalar is returned. Otherwise, a scipy Array instance is
-                returned. If R and Z both have the same shape then psi has this
-                shape as well. If the make_grid keyword was True then psi has
-                shape (len(Z), len(R)).
+            `psi` (`Array or scalar float`): If all of the input arguments are 
+                scalar, then a scalar is returned. Otherwise, a scipy Array 
+                instance is returned. If R and Z both have the same shape then 
+                psi has this shape as well. If the make_grid keyword was True 
+                then psi has shape (len(Z), len(R)).
         """
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
