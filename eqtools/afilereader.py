@@ -33,25 +33,24 @@ import csv
 
 class AFileReader(object):
     """
-    Class to read ASCII a-file (time-history data storage) into lightweight, user-friendly data structure.
+    Class to read ASCII a-file (time-history data storage) into lightweight, 
+    user-friendly data structure.
 
-    A-files store data blocks of scalar time-history data for EFIT plasma equilibrium.  Each parameter is 
-    read into a pseudo-private object attribute (marked by a leading underscore), followed by the standard
+    A-files store data blocks of scalar time-history data for EFIT 
+    plasma equilibrium.  Each parameter is read into a pseudo-private object 
+    attribute (marked by a leading underscore), followed by the standard
     EFIT variable names.
     
     initialize object, reading from file.
 
     Args:
-        afile: str
-            path to a-file
+        afile (String): file path to a-file
     """
     def __init__(self, afile):
-        """
-        """
         self._afile = afile
 
         with open(afile,'r') as readfile:
-            # skip delimiter, return as single string - let regex handle splitting.  
+            # skip delimiter, return as single string let regex handle splitting 
             # Use csv.reader for StopIteration error handling.
             reader = csv.reader(readfile)
             # date header line
@@ -471,21 +470,23 @@ class AFileReader(object):
                 self._efittype = lastline.split()[-1]
 
     def __str__(self):
-        """
-        overrides default __str__method with more useful output.
+        """overrides default __str__method with more useful output.
         """
         return 'a-file data from '+self._afile
 
     def __getattribute__(self, name):
         """
-        Copy-safe attribute retrieval method overriding default object.__getattribute__.
+        Copy-safe attribute retrieval method overriding default 
+        object.__getattribute__.
 
-        Tries to retrieve attribute as-written (first check for default object attributes).
-        If that fails, looks for pseudo-private attributes, marked by preceding underscore,
-        to retrieve data values.  If this fails, raise AttributeError.
+        Tries to retrieve attribute as-written (first check for default object 
+        attributes).  If that fails, looks for pseudo-private attributes, 
+        marked by preceding underscore, to retrieve data values.  If this 
+        fails, raise AttributeError.
 
         Args:
-            name: String.  Name (without leading underscore for data variables) of attribute.
+            name (String): Name (without leading underscore for data variables) 
+                of attribute.
 
         Raises:
             AttributeError: if no attribute can be found.
@@ -501,37 +502,24 @@ class AFileReader(object):
 
     def __setattr__(self, name, value):
         """
-        Copy-safe attribute setting method overriding default object.__setattr__.
+        Copy-safe attribute setting method overriding default 
+        object.__setattr__.
 
         Raises error if object already has attribute _{name} for input name,
-        as such an attribute would interfere with automatic property generation in
-        __getattribute__.
+        as such an attribute would interfere with automatic property generation 
+        in __getattribute__.
 
         Args:
-            name: String.  Attribute name.
+            name (String): Attribute name.
 
         Raises:
             AttributeError: if attempting to create attribute with protected
                 pseudo-private name.
         """
         if hasattr(self, '_'+name):
-            raise AttributeError("AFileReader object already has data attribute "
-                                 "'_%(n)s', creating attribute '%(n)s' will"
+            raise AttributeError("AFileReader object already has data attribute"
+                                 " '_%(n)s', creating attribute '%(n)s' will"
                                  " conflict with automatic property generation."
                                  % {'n': name})
         else:
             super(AFileReader, self).__setattr__(name, value)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
