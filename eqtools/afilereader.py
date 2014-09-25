@@ -472,14 +472,14 @@ class AFileReader(object):
                 self._efittype = lastline.split()[-1]
 
     def __str__(self):
-        """overrides default __str__method with more useful output.
+        """overrides default `__str__` method with more useful output.
         """
         return 'a-file data from '+self._afile
 
     def __getattribute__(self, name):
         """
         Copy-safe attribute retrieval method overriding default 
-        object.__getattribute__.
+        `object.__getattribute__`.
 
         Tries to retrieve attribute as-written (first check for default object 
         attributes).  If that fails, looks for pseudo-private attributes, 
@@ -505,11 +505,11 @@ class AFileReader(object):
     def __setattr__(self, name, value):
         """
         Copy-safe attribute setting method overriding default 
-        object.__setattr__.
+        `object.__setattr__`.
 
-        Raises error if object already has attribute _{name} for input name,
+        Raises error if object already has attribute `_{name}` for input name,
         as such an attribute would interfere with automatic property generation 
-        in __getattribute__.
+        in :py:meth:`__getattribute__`.
 
         Args:
             name (String): Attribute name.

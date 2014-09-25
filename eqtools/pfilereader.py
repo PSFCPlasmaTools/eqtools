@@ -155,11 +155,11 @@ class PFileReader(object):
 
     def __setattr__(self, name, value):
         """Copy-safe attribute setting method overriding default 
-        object.__setattr__.
+        `object.__setattr__`.
 
-        Raises error if object already has attribute _{name} for input name,
+        Raises error if object already has attribute `_{name}` for input name,
         as such an attribute would interfere with automatic property generation 
-        in __getattribute__.
+        in :py:meth:`__getattribute__`.
 
         Args:
             name (String): Attribute name.
