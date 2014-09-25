@@ -690,11 +690,13 @@ class EqdskReader(Equilibrium):
                 mapping routines) but will return dummy values.
 
         Returns:
-            psi (Array or scalar float): If all of the input arguments are 
-                scalar, then a scalar is returned. Otherwise, a scipy Array 
-                instance is returned. If `R` and `Z` both have the same shape 
-                then psi has this shape as well. If the make_grid keyword was 
-                True then psi has shape (`len(Z)`, `len(R)`).
+            psi (Array or scalar float): 
+
+                If all of the input arguments are scalar, then a scalar is 
+                returned. Otherwise, a scipy Array instance is returned. If `R` 
+                and `Z` both have the same shape then psi has this shape as 
+                well. If the make_grid keyword was True then psi has shape 
+                (`len(Z)`, `len(R)`).
 
         Examples:
             All assume that Eq_instance is a valid instance EqdskReader:
