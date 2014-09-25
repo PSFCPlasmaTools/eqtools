@@ -655,7 +655,7 @@ class EqdskReader(Equilibrium):
                 map to poloidal flux. Must have the same shape as `R` unless the 
                 `make_grid` keyword is set. If the make_grid keyword is True, 
                 `Z` must have shape (`len_Z`,).
-            args:
+            \*args:
                 Slot for time input for consistent syntax with 
                 :py:meth:`Equilibrium.rz2psi`.  Will return dummy value for time
                 if input in :py:class:`EqdskReader`.
@@ -684,7 +684,7 @@ class EqdskReader(Equilibrium):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (`R` and `Z` given in meters).
-            kwargs:
+            \*\*kwargs:
                 Other keywords (i.e., `return_t`) to :py:meth:`rz2psi` are 
                 valid (necessary for proper inheritance and usage in other 
                 mapping routines) but will return dummy values.
