@@ -642,6 +642,9 @@ class EqdskReader(Equilibrium):
     # wrappers for mapping routines handling time call #
     ####################################################
 
+    def aaaaa(self):
+        return None
+
     def rz2psi(self,R,Z,*args,**kwargs):
         """Converts the passed R, Z, t arrays to psi (unnormalized poloidal flux) values.
         
