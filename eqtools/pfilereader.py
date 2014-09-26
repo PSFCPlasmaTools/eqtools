@@ -21,7 +21,8 @@ This module contains the :py:class:`PFileReader` class, a lightweight data
 handler for p-file (radial profile) datasets.
 
 Classes:
-    PFileReader: Data-storage class for p-file data.  Reads 
+    PFileReader: 
+        Data-storage class for p-file data.  Reads 
         data from ASCII p-file, storing as copy-safe object 
         attributes.
 """
