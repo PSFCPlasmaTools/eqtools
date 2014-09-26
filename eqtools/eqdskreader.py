@@ -95,7 +95,7 @@ class EqdskReader(Equilibrium):
             edr = eqtools.EqdskReader(shot=shot,time=time,verbose=False)
 
         Instantiate EqdskReader with explicit file paths `gfile_path` and 
-        `afile_path`:
+        `afile_path`::
 
             edr = eqtools.EqdskReader(gfile=gfile_path,afile=afile_path)
     """
@@ -555,6 +555,8 @@ class EqdskReader(Equilibrium):
                 print('a-file data not loaded.')
                     
     def __str__(self):
+        """Overrides default __str__ method with more useful information.
+        """
         if self._efittype is None:
             eq = 'equilibrium'
         else:
@@ -659,10 +661,6 @@ class EqdskReader(Equilibrium):
     # wrappers for mapping routines handling time call #
     ####################################################
 
-    def aaaaa(self):
-        """Foo the bar baz"""
-        return None
-
     def rz2psi(self,R,Z,*args,**kwargs):
         """Converts passed, R,Z arrays to psi values.
         
@@ -754,8 +752,7 @@ class EqdskReader(Equilibrium):
                 map to normalized poloidal flux.  Must have the same shape as 
                 `R` unless the `make_grid` keyword is set. If the `make_grid`
                 keyword is True, `Z` must have shape (`len_Z`,).
-            *args:
-                Slot for time input for consistent syntax with 
+            *args: Slot for time input for consistent syntax with 
                 :py:meth:`Equilibrium.rz2psinorm`.  Will return dummy value for 
                 time if input in :py:class:`EqdskReader`.
 
@@ -788,9 +785,9 @@ class EqdskReader(Equilibrium):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (`R` and `Z` given in meters).
-            **kwargs:
-                Other keywords passed to :py:class:`Equilibrium.rz2psinorm` are 
-                valid, but will return dummy values (i.e. for timebase keywords)
+            **kwargs: Other keywords passed to 
+                :py:class:`Equilibrium.rz2psinorm` are valid, but will return 
+                dummy values (i.e. for timebase keywords)
 
         Returns:
             psinorm (Array or scalar float): If all of the input arguments are
@@ -812,8 +809,8 @@ class EqdskReader(Equilibrium):
             
                 psi_arr = Eq_instance.rz2psinorm([0.6, 0.8], [0, 0])
 
-            Find psinorm values on grid defined by 1D vector of radial positions R
-            and 1D vector of vertical positions Z::
+            Find psinorm values on grid defined by 1D vector of radial positions
+            R and 1D vector of vertical positions Z::
             
                 psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
         """
@@ -840,8 +837,7 @@ class EqdskReader(Equilibrium):
                 map to normalized toroidal flux. Must have the same shape as `R` 
                 unless the `make_grid` keyword is set. If the `make_grid` 
                 keyword is True, Z must have shape (`len_Z`,).
-            *args:
-                Slot for time input for consistent syntax with 
+            *args: Slot for time input for consistent syntax with 
                 :py:meth:`Equilibrium.rz2phinorm`.  Will return dummy value for 
                 time if input in EqdskReader.
 
@@ -884,9 +880,9 @@ class EqdskReader(Equilibrium):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            **kwargs:
-                Other keywords passed to :py:meth:`Equilibrium.rz2phinorm` are 
-                valid, but will return dummy values (i.e. for timebase keywords)
+            **kwargs: Other keywords passed to :py:meth:`Equilibrium.rz2phinorm` 
+                are valid, but will return dummy values (i.e. for timebase 
+                keywords)
 
         Returns:
             phinorm (Array or scalar float): If all of the input arguments are
@@ -927,13 +923,14 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def rz2rho(self,method,R,Z,t=False,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
-        """Convert the passed (R, Z) coordinates into one of several normalized coordinates.
-        Wrapper for Equilibrium.rz2rho masking timebase dependence.
+    def rz2rho(self,method,R,Z,t=False,sqrt=False,make_grid=False,kind='cubic',
+               length_unit=1):
+        """Convert the passed (R, Z) coordinates into one of several 
+        normalized coordinates.  Wrapper for Equilibrium.rz2rho masking 
+        timebase dependence.
         
         Args:
-            method: String.
-                Indicates which normalized coordinates to use.
+            method (String): Indicates which normalized coordinates to use.
                 Valid options are:
                     
                     =======     ========================
@@ -942,29 +939,24 @@ class EqdskReader(Equilibrium):
                     volnorm     Normalized volume
                     =======     ========================
                     
-            R: Array-like or scalar float.
-                Values of the radial coordinate to
-                map to normalized coordinate. Must have the same shape as Z 
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to normalized coordinate. Must have the same shape as `Z` 
                 unless the make_grid keyword is set. If the make_grid keyword
-                is True, R must have shape (len_R,).
-            Z: Array-like or scalar float.
-                Values of the vertical coordinate to
-                map to normalized coordinate. Must have the same shape as R 
+                is True, `R` must have shape (`len_R`,).
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to normalized coordinate. Must have the same shape as `R` 
                 unless the make_grid keyword is set. If the make_grid keyword 
-                is True, Z must have shape (len_Z,).
+                is True, `Z` must have shape (`len_Z`,).
         
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            sqrt: Boolean.
-                Set to True to return the square root of normalized
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed t values either as an Arg or Kwarg are neglected.
+            sqrt (Boolean): Set to True to return the square root of normalized
                 coordinate. Only the square root of positive values is taken.
                 Negative values are replaced with zeros, consistent with Steve
                 Wolfe's IDL implementation efit_rz2rho.pro. Default is False
                 (return normalized coordinate itself).
-            make_grid: Boolean.
-                Set to True to pass R and Z through meshgrid
+            make_grid (Boolean): Set to True to pass R and Z through meshgrid
                 before evaluating. If this is set to True, R and Z must each
                 only have a single dimension, but can have different lengths.
                 Default is False (do not form meshgrid).
@@ -978,8 +970,7 @@ class EqdskReader(Equilibrium):
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1.
-                Length unit that R and Z are being given
+            length_unit (String or 1): Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
                 
                 ===========  ===========
@@ -999,7 +990,7 @@ class EqdskReader(Equilibrium):
                 value is 1 (R and Z given in meters).
             
         Returns:
-            rho: Array or scalar float. If all of the input arguments are
+            rho (Array-like or scalar float): If all of the input arguments are
                 scalar, then a scalar is returned. Otherwise, a scipy Array
                 instance is returned. If R and Z both have the same shape then
                 rho has this shape as well. If the make_grid keyword was True
@@ -1037,54 +1028,48 @@ class EqdskReader(Equilibrium):
         else:
             return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
-    def rz2rmid(self,R,Z,t=False,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
+    def rz2rmid(self,R,Z,t=False,sqrt=False,make_grid=False,rho=False,
+                kind='cubic',length_unit=1):
         """Maps the given points to the outboard midplane major radius, R_mid.
         Wrapper for Equilibrium.rz2rmid masking timebase dependence.
         
         Based on the IDL version efit_rz2rmid.pro by Steve Wolfe.
         
         Args:
-            R: Array-like or scalar float.
-                Values of the radial coordinate to
-                map to midplane radius. Must have the same shape as Z unless 
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to midplane radius. Must have the same shape as `Z` unless 
                 the make_grid keyword is set. If the make_grid keyword is True,
-                R must have shape (len_R,).
-            Z: Array-like or scalar float.
-                Values of the vertical coordinate to
-                map to midplane radius. Must have the same shape as R unless the
-                make_grid keyword is set. If the make_grid keyword is True, Z 
-                must have shape (len_Z,).
+                `R` must have shape (`len_R`,).
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to midplane radius. Must have the same shape as `R` unless 
+                the make_grid keyword is set. If the make_grid keyword is True, 
+                `Z` must have shape (`len_Z`,).
         
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            sqrt: Boolean.
-                Set to True to return the square root of midplane
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed t values either as an Arg or Kwarg are neglected.
+            sqrt (Boolean): Set to True to return the square root of midplane
                 radius. Only the square root of positive values is taken.
                 Negative values are replaced with zeros, consistent with Steve
                 Wolfe's IDL implementation efit_rz2rho.pro. Default is False
                 (return R_mid itself).
-            make_grid: Boolean.
-                Set to True to pass R and Z through meshgrid
-                before evaluating. If this is set to True, R and Z must each
-                only have a single dimension, but can have different lengths.
-                Default is False (do not form meshgrid).
-            rho: Boolean.
-                Set to True to return r/a (normalized minor radius)
-                instead of R_mid. Default is False (return major radius, R_mid).
-            kind: String or non-negative int.
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to R_mid. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+            make_grid (Boolean): Set to True to pass `R` and `Z` through 
+                meshgrid before evaluating. If this is set to True, `R` and `Z` 
+                must each only have a single dimension, but can have different 
+                lengths.  Default is False (do not form meshgrid).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of `R_mid`. Default is False (return major radius, 
+                R_mid).
+            kind (String or non-negative int): Specifies the type of 
+                interpolation to be performed in getting from psinorm to R_mid. 
+                This is passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1.
-                Length unit that R and Z are being given
+            length_unit (String or 1): Length unit that R and Z are being given
                 in AND that R_mid is returned in. If a string is given, it
                 must be a valid unit specifier:
                 
@@ -1101,15 +1086,15 @@ class EqdskReader(Equilibrium):
                 'default'    meters
                 ===========  ===========
                 
-               If length_unit is 1 or None, meters are assumed. The default
+                If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters, R_mid returned in meters).
             
         Returns:
-            R_mid: Array or scalar float. If all of the input arguments are
+            R_mid (Array or scalar float): If all of the input arguments are
                 scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. If R and Z both have the same shape then
-                R_mid has this shape as well. If the make_grid keyword was True
-                then R_mid has shape (len(Z), len(R)).
+                instance is returned. If `R` and `Z` both have the same shape 
+                then `R_mid` has this shape as well. If the make_grid keyword 
+                was True then `R_mid` has shape (`len(Z)`, `len(R)`).
         
         Examples:
             All assume that Eq_instance is a valid instance of the appropriate
