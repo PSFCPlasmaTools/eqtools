@@ -56,17 +56,14 @@ class CModEFITTree(EFITTree):
     Additional attributes are initialized as None, filled on the first request to the object.
 
     Args:
-        shot: (long) int
-            C-Mod shot index (long)
+        shot (integer): C-Mod shot index (long)
     
     Keyword Args:
-        tree: str
-            Optional input for EFIT tree, defaults to 'ANALYSIS'
+        tree (string): Optional input for EFIT tree, defaults to 'ANALYSIS'
             (i.e., EFIT data are under \\analysis::top.efit.results).
             For any string TREE (such as 'EFIT20') other than 'ANALYSIS',
             data are taken from \\TREE::top.results.
-        length_unit: str
-            Sets the base unit used for any quantity whose
+        length_unit (string): Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
                 
                 ===========  ===========================================================================================
@@ -83,22 +80,20 @@ class CModEFITTree(EFITTree):
                 ===========  ===========================================================================================
                 
             Default is 'm' (all units taken and returned in meters).
-        gfile: str
-            Optional input for EFIT geqdsk location name, defaults to 'g_eqdsk'
-            (i.e., EFIT data are under \\tree::top.results.G_EQDSK)
-        afile: str
-            Optional input for EFIT aeqdsk location name, defaults to 'a_eqdsk'
-            (i.e., EFIT data are under \\tree::top.results.A_EQDSK)
-        tspline: Boolean
-            Sets whether or not interpolation in time is
+        gfile (string): Optional input for EFIT geqdsk location name, 
+            defaults to 'g_eqdsk' (i.e., EFIT data are under
+            \\tree::top.results.G_EQDSK)
+        afile (string): Optional input for EFIT aeqdsk location name,
+            defaults to 'a_eqdsk' (i.e., EFIT data are under 
+            \\tree::top.results.A_EQDSK)
+        tspline (Boolean): Sets whether or not interpolation in time is
             performed using a tricubic spline or nearest-neighbor
             interpolation. Tricubic spline interpolation requires at least
             four complete equilibria at different times. It is also assumed
             that they are functionally correlated, and that parameters do
             not vary out of their boundaries (derivative = 0 boundary
             condition). Default is False (use nearest neighbor interpolation).
-        monotonic: Boolean
-            Sets whether or not the "monotonic" form of time
+        monotonic (Boolean): Sets whether or not the "monotonic" form of time
             window finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
@@ -239,8 +234,7 @@ class CModEFITTree(EFITTree):
         vector format for use in other plotting routines
 
         Args:
-            shot: (long) int
-                C-Mod shot index (used for tree access)
+            shot (integer): C-Mod shot index (used for tree access)
 
         Returns:
             (x, y): The coordinates of the machine cross-section.
