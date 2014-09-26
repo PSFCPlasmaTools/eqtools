@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>eqtools.CModEFIT &mdash; eqtools 0.0 documentation</title>
+    <title>eqtools.CModEFIT &mdash; eqtools 1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="eqtools 0.0 documentation" href="../../index.html" />
+    <link rel="top" title="eqtools 1.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">eqtools 1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -67,6 +65,9 @@
 <span class="c"># You should have received a copy of the GNU General Public License</span>
 <span class="c"># along with EqTools.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
+<span class="sd">&quot;&quot;&quot;This module provides classes for working with C-Mod EFIT data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">scipy</span>
 
 <span class="kn">from</span> <span class="nn">.EFIT</span> <span class="kn">import</span> <span class="n">EFITTree</span>
@@ -92,44 +93,200 @@
     <span class="n">_has_MDS</span> <span class="o">=</span> <span class="bp">False</span>
 
 <div class="viewcode-block" id="CModEFITTree"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree">[docs]</a><span class="k">class</span> <span class="nc">CModEFITTree</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Inherits EFITTree class. machine-specific data handling class for Alcator C-Mod.</span>
-<span class="sd">    Pulls EFIT data from selected MDS tree and shot, stores as object attributes.</span>
-<span class="sd">    Each EFIT variable or set of variables is recovered with a corresponding getter method.</span>
-<span class="sd">    Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).</span>
-<span class="sd">    Additional data are pulled at the first request and stored for subsequent usage.</span>
+    <span class="sd">&quot;&quot;&quot;Inherits :py:class:`~gptools.EFIT.EFITTree` class. Machine-specific data</span>
+<span class="sd">    handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree</span>
+<span class="sd">    and shot, stores as object attributes. Each EFIT variable or set of</span>
+<span class="sd">    variables is recovered with a corresponding getter method. Essential data</span>
+<span class="sd">    for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional</span>
+<span class="sd">    data are pulled at the first request and stored for subsequent usage.</span>
+<span class="sd">    </span>
+<span class="sd">    Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage</span>
+<span class="sd">    in instance attributes.  Core attributes are populated from the MDS tree on initialization.</span>
+<span class="sd">    Additional attributes are initialized as None, filled on the first request to the object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shot (integer): C-Mod shot index (long)</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        tree (string): Optional input for EFIT tree, defaults to &#39;ANALYSIS&#39;</span>
+<span class="sd">            (i.e., EFIT data are under \\analysis::top.efit.results).</span>
+<span class="sd">            For any string TREE (such as &#39;EFIT20&#39;) other than &#39;ANALYSIS&#39;,</span>
+<span class="sd">            data are taken from \\TREE::top.results.</span>
+<span class="sd">        length_unit (string): Sets the base unit used for any quantity whose</span>
+<span class="sd">            dimensions are length to any power. Valid options are:</span>
+<span class="sd">                </span>
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">                &#39;m&#39;          meters</span>
+<span class="sd">                &#39;cm&#39;         centimeters</span>
+<span class="sd">                &#39;mm&#39;         millimeters</span>
+<span class="sd">                &#39;in&#39;         inches</span>
+<span class="sd">                &#39;ft&#39;         feet</span>
+<span class="sd">                &#39;yd&#39;         yards</span>
+<span class="sd">                &#39;smoot&#39;      smoots</span>
+<span class="sd">                &#39;cubit&#39;      cubits</span>
+<span class="sd">                &#39;hand&#39;       hands</span>
+<span class="sd">                &#39;default&#39;    whatever the default in the tree is (no conversion is performed, units may be inconsistent)</span>
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">                </span>
+<span class="sd">            Default is &#39;m&#39; (all units taken and returned in meters).</span>
+<span class="sd">        gfile (string): Optional input for EFIT geqdsk location name, </span>
+<span class="sd">            defaults to &#39;g_eqdsk&#39; (i.e., EFIT data are under</span>
+<span class="sd">            \\tree::top.results.G_EQDSK)</span>
+<span class="sd">        afile (string): Optional input for EFIT aeqdsk location name,</span>
+<span class="sd">            defaults to &#39;a_eqdsk&#39; (i.e., EFIT data are under </span>
+<span class="sd">            \\tree::top.results.A_EQDSK)</span>
+<span class="sd">        tspline (Boolean): Sets whether or not interpolation in time is</span>
+<span class="sd">            performed using a tricubic spline or nearest-neighbor</span>
+<span class="sd">            interpolation. Tricubic spline interpolation requires at least</span>
+<span class="sd">            four complete equilibria at different times. It is also assumed</span>
+<span class="sd">            that they are functionally correlated, and that parameters do</span>
+<span class="sd">            not vary out of their boundaries (derivative = 0 boundary</span>
+<span class="sd">            condition). Default is False (use nearest neighbor interpolation).</span>
+<span class="sd">        monotonic (Boolean): Sets whether or not the &quot;monotonic&quot; form of time</span>
+<span class="sd">            window finding is used. If True, the timebase must be monotonically</span>
+<span class="sd">            increasing. Default is False (use slower, safer method).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="s">&#39;ANALYSIS&#39;</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage</span>
-<span class="sd">        in instance attributes.  Core attributes are populated from the MDS tree on initialization.</span>
-<span class="sd">        Additional attributes are initialized as None, filled on the first request to the object.</span>
-
-<span class="sd">        INPUTS:</span>
-<span class="sd">        shot:   C-Mod shot index (long)</span>
-<span class="sd">        tree:   optional input for EFIT tree, defaults to &#39;ANALYSIS&#39; (i.e.,</span>
-<span class="sd">                    EFIT data are under \\analysis::top.efit.results).</span>
-<span class="sd">                    For any string TREE (such as &#39;EFIT20&#39;) other than &#39;ANALYSIS&#39;,</span>
-<span class="sd">                    data are taken from \\TREE::top.results.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="s">&#39;ANALYSIS&#39;</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="n">gfile</span><span class="o">=</span><span class="s">&#39;g_eqdsk&#39;</span><span class="p">,</span> <span class="n">afile</span><span class="o">=</span><span class="s">&#39;a_eqdsk&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;ANALYSIS&#39;</span><span class="p">:</span>
             <span class="n">root</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">analysis::top.efit.results.&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">root</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="o">+</span><span class="n">tree</span><span class="o">+</span><span class="s">&#39;::top.results.&#39;</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">CModEFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="n">length_unit</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="n">tspline</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="n">fast</span><span class="p">)</span>
-    
-<div class="viewcode-block" id="CModEFITTree.getMachineCrossSection"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getMachineCrossSection">[docs]</a>    <span class="k">def</span> <span class="nf">getMachineCrossSection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pulls C-Mod cross-section data from tree, converts to plottable</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CModEFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="n">length_unit</span><span class="p">,</span> <span class="n">gfile</span><span class="o">=</span><span class="n">gfile</span><span class="p">,</span> <span class="n">afile</span><span class="o">=</span><span class="n">afile</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="n">tspline</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="n">monotonic</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">getFluxVol</span><span class="p">()</span> <span class="c">#getFluxVol is called due to wide use on C-Mod</span>
+
+<div class="viewcode-block" id="CModEFITTree.getFluxVol"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getFluxVol">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxVol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns volume within flux surface [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fluxVolNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;fitout:volp&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="o">=</span> <span class="n">fluxVolNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="c"># Units aren&#39;t properly stored in the tree for this one!</span>
+                <span class="k">if</span> <span class="n">fluxVolNode</span><span class="o">.</span><span class="n">units</span> <span class="o">!=</span> <span class="s">&#39; &#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fluxVol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fluxVolNode</span><span class="o">.</span><span class="n">units</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fluxVol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m^3&#39;</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="c"># Default units are m^3, but aren&#39;t stored in the tree!</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fluxVol&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CModEFITTree.getRmidPsi"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getRmidPsi">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidPsi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns maximum major radius of each flux surface [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">RmidPsiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;fitout:rpres&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="o">=</span> <span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="c"># Units aren&#39;t properly stored in the tree for this one!</span>
+                <span class="k">if</span> <span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">units</span> <span class="o">!=</span> <span class="s">&#39; &#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RmidPsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">units</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RmidPsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RmidPsi&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CModEFITTree.getF"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getF">[docs]</a>    <span class="k">def</span> <span class="nf">getF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fpol</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:fpol&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fpol</span> <span class="o">=</span> <span class="n">fNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fpol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fpol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="CModEFITTree.getFluxPres"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getFluxPres">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxPres</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns pressure at flux surface [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fluxPresNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:pres&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span> <span class="o">=</span> <span class="n">fluxPresNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fluxPres&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fluxPresNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CModEFITTree.getFFPrime"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getFFPrime">[docs]</a>    <span class="k">def</span> <span class="nf">getFFPrime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns FF&#39; function used for grad-shafranov solutions [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ffprim</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">FFPrimeNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:ffprim&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ffprim</span> <span class="o">=</span> <span class="n">FFPrimeNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ffprim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FFPrimeNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ffprim</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CModEFITTree.getPPrime"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getPPrime">[docs]</a>    <span class="k">def</span> <span class="nf">getPPrime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns plasma pressure gradient as a function of psi [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pPrimeNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:pprime&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span> <span class="o">=</span> <span class="n">pPrimeNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_pprime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pPrimeNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CModEFITTree.getQProfile"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getQProfile">[docs]</a>    <span class="k">def</span> <span class="nf">getQProfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns safety factor q [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">qpsiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:qpsi&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="o">=</span> <span class="n">qpsiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_qpsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qpsiNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CModEFITTree.getRLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getRLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getRLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns R-values of LCFS position [t,n]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">RLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:rbbbs&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="o">=</span> <span class="n">RLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RLCFSNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CModEFITTree.getZLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getZLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getZLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns Z-values of LCFS position [t,n]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ZLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:zbbbs&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="o">=</span> <span class="n">ZLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ZLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ZLCFSNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ZLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+</div>
+<div class="viewcode-block" id="CModEFITTree.getMachineCrossSectionFull"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTree.getMachineCrossSectionFull">[docs]</a>    <span class="k">def</span> <span class="nf">getMachineCrossSectionFull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pulls C-Mod cross-section data from tree, converts to plottable</span>
 <span class="sd">        vector format for use in other plotting routines</span>
 
-<span class="sd">        INPUTS:</span>
-<span class="sd">        shot:   C-Mod shot index (used for tree access) (long)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            shot (integer): C-Mod shot index (used for tree access)</span>
 
-<span class="sd">        OUTPUTS:</span>
-
+<span class="sd">        Returns:</span>
+<span class="sd">            (x, y): The coordinates of the machine cross-section.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c">#pull cross-section from tree</span>
         <span class="k">try</span><span class="p">:</span>
@@ -167,7 +324,8 @@
 </div></div>
 <div class="viewcode-block" id="CModEFITTreeProp"><a class="viewcode-back" href="../../eqtools.html#eqtools.CModEFIT.CModEFITTreeProp">[docs]</a><span class="k">class</span> <span class="nc">CModEFITTreeProp</span><span class="p">(</span><span class="n">CModEFITTree</span><span class="p">,</span> <span class="n">PropertyAccessMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;CModEFITTree with the PropertyAccessMixin added to enable property-style</span>
-<span class="sd">    access. This is good for interactive use, but may drag the performance down.&quot;&quot;&quot;</span>
+<span class="sd">    access. This is good for interactive use, but may drag the performance down.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 </pre></div>
 
@@ -202,13 +360,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">eqtools 1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Mark Chilenski, Ian Faust and John Walk.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2014, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

@@ -1,11 +1,11 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.11.2)  21 NOV 2013 13:54
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2014.5.3)  26 SEP 2014 14:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **eqtools.tex
 (./eqtools.tex
 LaTeX2e <2011/06/27>
-Babel <3.9g> and hyphenation patterns for 78 languages loaded.
+Babel <3.9k> and hyphenation patterns for 78 languages loaded.
 (./sphinxmanual.cls
 Document Class: sphinxmanual 2009/06/02 Document class (Sphinx manual)
 (/usr/local/texlive/2013/texmf-dist/tex/latex/base/report.cls
@@ -245,21 +245,24 @@ Now handling font encoding U ...
 ))
    defining Unicode char U+00A0 (decimal 160)
 
+(/usr/local/texlive/2013/texmf-dist/tex/latex/cmap/cmap.sty
+Package: cmap 2008/03/06 v1.0h CMap support: searchable PDF
+)
 (/usr/local/texlive/2013/texmf-dist/tex/latex/base/fontenc.sty
 Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/base/t1enc.def
 File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding T1 on input line 43.
-))
+)<<t1.cmap>>)
 (/usr/local/texlive/2013/texmf-dist/tex/generic/babel/babel.sty
-Package: babel 2013/10/10 3.9g The Babel package
+Package: babel 2014/03/24 3.9k The Babel package
 
 (/usr/local/texlive/2013/texmf-dist/tex/generic/babel-english/english.ldf
 Language: english 2012/08/20 v3.3p English support from the babel system
 
 (/usr/local/texlive/2013/texmf-dist/tex/generic/babel/babel.def
-File: babel.def 2013/10/10 3.9g Babel common definitions
+File: babel.def 2014/03/24 3.9k Babel common definitions
 \babel@savecnt=\count88
 \U@D=\dimen103
 )
@@ -300,7 +303,19 @@ Package: longtable 2004/02/01 v4.11 Multi-page Table package (DPC)
 )
 (./sphinx.sty
 Package: sphinx 2010/01/15 LaTeX package (Sphinx markup)
- (/usr/local/texlive/2013/texmf-dist/tex/latex/base/textcomp.sty
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+\fancy@headwidth=\skip54
+\f@ncyO@elh=\skip55
+\f@ncyO@erh=\skip56
+\f@ncyO@olh=\skip57
+\f@ncyO@orh=\skip58
+\f@ncyO@elf=\skip59
+\f@ncyO@erf=\skip60
+\f@ncyO@olf=\skip61
+\f@ncyO@orf=\skip62
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/textcomp.sty
 Package: textcomp 2005/09/27 v1.99g Standard LaTeX package
 Package textcomp Info: Sub-encoding information:
 (textcomp)               5 = only ISO-Adobe without \textcurrency
@@ -455,17 +470,6 @@ Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 338.
 Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 339.
 Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 340.
 )
-(/usr/local/texlive/2013/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
-\fancy@headwidth=\skip54
-\f@ncyO@elh=\skip55
-\f@ncyO@erh=\skip56
-\f@ncyO@olh=\skip57
-\f@ncyO@orh=\skip58
-\f@ncyO@elf=\skip59
-\f@ncyO@erf=\skip60
-\f@ncyO@olf=\skip61
-\f@ncyO@orf=\skip62
-)
 (/usr/local/texlive/2013/texmf-dist/tex/latex/fancybox/fancybox.sty
 Package: fancybox 2010/05/15 1.4
 
@@ -492,7 +496,7 @@ Package: titlesec 2011/12/15 v2.10.0 Sectioning titles
 \titlewidthfirst=\dimen110
 )
 (./tabulary.sty
-Package: tabulary 2007/10/02 v0.9 tabulary package (DPC)
+Package: tabulary 2008/12/01 v0.9 tabulary package (DPC)
  (/usr/local/texlive/2013/texmf-dist/tex/latex/tools/array.sty
 Package: array 2008/09/09 v2.4c Tabular extension package (FMi)
 \col@sep=\dimen111
@@ -632,6 +636,13 @@ Package: wrapfig 2003/01/31  v 3.6
 (/usr/local/texlive/2013/texmf-dist/tex/latex/parskip/parskip.sty
 Package: parskip 2001/04/09 non-zero parskip adjustments
 )
+(/usr/local/texlive/2013/texmf-dist/tex/latex/base/alltt.sty
+Package: alltt 1997/06/16 v2.0g defines alltt environment
+)
+(/usr/local/texlive/2013/texmf-dist/tex/latex/upquote/upquote.sty
+Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
+tim
+)
 (/usr/local/texlive/2013/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
 
@@ -649,7 +660,7 @@ Package graphics Info: Driver file: pdftex.def on input line 91.
 \Gin@req@height=\dimen133
 \Gin@req@width=\dimen134
 )
-(/usr/local/texlive/2013/texmf-dist/tex/plain/misc/pdfcolor.tex)
+(/usr/local/texlive/2013/texmf-dist/tex/generic/pdftex/pdfcolor.tex)
 \distancetoright=\skip71
 \py@argswidth=\skip72
 \py@noticelength=\skip73
@@ -741,7 +752,7 @@ Package hyperref Info: Bookmarks ON on input line 4688.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
-Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5041.
 \XeTeXLinkMargin=\dimen137
@@ -792,28 +803,28 @@ Writing index file eqtools.idx
 (./eqtools.aux)
 \openout1 = `eqtools.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 116.
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 116.
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 116.
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 116.
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 116.
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 116.
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 116.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 116.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 119.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 119.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 119.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 119.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 119.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 119.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 119.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 119.
 
  (/usr/local/texlive/2013/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 116.
-LaTeX Font Info:    ... okay on input line 116.
-LaTeX Font Info:    Try loading font information for T1+ptm on input line 116.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 119.
+LaTeX Font Info:    ... okay on input line 119.
+LaTeX Font Info:    Try loading font information for T1+ptm on input line 119.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/t1ptm.fd
 File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
@@ -847,7 +858,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box41
-Package hyperref Info: Link coloring ON on input line 116.
+Package hyperref Info: Link coloring ON on input line 119.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -857,34 +868,34 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count130
 )
-LaTeX Info: Redefining \ref on input line 116.
-LaTeX Info: Redefining \pageref on input line 116.
-LaTeX Info: Redefining \nameref on input line 116.
+LaTeX Info: Redefining \ref on input line 119.
+LaTeX Info: Redefining \pageref on input line 119.
+LaTeX Info: Redefining \nameref on input line 119.
 
 (./eqtools.out) (./eqtools.out)
 \@outlinefile=\write6
 \openout6 = `eqtools.out'.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 119--119
+Underfull \hbox (badness 10000) in paragraph at lines 122--122
 
  []
 
-LaTeX Font Info:    Try loading font information for T1+phv on input line 119.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 122.
 (/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <24.88> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 119.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 122.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 119.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 122.
 LaTeX Font Info:    Font shape `T1/phv/bx/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/it' tried instead on input line 119.
+(Font)              Font shape `T1/phv/b/it' tried instead on input line 122.
 LaTeX Font Info:    Font shape `T1/phv/b/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 119.
+(Font)              Font shape `T1/phv/b/sl' tried instead on input line 122.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 119.
- [1
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 122.
+<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>> [1
 
 {/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2
 
@@ -898,118 +909,299 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <10> not available
 
 Adding blank page after the table of contents.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 119.
-pdfTeX warning (ext4): destination with the same identifier (name{page.i}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.119 \tableofcontents
-                       [1
-
-]pdfTeX warning (ext4): destination with the same identifier (name{page.ii}) ha
-s been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.119 \tableofcontents
-                       [2]
-Chapter 1.
-LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 124.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 122.
 [1
 
+] [2] [1
 
 ] [2
 
 ]
-Chapter 2.
-LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 135.
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 135.
+Chapter 1.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 129.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 129.
+LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 129.
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 131.
 (/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-)
-LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <12> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 135.
-LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
-(Font)              Font shape `T1/pcr/b/n' tried instead on input line 146.
-LaTeX Font Info:    Try loading font information for TS1+ptm on input line 166.
+) [3] [4
 
+]
+Chapter 2.
+LaTeX Font Info:    Try loading font information for TS1+pcr on input line 147.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/ts1pcr.fd
+File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
+) [5] [6]
+Chapter 3.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 213.
+LaTeX Font Info:    Font shape `T1/pcr/bx/n' in size <10> not available
+(Font)              Font shape `T1/pcr/b/n' tried instead on input line 222.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 241.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-Overfull \hbox (2.78798pt too wide) in paragraph at lines 233--233
+Overfull \hbox (2.78798pt too wide) in paragraph at lines 306--306
 []\T1/ptm/m/n/10 `smoot'|  
  []
 
-[3]
-Underfull \hbox (badness 10000) in paragraph at lines 298--298
+[7
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 440--440
 []\T1/ptm/m/it/10 shot\T1/ptm/m/n/10 , \T1/ptm/m/it/10 tree='ANALYSIS'\T1/ptm/m
 /n/10 , \T1/ptm/m/it/10 length_unit='m'\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 298--298
+Underfull \hbox (badness 10000) in paragraph at lines 440--440
 \T1/ptm/m/it/10 gfile='g_eqdsk'\T1/ptm/m/n/10 , \T1/ptm/m/it/10 afile='a_eqdsk'
 \T1/ptm/m/n/10 , \T1/ptm/m/it/10 tspline=False\T1/ptm/m/n/10 ,
  []
 
-[4]
-Overfull \hbox (2.78798pt too wide) in paragraph at lines 406--406
+[8]
+Overfull \hbox (2.78798pt too wide) in paragraph at lines 545--545
 []\T1/ptm/m/n/10 `smoot'|  
  []
 
-[5] [6] [7] [8]
-Underfull \hbox (badness 10000) in paragraph at lines 1027--1027
-[]\T1/ptm/m/it/10 psiRZ\T1/ptm/m/n/10 , \T1/ptm/m/it/10 rGrid\T1/ptm/m/n/10 , \
-T1/ptm/m/it/10 zGrid\T1/ptm/m/n/10 , \T1/ptm/m/it/10 time\T1/ptm/m/n/10 , \T1/p
-tm/m/it/10 q\T1/ptm/m/n/10 , \T1/ptm/m/it/10 fluxVol\T1/ptm/m/n/10 ,
+[9] [10] [11] [12] [13]
+Overfull \hbox (2.78798pt too wide) in paragraph at lines 1316--1316
+[]\T1/ptm/m/n/10 `smoot'|  
  []
 
-[9]
-Underfull \hbox (badness 7649) in paragraph at lines 1183--1183
+[14]
+Underfull \hbox (badness 7649) in paragraph at lines 1467--1467
 []\T1/ptm/m/it/10 shot\T1/ptm/m/n/10 , \T1/ptm/m/it/10 tree='EFIT01'\T1/ptm/m/n
 /10 , \T1/ptm/m/it/10 length_unit='m'\T1/ptm/m/n/10 , \T1/ptm/m/it/10 gfile='ge
 qdsk'\T1/ptm/m/n/10 ,
  []
 
 
-Overfull \hbox (2.78798pt too wide) in paragraph at lines 1268--1268
+Overfull \hbox (2.78798pt too wide) in paragraph at lines 1549--1549
 []\T1/ptm/m/n/10 `smoot'|  
  []
 
-[10] [11] [12]
-Overfull \hbox (2.78798pt too wide) in paragraph at lines 1694--1694
+[15] [16] [17]
+Overfull \hbox (2.78798pt too wide) in paragraph at lines 2004--2004
 []\T1/ptm/m/n/10 `smoot'|  
  []
 
-[13] [14]
+[18] [19] [20]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <9> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 1917.
- [15] [16] [17] [18] [19] [20] [21] [22] [23] [24] [25] [26] [27]
-[28] [29] [30] [31] [32] [33] [34]
-Underfull \hbox (badness 10000) in paragraph at lines 4238--4238
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 2314.
+ [21] [22] [23]
+Underfull \hbox (badness 10000) in paragraph at lines 2689--2693
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 psi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[24]
+Underfull \hbox (badness 7981) in paragraph at lines 2870--2882
+[]\T1/ptm/b/n/10 kind \T1/ptm/m/n/10 (\T1/ptm/m/it/10 String or non-negative in
+t\T1/ptm/m/n/10 ) -- Spec-i-fies the type of in-ter-po-la-tion to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2870--2882
+\T1/ptm/m/n/10 be per-formed in get-ting from psi-norm to phi-norm. This is pas
+sed to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2906--2910
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 phi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[25] [26]
+Underfull \hbox (badness 7981) in paragraph at lines 3083--3095
+[]\T1/ptm/b/n/10 kind \T1/ptm/m/n/10 (\T1/ptm/m/it/10 String or non-negative in
+t\T1/ptm/m/n/10 ) -- Spec-i-fies the type of in-ter-po-la-tion to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3083--3095
+\T1/ptm/m/n/10 be per-formed in get-ting from psi-norm to vol-norm. This is pas
+sed to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3119--3123
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 vol-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[27] [28] [29] [30] [31] [32] [33] [34]
+Underfull \hbox (badness 10000) in paragraph at lines 4160--4164
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 psi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[35] [36]
+Underfull \hbox (badness 10000) in paragraph at lines 4344--4348
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 phi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[37]
+Underfull \hbox (badness 10000) in paragraph at lines 4524--4528
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 vol-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[38] [39] [40] [41]
+Underfull \hbox (badness 10000) in paragraph at lines 5007--5011
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 psi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[42]
+Underfull \hbox (badness 10000) in paragraph at lines 5120--5124
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 phi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[43]
+Underfull \hbox (badness 10000) in paragraph at lines 5233--5237
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 vol-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[44] [45] [46] [47] [48]
+Underfull \hbox (badness 7981) in paragraph at lines 5822--5834
+[]\T1/ptm/b/n/10 kind \T1/ptm/m/n/10 (\T1/ptm/m/it/10 String or non-negative in
+t\T1/ptm/m/n/10 ) -- Spec-i-fies the type of in-ter-po-la-tion to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5822--5834
+\T1/ptm/m/n/10 be per-formed in get-ting from psi-norm to vol-norm. This is pas
+sed to
+ []
+
+[49]
+Underfull \hbox (badness 10000) in paragraph at lines 5855--5859
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 vol-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+
+Underfull \hbox (badness 7981) in paragraph at lines 5935--5947
+[]\T1/ptm/b/n/10 kind \T1/ptm/m/n/10 (\T1/ptm/m/it/10 String or non-negative in
+t\T1/ptm/m/n/10 ) -- Spec-i-fies the type of in-ter-po-la-tion to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5935--5947
+\T1/ptm/m/n/10 be per-formed in get-ting from psi-norm to phi-norm. This is pas
+sed to
+ []
+
+[50]
+Underfull \hbox (badness 10000) in paragraph at lines 5968--5972
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 phi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[51] [52]
+Underfull \hbox (badness 7981) in paragraph at lines 6270--6282
+[]\T1/ptm/b/n/10 kind \T1/ptm/m/n/10 (\T1/ptm/m/it/10 String or non-negative in
+t\T1/ptm/m/n/10 ) -- Spec-i-fies the type of in-ter-po-la-tion to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 6270--6282
+\T1/ptm/m/n/10 be per-formed in get-ting from phi-norm to psi-norm. This is pas
+sed to
+ []
+
+[53]
+Underfull \hbox (badness 10000) in paragraph at lines 6303--6307
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 psi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[54]
+Underfull \hbox (badness 10000) in paragraph at lines 6416--6420
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 vol-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[55] [56] [57] [58] [59]
+Underfull \hbox (badness 7981) in paragraph at lines 7014--7026
+[]\T1/ptm/b/n/10 kind \T1/ptm/m/n/10 (\T1/ptm/m/it/10 String or non-negative in
+t\T1/ptm/m/n/10 ) -- Spec-i-fies the type of in-ter-po-la-tion to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 7014--7026
+\T1/ptm/m/n/10 be per-formed in get-ting from vol-norm to psi-norm. This is pas
+sed to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 7047--7051
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 psi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[60]
+Underfull \hbox (badness 10000) in paragraph at lines 7160--7164
+[]\T1/ptm/b/n/10 time_idxs \T1/ptm/m/n/10 (Ar-ray with same shape as \T1/ptm/m/
+it/10 phi-norm\T1/ptm/m/n/10 ) - The in-dices (in
+ []
+
+[61] [62] [63] [64] [65] [66] [67] [68] [69] [70] [71] [72]
+Underfull \hbox (badness 10000) in paragraph at lines 8735--8735
 []\T1/ptm/m/it/10 shot=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 time=None\T1/ptm/m/
 n/10 , \T1/ptm/m/it/10 gfile=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 afile=None\T1
 /ptm/m/n/10 ,
  []
 
-[35] [36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47] [48] [49]
-Underfull \hbox (badness 10000) in paragraph at lines 6481--6485
-[]\T1/ptm/m/n/10 the lack of a grace-ful bounds er-ror causes the for-tran to f
-ail hard. This masks the
+[73] [74] [75] [76]
+Underfull \hbox (badness 10000) in paragraph at lines 9202--9206
+[]\T1/ptm/m/n/10 map to nor-mal-ized
  []
 
-[50] [51] [52
 
-]
-Chapter 3.
-[53] [54
-
-] [55
+Underfull \hbox (badness 5954) in paragraph at lines 9207--9211
+[]\T1/ptm/m/n/10 map to nor-mal-ized
+ []
 
 
-] (./eqtools.ind [56
+Underfull \hbox (badness 6094) in paragraph at lines 9220--9225
+[]\T1/ptm/m/n/10 flux. Only the
+ []
+
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 9226.
+[77] [78] [79] [80] [81] [82] [83] [84] [85] [86] [87] [88] [89] [90]
+Underfull \hbox (badness 10000) in paragraph at lines 11193--11196
+[]\T1/ptm/m/n/10 the lack of a grace-ful bounds er-ror causes the for-tran to f
+ail hard. This masks
+ []
+
+[91]
+Underfull \hbox (badness 10000) in paragraph at lines 11233--11237
+[]\T1/ptm/b/n/10 s \T1/ptm/m/n/10 (\T1/ptm/m/it/10 float\T1/ptm/m/n/10 ) -- Pos
+-i-tive smooth-ing fac-tor de-fined for es-ti-ma-tion con-di-tion,
+ []
+
+[92]
+Chapter 4.
+[93
+
+] [94
+
+] [95
+
+
+] (./eqtools.ind [96
 
 
 ]
@@ -1033,291 +1225,394 @@ Underfull \hbox (badness 10000) in paragraph at lines 9--10
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 51--52
+Underfull \hbox (badness 10000) in paragraph at lines 54--55
 []\T1/ptm/m/n/10 getAreaLCFS() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 72--73
+Underfull \hbox (badness 10000) in paragraph at lines 75--76
 []\T1/ptm/m/n/10 getCurrentSign() (eq-tools.eqdskreader.EqdskReader
  []
 
-[57
+[97
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 78--79
+Underfull \hbox (badness 10000) in paragraph at lines 82--83
 []\T1/ptm/m/n/10 getDiamagBetaP() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 81--82
+Underfull \hbox (badness 10000) in paragraph at lines 85--86
 []\T1/ptm/m/n/10 getDiamagBetaT() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 84--85
+Underfull \hbox (badness 10000) in paragraph at lines 88--89
 []\T1/ptm/m/n/10 getDiamagFlux() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 87--88
+Underfull \hbox (badness 10000) in paragraph at lines 91--92
 []\T1/ptm/m/n/10 getDiamagTauE() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 90--91
+Underfull \hbox (badness 10000) in paragraph at lines 94--95
 []\T1/ptm/m/n/10 getDiamagWp() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 93--94
+Underfull \hbox (badness 10000) in paragraph at lines 97--98
 []\T1/ptm/m/n/10 getElongation() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 102--103
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
+[]\T1/ptm/m/n/10 getFFPrime() (eq-tools.CModEFIT.CModEFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 108--109
+[]\T1/ptm/m/n/10 getFFPrime() (eq-tools.eqdskreader.EqdskReader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 114--115
 []\T1/ptm/m/n/10 getFluxAxis() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 105--106
+Underfull \hbox (badness 10000) in paragraph at lines 115--116
+[]\T1/ptm/m/n/10 getFluxAxis() (eq-tools.FromArrays.ArrayEquilibrium
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 118--119
 []\T1/ptm/m/n/10 getFluxGrid() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 106--107
+Underfull \hbox (badness 10000) in paragraph at lines 119--120
 []\T1/ptm/m/n/10 getFluxGrid() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 107--108
+Underfull \hbox (badness 10000) in paragraph at lines 120--121
 []\T1/ptm/m/n/10 getFluxGrid() (eq-tools.NSTXEFIT.NSTXEFITTree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 110--111
+Underfull \hbox (badness 10000) in paragraph at lines 123--124
 []\T1/ptm/m/n/10 getFluxLCFS() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 113--114
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+[]\T1/ptm/m/n/10 getFluxLCFS() (eq-tools.FromArrays.ArrayEquilibrium
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--126
+[]\T1/ptm/m/n/10 getFluxPres() (eq-tools.CModEFIT.CModEFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 128--129
 []\T1/ptm/m/n/10 getFluxPres() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 117--118
+Underfull \hbox (badness 10000) in paragraph at lines 129--130
+[]\T1/ptm/m/n/10 getFluxVol() (eq-tools.CModEFIT.CModEFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 133--134
+[]\T1/ptm/m/n/10 getFluxVol() (eq-tools.FromArrays.ArrayEquilibrium
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 134--135
 []\T1/ptm/m/n/10 getFluxVol() (eq-tools.NSTXEFIT.NSTXEFITTree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 120--121
+Underfull \hbox (badness 10000) in paragraph at lines 137--138
 []\T1/ptm/m/n/10 getGeometry() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 136--137
+Underfull \hbox (badness 10000) in paragraph at lines 144--145
+[]\T1/ptm/m/n/10 getIpCalc() (eq-tools.NSTXEFIT.NSTXEFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 155--156
 []\T1/ptm/m/n/10 getLowerTriangularity() (eq-tools.core.Equilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 137--138
+Underfull \hbox (badness 10000) in paragraph at lines 156--157
 []\T1/ptm/m/n/10 getLowerTriangularity() (eq-tools.EFIT.EFITTree
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 138--139
+[98]
+Underfull \hbox (badness 10000) in paragraph at lines 157--158
 []\T1/ptm/m/n/10 getLowerTriangularity() (eq-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 138--139
+Underfull \hbox (badness 10000) in paragraph at lines 157--158
 \T1/ptm/m/n/10 tools.eqdskreader.EqdskReader method),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 139--140
+Underfull \hbox (badness 10000) in paragraph at lines 158--159
 []\T1/ptm/m/n/10 getMachineCrossSection() (eq-tools.core.Equilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 140--141
+Underfull \hbox (badness 10000) in paragraph at lines 159--160
 []\T1/ptm/m/n/10 getMachineCrossSection() (eq-tools.EFIT.EFITTree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 141--142
+Underfull \hbox (badness 10000) in paragraph at lines 160--161
 []\T1/ptm/m/n/10 getMachineCrossSection() (eq-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 141--142
+Underfull \hbox (badness 10000) in paragraph at lines 160--161
 \T1/ptm/m/n/10 tools.eqdskreader.EqdskReader method),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 142--143
+Underfull \hbox (badness 10000) in paragraph at lines 161--162
+[]\T1/ptm/m/n/10 getMachineCrossSection() (eq-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 161--162
+\T1/ptm/m/n/10 tools.NSTXEFIT.NSTXEFITTree method),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 162--163
 []\T1/ptm/m/n/10 getMachineCrossSectionFull() (eq-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 142--143
+Underfull \hbox (badness 10000) in paragraph at lines 162--163
 \T1/ptm/m/n/10 tools.CModEFIT.CModEFITTree method),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 144--145
+Underfull \hbox (badness 10000) in paragraph at lines 164--165
 []\T1/ptm/m/n/10 getMachineCrossSectionFull() (eq-tools.EFIT.EFITTree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--146
+Underfull \hbox (badness 10000) in paragraph at lines 165--166
 []\T1/ptm/m/n/10 getMachineCrossSectionFull() (eq-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--146
+Underfull \hbox (badness 10000) in paragraph at lines 165--166
 \T1/ptm/m/n/10 tools.eqdskreader.EqdskReader method),
  []
 
-[58]
-Underfull \hbox (badness 10000) in paragraph at lines 178--179
-[]\T1/ptm/m/n/10 getQProfile() (eq-tools.eqdskreader.EqdskReader
+
+Underfull \hbox (badness 10000) in paragraph at lines 169--170
+[]\T1/ptm/m/n/10 getMagR() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 179--180
-[]\T1/ptm/m/n/10 getQProfile() (eq-tools.FromArrays.ArrayEquilibrium
+Underfull \hbox (badness 10000) in paragraph at lines 174--175
+[]\T1/ptm/m/n/10 getMagZ() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 186--187
-[]\T1/ptm/m/n/10 getRGrid() (eq-tools.FromArrays.ArrayEquilibrium
+Underfull \hbox (badness 10000) in paragraph at lines 182--183
+[]\T1/ptm/m/n/10 getPPrime() (eq-tools.CModEFIT.CModEFITTree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 192--193
-[]\T1/ptm/m/n/10 getRmidOut() (eq-tools.eqdskreader.EqdskReader
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 195--196
-[]\T1/ptm/m/n/10 getRmidPsi() (eq-tools.eqdskreader.EqdskReader
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 196--197
-[]\T1/ptm/m/n/10 getRmidPsi() (eq-tools.NSTXEFIT.NSTXEFITTree
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 202--203
-[]\T1/ptm/m/n/10 getTauMHD() (eq-tools.eqdskreader.EqdskReader
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 205--206
-[]\T1/ptm/m/n/10 getTimeBase() (eq-tools.eqdskreader.EqdskReader
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 206--207
-[]\T1/ptm/m/n/10 getTimeBase() (eq-tools.FromArrays.ArrayEquilibrium
+Underfull \hbox (badness 10000) in paragraph at lines 204--205
+[]\T1/ptm/m/n/10 getQProfile() (eq-tools.CModEFIT.CModEFITTree
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 207--208
-[]\T1/ptm/m/n/10 getUpperTriangularity() (eq-tools.core.Equilibrium
+[]\T1/ptm/m/n/10 getQProfile() (eq-tools.eqdskreader.EqdskReader
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 208--209
-[]\T1/ptm/m/n/10 getUpperTriangularity() (eq-tools.EFIT.EFITTree
+[]\T1/ptm/m/n/10 getQProfile() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 209--210
-[]\T1/ptm/m/n/10 getUpperTriangularity() (eq-
+Underfull \hbox (badness 10000) in paragraph at lines 215--216
+[]\T1/ptm/m/n/10 getRGrid() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 209--210
-\T1/ptm/m/n/10 tools.eqdskreader.EqdskReader method),
+Underfull \hbox (badness 10000) in paragraph at lines 216--217
+[]\T1/ptm/m/n/10 getRLCFS() (eq-tools.CModEFIT.CModEFITTree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 212--213
-[]\T1/ptm/m/n/10 getVolLCFS() (eq-tools.eqdskreader.EqdskReader
+Underfull \hbox (badness 10000) in paragraph at lines 220--221
+[]\T1/ptm/m/n/10 getRLCFS() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 213--214
-[]\T1/ptm/m/n/10 getVolLCFS() (eq-tools.NSTXEFIT.NSTXEFITTree
+Underfull \hbox (badness 10000) in paragraph at lines 223--224
+[]\T1/ptm/m/n/10 getRmidOut() (eq-tools.eqdskreader.EqdskReader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 224--225
+[]\T1/ptm/m/n/10 getRmidOut() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 226--227
+[]\T1/ptm/m/n/10 getRmidPsi() (eq-tools.CModEFIT.CModEFITTree
+ []
+
+[99]
+Underfull \hbox (badness 10000) in paragraph at lines 229--230
+[]\T1/ptm/m/n/10 getRmidPsi() (eq-tools.eqdskreader.EqdskReader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 230--231
+[]\T1/ptm/m/n/10 getRmidPsi() (eq-tools.NSTXEFIT.NSTXEFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 236--237
+[]\T1/ptm/m/n/10 getTauMHD() (eq-tools.eqdskreader.EqdskReader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 239--240
+[]\T1/ptm/m/n/10 getTimeBase() (eq-tools.eqdskreader.EqdskReader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 240--241
+[]\T1/ptm/m/n/10 getTimeBase() (eq-tools.FromArrays.ArrayEquilibrium
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 241--242
+[]\T1/ptm/m/n/10 getUpperTriangularity() (eq-tools.core.Equilibrium
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 242--243
+[]\T1/ptm/m/n/10 getUpperTriangularity() (eq-tools.EFIT.EFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 243--244
+[]\T1/ptm/m/n/10 getUpperTriangularity() (eq-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 243--244
+\T1/ptm/m/n/10 tools.eqdskreader.EqdskReader method),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 246--247
+[]\T1/ptm/m/n/10 getVolLCFS() (eq-tools.eqdskreader.EqdskReader
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 247--248
+[]\T1/ptm/m/n/10 getVolLCFS() (eq-tools.NSTXEFIT.NSTXEFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 260--261
 []\T1/ptm/m/n/10 getZGrid() (eq-tools.FromArrays.ArrayEquilibrium
  []
 
-[59]
-Underfull \hbox (badness 10000) in paragraph at lines 251--252
+
+Underfull \hbox (badness 10000) in paragraph at lines 261--262
+[]\T1/ptm/m/n/10 getZLCFS() (eq-tools.CModEFIT.CModEFITTree
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 265--266
+[]\T1/ptm/m/n/10 getZLCFS() (eq-tools.FromArrays.ArrayEquilibrium
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 295--296
 []\T1/ptm/m/n/10 psinorm2phinorm() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 253--254
+Underfull \hbox (badness 10000) in paragraph at lines 298--299
 []\T1/ptm/m/n/10 psinorm2rmid() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 255--256
+Underfull \hbox (badness 10000) in paragraph at lines 301--302
 []\T1/ptm/m/n/10 psinorm2volnorm() (eq-tools.eqdskreader.EqdskReader
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 264--265
+[100]
+Underfull \hbox (badness 10000) in paragraph at lines 310--311
 []\T1/ptm/m/n/10 remapLCFS() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 266--267
+Underfull \hbox (badness 10000) in paragraph at lines 323--324
 []\T1/ptm/m/n/10 rz2phinorm() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 270--271
+Underfull \hbox (badness 10000) in paragraph at lines 327--328
 []\T1/ptm/m/n/10 rz2psinorm() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 276--277
+Underfull \hbox (badness 10000) in paragraph at lines 334--335
 []\T1/ptm/m/n/10 rz2volnorm() (eq-tools.eqdskreader.EqdskReader
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 277--278
+Underfull \hbox (badness 10000) in paragraph at lines 335--336
 []\T1/ptm/m/n/10 rz2volnorm() (eq-tools.NSTXEFIT.NSTXEFITTree
  []
 
-[60])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 6555.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 6555.
- (./eqtools.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 6555.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 6555.
+[101
 
+])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 11318.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 11318.
+ (./eqtools.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 11318.
+
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 11318
+.
 Package rerunfilecheck Info: File `eqtools.out' has not changed.
-(rerunfilecheck)             Checksum: A10F2D608FE3FA02D878FA8C3E72C900;1001.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 6555.
+(rerunfilecheck)             Checksum: 302E59F594CFDA55E99537F98C18F182;1318.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 11318.
  ) 
 Here is how much of TeX's memory you used:
- 9603 strings out of 493308
- 140857 string characters out of 6137816
- 240093 words of memory out of 5000000
- 12538 multiletter control sequences out of 15000+600000
- 65850 words of font info for 73 fonts, out of 8000000 for 9000
+ 9949 strings out of 493308
+ 147898 string characters out of 6137817
+ 249786 words of memory out of 5000000
+ 12671 multiletter control sequences out of 15000+600000
+ 71682 words of font info for 76 fonts, out of 8000000 for 9000
  958 hyphenation exceptions out of 8191
- 36i,16n,45p,488b,685s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,17n,45p,992b,683s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
@@ -1328,12 +1623,13 @@ exmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2013/texmf-dis
 t/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts
 /type1/urw/helvetic/uhvbo8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1
 /urw/helvetic/uhvr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/ti
-mes/utmb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmr8a
-.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on eqtools.pdf (64 pages, 281350 bytes).
+mes/utmb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmbi8
+a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></us
+r/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on eqtools.pdf (105 pages, 429313 bytes).
 PDF statistics:
- 1002 PDF objects out of 1200 (max. 8388607)
- 914 compressed objects within 10 object streams
- 335 named destinations out of 1000 (max. 500000)
- 129 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1436 PDF objects out of 1440 (max. 8388607)
+ 1298 compressed objects within 13 object streams
+ 469 named destinations out of 1000 (max. 500000)
+ 173 words of extra memory for PDF output out of 10000 (max. 10000000)
 

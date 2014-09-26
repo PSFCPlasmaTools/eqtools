@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>eqtools.EFIT &mdash; eqtools 0.0 documentation</title>
+    <title>eqtools.EFIT &mdash; eqtools 1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="eqtools 0.0 documentation" href="../../index.html" />
+    <link rel="top" title="eqtools 1.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">eqtools 1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -70,7 +68,7 @@
 <span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
-<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Equilibrium</span><span class="p">,</span> <span class="n">ModuleWarning</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Equilibrium</span><span class="p">,</span> <span class="n">ModuleWarning</span><span class="p">,</span> <span class="n">inPolygon</span>
 
 <span class="kn">import</span> <span class="nn">warnings</span>
 
@@ -90,39 +88,80 @@
                       <span class="o">%</span> <span class="p">(</span><span class="n">_e_MDS</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">_e_MDS</span><span class="o">.</span><span class="n">message</span><span class="p">),</span>
                       <span class="n">ModuleWarning</span><span class="p">)</span>
     <span class="n">_has_MDS</span> <span class="o">=</span> <span class="bp">False</span>
+    
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+    <span class="n">_has_plt</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Matplotlib.pyplot module could not be loaded -- classes that &quot;</span>
+                  <span class="s">&quot;use pyplot will not work.&quot;</span><span class="p">,</span><span class="n">ModuleWarning</span><span class="p">)</span>
+    <span class="n">_has_plt</span> <span class="o">=</span> <span class="bp">False</span>
 
 <div class="viewcode-block" id="EFITTree"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree">[docs]</a><span class="k">class</span> <span class="nc">EFITTree</span><span class="p">(</span><span class="n">Equilibrium</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Inherits Equilibrium class. EFIT-specific data handling class for machines using</span>
+    <span class="sd">&quot;&quot;&quot;Inherits Equilibrium class. EFIT-specific data handling class for machines using</span>
 <span class="sd">    standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may</span>
 <span class="sd">    need overriding in a machine-specific implementation.</span>
 <span class="sd">    Pulls EFIT data from selected MDS tree and shot, stores as object attributes.</span>
 <span class="sd">    Each EFIT variable or set of variables is recovered with a corresponding getter method.</span>
 <span class="sd">    Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).</span>
 <span class="sd">    Additional data are pulled at the first request and stored for subsequent usage.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Intializes EFITTree object. Pulls data from MDS tree for storage in</span>
-<span class="sd">        instance attributes. Core attributes are populated from the MDS tree</span>
-<span class="sd">        on initialization. Additional attributes are initialized as None,</span>
-<span class="sd">        filled on the first request to the object.</span>
+<span class="sd">    </span>
+<span class="sd">    Intializes EFITTree object. Pulls data from MDS tree for storage in</span>
+<span class="sd">    instance attributes. Core attributes are populated from the MDS tree</span>
+<span class="sd">    on initialization. Additional attributes are initialized as None,</span>
+<span class="sd">    filled on the first request to the object.</span>
 
-<span class="sd">        INPUTS:</span>
-<span class="sd">        shot:   shot index</span>
-<span class="sd">        tree:   MDSplus tree to open to fetch EFIT data.</span>
-<span class="sd">        root:   Root path for EFIT data in MDSplus tree.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        shot (integer): Shot number</span>
+<span class="sd">        tree (string): MDSplus tree to open to fetch EFIT data.</span>
+<span class="sd">        root (string): Root path for EFIT data in MDSplus tree.</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        length_unit (string): Sets the base unit used for any</span>
+<span class="sd">            quantity whose dimensions are length to any power.</span>
+<span class="sd">            Valid options are:</span>
+
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">                &#39;m&#39;          meters</span>
+<span class="sd">                &#39;cm&#39;         centimeters</span>
+<span class="sd">                &#39;mm&#39;         millimeters</span>
+<span class="sd">                &#39;in&#39;         inches</span>
+<span class="sd">                &#39;ft&#39;         feet</span>
+<span class="sd">                &#39;yd&#39;         yards</span>
+<span class="sd">                &#39;smoot&#39;      smoots</span>
+<span class="sd">                &#39;cubit&#39;      cubits</span>
+<span class="sd">                &#39;hand&#39;       hands</span>
+<span class="sd">                &#39;default&#39;    whatever the default in the tree is (no conversion is performed, units may be inconsistent)</span>
+<span class="sd">                ===========  ===========================================================================================</span>
+
+<span class="sd">            Default is &#39;m&#39; (all units taken and returned in meters).</span>
+<span class="sd">        tspline (boolean): Sets whether or not interpolation in time is</span>
+<span class="sd">            performed using a tricubic spline or nearest-neighbor</span>
+<span class="sd">            interpolation. Tricubic spline interpolation requires at least</span>
+<span class="sd">            four complete equilibria at different times. It is also assumed</span>
+<span class="sd">            that they are functionally correlated, and that parameters do</span>
+<span class="sd">            not vary out of their boundaries (derivative = 0 boundary</span>
+<span class="sd">            condition). Default is False (use nearest neighbor interpolation).</span>
+<span class="sd">        monotonic (boolean): Sets whether or not the &quot;monotonic&quot; form of time</span>
+<span class="sd">            window finding is used. If True, the timebase must be </span>
+<span class="sd">            monotonically increasing. Default is False (use slower,</span>
+<span class="sd">            safer method).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="n">gfile</span> <span class="o">=</span> <span class="s">&#39;g_eqdsk&#39;</span><span class="p">,</span> <span class="n">afile</span><span class="o">=</span><span class="s">&#39;a_eqdsk&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_MDS</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s">&quot;ERROR: MDSplus module did not load properly. Exception is below:&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">_e_MDS</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="n">length_unit</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="n">tspline</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="n">fast</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="n">length_unit</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="n">tspline</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="n">monotonic</span><span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">_shot</span> <span class="o">=</span> <span class="n">shot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">tree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span> <span class="o">=</span> <span class="n">gfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_afile</span> <span class="o">=</span> <span class="n">afile</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot</span><span class="p">)</span>
         
@@ -130,8 +169,11 @@
         
         <span class="c">#initialize None for non-essential data</span>
 
-        <span class="c">#flux-surface pressure</span>
+        <span class="c">#grad-shafranov related parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fpol</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span> <span class="o">=</span> <span class="bp">None</span>                                                <span class="c">#pressure on flux surface (psi,t)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ffprim</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span> <span class="o">=</span> <span class="bp">None</span>                                                  <span class="c">#pressure derivative on flux surface (t,psi)</span>
 
         <span class="c">#fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_btaxp</span> <span class="o">=</span> <span class="bp">None</span>                                                   <span class="c">#Bt on-axis, with plasma (t)</span>
@@ -165,6 +207,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_areaLCFS</span> <span class="o">=</span> <span class="bp">None</span>                                                <span class="c">#LCFS surface area (t)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="o">=</span> <span class="bp">None</span>                                                   <span class="c">#R-positions of LCFS (t,n)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="o">=</span> <span class="bp">None</span>                                                   <span class="c">#Z-positions of LCFS (t,n)</span>
+        
+        <span class="c">#machine geometry parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span> <span class="o">=</span> <span class="bp">None</span>                                                <span class="c">#R-positions of vacuum-vessel wall (t)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span> <span class="o">=</span> <span class="bp">None</span>                                                <span class="c">#Z-positions of vacuum-vessel wall (t)</span>
 
         <span class="c">#calc. normalized-pressure values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_betat</span> <span class="o">=</span> <span class="bp">None</span>                                                   <span class="c">#EFIT-calc toroidal beta (t)</span>
@@ -193,7 +239,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span> <span class="o">=</span> <span class="bp">None</span>                                                   <span class="c">#EFIT Z-axis (t)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span> <span class="o">=</span> <span class="bp">None</span>                                                 <span class="c">#flux at LCFS (t)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span> <span class="o">=</span> <span class="bp">None</span>                                                 <span class="c">#flux at magnetic axis (t)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="o">=</span> <span class="bp">None</span>                                                 <span class="c">#volume within flux surface (psi,t)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="o">=</span> <span class="bp">None</span>                                                 <span class="c">#volume within flux surface (t,psi)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span> <span class="o">=</span> <span class="bp">None</span>                                                 <span class="c">#volume within LCFS (t)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="o">=</span> <span class="bp">None</span>                                                    <span class="c">#q profile (psi,t)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="o">=</span> <span class="bp">None</span>                                                 <span class="c">#max major radius of flux surface (t,psi)</span>
@@ -204,14 +250,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">getFluxGrid</span><span class="p">()</span> <span class="c"># loads _psiRZ, _rGrid and _zGrid at once.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getFluxLCFS</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getFluxAxis</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">getFluxVol</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getVolLCFS</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getQProfile</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">getRmidPsi</span><span class="p">()</span>
         
 <div class="viewcode-block" id="EFITTree.__str__"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        string formatting for EFITTree class.</span>
+        <span class="sd">&quot;&quot;&quot;string formatting for EFITTree class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">)</span>
@@ -226,15 +270,18 @@
             <span class="k">return</span> <span class="s">&#39;tree has failed data load.&#39;</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getInfo"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns namedtuple of shot information</span>
-<span class="sd">        outputs:</span>
-<span class="sd">        namedtuple containing</span>
-<span class="sd">            shot:   C-Mod shot index (long)</span>
-<span class="sd">            tree:   EFIT tree (string)</span>
-<span class="sd">            nr:     size of R-axis for spatial grid</span>
-<span class="sd">            nz:     size of Z-axis for spatial grid</span>
-<span class="sd">            nt:     size of timebase for flux grid</span>
+        <span class="sd">&quot;&quot;&quot;returns namedtuple of shot information</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing</span>
+<span class="sd">                </span>
+<span class="sd">                =====   ===============================</span>
+<span class="sd">                shot    C-Mod shot index (long)</span>
+<span class="sd">                tree    EFIT tree (string)</span>
+<span class="sd">                nr      size of R-axis for spatial grid</span>
+<span class="sd">                nz      size of Z-axis for spatial grid</span>
+<span class="sd">                nt      size of timebase for flux grid</span>
+<span class="sd">                =====   ===============================</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">)</span>
@@ -248,25 +295,23 @@
         <span class="k">return</span> <span class="n">data</span><span class="p">(</span><span class="n">shot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shot</span><span class="p">,</span><span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">,</span><span class="n">nr</span><span class="o">=</span><span class="n">nr</span><span class="p">,</span><span class="n">nz</span><span class="o">=</span><span class="n">nz</span><span class="p">,</span><span class="n">nt</span><span class="o">=</span><span class="n">nt</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getTimeBase"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getTimeBase">[docs]</a>    <span class="k">def</span> <span class="nf">getTimeBase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT time base vector</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT time base vector</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">timeNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:time&#39;</span><span class="p">)</span>
+                <span class="n">timeNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:time&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="o">=</span> <span class="n">timeNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">timeNode</span><span class="o">.</span><span class="n">units</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getFluxGrid"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getFluxGrid">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT flux grid, [t,z,r]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT flux grid, [t,z,r]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">psinode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;g_eqdsk:psirz&#39;</span><span class="p">)</span>
+                <span class="n">psinode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:psirz&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
@@ -278,8 +323,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getRGrid"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getRGrid">[docs]</a>    <span class="k">def</span> <span class="nf">getRGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT R-axis [r]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT R-axis [r]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
@@ -290,8 +334,7 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getZGrid"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getZGrid">[docs]</a>    <span class="k">def</span> <span class="nf">getZGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT Z-axis [z]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT Z-axis [z]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
@@ -302,12 +345,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getFluxAxis"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getFluxAxis">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxAxis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns psi on magnetic axis [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns psi on magnetic axis [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">psiAxisNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:simagx&#39;</span><span class="p">)</span>
+                <span class="n">psiAxisNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:simagx&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span> <span class="o">=</span> <span class="n">psiAxisNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_psiAxis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">psiAxisNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -315,12 +357,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getFluxLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getFluxLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns psi at separatrix [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns psi at separatrix [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">psiLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:sibdry&#39;</span><span class="p">)</span>
+                <span class="n">psiLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:sibdry&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span> <span class="o">=</span> <span class="n">psiLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_psiLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">psiLCFSNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -328,8 +369,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getFluxVol"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getFluxVol">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxVol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns volume within flux surface [psi,t]</span>
+        <span class="sd">&quot;&quot;&quot;returns volume within flux surface [t,psi]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -347,12 +387,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getVolLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getVolLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getVolLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns volume within LCFS [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns volume within LCFS [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">volLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:vout&#39;</span><span class="p">)</span>
+                <span class="n">volLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:vout&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span> <span class="o">=</span> <span class="n">volLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_volLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">volLCFSNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -362,8 +401,7 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getRmidPsi"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getRmidPsi">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidPsi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns maximum major radius of each flux surface [t,psi]</span>
+        <span class="sd">&quot;&quot;&quot;returns maximum major radius of each flux surface [t,psi]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -380,12 +418,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getRLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getRLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getRLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns R-values of LCFS position [t,n]</span>
+        <span class="sd">&quot;&quot;&quot;returns R-values of LCFS position [t,n]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">RLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;g_eqdsk:rbbbs&#39;</span><span class="p">)</span>
+                <span class="n">RLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:rbbbs&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="o">=</span> <span class="n">RLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RLCFSNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -394,39 +431,156 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getZLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getZLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getZLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns Z-values of LCFS position [t,n]</span>
+        <span class="sd">&quot;&quot;&quot;returns Z-values of LCFS position [t,n]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">ZLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;g_eqdsk:zbbbs&#39;</span><span class="p">)</span>
+                <span class="n">ZLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:zbbbs&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="o">=</span> <span class="n">ZLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ZLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ZLCFSNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
         <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ZLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        </div>
+<div class="viewcode-block" id="EFITTree.remapLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.remapLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">remapLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour</span>
+<span class="sd">        of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,</span>
+<span class="sd">        restricting the contour to the closed plasma surface and the divertor legs.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            mask: Boolean.</span>
+<span class="sd">                Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).</span>
+<span class="sd">                Set False to draw full contour of psi = psiLCFS.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_plt</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Requires matplotlib.pyplot for contour calculation.&quot;</span><span class="p">)</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Rlim</span><span class="p">,</span><span class="n">Zlim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMachineCrossSection</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Limiter outline (self.getMachineCrossSection) must be available.&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">ioff</span><span class="p">()</span>
+            
+        <span class="n">psiRZ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFluxGrid</span><span class="p">()</span>  <span class="c"># [nt,nZ,nR]</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRGrid</span><span class="p">()</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getZGrid</span><span class="p">()</span>
+        <span class="n">psiLCFS</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentSign</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFluxLCFS</span><span class="p">()</span>
+
+        <span class="n">RLCFS_stores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ZLCFS_stores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">maxlen</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">())</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nt</span><span class="p">):</span>
+            <span class="n">cs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">psiRZ</span><span class="p">[</span><span class="n">i</span><span class="p">],[</span><span class="n">psiLCFS</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">cs</span><span class="o">.</span><span class="n">collections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_paths</span><span class="p">()</span>
+            <span class="n">RLCFS_frame</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">ZLCFS_frame</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">vertices</span>
+                <span class="n">RLCFS_frame</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">ZLCFS_frame</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">RLCFS_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">ZLCFS_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="n">RLCFS_frame</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">RLCFS_frame</span><span class="p">)</span>
+            <span class="n">ZLCFS_frame</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ZLCFS_frame</span><span class="p">)</span>
+
+            <span class="c"># generate masking array to vessel</span>
+            <span class="k">if</span> <span class="n">mask</span><span class="p">:</span>
+                <span class="n">maskarr</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">False</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">RLCFS_frame</span><span class="p">))])</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">RLCFS_frame</span><span class="p">):</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">ZLCFS_frame</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">maskarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">inPolygon</span><span class="p">(</span><span class="n">Rlim</span><span class="p">,</span><span class="n">Zlim</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+
+                <span class="n">RLCFS_frame</span> <span class="o">=</span> <span class="n">RLCFS_frame</span><span class="p">[</span><span class="n">maskarr</span><span class="p">]</span>
+                <span class="n">ZLCFS_frame</span> <span class="o">=</span> <span class="n">ZLCFS_frame</span><span class="p">[</span><span class="n">maskarr</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">RLCFS_frame</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">maxlen</span><span class="p">:</span>
+                <span class="n">maxlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">RLCFS_frame</span><span class="p">)</span>
+            <span class="n">RLCFS_stores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RLCFS_frame</span><span class="p">)</span>
+            <span class="n">ZLCFS_stores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ZLCFS_frame</span><span class="p">)</span>
+
+        <span class="n">RLCFS</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span><span class="n">maxlen</span><span class="p">))</span>
+        <span class="n">ZLCFS</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span><span class="n">maxlen</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nt</span><span class="p">):</span>
+            <span class="n">RLCFS_frame</span> <span class="o">=</span> <span class="n">RLCFS_stores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ZLCFS_frame</span> <span class="o">=</span> <span class="n">ZLCFS_stores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">ni</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">RLCFS_frame</span><span class="p">)</span>
+            <span class="n">RLCFS</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="n">ni</span><span class="p">]</span> <span class="o">=</span> <span class="n">RLCFS_frame</span>
+            <span class="n">ZLCFS</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="n">ni</span><span class="p">]</span> <span class="o">=</span> <span class="n">ZLCFS_frame</span>
+
+        <span class="c"># store final values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="o">=</span> <span class="n">RLCFS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="o">=</span> <span class="n">ZLCFS</span>
+
+        <span class="c"># set default unit parameters, based on RZ grid</span>
+        <span class="n">rUnit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rGrid&#39;</span><span class="p">]</span>
+        <span class="n">zUnit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_zGrid&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rUnit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ZLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">zUnit</span>
+
+        <span class="c"># cleanup</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ioff</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="EFITTree.getF"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getF">[docs]</a>    <span class="k">def</span> <span class="nf">getF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fpol</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:fpol&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fpol</span> <span class="o">=</span> <span class="n">fNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fpol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fpol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getFluxPres"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getFluxPres">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxPres</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns pressure at flux surface [psi,t]</span>
+        <span class="sd">&quot;&quot;&quot;returns pressure at flux surface [t,psi]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">fluxPresNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;g_eqdsk:pres&#39;</span><span class="p">)</span>
+                <span class="n">fluxPresNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:pres&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span> <span class="o">=</span> <span class="n">fluxPresNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fluxPres&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fluxPresNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
+<div class="viewcode-block" id="EFITTree.getFFPrime"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getFFPrime">[docs]</a>    <span class="k">def</span> <span class="nf">getFFPrime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns FF&#39; function used for grad-shafranov solutions [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ffprim</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">FFPrimeNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:ffprim&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ffprim</span> <span class="o">=</span> <span class="n">FFPrimeNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ffprim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FFPrimeNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ffprim</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="EFITTree.getPPrime"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getPPrime">[docs]</a>    <span class="k">def</span> <span class="nf">getPPrime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns plasma pressure gradient as a function of psi [t,psi]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pPrimeNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:pprime&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span> <span class="o">=</span> <span class="n">pPrimeNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_pprime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pPrimeNode</span><span class="o">.</span><span class="n">units</span>
+            <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
 <div class="viewcode-block" id="EFITTree.getElongation"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getElongation">[docs]</a>    <span class="k">def</span> <span class="nf">getElongation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns LCFS elongation [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS elongation [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kappa</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">kappaNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:eout&#39;</span><span class="p">)</span>
+                <span class="n">kappaNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:eout&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_kappa</span> <span class="o">=</span> <span class="n">kappaNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_kappa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kappaNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -434,12 +588,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kappa</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getUpperTriangularity"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getUpperTriangularity">[docs]</a>    <span class="k">def</span> <span class="nf">getUpperTriangularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns LCFS upper triangularity [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS upper triangularity [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dupper</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">dupperNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:doutu&#39;</span><span class="p">)</span>
+                <span class="n">dupperNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:doutu&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dupper</span> <span class="o">=</span> <span class="n">dupperNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_dupper&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dupperNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -447,22 +600,22 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dupper</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getLowerTriangularity"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getLowerTriangularity">[docs]</a>    <span class="k">def</span> <span class="nf">getLowerTriangularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns LCFS lower triangularity [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS lower triangularity [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dlower</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">dlowerNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:doutl&#39;</span><span class="p">)</span>
+                <span class="n">dlowerNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:doutl&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dlower</span> <span class="o">=</span> <span class="n">dlowerNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_dlower&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">dlowerNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dlower</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
-<div class="viewcode-block" id="EFITTree.getShaping"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getShaping">[docs]</a>    <span class="k">def</span> <span class="nf">getShaping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        pulls LCFS elongation and upper/lower triangularity</span>
-<span class="sd">        returns namedtuple containing {kappa, delta_u, delta_l}</span>
+<div class="viewcode-block" id="EFITTree.getSlhaping"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getSlhaping">[docs]</a>    <span class="k">def</span> <span class="nf">getSlhaping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;pulls LCFS elongation and upper/lower triangularity</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing {kappa, delta_u, delta_l}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">kap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElongation</span><span class="p">()</span>
@@ -474,12 +627,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getMagR"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getMagR">[docs]</a>    <span class="k">def</span> <span class="nf">getMagR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns magnetic-axis major radius [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetic-axis major radius [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">rmagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:rmagx&#39;</span><span class="p">)</span>
+                <span class="n">rmagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:rmagx&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span> <span class="o">=</span> <span class="n">rmagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rmagNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span><span class="ne">AttributeError</span><span class="p">):</span>
@@ -488,12 +640,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getMagZ"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getMagZ">[docs]</a>    <span class="k">def</span> <span class="nf">getMagZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns magnetic-axis Z [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetic-axis Z [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">zmagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:zmagx&#39;</span><span class="p">)</span>
+                <span class="n">zmagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:zmagx&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span> <span class="o">=</span> <span class="n">zmagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_zmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">zmagNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -502,12 +653,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getAreaLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getAreaLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getAreaLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns LCFS cross-sectional area [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS cross-sectional area [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_areaLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">areaLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:areao&#39;</span><span class="p">)</span>
+                <span class="n">areaLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:areao&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_areaLCFS</span> <span class="o">=</span> <span class="n">areaLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_areaLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">areaLCFSNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -517,12 +667,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_areaLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getAOut"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getAOut">[docs]</a>    <span class="k">def</span> <span class="nf">getAOut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns outboard-midplane minor radius at LCFS [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane minor radius at LCFS [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">aLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:aout&#39;</span><span class="p">)</span>
+                <span class="n">aLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:aout&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_aLCFS</span> <span class="o">=</span> <span class="n">aLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_aLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aLCFSNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -531,12 +680,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getRmidOut"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getRmidOut">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidOut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns outboard-midplane major radius [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane major radius [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">RmidLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:rmidout&#39;</span><span class="p">)</span>
+                <span class="n">RmidLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:rmidout&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span> <span class="o">=</span> <span class="n">RmidLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="c"># The units aren&#39;t properly stored in the tree for this one!</span>
                 <span class="c"># Should be meters.</span>
@@ -550,9 +698,10 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getGeometry"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getGeometry">[docs]</a>    <span class="k">def</span> <span class="nf">getGeometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        pulls dimensional geometry parameters</span>
-<span class="sd">        returns namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}</span>
+        <span class="sd">&quot;&quot;&quot;pulls dimensional geometry parameters</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">Rmag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMagR</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="p">(</span><span class="n">length_unit</span> <span class="k">if</span> <span class="n">length_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="mi">1</span><span class="p">))</span>
@@ -566,12 +715,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQProfile"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQProfile">[docs]</a>    <span class="k">def</span> <span class="nf">getQProfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns safety factor q [psi,t]</span>
+        <span class="sd">&quot;&quot;&quot;returns safety factor q [t,psi]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">qpsiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;g_eqdsk:qpsi&#39;</span><span class="p">)</span>
+                <span class="n">qpsiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:qpsi&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="o">=</span> <span class="n">qpsiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_qpsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qpsiNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="n">TreeException</span><span class="p">:</span>
@@ -579,12 +727,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQ0"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQ0">[docs]</a>    <span class="k">def</span> <span class="nf">getQ0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns q on magnetic axis [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns q on magnetic axis [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q0</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">q0Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:qqmagx&#39;</span><span class="p">)</span>
+                <span class="n">q0Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:qqmagx&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_q0</span> <span class="o">=</span> <span class="n">q0Node</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_q0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q0Node</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -592,12 +739,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQ95"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQ95">[docs]</a>    <span class="k">def</span> <span class="nf">getQ95</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns q at 95% flux surface [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns q at 95% flux surface [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q95</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">q95Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:qpsib&#39;</span><span class="p">)</span>
+                <span class="n">q95Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:qpsib&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_q95</span> <span class="o">=</span> <span class="n">q95Node</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_q95&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q95Node</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -605,12 +751,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q95</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getQLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns q on LCFS [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns q on LCFS [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qLCFS</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">qLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:qout&#39;</span><span class="p">)</span>
+                <span class="n">qLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:qout&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_qLCFS</span> <span class="o">=</span> <span class="n">qLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_qLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qLCFSNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -618,12 +763,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQ1Surf"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQ1Surf">[docs]</a>    <span class="k">def</span> <span class="nf">getQ1Surf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns outboard-midplane minor radius of q=1 surface [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane minor radius of q=1 surface [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rq1</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">rq1Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:aaq1&#39;</span><span class="p">)</span>
+                <span class="n">rq1Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:aaq1&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rq1</span> <span class="o">=</span> <span class="n">rq1Node</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rq1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rq1Node</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span><span class="ne">AttributeError</span><span class="p">):</span>
@@ -632,12 +776,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rq1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQ2Surf"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQ2Surf">[docs]</a>    <span class="k">def</span> <span class="nf">getQ2Surf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns outboard-midplane minor radius of q=2 surface [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane minor radius of q=2 surface [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rq2</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">rq2Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:aaq2&#39;</span><span class="p">)</span>
+                <span class="n">rq2Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:aaq2&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rq2</span> <span class="o">=</span> <span class="n">rq2Node</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rq2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rq2Node</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span><span class="ne">AttributeError</span><span class="p">):</span>
@@ -646,12 +789,11 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rq2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQ3Surf"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQ3Surf">[docs]</a>    <span class="k">def</span> <span class="nf">getQ3Surf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns outboard-midplane minor radius of q=3 surface [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane minor radius of q=3 surface [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rq3</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">rq3Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:aaq3&#39;</span><span class="p">)</span>
+                <span class="n">rq3Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:aaq3&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rq3</span> <span class="o">=</span> <span class="n">rq3Node</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rq3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rq3Node</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span><span class="ne">AttributeError</span><span class="p">):</span>
@@ -660,9 +802,10 @@
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rq3</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getQs"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getQs">[docs]</a>    <span class="k">def</span> <span class="nf">getQs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        pulls q values</span>
-<span class="sd">        returns namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}</span>
+        <span class="sd">&quot;&quot;&quot;pulls q values</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">q0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getQ0</span><span class="p">()</span>
@@ -677,12 +820,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getBtVac"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getBtVac">[docs]</a>    <span class="k">def</span> <span class="nf">getBtVac</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns on-axis vacuum toroidal field [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns on-axis vacuum toroidal field [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_btaxv</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">btaxvNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:btaxv&#39;</span><span class="p">)</span>
+                <span class="n">btaxvNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:btaxv&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_btaxv</span> <span class="o">=</span> <span class="n">btaxvNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_btaxv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">btaxvNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -690,12 +832,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_btaxv</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getBtPla"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getBtPla">[docs]</a>    <span class="k">def</span> <span class="nf">getBtPla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns on-axis plasma toroidal field [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns on-axis plasma toroidal field [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_btaxp</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">btaxpNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:btaxp&#39;</span><span class="p">)</span>
+                <span class="n">btaxpNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:btaxp&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_btaxp</span> <span class="o">=</span> <span class="n">btaxpNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_btaxp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">btaxpNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span><span class="ne">AttributeError</span><span class="p">):</span>
@@ -703,12 +844,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_btaxp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getBpAvg"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getBpAvg">[docs]</a>    <span class="k">def</span> <span class="nf">getBpAvg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns average poloidal field [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns average poloidal field [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bpolav</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">bpolavNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:bpolav&#39;</span><span class="p">)</span>
+                <span class="n">bpolavNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:bpolav&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_bpolav</span> <span class="o">=</span> <span class="n">bpolavNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_bpolav&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bpolavNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span><span class="ne">AttributeError</span><span class="p">):</span>
@@ -716,9 +856,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bpolav</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getFields"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getFields">[docs]</a>    <span class="k">def</span> <span class="nf">getFields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        pulls vacuum and plasma toroidal field, avg poloidal field</span>
-<span class="sd">        returns namedtuple containing {btaxv,btaxp,bpolav}</span>
+        <span class="sd">&quot;&quot;&quot;pulls vacuum and plasma toroidal field, avg poloidal field</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing {btaxv,btaxp,bpolav}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">btaxv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBtVac</span><span class="p">()</span>
@@ -730,12 +871,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getIpCalc"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getIpCalc">[docs]</a>    <span class="k">def</span> <span class="nf">getIpCalc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated plasma current [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated plasma current [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">IpCalcNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:cpasma&#39;</span><span class="p">)</span>
+                <span class="n">IpCalcNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:cpasma&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span> <span class="o">=</span> <span class="n">IpCalcNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_IpCalc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IpCalcNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span><span class="ne">AttributeError</span><span class="p">):</span>
@@ -743,12 +883,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getIpMeas"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getIpMeas">[docs]</a>    <span class="k">def</span> <span class="nf">getIpMeas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns magnetics-measured plasma current [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetics-measured plasma current [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpMeas</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">IpMeasNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:pasmat&#39;</span><span class="p">)</span>
+                <span class="n">IpMeasNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:pasmat&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_IpMeas</span> <span class="o">=</span> <span class="n">IpMeasNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_IpMeas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">IpMeasNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -756,12 +895,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpMeas</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getJp"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getJp">[docs]</a>    <span class="k">def</span> <span class="nf">getJp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Jp</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">JpNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;g_eqdsk:pcurrt&#39;</span><span class="p">)</span>
+                <span class="n">JpNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:pcurrt&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_Jp</span> <span class="o">=</span> <span class="n">JpNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="c"># Units come in as &#39;a&#39;: am I missing something about the</span>
                 <span class="c"># definition of this quantity?</span>
@@ -771,12 +909,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Jp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getBetaT"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getBetaT">[docs]</a>    <span class="k">def</span> <span class="nf">getBetaT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated toroidal beta [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated toroidal beta [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betat</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">betatNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:betat&#39;</span><span class="p">)</span>
+                <span class="n">betatNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:betat&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_betat</span> <span class="o">=</span> <span class="n">betatNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_betat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betatNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -784,12 +921,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getBetaP"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getBetaP">[docs]</a>    <span class="k">def</span> <span class="nf">getBetaP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated poloidal beta [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated poloidal beta [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betap</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">betapNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:betap&#39;</span><span class="p">)</span>
+                <span class="n">betapNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:betap&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_betap</span> <span class="o">=</span> <span class="n">betapNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_betap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betapNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -797,12 +933,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betap</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getLi"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getLi">[docs]</a>    <span class="k">def</span> <span class="nf">getLi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated internal inductance [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated internal inductance [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Li</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">LiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:ali&#39;</span><span class="p">)</span>
+                <span class="n">LiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:ali&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_Li</span> <span class="o">=</span> <span class="n">LiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_Li&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LiNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -810,9 +945,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Li</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getBetas"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getBetas">[docs]</a>    <span class="k">def</span> <span class="nf">getBetas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        pulls calculated betap, betat, internal inductance</span>
-<span class="sd">        returns namedtuple containing {betat,betap,Li}</span>
+        <span class="sd">&quot;&quot;&quot;pulls calculated betap, betat, internal inductance</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing {betat,betap,Li}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">betat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBetaT</span><span class="p">()</span>
@@ -824,12 +960,11 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getDiamagFlux"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getDiamagFlux">[docs]</a>    <span class="k">def</span> <span class="nf">getDiamagFlux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns measured diamagnetic-loop flux [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns measured diamagnetic-loop flux [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diamag</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">diamagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:diamag&#39;</span><span class="p">)</span>
+                <span class="n">diamagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:diamag&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_diamag</span> <span class="o">=</span> <span class="n">diamagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_diamag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">diamagNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -837,12 +972,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_diamag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getDiamagBetaT"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getDiamagBetaT">[docs]</a>    <span class="k">def</span> <span class="nf">getDiamagBetaT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns diamagnetic-loop toroidal beta [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns diamagnetic-loop toroidal beta [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betatd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">betatdNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:betatd&#39;</span><span class="p">)</span>
+                <span class="n">betatdNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:betatd&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_betatd</span> <span class="o">=</span> <span class="n">betatdNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_betatd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betatdNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -850,12 +984,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betatd</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getDiamagBetaP"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getDiamagBetaP">[docs]</a>    <span class="k">def</span> <span class="nf">getDiamagBetaP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns diamagnetic-loop avg poloidal beta [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns diamagnetic-loop avg poloidal beta [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betapd</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">betapdNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:betapd&#39;</span><span class="p">)</span>
+                <span class="n">betapdNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:betapd&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_betapd</span> <span class="o">=</span> <span class="n">betapdNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_betapd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">betapdNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -863,12 +996,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betapd</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getDiamagTauE"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getDiamagTauE">[docs]</a>    <span class="k">def</span> <span class="nf">getDiamagTauE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns diamagnetic-loop energy confinement time [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns diamagnetic-loop energy confinement time [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tauDiamag</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">tauDiamagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:taudia&#39;</span><span class="p">)</span>
+                <span class="n">tauDiamagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:taudia&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_tauDiamag</span> <span class="o">=</span> <span class="n">tauDiamagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_tauDiamag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tauDiamagNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -876,12 +1008,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tauDiamag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getDiamagWp"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getDiamagWp">[docs]</a>    <span class="k">def</span> <span class="nf">getDiamagWp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns diamagnetic-loop plasma stored energy [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns diamagnetic-loop plasma stored energy [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WDiamag</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">WDiamagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:wplasmd&#39;</span><span class="p">)</span>
+                <span class="n">WDiamagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:wplasmd&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_WDiamag</span> <span class="o">=</span> <span class="n">WDiamagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_WDiamag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WDiamagNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -889,9 +1020,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WDiamag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getDiamag"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getDiamag">[docs]</a>    <span class="k">def</span> <span class="nf">getDiamag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy</span>
-<span class="sd">        returns namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}</span>
+        <span class="sd">&quot;&quot;&quot;pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">dFlux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDiamagFlux</span><span class="p">()</span>
@@ -900,17 +1032,16 @@
             <span class="n">dTau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDiamagTauE</span><span class="p">()</span>
             <span class="n">dWp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDiamagWp</span><span class="p">()</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;Diamag&#39;</span><span class="p">,[</span><span class="s">&#39;diaFlux&#39;</span><span class="p">,</span><span class="s">&#39;diaBetat&#39;</span><span class="p">,</span><span class="s">&#39;diaBetap&#39;</span><span class="p">,</span><span class="s">&#39;diaTauE&#39;</span><span class="p">,</span><span class="s">&#39;diaWp&#39;</span><span class="p">])</span>
-            <span class="k">return</span> <span class="n">data</span><span class="p">(</span><span class="n">diaFlux</span><span class="o">=</span><span class="n">dFLux</span><span class="p">,</span><span class="n">diaBetat</span><span class="o">=</span><span class="n">betatd</span><span class="p">,</span><span class="n">diaBetap</span><span class="o">=</span><span class="n">betapd</span><span class="p">,</span><span class="n">diaTauE</span><span class="o">=</span><span class="n">dTau</span><span class="p">,</span><span class="n">diaWp</span><span class="o">=</span><span class="n">dWp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">(</span><span class="n">diaFlux</span><span class="o">=</span><span class="n">dFlux</span><span class="p">,</span><span class="n">diaBetat</span><span class="o">=</span><span class="n">betatd</span><span class="p">,</span><span class="n">diaBetap</span><span class="o">=</span><span class="n">betapd</span><span class="p">,</span><span class="n">diaTauE</span><span class="o">=</span><span class="n">dTau</span><span class="p">,</span><span class="n">diaWp</span><span class="o">=</span><span class="n">dWp</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getWMHD"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getWMHD">[docs]</a>    <span class="k">def</span> <span class="nf">getWMHD</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated MHD stored energy [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated MHD stored energy [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WMHD</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">WMHDNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:wplasm&#39;</span><span class="p">)</span>
+                <span class="n">WMHDNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:wplasm&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_WMHD</span> <span class="o">=</span> <span class="n">WMHDNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_WMHD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WMHDNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -918,12 +1049,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WMHD</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getTauMHD"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getTauMHD">[docs]</a>    <span class="k">def</span> <span class="nf">getTauMHD</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated MHD energy confinement time [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated MHD energy confinement time [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tauMHD</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">tauMHDNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:taumhd&#39;</span><span class="p">)</span>
+                <span class="n">tauMHDNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:taumhd&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_tauMHD</span> <span class="o">=</span> <span class="n">tauMHDNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_tauMHD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tauMHDNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -931,12 +1061,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tauMHD</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getPinj"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getPinj">[docs]</a>    <span class="k">def</span> <span class="nf">getPinj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated injected power [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated injected power [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Pinj</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">PinjNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:pbinj&#39;</span><span class="p">)</span>
+                <span class="n">PinjNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:pbinj&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_Pinj</span> <span class="o">=</span> <span class="n">PinjNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_Pinj&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PinjNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -944,12 +1073,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Pinj</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getWbdot"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getWbdot">[docs]</a>    <span class="k">def</span> <span class="nf">getWbdot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated d/dt of magnetic stored energy [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated d/dt of magnetic stored energy [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Wbdot</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">WbdotNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:wbdot&#39;</span><span class="p">)</span>
+                <span class="n">WbdotNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:wbdot&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_Wbdot</span> <span class="o">=</span> <span class="n">WbdotNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_Wbdot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WbdotNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -957,12 +1085,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Wbdot</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getWpdot"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getWpdot">[docs]</a>    <span class="k">def</span> <span class="nf">getWpdot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        returns EFIT-calculated d/dt of plasma stored energy [t]</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated d/dt of plasma stored energy [t]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Wpdot</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">WpdotNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s">&#39;a_eqdsk:wpdot&#39;</span><span class="p">)</span>
+                <span class="n">WpdotNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s">&#39;:wpdot&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_Wpdot</span> <span class="o">=</span> <span class="n">WpdotNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_Wpdot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WpdotNode</span><span class="o">.</span><span class="n">units</span>
             <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
@@ -970,9 +1097,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Wpdot</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getEnergy"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getEnergy">[docs]</a>    <span class="k">def</span> <span class="nf">getEnergy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy</span>
-<span class="sd">        returns namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}</span>
+        <span class="sd">&quot;&quot;&quot;pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">WMHD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getWMHD</span><span class="p">()</span>
@@ -984,18 +1112,57 @@
             <span class="k">return</span> <span class="n">data</span><span class="p">(</span><span class="n">WMHD</span><span class="o">=</span><span class="n">WMHD</span><span class="p">,</span><span class="n">tauMHD</span><span class="o">=</span><span class="n">tauMHD</span><span class="p">,</span><span class="n">Pinj</span><span class="o">=</span><span class="n">Pinj</span><span class="p">,</span><span class="n">Wbdot</span><span class="o">=</span><span class="n">Wbdot</span><span class="p">,</span><span class="n">Wpdot</span><span class="o">=</span><span class="n">Wpdot</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+            </div>
+<div class="viewcode-block" id="EFITTree.getMachineCrossSection"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getMachineCrossSection">[docs]</a>    <span class="k">def</span> <span class="nf">getMachineCrossSection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            The requested data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">limitr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:limitr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="n">xlim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:xlim&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="n">ylim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s">&#39;:ylim&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">npts</span> <span class="o">&lt;</span> <span class="n">limitr</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Dimensions inconsistent in limiter array lengths.&quot;</span><span class="p">)</span>
+                    
+                <span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span> <span class="o">=</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">limitr</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">limitr</span><span class="p">]</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">TreeException</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;data retrieval failed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EFITTree.getMachineCrossSectionFull"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getMachineCrossSectionFull">[docs]</a>    <span class="k">def</span> <span class="nf">getMachineCrossSectionFull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns R,Z coordinates of vacuum-vessel wall for plotting routines.</span>
+<span class="sd">        </span>
+<span class="sd">        Absent additional vector-graphic data on machine cross-section, returns</span>
+<span class="sd">        self.getMachineCrossSection().</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            The requested data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMachineCrossSection</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;self.getMachineCrossSection not implemented.&quot;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getCurrentSign"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getCurrentSign">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentSign</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the sign of the current, based on the check in Steve Wolfe&#39;s</span>
-<span class="sd">        IDL implementation efit_rz2psi.pro.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns the sign of the current, based on the check in Steve Wolfe&#39;s IDL implementation efit_rz2psi.pro.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentSign</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_currentSign</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getIpMeas</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mf">1e5</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentSign</span>
 </div>
 <div class="viewcode-block" id="EFITTree.getParam"><a class="viewcode-back" href="../../eqtools.html#eqtools.EFIT.EFITTree.getParam">[docs]</a>    <span class="k">def</span> <span class="nf">getParam</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        backup function - path to parameter as input, returns desired variable</span>
-<span class="sd">        acts as wrapper for MDS call</span>
+        <span class="sd">&quot;&quot;&quot;backup function - path to parameter as input, returns desired variable acts as wrapper for MDS call</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            path (string): The path to the MDSplus node you wish to pull in.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            The requested data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
             <span class="n">EFITpath</span> <span class="o">=</span> <span class="n">path</span>
@@ -1042,13 +1209,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">eqtools 1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Mark Chilenski, Ian Faust and John Walk.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2014, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>
