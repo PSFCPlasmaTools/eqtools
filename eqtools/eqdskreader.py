@@ -643,6 +643,7 @@ class EqdskReader(Equilibrium):
     ####################################################
 
     def aaaaa(self):
+        """Foo the bar baz"""
         return None
 
     def rz2psi(self,R,Z,*args,**kwargs):
