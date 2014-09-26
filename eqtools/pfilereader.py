@@ -53,7 +53,25 @@ class PFileReader(object):
 
     Keyword Args:
         verbose (Boolean): Option to print message on object creation 
-            listing available data parameters. Defaults to True. 
+            listing available data parameters. Defaults to True.
+
+    Examples:
+        Load p-file data located at `file_path`, while suppressing terminal
+        output of stored parameters::
+
+            pfr = eqtools.pfilereader.PFileReader(file_path,verbose=False)
+
+        Recover electron density data (for example)::
+
+            ne_data = pfr.ne
+
+        Recover abscissa and electron density data (for example)::
+
+            ne = pfr.ne.y
+            abscis = pfr.ne.x
+
+        Available parameters in pfr may be listed via the overridden __str__
+        command.
     """
     def __init__(self,pfile,verbose=True):
         self._pfile = pfile
