@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>eqtools.FromArrays &mdash; eqtools 0.0 documentation</title>
+    <title>eqtools.FromArrays &mdash; eqtools 1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.0',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="eqtools 0.0 documentation" href="../../index.html" />
+    <link rel="top" title="eqtools 1.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">eqtools 1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -69,52 +67,106 @@
 
 <span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">Equilibrium</span>
 
+<span class="kn">import</span> <span class="nn">scipy</span>
+
 <div class="viewcode-block" id="ArrayEquilibrium"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium">[docs]</a><span class="k">class</span> <span class="nc">ArrayEquilibrium</span><span class="p">(</span><span class="n">Equilibrium</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to represent an equilibrium specified as arrays of data.</span>
+<span class="sd">    </span>
+<span class="sd">    Create ArrayEquilibrium instance from arrays of data.</span>
+<span class="sd">    </span>
+<span class="sd">    Has very little checking on the shape/type of the arrays at this point.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        psiRZ: Array-like, (M, N, P).</span>
+<span class="sd">            Flux values at M times, N Z locations and P R locations.</span>
+<span class="sd">        rGrid: Array-like, (P,).</span>
+<span class="sd">            R coordinates that psiRZ is given at.</span>
+<span class="sd">        zGrid: Array-like, (N,).</span>
+<span class="sd">            Z coordinates that psiRZ is given at.</span>
+<span class="sd">        time: Array-like, (M,).</span>
+<span class="sd">            Times that psiRZ is given at.</span>
+<span class="sd">        q: Array-like, (S, M).</span>
+<span class="sd">            q profile evaluated at S values of psinorm from 0 to 1, given at M</span>
+<span class="sd">            times.</span>
+<span class="sd">        fluxVol: Array-like, (S, M).</span>
+<span class="sd">            Flux surface volumes evaluated at S values of psinorm from 0 to 1,</span>
+<span class="sd">            given at M times.</span>
+<span class="sd">        psiLCFS: Array-like, (M,).</span>
+<span class="sd">            Flux at the last closed flux surface, given at M times.</span>
+<span class="sd">        psiAxis: Array-like, (M,).</span>
+<span class="sd">            Flux at the magnetic axis, given at M times.</span>
+<span class="sd">        rmag: Array-like, (M,).</span>
+<span class="sd">            Radial coordinate of the magnetic axis, given at M times.</span>
+<span class="sd">        zmag: Array-like, (M,).</span>
+<span class="sd">            Vertical coordinate of the magnetic axis, given at M times.</span>
+<span class="sd">        Rout: Outboard midplane radius of the last closed flux surface.</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        length_unit: String.</span>
+<span class="sd">            Sets the base unit used for any quantity whose</span>
+<span class="sd">            dimensions are length to any power. Valid options are:</span>
+<span class="sd">        </span>
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">                &#39;m&#39;          meters</span>
+<span class="sd">                &#39;cm&#39;         centimeters</span>
+<span class="sd">                &#39;mm&#39;         millimeters</span>
+<span class="sd">                &#39;in&#39;         inches</span>
+<span class="sd">                &#39;ft&#39;         feet</span>
+<span class="sd">                &#39;yd&#39;         yards</span>
+<span class="sd">                &#39;smoot&#39;      smoots</span>
+<span class="sd">                &#39;cubit&#39;      cubits</span>
+<span class="sd">                &#39;hand&#39;       hands</span>
+<span class="sd">                &#39;default&#39;    whatever the default in the tree is (no conversion is performed, units may be inconsistent)</span>
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">        </span>
+<span class="sd">            Default is &#39;m&#39; (all units taken and returned in meters).</span>
+<span class="sd">        tspline: Boolean.</span>
+<span class="sd">            Sets whether or not interpolation in time is</span>
+<span class="sd">            performed using a tricubic spline or nearest-neighbor</span>
+<span class="sd">            interpolation. Tricubic spline interpolation requires at least</span>
+<span class="sd">            four complete equilibria at different times. It is also assumed</span>
+<span class="sd">            that they are functionally correlated, and that parameters do</span>
+<span class="sd">            not vary out of their boundaries (derivative = 0 boundary</span>
+<span class="sd">            condition). Default is False (use nearest neighbor interpolation).</span>
+<span class="sd">        monotonic: Boolean.</span>
+<span class="sd">            Sets whether or not the &quot;monotonic&quot; form of time window</span>
+<span class="sd">            finding is used. If True, the timebase must be monotonically</span>
+<span class="sd">            increasing. Default is False (use slower, safer method).</span>
+<span class="sd">        verbose: Boolean.</span>
+<span class="sd">            Allows or blocks console readout during operation.  Defaults to True,</span>
+<span class="sd">            displaying useful information for the user.  Set to False for quiet</span>
+<span class="sd">            usage or to avoid console clutter for multiple instances.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psiRZ</span><span class="p">,</span> <span class="n">rGrid</span><span class="p">,</span> <span class="n">zGrid</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">fluxVol</span><span class="p">,</span>
-                 <span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fast</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create ArrayEquilibrium instance from arrays of data.</span>
-<span class="sd">        </span>
-<span class="sd">        Args:</span>
-<span class="sd">            psiRZ: Array-like, (M, N, P). Flux values at M times, N Z locations</span>
-<span class="sd">                and P R locations.</span>
-<span class="sd">            rGrid: Array-like, (P,). R coordinates that psiRZ is given at.</span>
-<span class="sd">            zGrid: Array-like, (N,). Z coordinates that psiRZ is given at.</span>
-<span class="sd">            time: Array-like, (M,). Times that psiRZ is given at.</span>
-<span class="sd">            q: Array-like, (Q, M). q profile evaluated at Q values of psinorm</span>
-<span class="sd">                from 0 to 1, given at M times.</span>
-<span class="sd">            fluxVol: Array-like, (S, M). Flux surface volumes evaluated at S</span>
-<span class="sd">                values of psinorm from 0 to 1, given at M times.</span>
-<span class="sd">        </span>
-<span class="sd">        Kwargs:</span>
-<span class="sd">            length_unit: String. Base unit for any quantity whose dimensions</span>
-<span class="sd">                are length to any power. Default is &#39;m&#39;. Valid options are:</span>
-<span class="sd">                    &#39;m&#39;         meters</span>
-<span class="sd">                    &#39;cm&#39;        centimeters</span>
-<span class="sd">                    &#39;mm&#39;        millimeters</span>
-<span class="sd">                    &#39;in&#39;        inches</span>
-<span class="sd">                    &#39;ft&#39;        feet</span>
-<span class="sd">                    &#39;yd&#39;        yards</span>
-<span class="sd">                    &#39;smoot&#39;     smoots</span>
-<span class="sd">                    &#39;default&#39;   whatever the default in the tree is (no</span>
-<span class="sd">                                    conversion is performed, units may be</span>
-<span class="sd">                                    inconsistent)</span>
-<span class="sd">        </span>
-<span class="sd">        Returns:</span>
-<span class="sd">            The ArrayEquilibrium instance created.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psiRZ</span><span class="p">,</span> <span class="n">rGrid</span><span class="p">,</span> <span class="n">zGrid</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">fluxVol</span><span class="p">,</span> <span class="n">psiLCFS</span><span class="p">,</span> <span class="n">psiAxis</span><span class="p">,</span>
+                 <span class="n">rmag</span><span class="p">,</span> <span class="n">zmag</span><span class="p">,</span> <span class="n">Rout</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">psiRZ</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rGrid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">zGrid</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fluxVol</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">psiLCFS</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">psiAxis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rmag</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">zmag</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Rout</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_psiRZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Wb/rad&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rGrid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_zGrid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_qpsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39; &#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fluxVol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m^3&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_psiLFCS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Wb/rad&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_psiAxis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Wb/rad&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_zmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RmidLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_ZLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span>
+        
+        <span class="nb">super</span><span class="p">(</span><span class="n">ArrayEquilibrium</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     
 <div class="viewcode-block" id="ArrayEquilibrium.getTimeBase"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getTimeBase">[docs]</a>    <span class="k">def</span> <span class="nf">getTimeBase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a copy of the time base vector, array dimensions are (M,).</span>
@@ -139,7 +191,54 @@
         <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_zGrid&#39;</span><span class="p">],</span>
                                                       <span class="n">length_unit</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    </div></div>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getQProfile"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getQProfile">[docs]</a>    <span class="k">def</span> <span class="nf">getQProfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns safety factor q profile (over Q values of psinorm from 0 to 1), dimensions are (Q, M)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getFluxVol"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getFluxVol">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxVol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns volume within flux surface [psi,t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_fluxVol&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getFluxLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getFluxLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns psi at separatrix [t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getFluxAxis"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getFluxAxis">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxAxis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns psi on magnetic axis [t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getMagR"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getMagR">[docs]</a>    <span class="k">def</span> <span class="nf">getMagR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetic-axis major radius [t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_rmag&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getMagZ"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getMagZ">[docs]</a>    <span class="k">def</span> <span class="nf">getMagZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetic-axis Z [t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_zmag&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getRmidOut"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getRmidOut">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidOut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane major radius [t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s">&#39;_RmidLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getRLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getRLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getRLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">TODO</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getZLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getZLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getZLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">TODO</span>
+    </div>
+<div class="viewcode-block" id="ArrayEquilibrium.getCurrentSign"><a class="viewcode-back" href="../../eqtools.html#eqtools.FromArrays.ArrayEquilibrium.getCurrentSign">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentSign</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span></div></div>
 </pre></div>
 
           </div>
@@ -173,13 +272,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 0.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">eqtools 1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Mark Chilenski, Ian Faust and John Walk.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+        &copy; Copyright 2014, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

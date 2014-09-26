@@ -642,105 +642,81 @@ class EqdskReader(Equilibrium):
     # wrappers for mapping routines handling time call #
     ####################################################
 
+    def aaaaa(self):
+        """Foo the bar baz"""
+        return None
+
     def rz2psi(self,R,Z,*args,**kwargs):
-        """Converts the passed R, Z, t arrays to psi (unnormalized poloidal flux) values.
+        """Converts passed, R,Z arrays to psi values.
         
+        Wrapper for :py:meth:`Equilibrium.rz2psi` removing timebase dependence.
+
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
-                map to poloidal flux. If `R` and `Z` are both scalar values,
-                they are used as the coordinate pair for all of the values in
-                `t`. Must have the same shape as `Z` unless the `make_grid`
-                keyword is set. If the `make_grid` keyword is True, `R` must
-                have exactly one dimension.
+                map to poloidal flux. If the `make_grid` keyword is True, `R` 
+                must have shape (`len_R`,).
             Z (Array-like or scalar float): Values of the vertical coordinate to
-                map to poloidal flux. If `R` and `Z` are both scalar values,
-                they are used as the coordinate pair for all of the values in
-                `t`. Must have the same shape as `R` unless the `make_grid`
-                keyword is set. If the `make_grid` keyword is True, `Z` must
-                have exactly one dimension.
-            t (Array-like or scalar float): Times to perform the conversion at.
-                If `t` is a single value, it is used for all of the elements of
-                `R`, `Z`. If the `each_t` keyword is True, then `t` must be
-                scalar or have exactly one dimension. If the `each_t` keyword is
-                False, `t` must have the same shape as `R` and `Z` (or their
-                meshgrid if `make_grid` is True).
-        
+                map to poloidal flux. Must have the same shape as `R` unless the 
+                `make_grid` keyword is set. If the make_grid keyword is True, 
+                `Z` must have shape (`len_Z`,).
+            *args: Slot for time input for consistent syntax with 
+                :py:meth:`Equilibrium.rz2psi`.  Will return dummy value for time
+                if input in :py:class:`EqdskReader`.
+
         Keyword Args:
-            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
-                at each value in `t`. If True, `t` must have only one dimension
-                (or be a scalar). If False, `t` must match the shape of `R` and
-                `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
-                EACH element in `t`).
-            make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
-                True, `R` and `Z` must each only have a single dimension, but
-                can have different lengths. Default is False (do not form
-                meshgrid).
-            length_unit (String or 1): Length unit that `R`, `Z` are given in.
-                If a string is given, it must be a valid unit specifier:
+            make_grid (Boolean): Set to True to pass `R` and `Z` through 
+                meshgrid before evaluating. If this is set to True, `R` and `Z`
+                must each only have a single dimension, but can have different 
+                lengths.  Default is False (do not form meshgrid).
+            length_unit (String or 1): Length unit that `R` and `Z` are being 
+                given in. If a string is given, it must be a valid unit 
+                specifier:
                 
-                    ===========  ===========
-                    'm'          meters
-                    'cm'         centimeters
-                    'mm'         millimeters
-                    'in'         inches
-                    'ft'         feet
-                    'yd'         yards
-                    'smoot'      smoots
-                    'cubit'      cubits
-                    'hand'       hands
-                    'default'    meters
-                    ===========  ===========
+                ===========  ===========
+                'm'          meters
+                'cm'         centimeters
+                'mm'         millimeters
+                'in'         inches
+                'ft'         feet
+                'yd'         yards
+                'smoot'      smoots
+                'cubit'      cubits
+                'hand'       hands
+                'default'    meters
+                ===========  ===========
                 
                 If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (use meters).
-            return_t (Boolean): Set to True to return a tuple of (`rho`,
-                `time_idxs`), where `time_idxs` is the array of time indices
-                actually used in evaluating `rho` with nearest-neighbor
-                interpolation. (This is mostly present as an internal helper.)
-                Default is False (only return `rho`).
-            
+                value is 1 (`R` and `Z` given in meters).
+            **kwargs: Other keywords (i.e., `return_t`) to :py:meth:`rz2psi` are 
+                valid (necessary for proper inheritance and usage in other 
+                mapping routines) but will return dummy values.
+
         Returns:
-            `psi` or (`psi`, `time_idxs`)
-            
-            * **psi** (`Array or scalar float`) - The unnormalized poloidal
-              flux. If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
-              both have the same shape then `psi` has this shape as well,
-              unless the `make_grid` keyword was True, in which case `psi` has
-              shape (len(`Z`), len(`R`)).
-            * **time_idxs** (Array with same shape as `psi`) - The indices 
-              (in :py:meth:`self.getTimeBase`) that were used for
-              nearest-neighbor interpolation. Only returned if `return_t` is
-              True.
-        
+            psi (Array or scalar float): 
+
+                If all of the input arguments are scalar, then a scalar is 
+                returned. Otherwise, a scipy Array instance is returned. If `R` 
+                and `Z` both have the same shape then psi has this shape as 
+                well. If the make_grid keyword was True then psi has shape 
+                (`len(Z)`, `len(R)`).
+
         Examples:
-            All assume that `Eq_instance` is a valid instance of the appropriate
-            extension of the :py:class:`Equilibrium` abstract class.
+            All assume that Eq_instance is a valid instance EqdskReader:
 
-            Find single psi value at R=0.6m, Z=0.0m, t=0.26s::
+            Find single psi value at R=0.6m, Z=0.0m::
             
-                psi_val = Eq_instance.rz2psi(0.6, 0, 0.26)
+                psi_val = Eq_instance.rz2psi(0.6, 0)
 
-            Find psi values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
-            single time t=0.26s. Note that the `Z` vector must be fully
-            specified, even if the values are all the same::
+            Find psi values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).
+            Note that the Z vector must be fully specified,
+            even if the values are all the same::
             
-                psi_arr = Eq_instance.rz2psi([0.6, 0.8], [0, 0], 0.26)
+                psi_arr = Eq_instance.rz2psi([0.6, 0.8], [0, 0])
 
-            Find psi values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+            Find psi values on grid defined by 1D vector of radial positions R
+            and 1D vector of vertical positions Z::
             
-                psi_arr = Eq_instance.rz2psi(0.6, 0, [0.2, 0.3])
-
-            Find psi values at (R, Z, t) points (0.6m, 0m, 0.2s) and
-            (0.5m, 0.2m, 0.3s)::
-            
-                psi_arr = Eq_instance.rz2psi([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
-
-            Find psi values on grid defined by 1D vector of radial positions `R`
-            and 1D vector of vertical positions `Z` at time t=0.2s::
-            
-                psi_mat = Eq_instance.rz2psi(R, Z, 0.2, make_grid=True)
+                psi_mat = Eq_instance.rz2psi(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
