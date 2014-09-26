@@ -56,15 +56,12 @@ class NSTXEFITTree(EFITTree):
     Additional attributes are initialized as None, filled on the first request to the object.
 
     Args:
-        shot: (long) int
-            NSTX shot index (long)
+        shot (integer): NSTX shot index (long)
     
     Keyword Args:
-        tree: str
-            Optional input for EFIT tree, defaults to 'EFIT01'
+        tree (string): Optional input for EFIT tree, defaults to 'EFIT01'
             (i.e., EFIT data are under \\EFIT01::top.results).
-        length_unit: str
-            Sets the base unit used for any quantity whose
+        length_unit (string): Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
                 
                 ===========  ===========================================================================================
@@ -81,22 +78,20 @@ class NSTXEFITTree(EFITTree):
                 ===========  ===========================================================================================
                 
             Default is 'm' (all units taken and returned in meters).
-        gfile: str
-            Optional input for EFIT geqdsk location name, defaults to 'g_eqdsk'
-            (i.e., EFIT data are under \\tree::top.results.G_EQDSK)
-        afile: str
-            Optional input for EFIT aeqdsk location name, defaults to 'a_eqdsk'
-            (i.e., EFIT data are under \\tree::top.results.A_EQDSK)
-        tspline: Boolean
-            Sets whether or not interpolation in time is
+        gfile (string): Optional input for EFIT geqdsk location name,
+            defaults to 'geqdsk' (i.e., EFIT data are under 
+            \\tree::top.results.GEQDSK)
+        afile (string): Optional input for EFIT aeqdsk location name,
+            defaults to 'aeqdsk' (i.e., EFIT data are under 
+            \\tree::top.results.AEQDSK)
+        tspline (Boolean): Sets whether or not interpolation in time is
             performed using a tricubic spline or nearest-neighbor
             interpolation. Tricubic spline interpolation requires at least
             four complete equilibria at different times. It is also assumed
             that they are functionally correlated, and that parameters do
             not vary out of their boundaries (derivative = 0 boundary
             condition). Default is False (use nearest neighbor interpolation).
-        monotonic: Boolean
-            Sets whether or not the "monotonic" form of time
+        monotonic (Boolean): Sets whether or not the "monotonic" form of time
             window finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
@@ -118,7 +113,8 @@ class NSTXEFITTree(EFITTree):
                                            monotonic=monotonic)
         
     def getFluxGrid(self):
-        """returns EFIT flux grid, [t,z,r]
+        """Returns:
+               EFIT flux grid, [t,z,r]
         """
         if self._psiRZ is None:
             try:
@@ -156,16 +152,17 @@ class NSTXEFITTree(EFITTree):
         return (self._Rlimiter,self._Zlimiter)        
 
     def getFluxVol(self): 
-        """
-        Not implemented in NSTXEFIT tree.
+        """Not implemented in NSTXEFIT tree.
         
-        Returns volume within flux surface [psi,t]
+        Returns:
+            volume within flux surface [psi,t]
         """
         super(EFITTree,self).getFluxVol()
         
         
     def getRmidPsi(self, length_unit=1):
-        """ returns maximum major radius of each flux surface [t,psi]
+        """ Returns:
+                maximum major radius of each flux surface [t,psi]
         """
         
         if self._RmidPsi is None:
@@ -190,7 +187,8 @@ class NSTXEFITTree(EFITTree):
             return unit_factor * self._RmidPsi.copy()
         
     def getIpCalc(self):
-        """returns EFIT-calculated plasma current [t]
+        """Returns:
+               EFIT-calculated plasma current [t]
         """
         if self._IpCalc is None:
             try:
@@ -203,7 +201,8 @@ class NSTXEFITTree(EFITTree):
 
         
     def getVolLCFS(self, length_unit=3):
-        """returns volume within LCFS [t]
+        """Returns:
+               volume within LCFS [t]
         """
         if self._volLCFS is None:
             try:
