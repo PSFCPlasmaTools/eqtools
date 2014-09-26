@@ -1123,30 +1123,26 @@ class EqdskReader(Equilibrium):
         """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
         
         Args:
-            psi_norm: Array-like or scalar float.
-                Values of the normalized
+            psi_norm (Array-like or scalar float): Values of the normalized
                 poloidal flux to map to midplane radius.
 
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            rho: Boolean.
-                Set to True to return r/a (normalized minor radius)
-                instead of R_mid. Default is False (return major radius, R_mid).
-            kind: String or non-negative int.
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to R_mid. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed `t` values either as an Arg or Kwarg are neglected.
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of `R_mid`. Default is False (return major radius, 
+                `R_mid`).
+            kind (String or non-negative int):  Specifies the type of 
+                interpolation to be performed in getting from psinorm to `R_mid`. 
+                This is passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1.
-                Length unit that R_mid is returned in. If
-                a string is given, it must be a valid unit specifier:
+            length_unit (String or 1): Length unit that `R_mid` is returned in. 
+                If a string is given, it must be a valid unit specifier:
                 
                 ===========  ===========
                 'm'          meters
@@ -1161,12 +1157,12 @@ class EqdskReader(Equilibrium):
                 'default'    meters
                 ===========  ===========
                 
-                If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (R_mid returned in meters).
+                If `length_unit` is 1 or None, meters are assumed. The default
+                value is 1 (`R_mid` returned in meters).
             
         Returns:
-            R_mid: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
+            R_mid (Array-like or scalar float): If all of the input arguments 
+                are scalar, then a scalar is returned. Otherwise, a scipy Array
                 instance is returned.
         
         Examples:
@@ -1188,9 +1184,11 @@ class EqdskReader(Equilibrium):
         return super(EqdskReader,self).psinorm2rmid(psi_norm,t,**kwargs)
 
     def psinorm2volnorm(self,*args,**kwargs):
-        """Calculates the outboard R_mid location corresponding to psi_norm (normalized poloidal flux) values.
-        Not implemented for EqdskReader, as necessary parameter
-        is not read from a/g-files.
+        """Calculates the outboard R_mid location corresponding to psi_norm 
+        (normalized poloidal flux) values.
+        
+        Not implemented for EqdskReader, as necessary parameter is not read 
+        from a/g-files.
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
