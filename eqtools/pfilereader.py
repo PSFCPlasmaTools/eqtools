@@ -59,7 +59,7 @@ class PFileReader(object):
         Load p-file data located at `file_path`, while suppressing terminal
         output of stored parameters::
 
-            pfr = eqtools.pfilereader.PFileReader(file_path,verbose=False)
+            pfr = eqtools.PFileReader(file_path,verbose=False)
 
         Recover electron density data (for example)::
 

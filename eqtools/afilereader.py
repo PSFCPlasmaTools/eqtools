@@ -50,7 +50,7 @@ class AFileReader(object):
     Examples:
         Load a-file data located at `file_path`::
 
-            afr = eqtools.afilereader.AFileReader(file_path)
+            afr = eqtools.AFileReader(file_path)
 
         Recover a datapoint (for example, `shot`, stored as `afr._shot`),
         using copy-protected __getattribute__ method::

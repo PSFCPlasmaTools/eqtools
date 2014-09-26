@@ -20,7 +20,8 @@
 functionality for equilibria stored in eqdsk files from EFIT(a- and g-files).
 
 Classes:
-    EqdskReader: class inheriting Equilibrium reading g- and a-files for
+    EqdskReader: 
+        Class inheriting Equilibrium reading g- and a-files for
         equilibrium data.
 """
 
@@ -81,6 +82,22 @@ class EqdskReader(Equilibrium):
         IOError: if both name/shot and explicit filenames are not set.
         ValueError: if the g-file cannot be found, or if multiple valid 
             g/a-files are found.
+
+    Examples:
+        Instantiate EqdskReader for a given `shot` and `time` -- will search current
+        working directory for files of the form g[shot].[time] and 
+        a[shot].[time], suppressing terminal outputs::
+
+            edr = eqtools.EqdskReader(shot,time,verbose=False)
+
+        or
+
+            edr = eqtools.EqdskReader(shot=shot,time=time,verbose=False)
+
+        Instantiate EqdskReader with explicit file paths `gfile_path` and 
+        `afile_path`:
+
+            edr = eqtools.EqdskReader(gfile=gfile_path,afile=afile_path)
     """
     def __init__(self,
                  shot=None,
