@@ -21,7 +21,8 @@ This module contains the AFileReader class, a lightweight data
 handler for a-file (time-history) datasets.
 
 Classes:
-    AFileReader: Data-storage class for a-file data.  Reads
+    AFileReader: 
+        Data-storage class for a-file data.  Reads
         data from ASCII a-file, storing as copy-safe object
         attributes.
 """
@@ -45,6 +46,22 @@ class AFileReader(object):
 
     Args:
         afile (String): file path to a-file
+
+    Examples:
+        Load a-file data located at `file_path`::
+
+            afr = eqtools.afilereader.AFileReader(file_path)
+
+        Recover a datapoint (for example, `shot`, stored as `afr._shot`),
+        using copy-protected __getattribute__ method::
+
+            shot = afr.shot
+
+        Assign a new attribute to afr -- note that this will raise an
+        AttributeError if attempting to overwrite a previously-stored
+        attribute::
+
+            afr.attribute = val
     """
     def __init__(self, afile):
         self._afile = afile
