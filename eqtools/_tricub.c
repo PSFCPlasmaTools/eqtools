@@ -177,11 +177,12 @@ int isregular(double val[], int ix)
        so on very large bases that fail, it 
        stops early. Starts at end.  */
   int counter = ix - 2,output = 1;
+  double eps = 1e-6; /* Difference between values within .001%  */
   double temp = val[counter] - val[counter + 1];
   while( counter )
     { counter--;
 
-      if(val[counter] - val[counter + 1] != temp)
+      if(abs((val[counter] - val[counter + 1])/temp - 1) >= eps)
 	{
 	  counter = 0;
 	  output = 0;
