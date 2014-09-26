@@ -1193,22 +1193,20 @@ class EqdskReader(Equilibrium):
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
     def psinorm2phinorm(self,psi_norm,t=False,kind='cubic'):
-        """Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.
+        """Calculates the normalized toroidal flux corresponding to the passed 
+        psi_norm (normalized poloidal flux) values.
         
         Args:
-            psi_norm: Array-like or scalar float.
-                Values of the normalized
+            psi_norm (Array-like or scalar float): Values of the normalized
                 poloidal flux to map to normalized toroidal flux.
         
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            kind: String or non-negative int.
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to phinorm. This is
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                passed to scipy.interpolate.interp1d. Valid options are:
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed `t` values either as an Arg or Kwarg are neglected.
+            kind (String or non-negative int): Specifies the type of 
+                interpolation to be performed in getting from psinorm to phinorm. 
+                This is 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 
+                'cubic' passed to scipy.interpolate.interp1d. Valid options are:
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
                 Default value is 'cubic' (3rd order spline interpolation). On
@@ -1216,8 +1214,8 @@ class EqdskReader(Equilibrium):
                 you should try 'linear' until you can rebuild your scipy install.
             
         Returns:
-            phinorm: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
+            phinorm (Array-like or scalar float): If all of the input arguments 
+                are scalar, then a scalar is returned. Otherwise, a scipy Array
                 instance is returned.
         
         Examples:
@@ -1243,66 +1241,106 @@ class EqdskReader(Equilibrium):
     #################
 
     def getTimeBase(self):
-        """Returns EFIT time point
+        """Returns EFIT time point.
+
+        Returns:
+            time (Array): 1-element, 1D array of time in s.  Returns array for
+                consistency with Equilibrium implementations with time 
+                .variation
         """
         return self._time.copy()
 
     def getCurrentSign(self):
-        """Returns the sign of the current, based on the check in Steve Wolfe's IDL implementation efit_rz2psi.pro.
+        """Returns the sign of the current, based on the check in Steve Wolfe's 
+        IDL implementation efit_rz2psi.pro.
+
+        Returns:
+            currentSign (Int): 1 for positive current, -1 for reversed.
         """
         if self._currentSign is None:
             self._currentSign = 1 if scipy.mean(self.getIpCalc()) > 1e5 else -1
         return self._currentSign
 
     def getFluxGrid(self):
-        """Returns EFIT flux grid, [r,z]
+        """Returns EFIT flux grid.
+
+        Returns:
+            psiRZ (Array): [1,r,z] Array of flux values.  Includes 1-element
+                time axis for consistency with Equilibrium implementations with 
+                time variation.
         """
         return self._psiRZ.copy()
 
     def getRGrid(self,length_unit=1):
-        """Returns EFIT R-axis [r]
+        """Returns EFIT R-axis.
+
+        Returns:
+            R (Array): [r] array of R-axis values for RZ grid.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],length_unit)
         return unit_factor * self._rGrid.copy()
 
     def getZGrid(self,length_unit=1):
-        """Returns EFIT Z-axis [z]
+        """Returns EFIT Z-axis.
+
+        Returns:
+            Z (Array): [z] array of Z-axis values for RZ grid.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],length_unit)
         return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
-        """Returns psi on magnetic axis
+        """Returns psi on magnetic axis.
+
+        Returns:
+            psi0 (Array): [1] array of psi on magnetic axis.  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
         return -1. * self.getCurrentSign() * scipy.array(self._psiAxis)
 
     def getFluxLCFS(self):
-        """Returns psi at separatrix
+        """Returns psi at separatrix.
+
+        Returns:
+            psia (Array): [1] array of psi at separatrix.  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
         return -1 * self.getCurrentSign() * scipy.array(self._psiLCFS)
 
     def getRLCFS(self,length_unit=1):
-        """Returns array of R-values of LCFS
+        """Returns array of R-values of LCFS.
+
+        Returns:
+            RLCFS (Array): [1,n] array of R values describing LCFS.  Returns 
+                array for consistency with Equilibrium implementations with 
+                time variation.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'],length_unit)
         return unit_factor * self._RLCFS.copy()
 
     def getZLCFS(self,length_unit=1):
-        """Returns array of Z-values of LCFS
+        """Returns array of Z-values of LCFS.
+
+        Returns:
+            ZLCFS (Array): [1,n] array of Z values describing LCFS.  Returns 
+                array for consistency with Equilibrium implementations with 
+                time variation.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'],length_unit)
         return unit_factor * self._ZLCFS.copy()
         
     def remapLCFS(self,mask=False):
-        """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
-        of psinorm=1 surface.
+        """Overwrites RLCFS, ZLCFS values pulled from EFIT with 
+        explicitly-calculated contour of psinorm=1 surface.
 
         Keyword Args:
-            mask: Boolean.
-                Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).
-                Set False to draw full contour of psi = psiLCFS.
+            mask (Boolean): Set True to mask LCFS path to limiter outline 
+                (using inPolygon).  Set False to draw full contour of 
+                psi = psiLCFS.  Defaults to False.
         """
         if not _has_plt:
             raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
@@ -1355,11 +1393,23 @@ class EqdskReader(Equilibrium):
         plt.ioff()
 
     def getFluxVol(self):
-        #returns volume contained within a flux surface as function of psi, volp(psi,t)
+        """Returns volume contained within a flux surface as a function of psi.
+
+        Not implemented in EqdskReader, as required data is not stored in
+        g/a-files.
+
+        Raises:
+            NotImplementedError: in all cases.
+        """
         raise NotImplementedError()
 
     def getVolLCFS(self,length_unit=3):
         """Returns volume with LCFS.
+
+        Returns:
+            Vol (Array): [1] array of plasma volume.  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1376,32 +1426,58 @@ class EqdskReader(Equilibrium):
         Data not read from a/g-files, not implemented for EqdskReader.
 
         Raises:
-            NotImplementedError: RmidPsi not read from a/g-files.
+            NotImplementedError: in all cases.
         """
         raise NotImplementedError('RmidPsi not read from a/g-files.')
 
     def getF(self):
-         """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [psi,t]
+         """returns F=RB_{\Phi}(\Psi), calculated for grad-shafranov solutions  
+         [psi,t]
+
+        Returns:
+            F (Array): [1,n] array of F(\psi).  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
         """       
          return self._fpol.copy()
     
     def getFluxPres(self):
-        """Returns pressure on flux surface p(psi)
+        """Returns pressure on flux surface p(psi).
+
+        Returns:
+            p (Array): [1,n] array of pressure.  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
         """
         return self._fluxPres.copy()
 
     def getFFPrime(self):
-        """returns FF' function used for grad-shafranov solutions [psi,t]
+        """returns FF' function used for grad-shafranov solutions.
+
+        Returns:
+            FF (Array): [1,n] array of FF'(\psi).  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
         """
         return self._ffprim.copy()
 
     def getPPrime(self): 
-        """returns plasma pressure gradient as a function of psi [psi,t]
+        """returns plasma pressure gradient as a function of psi.
+
+        Returns: [1,n] array of pp'(\psi).  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
+            pp (Array): 
         """
         return self._pprime.copy()
 
     def getElongation(self):
         """Returns elongation of LCFS.
+
+        Returns:
+            kappa (Array): [1] array of plasma elongation.  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1414,6 +1490,11 @@ class EqdskReader(Equilibrium):
     def getUpperTriangularity(self):
         """Returns upper triangularity of LCFS.
 
+        Returns:
+            delta (Array): [1] array of plasma upper triangularity.  Returns 
+                array for consistency with Equilibrium implementations with time 
+                variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1424,6 +1505,11 @@ class EqdskReader(Equilibrium):
 
     def getLowerTriangularity(self):
         """Returns lower triangularity of LCFS.
+
+        Returns:
+            delta (Array): [1] array of plasma lower triangularity.  Returns 
+                array for consistency with Equilibrium implementations with time 
+                variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1454,6 +1540,15 @@ class EqdskReader(Equilibrium):
     def getMagR(self,length_unit=1):
         """Returns major radius of magnetic axis.
 
+        Keyword Args:
+            length_unit (String or 1): length unit R is specified in.  Defaults
+            to 1 (default unit of rmagx, typically m)
+
+        Returns:
+            magR (Array): [1] array of major radius of magnetic axis.  Returns 
+                array for consistency with Equilibrium implementations with time 
+                variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1465,6 +1560,15 @@ class EqdskReader(Equilibrium):
 
     def getMagZ(self,length_unit=1):
         """Returns Z of magnetic axis.
+
+        Keyword Args:
+            length_unit (String or 1): length unit Z is specified in.  Defaults
+            to 1 (default unit of zmagx, typically m)
+
+        Returns:
+            magZ (Array): [1] array of Z of magnetic axis.  Returns array for
+                consistency with Equilibrium implementations with time 
+                variation.
 
         Raises:
             ValueError: if a-file data is not read.
