@@ -1110,8 +1110,7 @@ class EFITTree(Equilibrium):
         """backup function - path to parameter as input, returns desired variable acts as wrapper for MDS call
         
         Args:
-            path: str
-                The path to the MDSplus node you wish to pull in.
+            path (string): The path to the MDSplus node you wish to pull in.
         
         Returns:
             The requested data.
