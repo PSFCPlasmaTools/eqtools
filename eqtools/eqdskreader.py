@@ -1542,7 +1542,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): length unit R is specified in.  Defaults
-            to 1 (default unit of rmagx, typically m)
+            to 1 (default unit of rmagx, typically m).
 
         Returns:
             magR (Array): [1] array of major radius of magnetic axis.  Returns 
@@ -1563,7 +1563,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): length unit Z is specified in.  Defaults
-            to 1 (default unit of zmagx, typically m)
+            to 1 (default unit of zmagx, typically m).
 
         Returns:
             magZ (Array): [1] array of Z of magnetic axis.  Returns array for
@@ -1581,6 +1581,15 @@ class EqdskReader(Equilibrium):
 
     def getAreaLCFS(self,length_unit=2):
         """Returns surface area of LCFS.
+
+        Keyword Args:
+            length_unit (String or 2): unit area is specified in.  Defaults to 2
+            (default unit, typically m^2).
+
+        Returns:
+            AreaLCFS (Array): [1] array of surface area of LCFS.  Returns array 
+                for consistency with Equilibrium implementations with time 
+                variation.
 
         Raises:
             ValueError: if a-file data is not read.
