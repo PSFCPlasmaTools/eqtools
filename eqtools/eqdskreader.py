@@ -662,7 +662,10 @@ class EqdskReader(Equilibrium):
     ####################################################
 
     def rz2psi(self,R,Z,*args,**kwargs):
-        """foo
+        """Calculates the non-normalized poloidal flux at the given (`R`, `Z`). 
+        Wrapper for :py:meth:`Equilibrium.rz2psi` masking out timebase dependence.
+
+        
         """
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
