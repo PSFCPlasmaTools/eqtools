@@ -730,10 +730,10 @@ class EqdskReader(Equilibrium):
         ignored.
 
         Returns:
-            psi (Array-like or scalar float): non-normalized poloidal flux.  If 
-            all input arguments are scalar, then `psi` is scalar.  IF `R` and `Z` 
-            have the same shape, then `psi` has this shape as well.  If `make_grid` 
-            is True, then `psi` has the shape (`len_R`, `len_Z`). 
+            psinorm (Array-like or scalar float): non-normalized poloidal flux.  If 
+            all input arguments are scalar, then `psinorm` is scalar.  IF `R` and `Z` 
+            have the same shape, then `psinorm` has this shape as well.  If `make_grid` 
+            is True, then `psinorm` has the shape (`len_R`, `len_Z`). 
 
         Examples:
             All assume that Eq_instance is a valid instance EqdskReader:
@@ -776,59 +776,15 @@ class EqdskReader(Equilibrium):
                 map to normalized toroidal flux. Must have the same shape as `R` 
                 unless the `make_grid` keyword is set. If the `make_grid` 
                 keyword is True, Z must have shape (`len_Z`,).
-            *args: Slot for time input for consistent syntax with 
-                :py:meth:`Equilibrium.rz2phinorm`.  Will return dummy value for 
-                time if input in EqdskReader.
 
-        Keyword Args:
-            sqrt (Boolean): Set to True to return the square root of normalized
-                flux. Only the square root of positive `phi_norm` values is 
-                taken.  Negative values are replaced with zeros, consistent 
-                with Steve Wolfe's IDL implementation efit_rz2rho.pro. Default 
-                is False (return phinorm).
-            make_grid (Boolean): Set to True to pass `R` and `Z` through 
-                meshgrid before evaluating. If this is set to True, `R` and `Z` 
-                must each only have a single dimension, but can have different 
-                lengths.  Default is False (do not form meshgrid).
-            kind (String or non-negative int): Specifies the type of 
-                interpolation to be performed in getting from psinorm to 
-                phinorm. This is passed to scipy.interpolate.interp1d. Valid 
-                options are: 'linear', 'nearest', 'zero', 'slinear', 
-                'quadratic', 'cubic'.  If this keyword is an integer, it 
-                specifies the order of spline to use. See the documentation for 
-                interp1d for more details.  Default value is 'cubic' (3rd order 
-                spline interpolation). On some builds of scipy, this can cause 
-                problems, in which case you should try 'linear' until you can 
-                rebuild your scipy install.
-            length_unit (String or 1): Length unit that `R` and `Z` are being 
-                given in. If a string is given, it must be a valid unit 
-                specifier:
-                
-                ===========  ===========
-                'm'          meters
-                'cm'         centimeters
-                'mm'         millimeters
-                'in'         inches
-                'ft'         feet
-                'yd'         yards
-                'smoot'      smoots
-                'cubit'      cubits
-                'hand'       hands
-                'default'    meters
-                ===========  ===========
-                
-                If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (use meters).
-            **kwargs: Other keywords passed to :py:meth:`Equilibrium.rz2phinorm` 
-                are valid, but will return dummy values (i.e. for timebase 
-                keywords)
+        All keyword arguments are passed to the parent 
+        :py:meth:`Equilibrium.rz2phinorm`.  Remaining arguments in *args are ignored.
 
         Returns:
-            phinorm (Array or scalar float): If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. If `R` and `Z` both have the same shape 
-                then phinorm has this shape as well. If the make_grid keyword 
-                was True then phinorm has shape (`len(Z)`, `len(R)`).
+            phinorm (Array-like or scalar float): non-normalized poloidal flux.  If 
+            all input arguments are scalar, then `phinorm` is scalar.  IF `R` and `Z` 
+            have the same shape, then `phinorm` has this shape as well.  If `make_grid` 
+            is True, then `phinorm` has the shape (`len_R`, `len_Z`). 
 
         Examples:
             All assume that Eq_instance is a valid instance of EqdskReader.
@@ -930,10 +886,10 @@ class EqdskReader(Equilibrium):
             
         Returns:
             rho (Array-like or scalar float): If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. If R and Z both have the same shape then
-                rho has this shape as well. If the make_grid keyword was True
-                then rho has shape (len(Z), len(R)).
+            scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned. If R and Z both have the same shape then
+            rho has this shape as well. If the make_grid keyword was True
+            then rho has shape (len(Z), len(R)).
         
         Raises:
             ValueError: If method is not one of the supported values.
@@ -1030,10 +986,10 @@ class EqdskReader(Equilibrium):
             
         Returns:
             R_mid (Array or scalar float): If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. If `R` and `Z` both have the same shape 
-                then `R_mid` has this shape as well. If the make_grid keyword 
-                was True then `R_mid` has shape (`len(Z)`, `len(R)`).
+            scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned. If `R` and `Z` both have the same shape 
+            then `R_mid` has this shape as well. If the make_grid keyword 
+            was True then `R_mid` has shape (`len(Z)`, `len(R)`).
         
         Examples:
             All assume that Eq_instance is a valid instance of the appropriate
@@ -1101,8 +1057,8 @@ class EqdskReader(Equilibrium):
             
         Returns:
             R_mid (Array-like or scalar float): If all of the input arguments 
-                are scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned.
+            are scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned.
         
         Examples:
             All assume that Eq_instance is a valid instance of the appropriate
@@ -1157,8 +1113,8 @@ class EqdskReader(Equilibrium):
             
         Returns:
             phinorm (Array-like or scalar float): If all of the input arguments 
-                are scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned.
+            are scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned.
         
         Examples:
             All assume that Eq_instance is a valid instance of the appropriate
