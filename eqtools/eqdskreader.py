@@ -1187,6 +1187,9 @@ class EqdskReader(Equilibrium):
         
         Not implemented for EqdskReader, as necessary parameter is not read 
         from a/g-files.
+
+        Raises:
+            NotImplementedError: in all cases.            
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
@@ -1462,10 +1465,10 @@ class EqdskReader(Equilibrium):
     def getPPrime(self): 
         """returns plasma pressure gradient as a function of psi.
 
-        Returns: [1,n] array of pp'(\psi).  Returns array for
+        Returns: 
+                pp (Array): [1,n] array of pp'(\psi).  Returns array for
                 consistency with Equilibrium implementations with time 
                 variation.
-            pp (Array): 
         """
         return self._pprime.copy()
 
@@ -1601,6 +1604,13 @@ class EqdskReader(Equilibrium):
     def getAOut(self,length_unit=1):
         """Returns outboard-midplane minor radius of LCFS.
 
+        Keyword Args:
+            length_unit (String or 1): unit radius is specified in.  Defaults 
+            to 1 (default unit, typically m).
+
+        Returns:
+            AOut (Array): [1] array of outboard-midplane minor radius at LCFS.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1613,6 +1623,13 @@ class EqdskReader(Equilibrium):
     def getRmidOut(self,length_unit=1):
         """Returns outboard-midplane major radius of LCFS.
 
+        Keyword Args:
+            length_unit (String or 1): unit radius is specified in.  Defaults to
+             1 (default unit, typically m).
+
+        Returns:
+            Rmid (Array): [1] array of outboard-midplane major radius at LCFS.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1624,12 +1641,14 @@ class EqdskReader(Equilibrium):
 
     def getGeometry(self,length_unit=None):
         """Pulls dimensional geometry parameters.
-        
-        Returns:
-            namedtuple containing [Rmag,Zmag,AreaLCFS,aOut,RmidOut]
 
         Keyword Args:
-            length_unit: TODO
+            length_unit (String): length unit parameters are specified in.  
+                Defaults to None, using default units for individual getter 
+                methods for constituent parameters.
+
+        Returns:
+            namedtuple containing [Rmag,Zmag,AreaLCFS,aOut,RmidOut]
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1647,11 +1666,17 @@ class EqdskReader(Equilibrium):
 
     def getQProfile(self):
         """Returns safety factor q(psi).
+
+        Returns:
+            qpsi (Array): [1,n] array of q(psi).
         """
         return self._qpsi.copy()
 
     def getQ0(self):
         """Returns safety factor q on-axis, q0.
+
+        Returns:
+            q0 (Array): [1] array of q(psi=0).
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1664,6 +1689,9 @@ class EqdskReader(Equilibrium):
     def getQ95(self):
         """Returns safety factor q at 95% flux surface.
 
+        Returns:
+            q95 (Array): [1] array of q(psi=0.95).
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1675,6 +1703,9 @@ class EqdskReader(Equilibrium):
     def getQLCFS(self):
         """Returns safety factor q at LCFS (interpolated).
 
+        Returns:
+            qLCFS (Array): [1] array of q* (interpolated).
+
         Raises:
             ValueError: if a-file data is not loaded.
         """
@@ -1685,6 +1716,13 @@ class EqdskReader(Equilibrium):
 
     def getQ1Surf(self,length_unit=1):
         """Returns outboard-midplane minor radius of q=1 surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+            (default unit, typically m)
+
+        Returns:
+            qr1 (Array): [1] array of minor radius of q=1 surface.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1698,6 +1736,13 @@ class EqdskReader(Equilibrium):
     def getQ2Surf(self,length_unit=1):
         """Returns outboard-midplane minor radius of q=2 surface.
 
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+            (default unit, typically m)
+
+        Returns:
+            qr2 (Array): [1] array of minor radius of q=2 surface.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1710,6 +1755,13 @@ class EqdskReader(Equilibrium):
     def getQ3Surf(self,length_unit=1):
         """Returns outboard-midplane minor radius of q=3 surface.
 
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+            (default unit, typically m)
+
+        Returns:
+            qr3 (Array): [1] array of minor radius of q=3 surface.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1721,6 +1773,10 @@ class EqdskReader(Equilibrium):
 
     def getQs(self,length_unit=1):
         """Pulls q-profile data.
+
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+            (default unit, typically m)
         
         Returns:
             namedtuple containing [q0,q95,qLCFS,rq1,rq2,rq3]
@@ -1743,6 +1799,9 @@ class EqdskReader(Equilibrium):
     def getBtVac(self):
         """Returns vacuum toroidal field on-axis.
 
+        Returns:
+            BtVac (Array): [1] array of vacuum toroidal field.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1754,6 +1813,9 @@ class EqdskReader(Equilibrium):
     def getBtPla(self):
         """Returns plasma toroidal field on-axis.
 
+        Returns:
+            BtPla (Array): [1] array of toroidal field including plasma effects.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1764,6 +1826,9 @@ class EqdskReader(Equilibrium):
 
     def getBpAvg(self):
         """Returns average poloidal field.
+
+        Returns:
+            BpAvg (Array): [1] array of average poloidal field.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1793,11 +1858,17 @@ class EqdskReader(Equilibrium):
 
     def getIpCalc(self):
         """Returns EFIT-calculated plasma current.
+
+        Returns:
+            IpCalc (Array): [1] array of EFIT-reconstructed plasma current.
         """
         return self._IpCalc.copy()
 
     def getIpMeas(self):
         """Returns measured plasma current.
+
+        Returns:
+            IpMeas (Array): [1] array of measured plasma current.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1813,12 +1884,15 @@ class EqdskReader(Equilibrium):
         Data not read from g-file, not implemented for EqdskReader.
 
         Raises:
-            NotImplementedError: Jp not read from g-file.
+            NotImplementedError: In all cases.
         """
         raise NotImplementedError('Jp not read from g-file.')
 
     def getBetaT(self):
         """Returns EFIT-calculated toroidal beta.
+
+        Returns:
+            BetaT (Array): [1] array of average toroidal beta.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1831,6 +1905,9 @@ class EqdskReader(Equilibrium):
     def getBetaP(self):
         """Returns EFIT-calculated poloidal beta.
 
+        Returns:
+            BetaP (Array): [1] array of average poloidal beta.
+
         Raises:
             ValueError: if a-file data is not read
         """
@@ -1841,6 +1918,9 @@ class EqdskReader(Equilibrium):
 
     def getLi(self):
         """Returns internal inductance of plasma.
+
+        Returns:
+            Li (Array): [1] array of internal inductance.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1866,10 +1946,13 @@ class EqdskReader(Equilibrium):
             data = namedtuple('Betas',['betat','betap','Li'])
             return data(betat=betat,betap=betap,Li=Li)
         except ValueError:
-                raise ValueError('must read a-file for this data.')
+            raise ValueError('must read a-file for this data.')
             
     def getDiamagFlux(self):
         """Returns diamagnetic flux.
+
+        Returns:
+            Flux (Array): [1] array of measured diamagnetic flux.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1882,6 +1965,9 @@ class EqdskReader(Equilibrium):
     def getDiamagBetaT(self):
         """Returns diamagnetic-loop measured toroidal beta.
 
+        Returns:
+            BetaT (Array): [1] array of measured diamagnetic toroidal beta.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1892,6 +1978,9 @@ class EqdskReader(Equilibrium):
 
     def getDiamagBetaP(self):
         """Returns diamagnetic-loop measured poloidal beta.
+
+        Returns:
+            BetaP (Array): [1] array of measured diamagnetic poloidal beta.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1904,6 +1993,9 @@ class EqdskReader(Equilibrium):
     def getDiamagTauE(self):
         """Returns diamagnetic-loop energy confinement time.
 
+        Returns:
+            TauE (Array): [1] array of measured energy confinement time.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1915,6 +2007,9 @@ class EqdskReader(Equilibrium):
     def getDiamagWp(self):
         """Returns diamagnetic-loop measured stored energy.
 
+        Returns:
+            Wp (Array): [1] array of diamagnetic stored energy.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1924,7 +2019,8 @@ class EqdskReader(Equilibrium):
             return self._WDiamag.copy()
 
     def getDiamag(self):
-        """Pulls diamagnetic flux, diamag. measured toroidal and poloidal beta, stored energy, and energy confinement time.
+        """Pulls diamagnetic flux, diamag. measured toroidal and poloidal beta, 
+        stored energy, and energy confinement time.
         
         Returns:
             namedtuple containing [diaFlux,diaBetat,diaBetap,diaTauE,diaWp]
@@ -1946,6 +2042,9 @@ class EqdskReader(Equilibrium):
     def getWMHD(self):
         """Returns EFIT-calculated stored energy.
 
+        Returns:
+            WMHD (Array): [1] array of EFIT-reconstructed stored energy.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1956,6 +2055,10 @@ class EqdskReader(Equilibrium):
 
     def getTauMHD(self):
         """Returns EFIT-calculated energy confinement time.
+
+        Returns:
+            tauMHD (Array): [1] array of EFIT-reconstructed energy confinement
+                time.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1968,6 +2071,9 @@ class EqdskReader(Equilibrium):
     def getPinj(self):
         """Returns EFIT injected power.
 
+        Returns:
+            Pinj (Array): [1] array of EFIT-reconstructed injected power.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1978,6 +2084,9 @@ class EqdskReader(Equilibrium):
 
     def getWbdot(self):
         """Returns EFIT d/dt of magnetic stored energy
+
+        Returns:
+            dWdt (Array): [1] array of d(Wb)/dt
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1990,6 +2099,9 @@ class EqdskReader(Equilibrium):
     def getWpdot(self):
         """Returns EFIT d/dt of plasma stored energy.
 
+        Returns:
+            dWdt (Array): [1] array of d(Wp)/dt
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1999,7 +2111,8 @@ class EqdskReader(Equilibrium):
             return self._Wpdot.copy()
 
     def getEnergy(self):
-        """Pulls EFIT stored energy, energy confinement time, injected power, and d/dt of magnetic and plasma stored energy.
+        """Pulls EFIT stored energy, energy confinement time, injected power, 
+        and d/dt of magnetic and plasma stored energy.
         
         Returns:
             namedtuple containing [WMHD,tauMHD,Pinj,Wbdot,Wpdot]
@@ -2019,13 +2132,13 @@ class EqdskReader(Equilibrium):
             raise ValueError('must read a-file for this data.')
 
     def getParam(self,name):
-        """Backup function, applying a direct path input for tree-like data storage access
-        for parameters not typically found in Equilbrium object.  Directly calls attributes
-        read from g/a-files in copy-safe manner.
+        """Backup function, applying a direct path input for tree-like data 
+        storage access for parameters not typically found in Equilbrium object.  
+        Directly calls attributes read from g/a-files in copy-safe manner.
 
         Args:
-            name: String.
-                Parameter name for value stored in EqdskReader instance.
+            name (String): Parameter name for value stored in EqdskReader 
+                instance.
 
         Raises:
             AttributeError: raised if no attribute is found.
@@ -2043,18 +2156,24 @@ class EqdskReader(Equilibrium):
                 raise AttributeError('No attribute "_%s" found' % name)
         
     def getMachineCrossSection(self):
-        """Method to pull machine cross-section from data storage, convert to standard format for plotting routine.
+        """Method to pull machine cross-section from data storage, convert to 
+        standard format for plotting routine.
+
+        Returns:
+            tuple of (R,Z) coordinates of limiter outline.
         """
         return (self._xlim,self._ylim)
         
     def getMachineCrossSectionFull(self):
         """Returns vectorization of machine cross-section.
         
-        Absent additional data (not found in eqdsks) simply returns self.getMachineCrossSection().
+        Absent additional data (not found in eqdsks) simply returns 
+        self.getMachineCrossSection().
         """
         return self.getMachineCrossSection()
 
-    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, tunit='ms', title='EQTOOLS', nbbbs=100):
+    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, 
+              tunit='ms', title='EQTOOLS', nbbbs=100):
         """Generates an EFIT gfile with gfile naming convention
                   
         Keyword Args:
@@ -2097,9 +2216,6 @@ class EqdskReader(Equilibrium):
                 Eq_instance.gfile()
             
         """
-
-
-
         if time is None:
             time = self.getTimeBase()
 
@@ -2116,12 +2232,12 @@ class EqdskReader(Equilibrium):
         """streamlined plotting of flux contours directly from psi grid
 
         Keyword Args:
-            fill: Boolean.
-                Default True.  Set True to plot filled contours of flux delineated by black outlines.
-                Set False to instead plot color-coded line contours on a blank background.
-            mask: Boolean.
-                Default True.  Set True to draw a clipping mask based on the limiter outline for the flux contours.
-                Set False to draw the full RZ grid.
+            fill (Boolean): Default True.  Set True to plot filled contours of 
+                flux delineated by black outlines.  Set False to instead plot 
+                color-coded line contours on a blank background.
+            mask (Boolean): Default True.  Set True to draw a clipping mask 
+                based on the limiter outline for the flux contours.  Set False 
+                to draw the full RZ grid.
         """
         plt.ion()
 
@@ -2146,9 +2262,11 @@ class EqdskReader(Equilibrium):
 
         if fill:
             ax.contourf(rGrid,zGrid,psiRZ,50,zorder=2)
-            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid',zorder=3)
+            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid',
+                       zorder=3)
         else:
-            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2,zorder=2)
+            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2,
+                       zorder=2)
         ax.plot(RLCFS,ZLCFS,'r',linewidth=3)
 
         # generate graphical mask for limiter wall
