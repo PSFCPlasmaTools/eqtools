@@ -682,6 +682,7 @@ class EqdskReader(Equilibrium):
         :py:meth:`Equilibrium.rz2psi`.  Remaining arguments in *args are ignored.
 
         Returns:
+            foo (bar): baz
             
             * **psi** (`Array-like or scalar float`) - non-normalized poloidal 
             flux.  If input arguments are scalar, then a scalar is returned, 
