@@ -1543,7 +1543,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): length unit R is specified in.  Defaults
-            to 1 (default unit of rmagx, typically m).
+                to 1 (default unit of rmagx, typically m).
 
         Returns:
             magR (Array): [1] array of major radius of magnetic axis.  Returns 
@@ -1564,7 +1564,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): length unit Z is specified in.  Defaults
-            to 1 (default unit of zmagx, typically m).
+                to 1 (default unit of zmagx, typically m).
 
         Returns:
             magZ (Array): [1] array of Z of magnetic axis.  Returns array for
@@ -1585,7 +1585,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 2): unit area is specified in.  Defaults to 2
-            (default unit, typically m^2).
+                (default unit, typically m^2).
 
         Returns:
             AreaLCFS (Array): [1] array of surface area of LCFS.  Returns array 
@@ -1606,7 +1606,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): unit radius is specified in.  Defaults 
-            to 1 (default unit, typically m).
+                to 1 (default unit, typically m).
 
         Returns:
             AOut (Array): [1] array of outboard-midplane minor radius at LCFS.
@@ -1624,8 +1624,8 @@ class EqdskReader(Equilibrium):
         """Returns outboard-midplane major radius of LCFS.
 
         Keyword Args:
-            length_unit (String or 1): unit radius is specified in.  Defaults to
-             1 (default unit, typically m).
+            length_unit (String or 1): unit radius is specified in.  Defaults to 
+                1 (default unit, typically m).
 
         Returns:
             Rmid (Array): [1] array of outboard-midplane major radius at LCFS.
@@ -1719,7 +1719,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): unit of minor radius.  Defaults to 1
-            (default unit, typically m)
+                (default unit, typically m)
 
         Returns:
             qr1 (Array): [1] array of minor radius of q=1 surface.
@@ -1738,7 +1738,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): unit of minor radius.  Defaults to 1
-            (default unit, typically m)
+                (default unit, typically m)
 
         Returns:
             qr2 (Array): [1] array of minor radius of q=2 surface.
@@ -1757,7 +1757,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): unit of minor radius.  Defaults to 1
-            (default unit, typically m)
+                (default unit, typically m)
 
         Returns:
             qr3 (Array): [1] array of minor radius of q=3 surface.
@@ -1776,7 +1776,7 @@ class EqdskReader(Equilibrium):
 
         Keyword Args:
             length_unit (String or 1): unit of minor radius.  Defaults to 1
-            (default unit, typically m)
+                (default unit, typically m)
         
         Returns:
             namedtuple containing [q0,q95,qLCFS,rq1,rq2,rq3]
