@@ -680,6 +680,31 @@ class EqdskReader(Equilibrium):
 
         All keyword arguments are passed to the parent 
         :py:meth:`Equilibrium.rz2psi`.  Remaining arguments in *args are ignored.
+
+        Returns:
+            psi (Array-like or scalar float): non-normalized poloidal flux.  If 
+                input arguments are scalar, then a scalar is returned, else a 
+                scipy Array is returned.  If `R` and `Z` have the same shape then 
+                `psi` has this shape as well.  If `make_grid` is True, then `psi` 
+                has the shape (`len_R`, `len_Z`).
+
+        Examples:
+            All assume that Eq_instance is a valid instance EqdskReader:
+
+            Find single psi value at R=0.6m, Z=0.0m::
+            
+                psi_val = Eq_instance.rz2psi(0.6, 0)
+
+            Find psi values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).
+            Note that the Z vector must be fully specified,
+            even if the values are all the same::
+            
+                psi_arr = Eq_instance.rz2psi([0.6, 0.8], [0, 0])
+
+            Find psi values on grid defined by 1D vector of radial positions
+            R and 1D vector of vertical positions Z::
+            
+                psi_mat = Eq_instance.rz2psi(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
