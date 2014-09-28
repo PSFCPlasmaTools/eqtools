@@ -677,6 +677,8 @@ class EqdskReader(Equilibrium):
                 scalar `psi` is returned.  `R` and `Z` must have the same shape 
                 unless the `make_grid` keyword is set.  If `make_grid` is True, 
                 `Z` must have shape (`len_Z`,).
+            \*args: Slot for time input for consistent syntax with 
+                :py:meth:`Equilibrium.rz2psinorm`.  Allows for dummy time inputs.
         """
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
