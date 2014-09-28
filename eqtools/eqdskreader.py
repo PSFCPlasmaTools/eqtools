@@ -667,15 +667,15 @@ class EqdskReader(Equilibrium):
         Wrapper for :py:meth:`Equilibrium.rz2psi` removing timebase dependence.
 
         Args:
-            R (Array-like or scalar float): Values of the radial coordinate to
+            R (Array-like or scalar float): Values of the radial coordinate to 
                 map to poloidal flux. If the `make_grid` keyword is True, `R` 
                 must have shape (`len_R`,).
-            Z (Array-like or scalar float): Values of the vertical coordinate to
+            Z (Array-like or scalar float): Values of the vertical coordinate to 
                 map to poloidal flux. Must have the same shape as `R` unless the 
                 `make_grid` keyword is set. If the make_grid keyword is True, 
                 `Z` must have shape (`len_Z`,).
             *args: Slot for time input for consistent syntax with 
-                :py:meth:`Equilibrium.rz2psi`.  Will return dummy value for time
+                :py:meth:`Equilibrium.rz2psi`.  Will return dummy value for time 
                 if input in :py:class:`EqdskReader`.
 
         Keyword Args:
