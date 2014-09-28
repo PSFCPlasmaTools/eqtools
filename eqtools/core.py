@@ -787,7 +787,7 @@ class Equilibrium(object):
             return out
 
     def rz2phinorm(self, *args, **kwargs):
-        r"""Calculates the normalized toroidal flux.
+        """Calculates the normalized toroidal flux.
         
         Uses the definitions:
         
