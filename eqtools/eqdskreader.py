@@ -682,13 +682,10 @@ class EqdskReader(Equilibrium):
         :py:meth:`Equilibrium.rz2psi`.  Remaining arguments in *args are ignored.
 
         Returns:
-            `psi`
-
-            * **psi** (`Array-like or scalar float`) - non-normalized poloidal 
-            flux.  If input arguments are scalar, then a scalar is returned, 
-            else a scipy Array is returned.  If `R` and `Z` have the same shape 
-            then `psi` has this shape as well.  If `make_grid` is True, then 
-            `psi` has the shape (`len_R`, `len_Z`).
+            psi (Array-like or scalar float): non-normalized poloidal flux.  If 
+            all input arguments are scalar, then `psi` is scalar.  IF `R` and `Z` 
+            have the same shape, then `psi` has this shape as well.  If `make_grid` 
+            is True, then `psi` has the shape (`len_R`, `len_Z`). 
 
         Examples:
             All assume that Eq_instance is a valid instance EqdskReader:
