@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides classes inheriting :py:class:`Equilibrium` for working 
-with C-Mod EFIT data.
+"""This module provides classes inheriting :py:class:`core.Equilibrium` for 
+working with C-Mod EFIT data.
 """
 
 import scipy
@@ -58,7 +58,7 @@ class CModEFITTree(EFITTree):
     filled on the first request to the object.
 
     Args:
-        shot (integer): C-Mod shot index (long)
+        shot (integer): C-Mod shot index.
     
     Keyword Args:
         tree (string): Optional input for EFIT tree, defaults to 'ANALYSIS'
@@ -99,13 +99,16 @@ class CModEFITTree(EFITTree):
             window finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
-    def __init__(self, shot, tree='ANALYSIS', length_unit='m', gfile='g_eqdsk', afile='a_eqdsk', tspline=False, monotonic=True):
+    def __init__(self, shot, tree='ANALYSIS', length_unit='m', gfile='g_eqdsk', 
+                 afile='a_eqdsk', tspline=False, monotonic=True):
         if tree.upper() == 'ANALYSIS':
             root = '\\analysis::top.efit.results.'
         else:
             root = '\\'+tree+'::top.results.'
 
-        super(CModEFITTree, self).__init__(shot, tree, root, length_unit=length_unit, gfile=gfile, afile=afile, tspline=tspline, monotonic=monotonic)
+        super(CModEFITTree, self).__init__(shot, tree, root, 
+              length_unit=length_unit, gfile=gfile, afile=afile, 
+              tspline=tspline, monotonic=monotonic)
         
         self.getFluxVol() #getFluxVol is called due to wide use on C-Mod
 
@@ -114,7 +117,7 @@ class CModEFITTree(EFITTree):
 
         Keyword Args:
             length_unit (String or 3): unit for plasma volume.  Defaults to 3,
-            indicating default volumetric unit (typically m^3)
+                indicating default volumetric unit (typically m^3)
 
         Returns:
             fluxVol (Array): [nt,npsi] array of volume within flux surface.
@@ -142,7 +145,7 @@ class CModEFITTree(EFITTree):
 
         Keyword Args:
             length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating 
-            the default parameter unit (typically m).
+                the default parameter unit (typically m).
 
         Returns:
             Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of 
@@ -225,7 +228,7 @@ class CModEFITTree(EFITTree):
 
         Returns:
             pprime (Array): [nt,npsi] array of pressure gradient on flux surface 
-            psi from grad-shafranov solution.
+                psi from grad-shafranov solution.
 
         Raises:
             ValueError: if module cannot retrieve data from MDS tree.
@@ -301,8 +304,10 @@ class CModEFITTree(EFITTree):
         vector format for use in other plotting routines
 
         Returns:
-            x (Array): [n] array of x-values for machine cross section.
-            y (Array): [n] array of y-values for machine cross section.
+            (`x`,`y`)
+
+            * **x** (`Array`) - [n] array of x-values for machine cross-section.
+            * **y** (`Array`) - [n] array of y-values for machine cross-section.
 
         Raises:
             ValueError: if module cannot retrieve data from MDS tree.
