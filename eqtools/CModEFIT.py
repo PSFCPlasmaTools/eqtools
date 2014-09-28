@@ -304,7 +304,7 @@ class CModEFITTree(EFITTree):
         vector format for use in other plotting routines
 
         Returns:
-            (`x`,`y`)
+            (`x`, `y`)
 
             * **x** (`Array`) - [n] array of x-values for machine cross-section.
             * **y** (`Array`) - [n] array of y-values for machine cross-section.
