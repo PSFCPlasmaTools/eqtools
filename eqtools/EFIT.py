@@ -478,14 +478,19 @@ class EFITTree(Equilibrium):
         return unit_factor * self._ZLCFS.copy()
         
     def remapLCFS(self,mask=False):
-        """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
-        of psinorm=1 surface.  This is then masked down by the limiter array using core.inPolygon,
-        restricting the contour to the closed plasma surface and the divertor legs.
+        """Overwrites RLCFS, ZLCFS values pulled from EFIT with 
+        explicitly-calculated contour of psinorm=1 surface.  This is then masked 
+        down by the limiter array using core.inPolygon, restricting the contour 
+        to the closed plasma surface and the divertor legs.
 
         Keyword Args:
-            mask: Boolean.
-                Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).
-                Set False to draw full contour of psi = psiLCFS.
+            mask (Boolean): Default False.  Set True to mask LCFS path to 
+                limiter outline (using inPolygon).  Set False to draw full 
+                contour of psi = psiLCFS.
+
+        Raises:
+            NotImplementedError: if :py:mod:`matplotlib.pyplot` is not loaded.
+            ValueError: if limiter outline is not available.
         """
         if not _has_plt:
             raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
@@ -562,7 +567,14 @@ class EFITTree(Equilibrium):
         plt.ioff()
 
     def getF(self):
-        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [t,psi]
+        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov 
+        solutions.
+
+        Returns:
+            F (Array): [nt,npsi] array of F=RB_{\Phi}(\Psi)
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._fpol is None:
             try:
@@ -574,7 +586,13 @@ class EFITTree(Equilibrium):
         return self._fpol.copy()
 
     def getFluxPres(self):
-        """returns pressure at flux surface [t,psi]
+        """returns pressure at flux surface.
+
+        Returns:
+            p (Array): [nt,npsi] array of pressure on flux surface psi.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._fluxPres is None:
             try:
@@ -586,7 +604,13 @@ class EFITTree(Equilibrium):
         return self._fluxPres.copy()
 
     def getFFPrime(self):
-        """returns FF' function used for grad-shafranov solutions [t,psi]
+        """returns FF' function used for grad-shafranov solutions.
+
+        Returns:
+            FFprime (Array): [nt,npsi] array of FF' fromgrad-shafranov solution.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._ffprim is None:
             try:
@@ -598,7 +622,14 @@ class EFITTree(Equilibrium):
         return self._ffprim.copy()
 
     def getPPrime(self):
-        """returns plasma pressure gradient as a function of psi [t,psi]
+        """returns plasma pressure gradient as a function of psi.
+
+        Returns:
+            pprime (Array): [nt,npsi] array of pressure gradient on flux surface 
+                psi from grad-shafranov solution.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._pprime is None:
             try:
@@ -610,7 +641,13 @@ class EFITTree(Equilibrium):
         return self._pprime.copy()
 
     def getElongation(self):
-        """returns LCFS elongation [t]
+        """returns LCFS elongation.
+
+        Returns:
+            kappa (Array): [nt] array of LCFS elongation.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._kappa is None:
             try:
@@ -622,7 +659,13 @@ class EFITTree(Equilibrium):
         return self._kappa.copy()
 
     def getUpperTriangularity(self):
-        """returns LCFS upper triangularity [t]
+        """returns LCFS upper triangularity.
+
+        Returns:
+            deltau (Array): [nt] array of LCFS upper triangularity.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._dupper is None:
             try:
@@ -634,7 +677,13 @@ class EFITTree(Equilibrium):
         return self._dupper.copy()
 
     def getLowerTriangularity(self):
-        """returns LCFS lower triangularity [t]
+        """returns LCFS lower triangularity.
+
+        Returns:
+            deltal (Array): [nt] array of LCFS lower triangularity.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._dlower is None:
             try:
@@ -645,11 +694,14 @@ class EFITTree(Equilibrium):
                 raise ValueError('data retrieval failed.')
         return self._dlower.copy()
 
-    def getSlhaping(self):
-        """pulls LCFS elongation and upper/lower triangularity
+    def getShaping(self):
+        """pulls LCFS elongation and upper/lower triangularity.
         
         Returns:
-            namedtuple containing {kappa, delta_u, delta_l}
+            namedtuple containing (kappa, delta_u, delta_l)
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         try:
             kap = self.getElongation()
@@ -661,7 +713,13 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getMagR(self, length_unit=1):
-        """returns magnetic-axis major radius [t]
+        """returns magnetic-axis major radius.
+
+        Returns:
+            magR (Array): [nt] array of major radius of magnetic axis.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._rmag is None:
             try:
@@ -674,7 +732,13 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rmag.copy()
 
     def getMagZ(self, length_unit=1):
-        """returns magnetic-axis Z [t]
+        """returns magnetic-axis Z.
+
+        Returns:
+            magZ (Array): [nt] array of Z of magnetic axis.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._zmag is None:
             try:
@@ -687,7 +751,17 @@ class EFITTree(Equilibrium):
         return unit_factor * self._zmag.copy()
 
     def getAreaLCFS(self, length_unit=2):
-        """returns LCFS cross-sectional area [t]
+        """returns LCFS cross-sectional area.
+
+        Keyword Args:
+            length_unit (String or 2): unit for LCFS area.  Defaults to 2, 
+                denoting default areal unit (typically m^2).
+
+        Returns:
+            areaLCFS (Array): [nt] array of LCFS area.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._areaLCFS is None:
             try:
@@ -701,7 +775,17 @@ class EFITTree(Equilibrium):
         return unit_factor * self._areaLCFS.copy()
 
     def getAOut(self, length_unit=1):
-        """returns outboard-midplane minor radius at LCFS [t]
+        """returns outboard-midplane minor radius at LCFS.
+
+        Keyword Args:
+            length_unit (String or 1): unit for minor radius.  Defaults to 1, 
+                denoting default length unit (typically m).
+
+        Returns:
+            aOut (Array): [nt] array of LCFS outboard-midplane minor radius.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._aLCFS is None:
             try:
@@ -714,7 +798,17 @@ class EFITTree(Equilibrium):
         return unit_factor * self._aLCFS.copy()
 
     def getRmidOut(self, length_unit=1):
-        """returns outboard-midplane major radius [t]
+        """returns outboard-midplane major radius.
+
+        Keyword Args:
+            length_unit (String or 1): unit for major radius.  Defaults to 1, 
+                denoting default length unit (typically m).
+
+        Returns:
+            RmidOut (Array): [nt] array of major radius of LCFS.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._RmidLCFS is None:
             try:
@@ -732,10 +826,13 @@ class EFITTree(Equilibrium):
         return unit_factor * self._RmidLCFS.copy()
 
     def getGeometry(self, length_unit=None):
-        """pulls dimensional geometry parameters
+        """pulls dimensional geometry parameters.
         
         Returns:
-            namedtuple containing {magnetic-axis R,Z, LCFS area, outboard-midplane LCFS a,R}
+            namedtuple containing (magR,magZ,areaLCFS,aOut,RmidOut)
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         try:
             Rmag = self.getMagR(length_unit=(length_unit if length_unit is not None else 1))
@@ -749,7 +846,13 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getQProfile(self):
-        """returns safety factor q [t,psi]
+        """returns profile of safety factor q.
+
+        Returns:
+            qpsi (Array): [nt,npsi] array of q on flux surface psi.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._qpsi is None:
             try:
@@ -761,7 +864,13 @@ class EFITTree(Equilibrium):
         return self._qpsi.copy()
 
     def getQ0(self):
-        """returns q on magnetic axis [t]
+        """returns q on magnetic axis,q0.
+
+        Returns:
+            q0 (Array): [nt] array of q(psi=0).
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._q0 is None:
             try:
@@ -773,7 +882,13 @@ class EFITTree(Equilibrium):
         return self._q0.copy()
 
     def getQ95(self):
-        """returns q at 95% flux surface [t]
+        """returns q at 95% flux surface.
+
+        Returns:
+            q95 (Array): [nt] array of q(psi=0.95).
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._q95 is None:
             try:
@@ -785,7 +900,13 @@ class EFITTree(Equilibrium):
         return self._q95.copy()
 
     def getQLCFS(self):
-        """returns q on LCFS [t]
+        """returns q on LCFS (interpolated).
+
+        Returns:
+            qLCFS (Array): [nt] array of q* (interpolated).
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._qLCFS is None:
             try:
@@ -797,7 +918,17 @@ class EFITTree(Equilibrium):
         return self._qLCFS.copy()
 
     def getQ1Surf(self, length_unit=1):
-        """returns outboard-midplane minor radius of q=1 surface [t]
+        """returns outboard-midplane minor radius of q=1 surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit for minor radius.  Defaults to 1, 
+                denoting default length unit (typically m).
+
+        Returns:
+            qr1 (Array): [nt] array of minor radius of q=1 surface.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._rq1 is None:
             try:
@@ -810,7 +941,17 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rq1.copy()
 
     def getQ2Surf(self, length_unit=1):
-        """returns outboard-midplane minor radius of q=2 surface [t]
+        """returns outboard-midplane minor radius of q=2 surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit for minor radius.  Defaults to 1, 
+                denoting default length unit (typically m).
+
+        Returns:
+            qr2 (Array): [nt] array of minor radius of q=2 surface.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._rq2 is None:
             try:
@@ -823,7 +964,17 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rq2.copy()
 
     def getQ3Surf(self, length_unit=1):
-        """returns outboard-midplane minor radius of q=3 surface [t]
+        """returns outboard-midplane minor radius of q=3 surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit for minor radius.  Defaults to 1, 
+                denoting default length unit (typically m).
+
+        Returns:
+            qr3 (Array): [nt] array of minor radius of q=3 surface.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._rq3 is None:
             try:
@@ -836,10 +987,13 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rq3.copy()
 
     def getQs(self, length_unit=1):
-        """pulls q values
+        """pulls q values.
         
         Returns:
-            namedtuple containing {q0,q95,qLCFS,rq1,rq2,rq3}
+            namedtuple containing (q0,q95,qLCFS,rq1,rq2,rq3).
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         try:
             q0 = self.getQ0()
@@ -854,7 +1008,13 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getBtVac(self):
-        """returns on-axis vacuum toroidal field [t]
+        """Returns vacuum toroidal field on-axis.
+
+        Returns:
+            BtVac (Array): [nt] array of vacuum toroidal field.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._btaxv is None:
             try:
@@ -866,7 +1026,13 @@ class EFITTree(Equilibrium):
         return self._btaxv.copy()
 
     def getBtPla(self):
-        """returns on-axis plasma toroidal field [t]
+        """returns on-axis plasma toroidal field.
+
+        Returns:
+            BtPla (Array): [nt] array of toroidal field including plasma effects.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._btaxp is None:
             try:
@@ -878,7 +1044,13 @@ class EFITTree(Equilibrium):
         return self._btaxp.copy()
 
     def getBpAvg(self):
-        """returns average poloidal field [t]
+        """returns average poloidal field.
+
+        Returns:
+            BpAvg (Array): [nt] array of average poloidal field.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._bpolav is None:
             try:
@@ -890,10 +1062,13 @@ class EFITTree(Equilibrium):
         return self._bpolav.copy()
 
     def getFields(self):
-        """pulls vacuum and plasma toroidal field, avg poloidal field
+        """pulls vacuum and plasma toroidal field, avg poloidal field.
         
         Returns:
-            namedtuple containing {btaxv,btaxp,bpolav}
+            namedtuple containing (btaxv,btaxp,bpolav).
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         try:
             btaxv = self.getBtVac()
@@ -905,7 +1080,13 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
 
     def getIpCalc(self):
-        """returns EFIT-calculated plasma current [t]
+        """returns EFIT-calculated plasma current.
+
+        Returns:
+            IpCalc (Array): [nt] array of EFIT-reconstructed plasma current.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._IpCalc is None:
             try:
@@ -917,7 +1098,13 @@ class EFITTree(Equilibrium):
         return self._IpCalc.copy()
 
     def getIpMeas(self):
-        """returns magnetics-measured plasma current [t]
+        """returns magnetics-measured plasma current.
+
+        Returns:
+            IpMeas (Array): [nt] array of measured plasma current.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._IpMeas is None:
             try:
@@ -929,7 +1116,13 @@ class EFITTree(Equilibrium):
         return self._IpMeas.copy()
 
     def getJp(self):
-        """returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]
+        """returns EFIT-calculated plasma current density Jp on flux grid.
+
+        Returns:
+            Jp (Array): [nt,nz,nr] array of current density.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._Jp is None:
             try:
@@ -943,7 +1136,13 @@ class EFITTree(Equilibrium):
         return self._Jp.copy()
 
     def getBetaT(self):
-        """returns EFIT-calculated toroidal beta [t]
+        """returns EFIT-calculated toroidal beta.
+
+        Returns:
+            BetaT (Array): [nt] array of EFIT-calculated average toroidal beta.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._betat is None:
             try:
@@ -955,7 +1154,13 @@ class EFITTree(Equilibrium):
         return self._betat.copy()
 
     def getBetaP(self):
-        """returns EFIT-calculated poloidal beta [t]
+        """returns EFIT-calculated poloidal beta.
+
+        Returns:
+            BetaP (Array): [nt] array of EFIT-calculated average poloidal beta.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._betap is None:
             try:
@@ -967,7 +1172,13 @@ class EFITTree(Equilibrium):
         return self._betap.copy()
 
     def getLi(self):
-        """returns EFIT-calculated internal inductance [t]
+        """returns EFIT-calculated internal inductance.
+
+        Returns:
+            Li (Array): [nt] array of EFIT-calculated internal inductance.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._Li is None:
             try:
@@ -982,7 +1193,10 @@ class EFITTree(Equilibrium):
         """pulls calculated betap, betat, internal inductance
         
         Returns:
-            namedtuple containing {betat,betap,Li}
+            namedtuple containing (betat,betap,Li)
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         try:
             betat = self.getBetaT()
@@ -994,7 +1208,13 @@ class EFITTree(Equilibrium):
                 raise ValueError('data retrieval failed.')
 
     def getDiamagFlux(self):
-        """returns measured diamagnetic-loop flux [t]
+        """returns measured diamagnetic-loop flux.
+
+        Returns:
+            Flux (Array): [nt] array of diamagnetic-loop flux.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._diamag is None:
             try:
@@ -1006,7 +1226,13 @@ class EFITTree(Equilibrium):
         return self._diamag.copy()
 
     def getDiamagBetaT(self):
-        """returns diamagnetic-loop toroidal beta [t]
+        """returns diamagnetic-loop toroidal beta.
+
+        Returns:
+            BetaT (Array): [nt] array of measured toroidal beta.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._betatd is None:
             try:
@@ -1018,7 +1244,13 @@ class EFITTree(Equilibrium):
         return self._betatd.copy()
 
     def getDiamagBetaP(self):
-        """returns diamagnetic-loop avg poloidal beta [t]
+        """returns diamagnetic-loop avg poloidal beta.
+
+        Returns:
+            BetaP (Array): [nt] array of measured poloidal beta.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._betapd is None:
             try:
@@ -1030,7 +1262,13 @@ class EFITTree(Equilibrium):
         return self._betapd.copy()
 
     def getDiamagTauE(self):
-        """returns diamagnetic-loop energy confinement time [t]
+        """returns diamagnetic-loop energy confinement time.
+
+        Returns:
+            tauE (Array): [nt] array of measured energy confinement time.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._tauDiamag is None:
             try:
@@ -1042,7 +1280,13 @@ class EFITTree(Equilibrium):
         return self._tauDiamag.copy()
 
     def getDiamagWp(self):
-        """returns diamagnetic-loop plasma stored energy [t]
+        """returns diamagnetic-loop plasma stored energy.
+
+        Returns:
+            Wp (Array): [nt] array of measured plasma stored energy.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._WDiamag is None:
             try:
@@ -1054,10 +1298,14 @@ class EFITTree(Equilibrium):
         return self._WDiamag.copy()
 
     def getDiamag(self):
-        """pulls diamagnetic flux measurements, toroidal and poloidal beta, energy confinement time and stored energy
+        """pulls diamagnetic flux measurements, toroidal and poloidal beta, 
+        energy confinement time and stored energy.
         
         Returns:
-            namedtuple containing {diamag. flux, betatd, betapd, tauDiamag, WDiamag}
+            namedtuple containing (diamag. flux, betatd, betapd, tauDiamag, WDiamag)
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         try:
             dFlux = self.getDiamagFlux()
@@ -1071,7 +1319,13 @@ class EFITTree(Equilibrium):
                 raise ValueError('data retrieval failed.')
 
     def getWMHD(self):
-        """returns EFIT-calculated MHD stored energy [t]
+        """returns EFIT-calculated MHD stored energy.
+
+        Returns:
+            WMHD (Array): [nt] array of EFIT-calculated stored energy.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._WMHD is None:
             try:
@@ -1083,7 +1337,13 @@ class EFITTree(Equilibrium):
         return self._WMHD.copy()
 
     def getTauMHD(self):
-        """returns EFIT-calculated MHD energy confinement time [t]
+        """returns EFIT-calculated MHD energy confinement time.
+
+        Returns:
+            tauMHD (Array): [nt] array of EFIT-calculated energy confinement time.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._tauMHD is None:
             try:
@@ -1095,7 +1355,13 @@ class EFITTree(Equilibrium):
         return self._tauMHD.copy()
 
     def getPinj(self):
-        """returns EFIT-calculated injected power [t]
+        """returns EFIT-calculated injected power.
+
+        Returns:
+            Pinj (Array): [nt] array of EFIT-reconstructed injected power.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._Pinj is None:
             try:
@@ -1107,7 +1373,13 @@ class EFITTree(Equilibrium):
         return self._Pinj.copy()
 
     def getWbdot(self):
-        """returns EFIT-calculated d/dt of magnetic stored energy [t]
+        """returns EFIT-calculated d/dt of magnetic stored energy.
+
+        Returns:
+            dWdt (Array): [nt] array of d(Wb)/dt
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._Wbdot is None:
             try:
@@ -1119,7 +1391,13 @@ class EFITTree(Equilibrium):
         return self._Wbdot.copy()
 
     def getWpdot(self):
-        """returns EFIT-calculated d/dt of plasma stored energy [t]
+        """returns EFIT-calculated d/dt of plasma stored energy.
+
+        Returns:
+            dWdt (Array): [nt] array of d(Wp)/dt
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._Wpdot is None:
             try:
@@ -1131,10 +1409,14 @@ class EFITTree(Equilibrium):
         return self._Wpdot.copy()
 
     def getEnergy(self):
-        """pulls EFIT-calculated energy parameters - stored energy, tau_E, injected power, d/dt of magnetic and plasma stored energy
+        """pulls EFIT-calculated energy parameters - stored energy, tau_E, 
+        injected power, d/dt of magnetic and plasma stored energy.
         
         Returns:
-            namedtuple containing {WMHD,tauMHD,Pinj,Wbdot,Wpdot}
+            namedtuple containing (WMHD,tauMHD,Pinj,Wbdot,Wpdot)
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         try:
             WMHD = self.getWMHD()
@@ -1148,10 +1430,14 @@ class EFITTree(Equilibrium):
             raise ValueError('data retrieval failed.')
             
     def getMachineCrossSection(self):
-        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.
+        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting 
+        routines.
         
         Returns:
-            The requested data.
+            (`R_limiter`, `Z_limiter`)
+
+            * **R_limiter** (`Array`) - [n] array of x-values for machine cross-section.
+            * **Z_limiter** (`Array`) - [n] array of y-values for machine cross-section.
         """
         if self._Rlimiter is None or self._Zlimiter is None:
             try:
@@ -1176,7 +1462,7 @@ class EFITTree(Equilibrium):
         self.getMachineCrossSection().
         
         Returns:
-            The requested data.
+            result from getMachineCrossSection().
         """
         try:
             return self.getMachineCrossSection()
@@ -1184,19 +1470,27 @@ class EFITTree(Equilibrium):
             raise NotImplementedError("self.getMachineCrossSection not implemented.")
 
     def getCurrentSign(self):
-        """Returns the sign of the current, based on the check in Steve Wolfe's IDL implementation efit_rz2psi.pro."""
+        """Returns the sign of the current, based on the check in Steve Wolfe's 
+        IDL implementation efit_rz2psi.pro.
+
+        Returns:
+            currentSign (Integer): 1 for positive-direction current, -1 for negative.
+        """
         if self._currentSign is None:
             self._currentSign = 1 if scipy.mean(self.getIpMeas()) > 1e5 else -1
         return self._currentSign
 
     def getParam(self, path):
-        """backup function - path to parameter as input, returns desired variable acts as wrapper for MDS call
-        
+        """Backup function, applying a direct path input for tree-like data 
+        storage access for parameters not typically found in Equilbrium object.  
+        Directly calls attributes read from g/a-files in copy-safe manner.
+
         Args:
-            path (string): The path to the MDSplus node you wish to pull in.
-        
-        Returns:
-            The requested data.
+            name (String): Parameter name for value stored in EqdskReader 
+                instance.
+
+        Raises:
+            AttributeError: raised if no attribute is found.
         """
         if self._root in path:
             EFITpath = path

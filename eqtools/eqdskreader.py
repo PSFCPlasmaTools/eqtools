@@ -2160,7 +2160,10 @@ class EqdskReader(Equilibrium):
         standard format for plotting routine.
 
         Returns:
-            tuple of (R,Z) coordinates of limiter outline.
+            (`R_limiter`, `Z_limiter`)
+
+            * **R_limiter** (`Array`) - [n] array of x-values for machine cross-section.
+            * **Z_limiter** (`Array`) - [n] array of y-values for machine cross-section.
         """
         return (self._xlim,self._ylim)
         
