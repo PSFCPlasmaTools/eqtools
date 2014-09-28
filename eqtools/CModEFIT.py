@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides classes for working with C-Mod EFIT data.
+"""This module provides classes inheriting :py:class:`Equilibrium` for working 
+with C-Mod EFIT data.
 """
 
 import scipy
@@ -51,9 +52,10 @@ class CModEFITTree(EFITTree):
     for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
     data are pulled at the first request and stored for subsequent usage.
     
-    Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for storage
-    in instance attributes.  Core attributes are populated from the MDS tree on initialization.
-    Additional attributes are initialized as None, filled on the first request to the object.
+    Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for 
+    storage in instance attributes.  Core attributes are populated from the MDS 
+    tree on initialization.  Additional attributes are initialized as None, 
+    filled on the first request to the object.
 
     Args:
         shot (integer): C-Mod shot index (long)
@@ -108,7 +110,17 @@ class CModEFITTree(EFITTree):
         self.getFluxVol() #getFluxVol is called due to wide use on C-Mod
 
     def getFluxVol(self, length_unit=3):
-        """returns volume within flux surface [t,psi]
+        """returns volume within flux surface.
+
+        Keyword Args:
+            length_unit (String or 3): unit for plasma volume.  Defaults to 3,
+            indicating default volumetric unit (typically m^3)
+
+        Returns:
+            fluxVol (Array): [nt,npsi] array of volume within flux surface.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._fluxVol is None:
             try:
@@ -126,7 +138,18 @@ class CModEFITTree(EFITTree):
         return unit_factor * self._fluxVol.copy()
 
     def getRmidPsi(self, length_unit=1):
-        """returns maximum major radius of each flux surface [t,psi]
+        """returns maximum major radius of each flux surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating 
+            the default parameter unit (typically m).
+
+        Returns:
+            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of 
+                flux surface psi.
+
+        Raises:
+            Value Error: if module cannot retrieve data from MDS tree.
         """
         if self._RmidPsi is None:
             try:
@@ -143,7 +166,14 @@ class CModEFITTree(EFITTree):
         return unit_factor * self._RmidPsi.copy()
 
     def getF(self):
-        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [t,psi]
+        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov 
+        solutions.
+
+        Returns:
+            F (Array): [nt,npsi] array of F=RB_{\Phi}(\Psi)
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._fpol is None:
             try:
@@ -155,7 +185,13 @@ class CModEFITTree(EFITTree):
         return self._fpol.copy()
     
     def getFluxPres(self):
-        """returns pressure at flux surface [t,psi]
+        """returns pressure at flux surface.
+
+        Returns:
+            p (Array): [nt,npsi] array of pressure on flux surface psi.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._fluxPres is None:
             try:
@@ -167,7 +203,13 @@ class CModEFITTree(EFITTree):
         return self._fluxPres.copy()
 
     def getFFPrime(self):
-        """returns FF' function used for grad-shafranov solutions [t,psi]
+        """returns FF' function used for grad-shafranov solutions.
+
+        Returns:
+            FFprime (Array): [nt,npsi] array of FF' fromgrad-shafranov solution.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._ffprim is None:
             try:
@@ -179,7 +221,14 @@ class CModEFITTree(EFITTree):
         return self._ffprim.copy()
 
     def getPPrime(self):
-        """returns plasma pressure gradient as a function of psi [t,psi]
+        """returns plasma pressure gradient as a function of psi.
+
+        Returns:
+            pprime (Array): [nt,npsi] array of pressure gradient on flux surface 
+            psi from grad-shafranov solution.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._pprime is None:
             try:
@@ -191,7 +240,13 @@ class CModEFITTree(EFITTree):
         return self._pprime.copy()
 
     def getQProfile(self):
-        """returns safety factor q [t,psi]
+        """returns profile of safety factor q.
+
+        Returns:
+            qpsi (Array): [nt,npsi] array of q on flux surface psi.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._qpsi is None:
             try:
@@ -203,7 +258,13 @@ class CModEFITTree(EFITTree):
         return self._qpsi.copy()
 
     def getRLCFS(self, length_unit=1):
-        """returns R-values of LCFS position [t,n]
+        """returns R-values of LCFS position.
+
+        Returns:
+            RLCFS (Array): [nt,n] array of R of LCFS points.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._RLCFS is None:
             try:
@@ -216,7 +277,13 @@ class CModEFITTree(EFITTree):
         return unit_factor * self._RLCFS.copy()
 
     def getZLCFS(self, length_unit=1):
-        """returns Z-values of LCFS position [t,n]
+        """returns Z-values of LCFS position.
+
+        Returns:
+            ZLCFS (Array): [nt,n] array of Z of LCFS points.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._ZLCFS is None:
             try:
@@ -233,11 +300,12 @@ class CModEFITTree(EFITTree):
         """Pulls C-Mod cross-section data from tree, converts to plottable
         vector format for use in other plotting routines
 
-        Args:
-            shot (integer): C-Mod shot index (used for tree access)
-
         Returns:
-            (x, y): The coordinates of the machine cross-section.
+            x (Array): [n] array of x-values for machine cross section.
+            y (Array): [n] array of y-values for machine cross section.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         #pull cross-section from tree
         try:
