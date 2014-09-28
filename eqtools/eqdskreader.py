@@ -672,6 +672,11 @@ class EqdskReader(Equilibrium):
                 scalar `psi` is returned.  `R` and `Z` must have the same shape 
                 unless the `make_grid` keyword is set.  If `make_grid` is True, 
                 `R` must have shape (`len_R`,).
+            Z (Array-like or scalar float): Values of the vertical coordinate to 
+                map to poloidal flux.  If `R` and `Z` are both scalar, then a 
+                scalar `psi` is returned.  `R` and `Z` must have the same shape 
+                unless the `make_grid` keyword is set.  If `make_grid` is True, 
+                `Z` must have shape (`len_Z`,).
         """
         t = self.getTimeBase()[0]
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
