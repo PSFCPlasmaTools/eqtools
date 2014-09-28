@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides classes inheriting :py:class:`core.Equilibrium` for 
+"""This module provides classes inheriting :py:class:`EFIT.EFITTree` for 
 working with C-Mod EFIT data.
 """
 
@@ -117,7 +117,7 @@ class CModEFITTree(EFITTree):
 
         Keyword Args:
             length_unit (String or 3): unit for plasma volume.  Defaults to 3,
-                indicating default volumetric unit (typically m^3)
+                indicating default volumetric unit (typically m^3).
 
         Returns:
             fluxVol (Array): [nt,npsi] array of volume within flux surface.

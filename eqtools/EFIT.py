@@ -16,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
+"""Provides class inheriting :py:class:`core.Equilibrium` for working with EFIT 
+data.
+"""
+
 import scipy
 from collections import namedtuple
 
@@ -49,13 +53,14 @@ except:
     _has_plt = False
 
 class EFITTree(Equilibrium):
-    """Inherits Equilibrium class. EFIT-specific data handling class for machines using
-    standard EFIT tag names/tree structure with MDSplus. Constructor and/or data loading may
-    need overriding in a machine-specific implementation.
-    Pulls EFIT data from selected MDS tree and shot, stores as object attributes.
-    Each EFIT variable or set of variables is recovered with a corresponding getter method.
-    Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).
-    Additional data are pulled at the first request and stored for subsequent usage.
+    """Inherits Equilibrium class. EFIT-specific data handling class for 
+    machines using standard EFIT tag names/tree structure with MDSplus. 
+    Constructor and/or data loading may need overriding in a machine-specific 
+    implementation.  Pulls EFIT data from selected MDS tree and shot, stores as 
+    object attributes.  Each EFIT variable or set of variables is recovered 
+    with a corresponding getter method.  Essential data for EFIT mapping are 
+    pulled on initialization (e.g. psirz grid).  Additional data are pulled at 
+    the first request and stored for subsequent usage.
     
     Intializes EFITTree object. Pulls data from MDS tree for storage in
     instance attributes. Core attributes are populated from the MDS tree
@@ -98,15 +103,14 @@ class EFITTree(Equilibrium):
             monotonically increasing. Default is False (use slower,
             safer method).
     """
-    def __init__(self, shot, tree, root, length_unit='m', gfile = 'g_eqdsk', afile='a_eqdsk', tspline=False, monotonic=True):
-        """
-        """
-
+    def __init__(self, shot, tree, root, length_unit='m', gfile = 'g_eqdsk', 
+                 afile='a_eqdsk', tspline=False, monotonic=True):
         if not _has_MDS:
             print("ERROR: MDSplus module did not load properly. Exception is below:")
             raise _e_MDS
 
-        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline, monotonic=monotonic)
+        super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline, 
+                                       monotonic=monotonic)
         
         self._shot = shot
         self._tree = tree
@@ -246,7 +250,13 @@ class EFITTree(Equilibrium):
         return data(shot=self._shot,tree=self._tree,nr=nr,nz=nz,nt=nt)
 
     def getTimeBase(self):
-        """returns EFIT time base vector
+        """returns EFIT time base vector.
+
+        Returns:
+            time (array): [nt] array of time points.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._time is None:
             try:
@@ -258,7 +268,13 @@ class EFITTree(Equilibrium):
         return self._time.copy()
 
     def getFluxGrid(self):
-        """returns EFIT flux grid, [t,z,r]
+        """returns EFIT flux grid.
+
+        Returns:
+            psiRZ (Array): [nt,nz,nr] array of (non-normalized) flux on grid.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._psiRZ is None:
             try:
@@ -274,7 +290,13 @@ class EFITTree(Equilibrium):
         return self._psiRZ.copy()
 
     def getRGrid(self, length_unit=1):
-        """returns EFIT R-axis [r]
+        """returns EFIT R-axis.
+
+        Returns:
+            rGrid (Array): [nr] array of R-axis of flux grid.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._rGrid is None:
             raise ValueError('data retrieval failed.')
@@ -285,7 +307,13 @@ class EFITTree(Equilibrium):
         return unit_factor * self._rGrid.copy()
 
     def getZGrid(self, length_unit=1):
-        """returns EFIT Z-axis [z]
+        """returns EFIT Z-axis.
+
+        Returns:
+            zGrid (Array): [nz] array of Z-axis of flux grid.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._zGrid is None:
             raise ValueError('data retrieval failed.')
@@ -296,7 +324,13 @@ class EFITTree(Equilibrium):
         return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
-        """returns psi on magnetic axis [t]
+        """returns psi on magnetic axis.
+
+        Returns:
+            psiAxis (Array): [nt] array of psi on magnetic axis.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._psiAxis is None:
             try:
@@ -308,7 +342,13 @@ class EFITTree(Equilibrium):
         return self._psiAxis.copy()
 
     def getFluxLCFS(self):
-        """returns psi at separatrix [t]
+        """returns psi at separatrix.
+
+        Returns:
+            psiLCFS (Array): [nt] array of psi at LCFS.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._psiLCFS is None:
             try:
@@ -320,7 +360,17 @@ class EFITTree(Equilibrium):
         return self._psiLCFS.copy()
 
     def getFluxVol(self, length_unit=3):
-        """returns volume within flux surface [t,psi]
+        """returns volume within flux surface.
+
+        Keyword Args:
+            length_unit (String or 3): unit for plasma volume.  Defaults to 3, 
+                indicating default volumetric unit (typically m^3).
+
+        Returns:
+            fluxVol (Array): [nt,npsi] array of volume within flux surface.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._fluxVol is None:
             try:
@@ -338,7 +388,17 @@ class EFITTree(Equilibrium):
         return unit_factor * self._fluxVol.copy()
 
     def getVolLCFS(self, length_unit=3):
-        """returns volume within LCFS [t]
+        """returns volume within LCFS.
+
+        Keyword Args:
+            length_unit (String or 3): unit for LCFS volume.  Defaults to 3, 
+                denoting default volumetric unit (typically m^3).
+
+        Returns:
+            volLCFS (Array): [nt] array of volume within LCFS.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._volLCFS is None:
             try:
@@ -352,7 +412,18 @@ class EFITTree(Equilibrium):
         return unit_factor * self._volLCFS.copy()
 
     def getRmidPsi(self, length_unit=1):
-        """returns maximum major radius of each flux surface [t,psi]
+        """returns maximum major radius of each flux surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating 
+                the default parameter unit (typically m).
+
+        Returns:
+            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of 
+                flux surface psi.
+
+        Raises:
+            Value Error: if module cannot retrieve data from MDS tree.
         """
         if self._RmidPsi is None:
             try:
@@ -369,7 +440,13 @@ class EFITTree(Equilibrium):
         return unit_factor * self._RmidPsi.copy()
 
     def getRLCFS(self, length_unit=1):
-        """returns R-values of LCFS position [t,n]
+        """returns R-values of LCFS position.
+
+        Returns:
+            RLCFS (Array): [nt,n] array of R of LCFS points.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._RLCFS is None:
             try:
@@ -382,7 +459,13 @@ class EFITTree(Equilibrium):
         return unit_factor * self._RLCFS.copy()
 
     def getZLCFS(self, length_unit=1):
-        """returns Z-values of LCFS position [t,n]
+        """returns Z-values of LCFS position.
+
+        Returns:
+            ZLCFS (Array): [nt,n] array of Z of LCFS points.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
         if self._ZLCFS is None:
             try:
