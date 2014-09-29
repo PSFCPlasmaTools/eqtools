@@ -761,8 +761,7 @@ class EqdskReader(Equilibrium):
 
         .. math::
 
-            \texttt{phi} &= \int q(\psi)\,d\psi
-
+            \texttt{phi} &= \int q(\psi)\,d\psi\\
             \texttt{phi\_norm} &= \frac{\phi}{\phi(a)}
         
         Wrapper for Equilibrium.rz2phinorm masking out timebase dependence.

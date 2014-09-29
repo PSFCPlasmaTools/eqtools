@@ -793,8 +793,7 @@ class Equilibrium(object):
         
         .. math::
         
-            \texttt{phi} &= \int q(\psi)\,d\psi
-            
+            \texttt{phi} &= \int q(\psi)\,d\psi\\
             \texttt{phi\_norm} &= \frac{\phi}{\phi(a)}
             
         This is based on the IDL version efit_rz2rho.pro by Steve Wolfe.
