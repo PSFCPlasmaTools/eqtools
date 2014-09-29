@@ -663,8 +663,9 @@ class EqdskReader(Equilibrium):
 
     def rz2psi(self,R,Z,*args,**kwargs):
         """Calculates the non-normalized poloidal flux at the given (`R`, `Z`). 
-        Wrapper for :py:meth:`Equilibrium.rz2psi` masking out timebase 
-        dependence.
+        Wrapper for 
+        :py:meth:`Equilibrium.rz2psi <eqtools.core.Equilibrium.rz2psi>` masking 
+        out timebase dependence.
 
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to 
@@ -710,11 +711,16 @@ class EqdskReader(Equilibrium):
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
 
     def rz2psinorm(self,R,Z,*args,**kwargs):
-        """Calculates the normalized poloidal flux at the given (R,Z).
-        Wrapper for Equilibrium.rz2psinorm masking out timebase dependence.
+        r"""Calculates the normalized poloidal flux at the given (R,Z).
+        Wrapper for 
+        :py:meth:`Equilibrium.rz2psinorm <eqtools.core.Equilibrium.rz2psinorm>` 
+        masking out timebase dependence.
 
         Uses the definition:
-        psi_norm = (psi - psi(0)) / (psi(a) - psi(0))
+
+        .. math::
+
+            \texttt{psi\_norm} = \frac{\psi - \psi(0)}{\psi(a) - \psi(0)}
 
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
@@ -727,8 +733,8 @@ class EqdskReader(Equilibrium):
                 keyword is True, `Z` must have shape (`len_Z`,).
 
         All keyword arguments are passed to the parent 
-        :py:meth:`Equilibrium.rz2psinorm`.  Remaining arguments in *args are 
-        ignored.
+        :py:meth:`Equilibrium.rz2psinorm <eqtools.core.Equilibrium.rz2psinorm>`.  
+        Remaining arguments in \*args are ignored.
 
         Returns:
             psinorm (Array-like or scalar float): non-normalized poloidal flux.  If 
