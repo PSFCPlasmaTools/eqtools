@@ -757,7 +757,7 @@ class EqdskReader(Equilibrium):
         return super(EqdskReader,self).rz2psinorm(R,Z,t,**kwargs)
 
     def rz2phinorm(self,R,Z,*args,**kwargs):
-        """Calculates normalized toroidal flux at a given (R,Z), using
+        r"""Calculates normalized toroidal flux at a given (R,Z), using
 
         .. math::
 

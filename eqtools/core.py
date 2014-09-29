@@ -644,7 +644,7 @@ class Equilibrium(object):
 
     def rz2psinorm(self, R, Z, t, return_t=False, sqrt=False, make_grid=False,
                    each_t=True, length_unit=1):
-        """Calculates the normalized poloidal flux at the given (R, Z, t).
+        r"""Calculates the normalized poloidal flux at the given (R, Z, t).
         
         Uses the definition:
         
@@ -787,7 +787,7 @@ class Equilibrium(object):
             return out
 
     def rz2phinorm(self, *args, **kwargs):
-        """Calculates the normalized toroidal flux.
+        r"""Calculates the normalized toroidal flux.
         
         Uses the definitions:
         
