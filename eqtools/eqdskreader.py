@@ -679,7 +679,8 @@ class EqdskReader(Equilibrium):
                 `Z` must have shape (`len_Z`,).
 
         All keyword arguments are passed to the parent 
-        :py:meth:`Equilibrium.rz2psi`.  Remaining arguments in *args are ignored.
+        :py:meth:`Equilibrium.rz2psi <eqtools.core.Equilibrium.rz2psi>`.  
+        Remaining arguments in \*args are ignored.
 
         Returns:
             psi (Array-like or scalar float): non-normalized poloidal flux.  If 
