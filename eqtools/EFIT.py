@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Provides class inheriting :py:class:`core.Equilibrium` for working with EFIT 
-data.
+"""Provides class inheriting :py:class:`eqtools.core.Equilibrium` for working 
+with EFIT data.
 """
 
 import scipy
@@ -53,18 +53,19 @@ except:
     _has_plt = False
 
 class EFITTree(Equilibrium):
-    """Inherits Equilibrium class. EFIT-specific data handling class for 
-    machines using standard EFIT tag names/tree structure with MDSplus. 
-    Constructor and/or data loading may need overriding in a machine-specific 
-    implementation.  Pulls EFIT data from selected MDS tree and shot, stores as 
-    object attributes.  Each EFIT variable or set of variables is recovered 
-    with a corresponding getter method.  Essential data for EFIT mapping are 
-    pulled on initialization (e.g. psirz grid).  Additional data are pulled at 
-    the first request and stored for subsequent usage.
+    """Inherits :py:class:`Equilibrium <eqtools.core.Equilibrium>` class. 
+    EFIT-specific data handling class for machines using standard EFIT tag 
+    names/tree structure with MDSplus.  Constructor and/or data loading may 
+    need overriding in a machine-specific implementation.  Pulls EFIT data 
+    from selected MDS tree and shot, stores as object attributes.  Each EFIT 
+    variable or set of variables is recovered with a corresponding getter 
+    method.  Essential data for EFIT mapping are pulled on initialization 
+    (e.g. psirz grid).  Additional data are pulled at the first request and 
+    stored for subsequent usage.
     
-    Intializes EFITTree object. Pulls data from MDS tree for storage in
-    instance attributes. Core attributes are populated from the MDS tree
-    on initialization. Additional attributes are initialized as None,
+    Intializes :py:class:`EFITTree` object. Pulls data from MDS tree for 
+    storage in instance attributes. Core attributes are populated from the MDS 
+    tree on initialization. Additional attributes are initialized as None,
     filled on the first request to the object.
 
     Args:
@@ -1459,7 +1460,7 @@ class EFITTree(Equilibrium):
         """Returns R,Z coordinates of vacuum-vessel wall for plotting routines.
         
         Absent additional vector-graphic data on machine cross-section, returns
-        self.getMachineCrossSection().
+        :py:meth:`getMachineCrossSection`.
         
         Returns:
             result from getMachineCrossSection().
@@ -1482,7 +1483,8 @@ class EFITTree(Equilibrium):
 
     def getParam(self, path):
         """Backup function, applying a direct path input for tree-like data 
-        storage access for parameters not typically found in Equilbrium object.  
+        storage access for parameters not typically found in 
+        :py:class:`Equilbrium <eqtools.core.Equilbrium>` object.  
         Directly calls attributes read from g/a-files in copy-safe manner.
 
         Args:

@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides classes inheriting :py:class:`EFIT.EFITTree` for 
+"""This module provides classes inheriting :py:class:`eqtools.EFIT.EFITTree` for 
 working with C-Mod EFIT data.
 """
 
@@ -45,7 +45,7 @@ except Exception as _e_MDS:
     _has_MDS = False
 
 class CModEFITTree(EFITTree):
-    """Inherits :py:class:`~gptools.EFIT.EFITTree` class. Machine-specific data
+    """Inherits :py:class:`eqtools.EFIT.EFITTree` class. Machine-specific data
     handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
     and shot, stores as object attributes. Each EFIT variable or set of
     variables is recovered with a corresponding getter method. Essential data

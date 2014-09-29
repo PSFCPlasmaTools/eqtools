@@ -1156,8 +1156,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             time (Array): 1-element, 1D array of time in s.  Returns array for
-                consistency with Equilibrium implementations with time 
-                .variation
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._time.copy()
 
@@ -1177,8 +1177,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             psiRZ (Array): [1,r,z] Array of flux values.  Includes 1-element
-                time axis for consistency with Equilibrium implementations with 
-                time variation.
+            time axis for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` implementations 
+            with time variation.
         """
         return self._psiRZ.copy()
 
@@ -1205,8 +1206,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             psi0 (Array): [1] array of psi on magnetic axis.  Returns array for
-                consistency with Equilibrium implementations with time 
-                variation.
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
         return -1. * self.getCurrentSign() * scipy.array(self._psiAxis)
@@ -1216,8 +1217,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             psia (Array): [1] array of psi at separatrix.  Returns array for
-                consistency with Equilibrium implementations with time 
-                variation.
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
         return -1 * self.getCurrentSign() * scipy.array(self._psiLCFS)
@@ -1227,8 +1228,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             RLCFS (Array): [1,n] array of R values describing LCFS.  Returns 
-                array for consistency with Equilibrium implementations with 
-                time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` implementations 
+            with time variation.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'],length_unit)
         return unit_factor * self._RLCFS.copy()
@@ -1238,8 +1240,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             ZLCFS (Array): [1,n] array of Z values describing LCFS.  Returns 
-                array for consistency with Equilibrium implementations with 
-                time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` implementations 
+            with time variation.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'],length_unit)
         return unit_factor * self._ZLCFS.copy()
@@ -1319,9 +1322,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             Vol (Array): [1] array of plasma volume.  Returns array for
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1348,9 +1351,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             F (Array): [1,n] array of F(\psi).  Returns array for
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """       
          return self._fpol.copy()
     
@@ -1359,9 +1362,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             p (Array): [1,n] array of pressure.  Returns array for
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._fluxPres.copy()
 
@@ -1370,9 +1373,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             FF (Array): [1,n] array of FF'(\psi).  Returns array for
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._ffprim.copy()
 
@@ -1380,10 +1383,10 @@ class EqdskReader(Equilibrium):
         """returns plasma pressure gradient as a function of psi.
 
         Returns: 
-                pp (Array): [1,n] array of pp'(\psi).  Returns array for
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            pp (Array): [1,n] array of pp'(\psi).  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._pprime.copy()
 
@@ -1392,9 +1395,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             kappa (Array): [1] array of plasma elongation.  Returns array for
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1409,9 +1412,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             delta (Array): [1] array of plasma upper triangularity.  Returns 
-                array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1426,9 +1429,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             delta (Array): [1] array of plasma lower triangularity.  Returns 
-                array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1465,9 +1468,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             magR (Array): [1] array of major radius of magnetic axis.  Returns 
-                array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1487,9 +1490,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             magZ (Array): [1] array of Z of magnetic axis.  Returns array for
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1509,9 +1512,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             AreaLCFS (Array): [1] array of surface area of LCFS.  Returns array 
-                for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1550,9 +1553,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             Rmid (Array): [1] array of outboard-midplane major radius at LCFS.  
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1601,8 +1604,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             q0 (Array): [1] array of q(psi=0).  Returns array for consistency 
-                with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1617,8 +1620,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             q95 (Array): [1] array of q(psi=0.95).  Returns array for consistency 
-                with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1633,8 +1636,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             qLCFS (Array): [1] array of q* (interpolated).  Returns array for 
-                consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not loaded.
@@ -1653,9 +1656,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             qr1 (Array): [1] array of minor radius of q=1 surface.  Returns 
-                array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1675,9 +1678,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             qr2 (Array): [1] array of minor radius of q=2 surface.  Returns 
-                array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1697,9 +1700,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             qr3 (Array): [1] array of minor radius of q=3 surface.  Returns 
-                array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1740,9 +1743,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             BtVac (Array): [1] array of vacuum toroidal field.  Returns array 
-                for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1757,9 +1760,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             BtPla (Array): [1] array of toroidal field including plasma effects.
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1774,9 +1777,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             BpAvg (Array): [1] array of average poloidal field.  Returns array 
-                for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1809,9 +1812,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             IpCalc (Array): [1] array of EFIT-reconstructed plasma current.
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._IpCalc.copy()
 
@@ -1820,9 +1823,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             IpMeas (Array): [1] array of measured plasma current.  Returns 
-                array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1847,9 +1850,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             BetaT (Array): [1] array of average toroidal beta.  Returns array 
-                for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1864,9 +1867,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             BetaP (Array): [1] array of average poloidal beta.  Returns array 
-                for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read
@@ -1881,9 +1884,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             Li (Array): [1] array of internal inductance.  Returns array for 
-                consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1916,9 +1919,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             Flux (Array): [1] array of measured diamagnetic flux.  Returns array 
-                for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1933,9 +1936,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             BetaT (Array): [1] array of measured diamagnetic toroidal beta.   
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1950,9 +1953,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             BetaP (Array): [1] array of measured diamagnetic poloidal beta.  
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+           :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1967,9 +1970,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             TauE (Array): [1] array of measured energy confinement time.  
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1984,9 +1987,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             Wp (Array): [1] array of diamagnetic stored energy.  
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -2022,9 +2025,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             WMHD (Array): [1] array of EFIT-reconstructed stored energy.  
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -2039,9 +2042,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             tauMHD (Array): [1] array of EFIT-reconstructed energy confinement
-                time.  Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            time.  Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -2056,9 +2059,9 @@ class EqdskReader(Equilibrium):
 
         Returns:
             Pinj (Array): [1] array of EFIT-reconstructed injected power.  
-                Returns array for consistency with 
-                :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -2073,8 +2076,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             dWdt (Array): [1] array of d(Wb)/dt.  Returns array for consistency 
-                with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -2089,8 +2092,8 @@ class EqdskReader(Equilibrium):
 
         Returns:
             dWdt (Array): [1] array of d(Wp)/dt.  Returns array for consistency 
-                with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
-                implementations with time variation.
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -2132,7 +2135,7 @@ class EqdskReader(Equilibrium):
 
         Returns:
             param (Array-like or scalar float): value stored as attribute in
-                :py:class:`EqdskReader`.
+            :py:class:`EqdskReader`.
 
         Raises:
             AttributeError: raised if no attribute is found.
