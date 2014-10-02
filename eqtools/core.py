@@ -5427,6 +5427,8 @@ class Equilibrium(object):
             length_unit (String or 1):
                 Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
+                    
+                    =========== ===========
                     'm'         meters
                     'cm'        centimeters
                     'mm'        millimeters
@@ -5437,6 +5439,8 @@ class Equilibrium(object):
                     'cubit'     cubits
                     'hand'      hands
                     'default'   meters
+                    =========== ===========
+                    
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
@@ -5485,6 +5489,8 @@ class Equilibrium(object):
             length_unit (String or 1):
                 Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
+                
+                    =========== ===========
                     'm'         meters
                     'cm'        centimeters
                     'mm'        millimeters
@@ -5495,6 +5501,8 @@ class Equilibrium(object):
                     'cubit'     cubits
                     'hand'      hands
                     'default'   meters
+                    =========== ===========
+                    
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
@@ -5545,6 +5553,8 @@ class Equilibrium(object):
             length_unit (String or 1):
                 Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
+                
+                    =========== ===========
                     'm'         meters
                     'cm'        centimeters
                     'mm'        millimeters
@@ -5555,6 +5565,8 @@ class Equilibrium(object):
                     'cubit'     cubits
                     'hand'      hands
                     'default'   meters
+                    =========== ===========
+                    
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):

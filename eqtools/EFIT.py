@@ -421,7 +421,7 @@ class EFITTree(Equilibrium):
 
         Returns:
             Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of 
-                flux surface psi.
+            flux surface psi.
 
         Raises:
             Value Error: if module cannot retrieve data from MDS tree.
@@ -627,7 +627,7 @@ class EFITTree(Equilibrium):
 
         Returns:
             pprime (Array): [nt,npsi] array of pressure gradient on flux surface 
-                psi from grad-shafranov solution.
+            psi from grad-shafranov solution.
 
         Raises:
             ValueError: if module cannot retrieve data from MDS tree.

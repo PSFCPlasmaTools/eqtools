@@ -38,20 +38,16 @@ class Spline():
     Args:
         z (1-dimensional float array): Values of the positions of the 1st
             Dimension of f. Must be monotonic without duplicates.
-
         y (1-dimensional float array): Values of the positions of the 2nd
             dimension of f. Must be monotonic without duplicates.
-
         x (1-dimensional float array): Values of the positions of the 3rd
             dimension of f. Must be monotonic without duplicates.
-
         f (3-dimensional float array): f[z,y,x]. NaN and Inf will hamper
             performance and affect interpolation in 4x4x4 space about its value.
     
     Keyword Args:
         regular (Boolean): If the grid is known to be regular, forces 
             matrix-based fast evaluation of interpolation.
-            
         fast (Boolean): Outdated input to test the indexing performance of the
             c code vs internal python handling.
     
@@ -130,18 +126,13 @@ class Spline():
         Args:
             z1 (scalar float or 1-dimensional float): Position in z dimension.
                This is the first dimension of 3d-valued grid.
-
             y1 (scalar float or 1-dimensional float): Position in y dimension.
                This is the second dimension of 3d-valued grid.
-
             x1 (scalar float or 1-dimensional float): Position in x dimension. 
                This is the third dimension of 3d-valued grid.
 
         Returns:
-            `val`
-
-            * **val** (`array or scalar float`) - The interpolated value at 
-            (x1,y1,z1).
+            val (array or scalar float): The interpolated value at (x1,y1,z1).
             
         Raises:
             ValueError: If any of the dimensions exceed the evaluation boundary
@@ -202,10 +193,8 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
     Args:
         x (1-dimensional float array):
             1-D array of coordinates in monotonically increasing order.
-
         y (1-dimensional float array):
             1-D array of coordinates in monotonically increasing order.
-
         z (2-dimensional float array):
             2-D array of data with shape (x.size,y.size).
 
@@ -213,11 +202,8 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
         bbox (1-dimensional float): Sequence of length 4 specifying the
             boundary of the rectangular approximation domain.  By default,
             ``bbox=[min(x,tx),max(x,tx), min(y,ty),max(y,ty)]``.
-        
         kx (integer): Degrees of the bivariate spline. Default is 3.
-        
         ky (integer): Degrees of the bivariate spline. Default is 3.
-
         s (float): Positive smoothing factor defined for estimation condition,
             ``sum((w[i]*(z[i]-s(x[i], y[i])))**2, axis=0) <= s``
             Default is ``s=0``, which is for interpolation.
@@ -236,12 +222,12 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
 
         Args:
             x_new (float array):
-
+            
             y_new (float array):
 
         Returns:
             out_of_bounds (Boolean array): The mask on x_new and y_new of
-                values that are NOT of bounds.
+            values that are NOT of bounds.
         """
         below_bounds_x = x_new < self._xlim[0]
         above_bounds_x = x_new > self._xlim[1]
@@ -274,12 +260,10 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
 
         Args:
             xi (float array): input x dimensional values 
-
             yi (float array): input x dimensional values 
 
         Returns:
-            val (float array): evaluated spline at points 
-                (x[i], y[i]), i=0,...,len(x)-1
+            val (float array): evaluated spline at points (x[i], y[i]), i=0,...,len(x)-1
         """
         idx = self._check_bounds(xi, yi)
         print(idx)
