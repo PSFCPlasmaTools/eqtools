@@ -114,7 +114,7 @@ class NSTXEFITTree(EFITTree):
                                            monotonic=monotonic)
         
     def getFluxGrid(self):
-         """returns EFIT flux grid.
+        """returns EFIT flux grid.
 
         Returns:
             psiRZ (Array): [nt,nz,nr] array of (non-normalized) flux on grid.
