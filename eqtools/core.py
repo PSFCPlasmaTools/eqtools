@@ -1515,6 +1515,7 @@ class Equilibrium(object):
             
                 roa_arr = Eq_instance.rmid2roa([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
+        # TODO: Make this map inboard to outboard!
         if time_idxs is None:
             (R_mid,
              dum,
@@ -4101,9 +4102,13 @@ class Equilibrium(object):
         # Not used by rz2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
-
+        
+        # Make sure we don't convert to sqrtpsinorm first!
+        sqrt = kwargs.pop('sqrt', False)
+        
         psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
         
+        kwargs['sqrt'] = sqrt
         kwargs['return_t'] = return_t
         
         # Not used by _psinorm2Quan
@@ -4208,8 +4213,12 @@ class Equilibrium(object):
         # Not used by rmid2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
+        
+        sqrt = kwargs.pop('sqrt', False)
 
         psi_norm, time_idxs = self.rmid2psinorm(R_mid, t, **kwargs)
+        
+        kwargs['sqrt'] = sqrt
         
         kwargs.pop('convert_roa', False)
         
@@ -4299,8 +4308,12 @@ class Equilibrium(object):
         # Not used by phinorm2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
-
+        
+        sqrt = kwargs.pop('sqrt', False)
+        
         psi_norm, time_idxs = self.phinorm2psinorm(phinorm, t, **kwargs)
+        
+        kwargs['sqrt'] = sqrt
         
         kwargs['return_t'] = return_t
         kwargs['rho'] = rho
@@ -4386,8 +4399,12 @@ class Equilibrium(object):
         # Not used by phinorm2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
-
+        
+        sqrt = kwargs.pop('sqrt', False)
+        
         psi_norm, time_idxs = self.volnorm2psinorm(volnorm, t, **kwargs)
+        
+        kwargs['sqrt'] = sqrt
         
         kwargs['return_t'] = return_t
         kwargs['rho'] = rho
