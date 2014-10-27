@@ -12,6 +12,14 @@ eqtools.CModEFIT module
     :undoc-members:
     :show-inheritance:
 
+eqtools.D3DEFIT module
+----------------------
+
+.. automodule:: eqtools.D3DEFIT
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 eqtools.EFIT module
 -------------------
 
