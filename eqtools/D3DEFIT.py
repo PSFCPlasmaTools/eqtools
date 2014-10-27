@@ -46,25 +46,23 @@ except Exception as _e_MDS:
 
 class D3DEFITTree(EFITTree):
     """Inherits :py:class:`eqtools.EFIT.EFITTree` class. Machine-specific data
-    handling class for Alcator C-Mod. Pulls EFIT data from selected MDS tree
+    handling class for DIII-D. Pulls EFIT data from selected MDS tree
     and shot, stores as object attributes. Each EFIT variable or set of
     variables is recovered with a corresponding getter method. Essential data
     for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional
     data are pulled at the first request and stored for subsequent usage.
     
-    Intializes C-Mod version of EFITTree object.  Pulls data from MDS tree for 
+    Intializes DIII-D version of EFITTree object.  Pulls data from MDS tree for 
     storage in instance attributes.  Core attributes are populated from the MDS 
     tree on initialization.  Additional attributes are initialized as None, 
     filled on the first request to the object.
 
     Args:
-        shot (integer): C-Mod shot index.
+        shot (integer): DIII-D shot index.
     
     Keyword Args:
-        tree (string): Optional input for EFIT tree, defaults to 'ANALYSIS'
-            (i.e., EFIT data are under \\analysis::top.efit.results).
-            For any string TREE (such as 'EFIT20') other than 'ANALYSIS',
-            data are taken from \\TREE::top.results.
+        tree (string): Optional input for EFIT tree, defaults to 'EFIT01'
+            (i.e., EFIT data are under \\EFIT01::top.results).
         length_unit (string): Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
                 
@@ -83,11 +81,11 @@ class D3DEFITTree(EFITTree):
                 
             Default is 'm' (all units taken and returned in meters).
         gfile (string): Optional input for EFIT geqdsk location name, 
-            defaults to 'g_eqdsk' (i.e., EFIT data are under
-            \\tree::top.results.G_EQDSK)
+            defaults to 'geqdsk' (i.e., EFIT data are under
+            \\tree::top.results.GEQDSK)
         afile (string): Optional input for EFIT aeqdsk location name,
-            defaults to 'a_eqdsk' (i.e., EFIT data are under 
-            \\tree::top.results.A_EQDSK)
+            defaults to 'aeqdsk' (i.e., EFIT data are under 
+            \\tree::top.results.AEQDSK)
         tspline (Boolean): Sets whether or not interpolation in time is
             performed using a tricubic spline or nearest-neighbor
             interpolation. Tricubic spline interpolation requires at least
