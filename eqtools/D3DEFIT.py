@@ -138,7 +138,7 @@ class D3DEFITTree(EFITTree):
         super(EFITTree,self).getRmidPsi()
 
  
-class D3DEFITTreeProp(CModEFITTree, PropertyAccessMixin):
+class D3DEFITTreeProp(D3DEFITTree, PropertyAccessMixin):
     """D3DEFITTree with the PropertyAccessMixin added to enable property-style
     access. This is good for interactive use, but may drag the performance down.
     """

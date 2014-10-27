@@ -23,6 +23,7 @@ from .core import *
 from .EFIT import *
 from .CModEFIT import *
 from .NSTXEFIT import *
+from .D3DEFIT import *
 from .eqdskreader import *
 from .pfilereader import *
 from .FromArrays import *
