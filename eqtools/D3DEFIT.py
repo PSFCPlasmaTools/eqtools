@@ -99,46 +99,26 @@ class D3DEFITTree(EFITTree):
             window finding is used. If True, the timebase must be monotonically
             increasing. Default is False (use slower, safer method).
     """
-    def __init__(self, shot, tree='ANALYSIS', length_unit='m', gfile='g_eqdsk', 
-                 afile='a_eqdsk', tspline=False, monotonic=True):
-        if tree.upper() == 'ANALYSIS':
-            root = '\\analysis::top.efit.results.'
-        else:
-            root = '\\'+tree+'::top.results.'
+    def __init__(self, shot, tree='EFIT01', length_unit='m', gfile='geqdsk', 
+                 afile='aeqdsk', tspline=False, monotonic=True):
+        root = '\\'+tree+'::top.results.'
 
-        super(CModEFITTree, self).__init__(shot, tree, root, 
-              length_unit=length_unit, gfile=gfile, afile=afile, 
-              tspline=tspline, monotonic=monotonic)
+        super(D3DEFITTree, self).__init__(shot,
+                                          tree,
+                                          root,
+                                          length_unit=length_unit,
+                                          gfile=gfile,
+                                          afile=afile,
+                                          tspline=tspline,
+                                          monotonic=monotonic)
+
+    def getFluxVol(self): 
+        """Not implemented in D3DEFIT tree.
         
-        self.getFluxVol() #getFluxVol is called due to wide use on C-Mod
-
-    def getFluxVol(self, length_unit=3):
-        """returns volume within flux surface.
-
-        Keyword Args:
-            length_unit (String or 3): unit for plasma volume.  Defaults to 3,
-                indicating default volumetric unit (typically m^3).
-
         Returns:
-            fluxVol (Array): [nt,npsi] array of volume within flux surface.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
+            volume within flux surface [psi,t]
         """
-        if self._fluxVol is None:
-            try:
-                fluxVolNode = self._MDSTree.getNode(self._root+'fitout:volp')
-                self._fluxVol = fluxVolNode.data().T
-                # Units aren't properly stored in the tree for this one!
-                if fluxVolNode.units != ' ':
-                    self._defaultUnits['_fluxVol'] = fluxVolNode.units
-                else:
-                    self._defaultUnits['_fluxVol'] = 'm^3'
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        # Default units are m^3, but aren't stored in the tree!
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
-        return unit_factor * self._fluxVol.copy()
+        super(EFITTree,self).getFluxVol()
 
     def getRmidPsi(self, length_unit=1):
         """returns maximum major radius of each flux surface.
@@ -154,200 +134,12 @@ class D3DEFITTree(EFITTree):
         Raises:
             Value Error: if module cannot retrieve data from MDS tree.
         """
-        if self._RmidPsi is None:
-            try:
-                RmidPsiNode = self._MDSTree.getNode(self._root+'fitout:rpres')
-                self._RmidPsi = RmidPsiNode.data().T
-                # Units aren't properly stored in the tree for this one!
-                if RmidPsiNode.units != ' ':
-                    self._defaultUnits['_RmidPsi'] = RmidPsiNode.units
-                else:
-                    self._defaultUnits['_RmidPsi'] = 'm'
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
-        return unit_factor * self._RmidPsi.copy()
 
-    def getF(self):
-        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov 
-        solutions.
+        super(EFITTree,self).getRmidPsi()
 
-        Returns:
-            F (Array): [nt,npsi] array of F=RB_{\Phi}(\Psi)
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        if self._fpol is None:
-            try:
-                fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
-                self._fpol = fNode.data().T
-                self._defaultUnits['_fpol'] = fNode.units
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        return self._fpol.copy()
-    
-    def getFluxPres(self):
-        """returns pressure at flux surface.
-
-        Returns:
-            p (Array): [nt,npsi] array of pressure on flux surface psi.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        if self._fluxPres is None:
-            try:
-                fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
-                self._fluxPres = fluxPresNode.data().T
-                self._defaultUnits['_fluxPres'] = fluxPresNode.units
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        return self._fluxPres.copy()
-
-    def getFFPrime(self):
-        """returns FF' function used for grad-shafranov solutions.
-
-        Returns:
-            FFprime (Array): [nt,npsi] array of FF' fromgrad-shafranov solution.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        if self._ffprim is None:
-            try:
-                FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
-                self._ffprim = FFPrimeNode.data().T
-                self._defaultUnits['_ffprim'] = FFPrimeNode.units
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        return self._ffprim.copy()
-
-    def getPPrime(self):
-        """returns plasma pressure gradient as a function of psi.
-
-        Returns:
-            pprime (Array): [nt,npsi] array of pressure gradient on flux surface 
-            psi from grad-shafranov solution.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        if self._pprime is None:
-            try:
-                pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
-                self._pprime = pPrimeNode.data().T
-                self._defaultUnits['_pprime'] = pPrimeNode.units
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        return self._pprime.copy()
-
-    def getQProfile(self):
-        """returns profile of safety factor q.
-
-        Returns:
-            qpsi (Array): [nt,npsi] array of q on flux surface psi.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        if self._qpsi is None:
-            try:
-                qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
-                self._qpsi = qpsiNode.data().T
-                self._defaultUnits['_qpsi'] = qpsiNode.units
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        return self._qpsi.copy()
-
-    def getRLCFS(self, length_unit=1):
-        """returns R-values of LCFS position.
-
-        Returns:
-            RLCFS (Array): [nt,n] array of R of LCFS points.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        if self._RLCFS is None:
-            try:
-                RLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':rbbbs')
-                self._RLCFS = RLCFSNode.data().T
-                self._defaultUnits['_RLCFS'] = RLCFSNode.units
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
-        return unit_factor * self._RLCFS.copy()
-
-    def getZLCFS(self, length_unit=1):
-        """returns Z-values of LCFS position.
-
-        Returns:
-            ZLCFS (Array): [nt,n] array of Z of LCFS points.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        if self._ZLCFS is None:
-            try:
-                ZLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':zbbbs')
-                self._ZLCFS = ZLCFSNode.data().T
-                self._defaultUnits['_ZLCFS'] = ZLCFSNode.units
-            except TreeException:
-                raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
-        return unit_factor * self._ZLCFS.copy()
-        
-
-    def getMachineCrossSectionFull(self):
-        """Pulls C-Mod cross-section data from tree, converts to plottable
-        vector format for use in other plotting routines
-
-        Returns:
-            (`x`, `y`)
-
-            * **x** (`Array`) - [n] array of x-values for machine cross-section.
-            * **y** (`Array`) - [n] array of y-values for machine cross-section.
-
-        Raises:
-            ValueError: if module cannot retrieve data from MDS tree.
-        """
-        #pull cross-section from tree
-        try:
-            ccT = MDSplus.Tree('analysis', self._shot)
-            path = '\\analysis::top.limiters.tiles:'
-            xvctr = ccT.getNode(path+'XTILE').data()
-            yvctr = ccT.getNode(path+'YTILE').data()
-            nvctr = ccT.getNode(path+'NSEG').data()
-            lvctr = ccT.getNode(path+'PTS_PER_SEG').data()
-        except MDSplus._treeshr.TreeException:
-            raise ValueError('data load failed.')
-
-        #xvctr, yvctr stored as [nvctr,npts] ndarray.  Each of [nvctr] rows
-        #represents the x- or y- coordinate of a line segment; lvctr stores the length
-        #of each line segment row.  x/yvctr rows padded out to npts = max(lvctr) with
-        #uniform zeros.  To rapidly plot this, we want to flatten xvctr,yvctr down to
-        #a single x,y vector set.  We'll use Nones to separate line segments (as these
-        #break the continuous plotting joints).
-        x = []
-        y = []
-        for i in range(nvctr):
-            length = lvctr[i]
-            xseg = xvctr[i,0:length]
-            yseg = yvctr[i,0:length]
-            x.extend(xseg)
-            y.extend(yseg)
-            if i != nvctr-1:
-                x.append(None)
-                y.append(None)
-
-        x = scipy.array(x)
-        y = scipy.array(y)
-        return (x, y)
-
-
-class CModEFITTreeProp(CModEFITTree, PropertyAccessMixin):
-    """CModEFITTree with the PropertyAccessMixin added to enable property-style
+ 
+class D3DEFITTreeProp(CModEFITTree, PropertyAccessMixin):
+    """D3DEFITTree with the PropertyAccessMixin added to enable property-style
     access. This is good for interactive use, but may drag the performance down.
     """
     pass
