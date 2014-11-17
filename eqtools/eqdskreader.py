@@ -237,6 +237,9 @@ class EqdskReader(Equilibrium):
             except KeyError:
                 tunits = None
                 self._time = None
+            except IndexError:
+                tunits = None
+                self._time = None
 
             self._defaultUnits['_time'] = 's'
             
@@ -1317,8 +1320,8 @@ class EqdskReader(Equilibrium):
             ZLCFS = ZLCFS[maskarr]
 
         npts = len(RLCFS)
-        self._RLCFS = RLCFS.reshape((npts,1))
-        self._ZLCFS = ZLCFS.reshape((npts,1))
+        self._RLCFS = RLCFS.reshape((1,npts))
+        self._ZLCFS = ZLCFS.reshape((1,npts))
         
         # cleanup
         plt.ion()
