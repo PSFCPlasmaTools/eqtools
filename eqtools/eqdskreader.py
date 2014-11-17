@@ -206,18 +206,38 @@ class EqdskReader(Equilibrium):
                                         # use csv package for error handling.
             # read the header line, containing grid size, mfit size, and type data
             line = next(reader)[0].split()
-            self._date = line[1]                            # (str) date of g-file generation, MM/DD/YYYY
-            self._shot = int(re.split('\D',line[-5])[-1])   # (int) shot index
-            timestring = line[-4]                           # (str) time index, with units (e.g. '875ms')
+            try:
+                self._date = line[1]                            # (str) date of g-file generation, MM/DD/YYYY
+            except ValueError:
+                self._date = None
+
+            try:
+                self._shot = int(re.split('\D',line[-5])[-1])   # (int) shot index
+            except ValueError:
+                self._shot = None
+
+            try:
+                timestring = line[-4]                       # (str) time index, with units (e.g. '875ms')
+                print(timestring)
+            except ValueError:
+                timestring = None
+
             #imfit = int(line[-3])                           # not sure what this is supposed to be...
             nw = int(line[-2])                              # width of flux grid (dim(R))
             nh = int(line[-1])                              # height of flux grid (dim(Z))
 
+            print(nw,nh)
             #extract time, units from timestring
-            time = re.findall('\d+',timestring)[0]
-            tunits = timestring.split(time)[1]
-            timeConvertDict = {'ms':1./1000.,'s':1.}
-            self._time = scipy.array([float(time)*timeConvertDict[tunits]]) # returns time in seconds as array
+            try:
+                time = re.findall('\d+',timestring)[0]
+                tunits = timestring.split(time)[1]
+                timeConvertDict = {'ms':1./1000.,'s':1.}
+                self._time = scipy.array([float(time)*timeConvertDict[tunits]]) # returns time in seconds as array
+    
+            except KeyError:
+                tunits = None
+                self._time = None
+
             self._defaultUnits['_time'] = 's'
             
             # next line - construction values for RZ grid
