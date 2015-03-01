@@ -237,6 +237,9 @@ class EFITTree(Equilibrium):
         
         This is needed since it isn't pickleable, so we might need to trash it
         and restore it automatically.
+        
+        You should ALWAYS access _MDSTree since _MDSTree_internal is guaranteed
+        to be None after pickling/unpickling.
         """
         if self._MDSTree_internal is None:
             self._MDSTree_internal = MDSplus.Tree(self._tree, self._shot)
