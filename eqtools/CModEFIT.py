@@ -131,7 +131,7 @@ class CModEFITTree(EFITTree):
                 self._fluxVol = fluxVolNode.data().T
                 # Units aren't properly stored in the tree for this one!
                 if fluxVolNode.units != ' ':
-                    self._defaultUnits['_fluxVol'] = fluxVolNode.units
+                    self._defaultUnits['_fluxVol'] = str(fluxVolNode.units)
                 else:
                     self._defaultUnits['_fluxVol'] = 'm^3'
             except TreeException:
@@ -160,7 +160,7 @@ class CModEFITTree(EFITTree):
                 self._RmidPsi = RmidPsiNode.data().T
                 # Units aren't properly stored in the tree for this one!
                 if RmidPsiNode.units != ' ':
-                    self._defaultUnits['_RmidPsi'] = RmidPsiNode.units
+                    self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
             except TreeException:
@@ -182,7 +182,7 @@ class CModEFITTree(EFITTree):
             try:
                 fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
                 self._fpol = fNode.data().T
-                self._defaultUnits['_fpol'] = fNode.units
+                self._defaultUnits['_fpol'] = str(fNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._fpol.copy()
@@ -200,7 +200,7 @@ class CModEFITTree(EFITTree):
             try:
                 fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
                 self._fluxPres = fluxPresNode.data().T
-                self._defaultUnits['_fluxPres'] = fluxPresNode.units
+                self._defaultUnits['_fluxPres'] = str(fluxPresNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
@@ -218,7 +218,7 @@ class CModEFITTree(EFITTree):
             try:
                 FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
                 self._ffprim = FFPrimeNode.data().T
-                self._defaultUnits['_ffprim'] = FFPrimeNode.units
+                self._defaultUnits['_ffprim'] = str(FFPrimeNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._ffprim.copy()
@@ -237,7 +237,7 @@ class CModEFITTree(EFITTree):
             try:
                 pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
                 self._pprime = pPrimeNode.data().T
-                self._defaultUnits['_pprime'] = pPrimeNode.units
+                self._defaultUnits['_pprime'] = str(pPrimeNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._pprime.copy()
@@ -255,7 +255,7 @@ class CModEFITTree(EFITTree):
             try:
                 qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
                 self._qpsi = qpsiNode.data().T
-                self._defaultUnits['_qpsi'] = qpsiNode.units
+                self._defaultUnits['_qpsi'] = str(qpsiNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._qpsi.copy()
@@ -273,7 +273,7 @@ class CModEFITTree(EFITTree):
             try:
                 RLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':rbbbs')
                 self._RLCFS = RLCFSNode.data().T
-                self._defaultUnits['_RLCFS'] = RLCFSNode.units
+                self._defaultUnits['_RLCFS'] = str(RLCFSNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
@@ -292,7 +292,7 @@ class CModEFITTree(EFITTree):
             try:
                 ZLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':zbbbs')
                 self._ZLCFS = ZLCFSNode.data().T
-                self._defaultUnits['_ZLCFS'] = ZLCFSNode.units
+                self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)

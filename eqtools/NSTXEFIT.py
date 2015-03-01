@@ -129,9 +129,9 @@ class NSTXEFITTree(EFITTree):
                 self._psiRZ = psinode.data()
                 self._rGrid = psinode.dim_of(1).data()[0]
                 self._zGrid = psinode.dim_of(2).data()[0]
-                self._defaultUnits['_psiRZ'] = psinode.units
-                self._defaultUnits['_rGrid'] = psinode.dim_of(1).units
-                self._defaultUnits['_zGrid'] = psinode.dim_of(2).units
+                self._defaultUnits['_psiRZ'] = str(psinode.units)
+                self._defaultUnits['_rGrid'] = str(psinode.dim_of(1).units)
+                self._defaultUnits['_zGrid'] = str(psinode.dim_of(2).units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._psiRZ.copy()
@@ -188,7 +188,7 @@ class NSTXEFITTree(EFITTree):
                 self._RmidPsi = RmidPsiNode.data()
                 # Units aren't properly stored in the tree for this one!
                 if RmidPsiNode.units != ' ':
-                    self._defaultUnits['_RmidPsi'] = RmidPsiNode.units
+                    self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
             except TreeException:
@@ -217,7 +217,7 @@ class NSTXEFITTree(EFITTree):
             try:
                 IpCalcNode = self._MDSTree.getNode(self._root+self._gfile+':cpasma')
                 self._IpCalc = IpCalcNode.data()
-                self._defaultUnits['_IpCalc'] = IpCalcNode.units
+                self._defaultUnits['_IpCalc'] = str(IpCalcNode.units)
             except (TreeException,AttributeError):
                 raise ValueError('data retrieval failed.')
         return self._IpCalc.copy()
@@ -241,7 +241,7 @@ class NSTXEFITTree(EFITTree):
             try:
                 volLCFSNode = self._MDSTree.getNode(self._root+self._afile+':volume')
                 self._volLCFS = volLCFSNode.data()
-                self._defaultUnits['_volLCFS'] = volLCFSNode.units
+                self._defaultUnits['_volLCFS'] = str(volLCFSNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         # Default units should be 'cm^3':
