@@ -250,9 +250,6 @@ class EFITTree(Equilibrium):
     def _MDSTree(self):
         del self._MDSTree_internal
     
-    def _open_MDSplus_tree(self):
-        self._MDSTree = MDSplus.Tree(self._tree, self._shot)
-    
     def getInfo(self):
         """returns namedtuple of shot information
         
