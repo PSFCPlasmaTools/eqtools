@@ -229,7 +229,7 @@ class EFITTree(Equilibrium):
         """Used to close out the MDSplus.Tree instance to make this class pickleable.
         """
         self._MDSTree_internal = None
-        return self.__dict__
+        return super(EFITTree, self).__getstate__()
     
     @property
     def _MDSTree(self):

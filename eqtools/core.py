@@ -334,6 +334,25 @@ class Equilibrium(object):
         """
         return 'This is an abstract class. Please use machine-specific subclass.'
     
+    def __getstate__(self):
+        """Deletes all of the stored splines, since they aren't pickleable.
+        """
+        self._psiOfRZSpline = {}
+        self._phiNormSpline = {}
+        self._volNormSpline = {}
+        self._RmidSpline = {}
+        self._magRSpline = {}
+        self._magZSpline = {}
+        self._RmidOutSpline = {}
+        self._psiOfPsi0Spline = {}
+        self._psiOfLCFSSpline = {}
+        self._RmidToPsiNormSpline = {}
+        self._phiNormToPsiNormSpline = {}
+        self._volNormToPsiNormSpline = {}
+        self._AOutSpline = {}
+        
+        return self.__dict__
+    
     ####################
     # Mapping routines #
     ####################
@@ -5206,18 +5225,24 @@ class Equilibrium(object):
                 # flux grid to avoid 1d interpolation problems in the core. The
                 # bivariate spline seems to be a little more robust in this respect.
                 resample_factor = 3
-                R_grid = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                        self.getRGrid(length_unit='m')[-1],
-                                        resample_factor * len(self.getRGrid(length_unit='m')))
-
-                psi_norm_on_grid = self.rz2psinorm(R_grid,
-                                                   self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
-                                                   self.getTimeBase()[idx])
-
-                spline = scipy.interpolate.interp1d(psi_norm_on_grid,
-                                                    R_grid,
-                                                    kind=kind,
-                                                    bounds_error=False)
+                R_grid = scipy.linspace(
+                    self.getMagR(length_unit='m')[idx],
+                    self.getRGrid(length_unit='m')[-1],
+                    resample_factor * len(self.getRGrid(length_unit='m'))
+                )
+                
+                psi_norm_on_grid = self.rz2psinorm(
+                    R_grid,
+                    self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
+                    self.getTimeBase()[idx]
+                )
+                
+                spline = scipy.interpolate.interp1d(
+                    psi_norm_on_grid,
+                    R_grid,
+                    kind=kind,
+                    bounds_error=False
+                )
                 try:
                     self._RmidSpline[idx][kind] = spline
                 except KeyError:
@@ -5228,25 +5253,37 @@ class Equilibrium(object):
                 return self._RmidSpline
             else:
                 resample_factor = 3 * len(self.getRGrid(length_unit='m'))
-
+                
                 # generate timebase and R_grid through a meshgrid
-                t, R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
-                Z_grid = scipy.dot(scipy.ones((resample_factor,1)),
-                                   scipy.atleast_2d(self.getMagZ(length_unit='m')))
-
+                t, R_grid = scipy.meshgrid(
+                    self.getTimeBase(),
+                    scipy.zeros((resample_factor,))
+                )
+                Z_grid = scipy.dot(
+                    scipy.ones((resample_factor,1)),
+                    scipy.atleast_2d(self.getMagZ(length_unit='m'))
+                )
+                
                 for idx in scipy.arange(self.getTimeBase().size):
-                    R_grid[:,idx] = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                                   self.getRGrid(length_unit='m')[-1],
-                                                   resample_factor)
-
-                psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
-                    
+                    R_grid[:,idx] = scipy.linspace(
+                        self.getMagR(length_unit='m')[idx],
+                        self.getRGrid(length_unit='m')[-1],
+                        resample_factor
+                    )
+                
+                psi_norm_on_grid = self.rz2psinorm(
+                    R_grid,
+                    Z_grid,
+                    t,
+                    each_t=False
+                )
+                
                 self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(
                     t.flatten(),
                     psi_norm_on_grid.flatten(),
                     R_grid.flatten()
                 )
-            
+                
                 return self._RmidSpline
     
     def _getRmidToPsiNormSpline(self, idx, kind='cubic'):
