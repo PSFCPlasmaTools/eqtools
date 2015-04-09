@@ -6300,7 +6300,7 @@ class Equilibrium(object):
                          title=title,
                          nbbbs=nbbbs)
 
-    def plotFlux(self,fill=True,mask=True):
+    def plotFlux(self, fill=True, mask=True):
         """Plots flux contours directly from psi grid.
         
         Keyword Args:
@@ -6399,3 +6399,5 @@ class Equilibrium(object):
         fluxPlot.show()
 
         fluxPlot.canvas.mpl_connect('key_press_event', lambda evt: arrowRespond(timeSlider, evt))
+        
+        return psi
