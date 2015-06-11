@@ -2312,5 +2312,3 @@ class EqdskReader(Equilibrium):
 
         ax.plot(Rlim,Zlim,'k',linewidth=3,zorder=5)
         fig.show()
-
-        return fig
