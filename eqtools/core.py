@@ -6303,8 +6303,9 @@ class Equilibrium(object):
     def plotFlux(self, fill=True, mask=True):
         """Plots flux contours directly from psi grid.
         
-        Returns the Figure instance created. `f.axes` contains the contour plot
-        as the first element and the time slice slider as the second element.
+        Returns the Figure instance created and the time slider widget (in case
+        you need to modify the callback). `f.axes` contains the contour plot as
+        the first element and the time slice slider as the second element.
         
         Keyword Args:
             fill (Boolean):
@@ -6403,4 +6404,4 @@ class Equilibrium(object):
 
         fluxPlot.canvas.mpl_connect('key_press_event', lambda evt: arrowRespond(timeSlider, evt))
         
-        return fluxPlot
+        return (fluxPlot, timeSlider)
