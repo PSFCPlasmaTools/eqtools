@@ -6303,6 +6303,9 @@ class Equilibrium(object):
     def plotFlux(self, fill=True, mask=True):
         """Plots flux contours directly from psi grid.
         
+        Returns the Figure instance created. `f.axes` contains the contour plot
+        as the first element and the time slice slider as the second element.
+        
         Keyword Args:
             fill (Boolean):
                 Set True to plot filled contours.  Set False (default) to plot white-background
