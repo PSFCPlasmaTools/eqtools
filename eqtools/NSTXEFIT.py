@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides classes for working with NSTX EFIT data.
+"""This module provides classes inheriting :py:class:`eqtools.EFIT.EFITTree` for 
+working with NSTX EFIT data.
 """
 
 import scipy
@@ -113,18 +114,24 @@ class NSTXEFITTree(EFITTree):
                                            monotonic=monotonic)
         
     def getFluxGrid(self):
-        """Returns:
-               EFIT flux grid, [t,z,r]
-        """
+        """returns EFIT flux grid.
+
+        Returns:
+            psiRZ (Array): [nt,nz,nr] array of (non-normalized) flux on grid.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
+         """        
+
         if self._psiRZ is None:
             try:
                 psinode = self._MDSTree.getNode(self._root+self._gfile+':psirz')
                 self._psiRZ = psinode.data()
                 self._rGrid = psinode.dim_of(1).data()[0]
                 self._zGrid = psinode.dim_of(2).data()[0]
-                self._defaultUnits['_psiRZ'] = psinode.units
-                self._defaultUnits['_rGrid'] = psinode.dim_of(1).units
-                self._defaultUnits['_zGrid'] = psinode.dim_of(2).units
+                self._defaultUnits['_psiRZ'] = str(psinode.units)
+                self._defaultUnits['_rGrid'] = str(psinode.dim_of(1).units)
+                self._defaultUnits['_zGrid'] = str(psinode.dim_of(2).units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         return self._psiRZ.copy()
@@ -161,8 +168,18 @@ class NSTXEFITTree(EFITTree):
         
         
     def getRmidPsi(self, length_unit=1):
-        """ Returns:
-                maximum major radius of each flux surface [t,psi]
+        """returns maximum major radius of each flux surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating 
+                the default parameter unit (typically m).
+
+        Returns:
+            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of 
+            flux surface psi.
+
+        Raises:
+            Value Error: if module cannot retrieve data from MDS tree.
         """
         
         if self._RmidPsi is None:
@@ -171,7 +188,7 @@ class NSTXEFITTree(EFITTree):
                 self._RmidPsi = RmidPsiNode.data()
                 # Units aren't properly stored in the tree for this one!
                 if RmidPsiNode.units != ' ':
-                    self._defaultUnits['_RmidPsi'] = RmidPsiNode.units
+                    self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
             except TreeException:
@@ -187,28 +204,44 @@ class NSTXEFITTree(EFITTree):
             return unit_factor * self._RmidPsi.copy()
         
     def getIpCalc(self):
-        """Returns:
-               EFIT-calculated plasma current [t]
+        """returns EFIT-calculated plasma current.
+
+        Returns:
+            IpCalc (Array): [nt] array of EFIT-reconstructed plasma current.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
+
         if self._IpCalc is None:
             try:
                 IpCalcNode = self._MDSTree.getNode(self._root+self._gfile+':cpasma')
                 self._IpCalc = IpCalcNode.data()
-                self._defaultUnits['_IpCalc'] = IpCalcNode.units
+                self._defaultUnits['_IpCalc'] = str(IpCalcNode.units)
             except (TreeException,AttributeError):
                 raise ValueError('data retrieval failed.')
         return self._IpCalc.copy()
 
         
     def getVolLCFS(self, length_unit=3):
-        """Returns:
-               volume within LCFS [t]
+        """returns volume within LCFS.
+
+        Keyword Args:
+            length_unit (String or 3): unit for LCFS volume.  Defaults to 3, 
+                denoting default volumetric unit (typically m^3).
+
+        Returns:
+            volLCFS (Array): [nt] array of volume within LCFS.
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
         """
+
         if self._volLCFS is None:
             try:
                 volLCFSNode = self._MDSTree.getNode(self._root+self._afile+':volume')
                 self._volLCFS = volLCFSNode.data()
-                self._defaultUnits['_volLCFS'] = volLCFSNode.units
+                self._defaultUnits['_volLCFS'] = str(volLCFSNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
         # Default units should be 'cm^3':
@@ -216,22 +249,28 @@ class NSTXEFITTree(EFITTree):
         return unit_factor * self._volLCFS.copy()
  
     def getJp(self):
-        """
-        Not implemented in NSTXEFIT tree.
+        """Not implemented in NSTXEFIT tree.
 
-        returns EFIT-calculated plasma current density Jp on flux grid [t,r,z]
+        Returns:
+            EFIT-calculated plasma current density Jp on flux grid [t,r,z]
         """
         super(EFITTree,self).getJp()
 
     def rz2volnorm(self,*args,**kwargs):
-        """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
-        not implemented"""
+        """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT.
+
+        Returns:
+            All mapping with Volnorm not implemented
+        """
         raise NotImplementedError()
 
 
     def psinorm2volnorm(self,*args,**kwargs):
-        """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. All maping with Volnorm
-        not implemented"""
+        """ Calculated normalized volume of flux surfaces not stored in NSTX EFIT. 
+
+        Returns:
+            All maping with Volnorm not implemented
+        """
         raise NotImplementedError()
 
 

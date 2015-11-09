@@ -40,11 +40,22 @@ class PFileReader(object):
     P-files store data blocks containing the following: a header with parameter
     name, parameter units, x-axis units, and number of data points, followed by 
     values of axis x, parameter y, and derivative dy/dx.  Each parameter block 
-    is read into a namedtuple storing ['name','npts','units','xunits','x','y',
-    'dydx'], with each namedtuple stored as an attribute of the PFileReader 
-    instance.  This gracefully handles variable formats of p-files (differing 
-    versions of p-files will have different parameters stored).  Data blocks 
-    are accessed as attributes in a copy-safe manner.
+    is read into a namedtuple storing 
+
+    ======== ==============
+    'name'   parameter name
+    'npts'   array size
+    'x'      abscissa array
+    'y'      data array
+    'dydx'   data gradient
+    'xunits' abscissa units
+    'units'  data units
+    ======== ==============
+
+    with each namedtuple stored as an attribute of the PFileReader  instance.  
+    This gracefully handles variable formats of p-files (differing versions of 
+    p-files will have different parameters stored).  Data blocks are accessed 
+    as attributes in a copy-safe manner.
     
     Creates instance of PFileReader.
 
@@ -59,7 +70,7 @@ class PFileReader(object):
         Load p-file data located at `file_path`, while suppressing terminal
         output of stored parameters::
 
-            pfr = eqtools.pfilereader.PFileReader(file_path,verbose=False)
+            pfr = eqtools.PFileReader(file_path,verbose=False)
 
         Recover electron density data (for example)::
 

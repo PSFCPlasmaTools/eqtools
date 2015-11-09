@@ -334,6 +334,25 @@ class Equilibrium(object):
         """
         return 'This is an abstract class. Please use machine-specific subclass.'
     
+    def __getstate__(self):
+        """Deletes all of the stored splines, since they aren't pickleable.
+        """
+        self._psiOfRZSpline = {}
+        self._phiNormSpline = {}
+        self._volNormSpline = {}
+        self._RmidSpline = {}
+        self._magRSpline = {}
+        self._magZSpline = {}
+        self._RmidOutSpline = {}
+        self._psiOfPsi0Spline = {}
+        self._psiOfLCFSSpline = {}
+        self._RmidToPsiNormSpline = {}
+        self._phiNormToPsiNormSpline = {}
+        self._volNormToPsiNormSpline = {}
+        self._AOutSpline = {}
+        
+        return self.__dict__
+    
     ####################
     # Mapping routines #
     ####################
@@ -793,8 +812,7 @@ class Equilibrium(object):
         
         .. math::
         
-            \texttt{phi} &= \int q(\psi)\,d\psi
-            
+            \texttt{phi} &= \int q(\psi)\,d\psi\\
             \texttt{phi\_norm} &= \frac{\phi}{\phi(a)}
             
         This is based on the IDL version efit_rz2rho.pro by Steve Wolfe.
@@ -1516,6 +1534,7 @@ class Equilibrium(object):
             
                 roa_arr = Eq_instance.rmid2roa([0.6, 0.5], [0.2, 0.3], each_t=False)
         """
+        # TODO: Make this map inboard to outboard!
         if time_idxs is None:
             (R_mid,
              dum,
@@ -4102,9 +4121,13 @@ class Equilibrium(object):
         # Not used by rz2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
-
+        
+        # Make sure we don't convert to sqrtpsinorm first!
+        sqrt = kwargs.pop('sqrt', False)
+        
         psi_norm, time_idxs = self.rz2psinorm(R, Z, t, **kwargs)
         
+        kwargs['sqrt'] = sqrt
         kwargs['return_t'] = return_t
         
         # Not used by _psinorm2Quan
@@ -4209,8 +4232,12 @@ class Equilibrium(object):
         # Not used by rmid2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
+        
+        sqrt = kwargs.pop('sqrt', False)
 
         psi_norm, time_idxs = self.rmid2psinorm(R_mid, t, **kwargs)
+        
+        kwargs['sqrt'] = sqrt
         
         kwargs.pop('convert_roa', False)
         
@@ -4300,8 +4327,12 @@ class Equilibrium(object):
         # Not used by phinorm2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
-
+        
+        sqrt = kwargs.pop('sqrt', False)
+        
         psi_norm, time_idxs = self.phinorm2psinorm(phinorm, t, **kwargs)
+        
+        kwargs['sqrt'] = sqrt
         
         kwargs['return_t'] = return_t
         kwargs['rho'] = rho
@@ -4387,8 +4418,12 @@ class Equilibrium(object):
         # Not used by phinorm2psinorm:
         kind = kwargs.pop('kind', 'cubic')
         rho = kwargs.pop('rho', False)
-
+        
+        sqrt = kwargs.pop('sqrt', False)
+        
         psi_norm, time_idxs = self.volnorm2psinorm(volnorm, t, **kwargs)
+        
+        kwargs['sqrt'] = sqrt
         
         kwargs['return_t'] = return_t
         kwargs['rho'] = rho
@@ -5190,18 +5225,24 @@ class Equilibrium(object):
                 # flux grid to avoid 1d interpolation problems in the core. The
                 # bivariate spline seems to be a little more robust in this respect.
                 resample_factor = 3
-                R_grid = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                        self.getRGrid(length_unit='m')[-1],
-                                        resample_factor * len(self.getRGrid(length_unit='m')))
-
-                psi_norm_on_grid = self.rz2psinorm(R_grid,
-                                                   self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
-                                                   self.getTimeBase()[idx])
-
-                spline = scipy.interpolate.interp1d(psi_norm_on_grid,
-                                                    R_grid,
-                                                    kind=kind,
-                                                    bounds_error=False)
+                R_grid = scipy.linspace(
+                    self.getMagR(length_unit='m')[idx],
+                    self.getRGrid(length_unit='m')[-1],
+                    resample_factor * len(self.getRGrid(length_unit='m'))
+                )
+                
+                psi_norm_on_grid = self.rz2psinorm(
+                    R_grid,
+                    self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
+                    self.getTimeBase()[idx]
+                )
+                
+                spline = scipy.interpolate.interp1d(
+                    psi_norm_on_grid,
+                    R_grid,
+                    kind=kind,
+                    bounds_error=False
+                )
                 try:
                     self._RmidSpline[idx][kind] = spline
                 except KeyError:
@@ -5212,25 +5253,37 @@ class Equilibrium(object):
                 return self._RmidSpline
             else:
                 resample_factor = 3 * len(self.getRGrid(length_unit='m'))
-
+                
                 # generate timebase and R_grid through a meshgrid
-                t, R_grid = scipy.meshgrid(self.getTimeBase(),scipy.zeros((resample_factor,)))
-                Z_grid = scipy.dot(scipy.ones((resample_factor,1)),
-                                   scipy.atleast_2d(self.getMagZ(length_unit='m')))
-
+                t, R_grid = scipy.meshgrid(
+                    self.getTimeBase(),
+                    scipy.zeros((resample_factor,))
+                )
+                Z_grid = scipy.dot(
+                    scipy.ones((resample_factor,1)),
+                    scipy.atleast_2d(self.getMagZ(length_unit='m'))
+                )
+                
                 for idx in scipy.arange(self.getTimeBase().size):
-                    R_grid[:,idx] = scipy.linspace(self.getMagR(length_unit='m')[idx],
-                                                   self.getRGrid(length_unit='m')[-1],
-                                                   resample_factor)
-
-                psi_norm_on_grid = self.rz2psinorm(R_grid, Z_grid, t, each_t=False)
-                    
+                    R_grid[:,idx] = scipy.linspace(
+                        self.getMagR(length_unit='m')[idx],
+                        self.getRGrid(length_unit='m')[-1],
+                        resample_factor
+                    )
+                
+                psi_norm_on_grid = self.rz2psinorm(
+                    R_grid,
+                    Z_grid,
+                    t,
+                    each_t=False
+                )
+                
                 self._RmidSpline = scipy.interpolate.SmoothBivariateSpline(
                     t.flatten(),
                     psi_norm_on_grid.flatten(),
                     R_grid.flatten()
                 )
-            
+                
                 return self._RmidSpline
     
     def _getRmidToPsiNormSpline(self, idx, kind='cubic'):
@@ -5428,6 +5481,8 @@ class Equilibrium(object):
             length_unit (String or 1):
                 Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
+                    
+                    =========== ===========
                     'm'         meters
                     'cm'        centimeters
                     'mm'        millimeters
@@ -5438,6 +5493,8 @@ class Equilibrium(object):
                     'cubit'     cubits
                     'hand'      hands
                     'default'   meters
+                    =========== ===========
+                    
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
@@ -5486,6 +5543,8 @@ class Equilibrium(object):
             length_unit (String or 1):
                 Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
+                
+                    =========== ===========
                     'm'         meters
                     'cm'        centimeters
                     'mm'        millimeters
@@ -5496,6 +5555,8 @@ class Equilibrium(object):
                     'cubit'     cubits
                     'hand'      hands
                     'default'   meters
+                    =========== ===========
+                    
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
@@ -5546,6 +5607,8 @@ class Equilibrium(object):
             length_unit (String or 1):
                 Length unit that R_mag is returned in. If
                 a string is given, it must be a valid unit specifier:
+                
+                    =========== ===========
                     'm'         meters
                     'cm'        centimeters
                     'mm'        millimeters
@@ -5556,6 +5619,8 @@ class Equilibrium(object):
                     'cubit'     cubits
                     'hand'      hands
                     'default'   meters
+                    =========== ===========
+                    
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
@@ -6235,8 +6300,12 @@ class Equilibrium(object):
                          title=title,
                          nbbbs=nbbbs)
 
-    def plotFlux(self,fill=True,mask=True):
+    def plotFlux(self, fill=True, mask=True):
         """Plots flux contours directly from psi grid.
+        
+        Returns the Figure instance created and the time slider widget (in case
+        you need to modify the callback). `f.axes` contains the contour plot as
+        the first element and the time slice slider as the second element.
         
         Keyword Args:
             fill (Boolean):
@@ -6334,3 +6403,5 @@ class Equilibrium(object):
         fluxPlot.show()
 
         fluxPlot.canvas.mpl_connect('key_press_event', lambda evt: arrowRespond(timeSlider, evt))
+        
+        return (fluxPlot, timeSlider)

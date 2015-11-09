@@ -20,7 +20,8 @@
 functionality for equilibria stored in eqdsk files from EFIT(a- and g-files).
 
 Classes:
-    EqdskReader: class inheriting Equilibrium reading g- and a-files for
+    EqdskReader: 
+        Class inheriting Equilibrium reading g- and a-files for
         equilibrium data.
 """
 
@@ -81,6 +82,22 @@ class EqdskReader(Equilibrium):
         IOError: if both name/shot and explicit filenames are not set.
         ValueError: if the g-file cannot be found, or if multiple valid 
             g/a-files are found.
+
+    Examples:
+        Instantiate EqdskReader for a given `shot` and `time` -- will search current
+        working directory for files of the form g[shot].[time] and 
+        a[shot].[time], suppressing terminal outputs::
+
+            edr = eqtools.EqdskReader(shot,time,verbose=False)
+
+        or::
+
+            edr = eqtools.EqdskReader(shot=shot,time=time,verbose=False)
+
+        Instantiate EqdskReader with explicit file paths `gfile_path` and 
+        `afile_path`::
+
+            edr = eqtools.EqdskReader(gfile=gfile_path,afile=afile_path)
     """
     def __init__(self,
                  shot=None,
@@ -189,18 +206,41 @@ class EqdskReader(Equilibrium):
                                         # use csv package for error handling.
             # read the header line, containing grid size, mfit size, and type data
             line = next(reader)[0].split()
-            self._date = line[1]                            # (str) date of g-file generation, MM/DD/YYYY
-            self._shot = int(re.split('\D',line[-5])[-1])   # (int) shot index
-            timestring = line[-4]                           # (str) time index, with units (e.g. '875ms')
+            try:
+                self._date = line[1]                            # (str) date of g-file generation, MM/DD/YYYY
+            except ValueError:
+                self._date = None
+
+            try:
+                self._shot = int(re.split('\D',line[-5])[-1])   # (int) shot index
+            except ValueError:
+                self._shot = None
+
+            try:
+                timestring = line[-4]                       # (str) time index, with units (e.g. '875ms')
+                print(timestring)
+            except ValueError:
+                timestring = None
+
             #imfit = int(line[-3])                           # not sure what this is supposed to be...
             nw = int(line[-2])                              # width of flux grid (dim(R))
             nh = int(line[-1])                              # height of flux grid (dim(Z))
 
+            print(nw,nh)
             #extract time, units from timestring
-            time = re.findall('\d+',timestring)[0]
-            tunits = timestring.split(time)[1]
-            timeConvertDict = {'ms':1./1000.,'s':1.}
-            self._time = scipy.array([float(time)*timeConvertDict[tunits]]) # returns time in seconds as array
+            try:
+                time = re.findall('\d+',timestring)[0]
+                tunits = timestring.split(time)[1]
+                timeConvertDict = {'ms':1./1000.,'s':1.}
+                self._time = scipy.array([float(time)*timeConvertDict[tunits]]) # returns time in seconds as array
+    
+            except KeyError:
+                tunits = None
+                self._time = None
+            except IndexError:
+                tunits = None
+                self._time = None
+
             self._defaultUnits['_time'] = 's'
             
             # next line - construction values for RZ grid
@@ -538,6 +578,8 @@ class EqdskReader(Equilibrium):
                 print('a-file data not loaded.')
                     
     def __str__(self):
+        """Overrides default __str__ method with more useful information.
+        """
         if self._efittype is None:
             eq = 'equilibrium'
         else:
@@ -642,63 +684,33 @@ class EqdskReader(Equilibrium):
     # wrappers for mapping routines handling time call #
     ####################################################
 
-    def aaaaa(self):
-        """Foo the bar baz"""
-        return None
-
     def rz2psi(self,R,Z,*args,**kwargs):
-        """Converts passed, R,Z arrays to psi values.
-        
-        Wrapper for :py:meth:`Equilibrium.rz2psi` removing timebase dependence.
+        """Calculates the non-normalized poloidal flux at the given (`R`, `Z`). 
+        Wrapper for 
+        :py:meth:`Equilibrium.rz2psi <eqtools.core.Equilibrium.rz2psi>` masking 
+        out timebase dependence.
 
         Args:
-            R (Array-like or scalar float): Values of the radial coordinate to
-                map to poloidal flux. If the `make_grid` keyword is True, `R` 
-                must have shape (`len_R`,).
-            Z (Array-like or scalar float): Values of the vertical coordinate to
-                map to poloidal flux. Must have the same shape as `R` unless the 
-                `make_grid` keyword is set. If the make_grid keyword is True, 
+            R (Array-like or scalar float): Values of the radial coordinate to 
+                map to poloidal flux.  If `R` and `Z` are both scalar, then a 
+                scalar `psi` is returned.  `R` and `Z` must have the same shape 
+                unless the `make_grid` keyword is set.  If `make_grid` is True, 
+                `R` must have shape (`len_R`,).
+            Z (Array-like or scalar float): Values of the vertical coordinate to 
+                map to poloidal flux.  If `R` and `Z` are both scalar, then a 
+                scalar `psi` is returned.  `R` and `Z` must have the same shape 
+                unless the `make_grid` keyword is set.  If `make_grid` is True, 
                 `Z` must have shape (`len_Z`,).
-            *args: Slot for time input for consistent syntax with 
-                :py:meth:`Equilibrium.rz2psi`.  Will return dummy value for time
-                if input in :py:class:`EqdskReader`.
 
-        Keyword Args:
-            make_grid (Boolean): Set to True to pass `R` and `Z` through 
-                meshgrid before evaluating. If this is set to True, `R` and `Z`
-                must each only have a single dimension, but can have different 
-                lengths.  Default is False (do not form meshgrid).
-            length_unit (String or 1): Length unit that `R` and `Z` are being 
-                given in. If a string is given, it must be a valid unit 
-                specifier:
-                
-                ===========  ===========
-                'm'          meters
-                'cm'         centimeters
-                'mm'         millimeters
-                'in'         inches
-                'ft'         feet
-                'yd'         yards
-                'smoot'      smoots
-                'cubit'      cubits
-                'hand'       hands
-                'default'    meters
-                ===========  ===========
-                
-                If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (`R` and `Z` given in meters).
-            **kwargs: Other keywords (i.e., `return_t`) to :py:meth:`rz2psi` are 
-                valid (necessary for proper inheritance and usage in other 
-                mapping routines) but will return dummy values.
+        All keyword arguments are passed to the parent 
+        :py:meth:`Equilibrium.rz2psi <eqtools.core.Equilibrium.rz2psi>`.  
+        Remaining arguments in \*args are ignored.
 
         Returns:
-            psi (Array or scalar float): 
-
-                If all of the input arguments are scalar, then a scalar is 
-                returned. Otherwise, a scipy Array instance is returned. If `R` 
-                and `Z` both have the same shape then psi has this shape as 
-                well. If the make_grid keyword was True then psi has shape 
-                (`len(Z)`, `len(R)`).
+            psi (Array-like or scalar float): non-normalized poloidal flux.  If 
+            all input arguments are scalar, then `psi` is scalar.  IF `R` and `Z` 
+            have the same shape, then `psi` has this shape as well.  If `make_grid` 
+            is True, then `psi` has the shape (`len_R`, `len_Z`). 
 
         Examples:
             All assume that Eq_instance is a valid instance EqdskReader:
@@ -713,8 +725,8 @@ class EqdskReader(Equilibrium):
             
                 psi_arr = Eq_instance.rz2psi([0.6, 0.8], [0, 0])
 
-            Find psi values on grid defined by 1D vector of radial positions R
-            and 1D vector of vertical positions Z::
+            Find psi values on grid defined by 1D vector of radial positions
+            R and 1D vector of vertical positions Z::
             
                 psi_mat = Eq_instance.rz2psi(R, Z, make_grid=True)
         """
@@ -722,11 +734,16 @@ class EqdskReader(Equilibrium):
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
 
     def rz2psinorm(self,R,Z,*args,**kwargs):
-        """Calculates the normalized poloidal flux at the given (R,Z).
-        Wrapper for Equilibrium.rz2psinorm masking out timebase dependence.
+        r"""Calculates the normalized poloidal flux at the given (R,Z).
+        Wrapper for 
+        :py:meth:`Equilibrium.rz2psinorm <eqtools.core.Equilibrium.rz2psinorm>` 
+        masking out timebase dependence.
 
         Uses the definition:
-        psi_norm = (psi - psi(0)) / (psi(a) - psi(0))
+
+        .. math::
+
+            \texttt{psi\_norm} = \frac{\psi - \psi(0)}{\psi(a) - \psi(0)}
 
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
@@ -737,53 +754,19 @@ class EqdskReader(Equilibrium):
                 map to normalized poloidal flux.  Must have the same shape as 
                 `R` unless the `make_grid` keyword is set. If the `make_grid`
                 keyword is True, `Z` must have shape (`len_Z`,).
-            *args:
-                Slot for time input for consistent syntax with 
-                :py:meth:`Equilibrium.rz2psinorm`.  Will return dummy value for 
-                time if input in :py:class:`EqdskReader`.
 
-        Keyword Args:
-            sqrt (Boolean): Set to True to return the square root of normalized
-                flux. Only the square root of positive `psi_norm` values is 
-                taken. Negative values are replaced with zeros, consistent with 
-                Steve Wolfe's IDL implementation efit_rz2rho.pro. Default is 
-                False (return psinorm).
-            make_grid (Boolean): Set to True to pass `R` and `Z` through 
-                meshgrid before evaluating. If this is set to True, `R` and `Z`
-                must each only have a single dimension, but can have different 
-                lengths.  Default is False (do not form meshgrid).
-            length_unit (String or 1): Length unit that `R` and `Z` are being 
-                given in. If a string is given, it must be a valid unit 
-                specifier:
-                
-                ===========  ===========
-                'm'          meters
-                'cm'         centimeters
-                'mm'         millimeters
-                'in'         inches
-                'ft'         feet
-                'yd'         yards
-                'smoot'      smoots
-                'cubit'      cubits
-                'hand'       hands
-                'default'    meters
-                ===========  ===========
-                
-                If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (`R` and `Z` given in meters).
-            **kwargs:
-                Other keywords passed to :py:class:`Equilibrium.rz2psinorm` are 
-                valid, but will return dummy values (i.e. for timebase keywords)
+        All keyword arguments are passed to the parent 
+        :py:meth:`Equilibrium.rz2psinorm <eqtools.core.Equilibrium.rz2psinorm>`.  
+        Remaining arguments in \*args are ignored.
 
         Returns:
-            psinorm (Array or scalar float): If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned, with the same shape as `R` and `Z`. 
-                If the make_grid keyword was True then psinorm has shape 
-                (`len(Z)`, `len(R)`).
+            psinorm (Array-like or scalar float): non-normalized poloidal flux.  If 
+            all input arguments are scalar, then `psinorm` is scalar.  IF `R` and `Z` 
+            have the same shape, then `psinorm` has this shape as well.  If `make_grid` 
+            is True, then `psinorm` has the shape (`len_R`, `len_Z`). 
 
         Examples:
-            All assume that Eq_instance is a valid instance EqdskReader:
+            All assume that Eq_instance is a valid instance of EqdskReader:
 
             Find single psinorm value at R=0.6m, Z=0.0m::
             
@@ -795,8 +778,8 @@ class EqdskReader(Equilibrium):
             
                 psi_arr = Eq_instance.rz2psinorm([0.6, 0.8], [0, 0])
 
-            Find psinorm values on grid defined by 1D vector of radial positions R
-            and 1D vector of vertical positions Z::
+            Find psinorm values on grid defined by 1D vector of radial positions
+            R and 1D vector of vertical positions Z::
             
                 psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
         """
@@ -804,15 +787,16 @@ class EqdskReader(Equilibrium):
         return super(EqdskReader,self).rz2psinorm(R,Z,t,**kwargs)
 
     def rz2phinorm(self,R,Z,*args,**kwargs):
-        """Calculates normalized toroidal flux at a given (R,Z), using
+        r"""Calculates normalized toroidal flux at a given (R,Z), using
 
         .. math::
 
-            \texttt{phi} &= \int q(\psi)\,d\psi
-
+            \texttt{phi} &= \int q(\psi)\,d\psi\\
             \texttt{phi\_norm} &= \frac{\phi}{\phi(a)}
         
-        Wrapper for Equilibrium.rz2phinorm masking out timebase dependence.
+        Wrapper for 
+        :py:meth:`Equilibrium.rz2phinorm <eqtools.core.Equilibrium.rz2phinorm>` 
+        masking out timebase dependence.
 
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
@@ -823,60 +807,16 @@ class EqdskReader(Equilibrium):
                 map to normalized toroidal flux. Must have the same shape as `R` 
                 unless the `make_grid` keyword is set. If the `make_grid` 
                 keyword is True, Z must have shape (`len_Z`,).
-            *args:
-                Slot for time input for consistent syntax with 
-                :py:meth:`Equilibrium.rz2phinorm`.  Will return dummy value for 
-                time if input in EqdskReader.
 
-        Keyword Args:
-            sqrt (Boolean): Set to True to return the square root of normalized
-                flux. Only the square root of positive `phi_norm` values is 
-                taken.  Negative values are replaced with zeros, consistent 
-                with Steve Wolfe's IDL implementation efit_rz2rho.pro. Default 
-                is False (return phinorm).
-            make_grid (Boolean): Set to True to pass `R` and `Z` through 
-                meshgrid before evaluating. If this is set to True, `R` and `Z` 
-                must each only have a single dimension, but can have different 
-                lengths.  Default is False (do not form meshgrid).
-            kind (String or non-negative int): Specifies the type of 
-                interpolation to be performed in getting from psinorm to 
-                phinorm. This is passed to scipy.interpolate.interp1d. Valid 
-                options are: 'linear', 'nearest', 'zero', 'slinear', 
-                'quadratic', 'cubic'.  If this keyword is an integer, it 
-                specifies the order of spline to use. See the documentation for 
-                interp1d for more details.  Default value is 'cubic' (3rd order 
-                spline interpolation). On some builds of scipy, this can cause 
-                problems, in which case you should try 'linear' until you can 
-                rebuild your scipy install.
-            length_unit (String or 1): Length unit that `R` and `Z` are being 
-                given in. If a string is given, it must be a valid unit 
-                specifier:
-                
-                ===========  ===========
-                'm'          meters
-                'cm'         centimeters
-                'mm'         millimeters
-                'in'         inches
-                'ft'         feet
-                'yd'         yards
-                'smoot'      smoots
-                'cubit'      cubits
-                'hand'       hands
-                'default'    meters
-                ===========  ===========
-                
-                If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (use meters).
-            **kwargs:
-                Other keywords passed to :py:meth:`Equilibrium.rz2phinorm` are 
-                valid, but will return dummy values (i.e. for timebase keywords)
+        All keyword arguments are passed to the parent 
+        :py:meth:`Equilibrium.rz2phinorm <eqtools.core.Equilibrium.rz2phinorm>`.  
+        Remaining arguments in \*args are ignored.
 
         Returns:
-            phinorm (Array or scalar float): If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. If `R` and `Z` both have the same shape 
-                then phinorm has this shape as well. If the make_grid keyword 
-                was True then phinorm has shape (`len(Z)`, `len(R)`).
+            phinorm (Array-like or scalar float): non-normalized poloidal flux.  If 
+            all input arguments are scalar, then `phinorm` is scalar.  IF `R` and `Z` 
+            have the same shape, then `phinorm` has this shape as well.  If `make_grid` 
+            is True, then `phinorm` has the shape (`len_R`, `len_Z`). 
 
         Examples:
             All assume that Eq_instance is a valid instance of EqdskReader.
@@ -910,13 +850,15 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def rz2rho(self,method,R,Z,t=False,sqrt=False,make_grid=False,kind='cubic',length_unit=1):
-        """Convert the passed (R, Z) coordinates into one of several normalized coordinates.
-        Wrapper for Equilibrium.rz2rho masking timebase dependence.
+    def rz2rho(self,method,R,Z,t=False,sqrt=False,make_grid=False,kind='cubic',
+               length_unit=1):
+        """Convert the passed (R, Z) coordinates into one of several 
+        normalized coordinates.  Wrapper for 
+        :py:meth:`Equilibrium.rz2rho <eqtools.core.Equilibrium.rz2rho>` masking 
+        timebase dependence.
         
         Args:
-            method: String.
-                Indicates which normalized coordinates to use.
+            method (String): Indicates which normalized coordinates to use.
                 Valid options are:
                     
                     =======     ========================
@@ -925,29 +867,24 @@ class EqdskReader(Equilibrium):
                     volnorm     Normalized volume
                     =======     ========================
                     
-            R: Array-like or scalar float.
-                Values of the radial coordinate to
-                map to normalized coordinate. Must have the same shape as Z 
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to normalized coordinate. Must have the same shape as `Z` 
                 unless the make_grid keyword is set. If the make_grid keyword
-                is True, R must have shape (len_R,).
-            Z: Array-like or scalar float.
-                Values of the vertical coordinate to
-                map to normalized coordinate. Must have the same shape as R 
+                is True, `R` must have shape (`len_R`,).
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to normalized coordinate. Must have the same shape as `R` 
                 unless the make_grid keyword is set. If the make_grid keyword 
-                is True, Z must have shape (len_Z,).
+                is True, `Z` must have shape (`len_Z`,).
         
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            sqrt: Boolean.
-                Set to True to return the square root of normalized
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed t values either as an Arg or Kwarg are neglected.
+            sqrt (Boolean): Set to True to return the square root of normalized
                 coordinate. Only the square root of positive values is taken.
                 Negative values are replaced with zeros, consistent with Steve
                 Wolfe's IDL implementation efit_rz2rho.pro. Default is False
                 (return normalized coordinate itself).
-            make_grid: Boolean.
-                Set to True to pass R and Z through meshgrid
+            make_grid (Boolean): Set to True to pass R and Z through meshgrid
                 before evaluating. If this is set to True, R and Z must each
                 only have a single dimension, but can have different lengths.
                 Default is False (do not form meshgrid).
@@ -961,8 +898,7 @@ class EqdskReader(Equilibrium):
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1.
-                Length unit that R and Z are being given
+            length_unit (String or 1): Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
                 
                 ===========  ===========
@@ -982,11 +918,11 @@ class EqdskReader(Equilibrium):
                 value is 1 (R and Z given in meters).
             
         Returns:
-            rho: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. If R and Z both have the same shape then
-                rho has this shape as well. If the make_grid keyword was True
-                then rho has shape (len(Z), len(R)).
+            rho (Array-like or scalar float): If all of the input arguments are
+            scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned. If R and Z both have the same shape then
+            rho has this shape as well. If the make_grid keyword was True
+            then rho has shape (len(Z), len(R)).
         
         Raises:
             ValueError: If method is not one of the supported values.
@@ -1020,54 +956,50 @@ class EqdskReader(Equilibrium):
         else:
             return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
-    def rz2rmid(self,R,Z,t=False,sqrt=False,make_grid=False,rho=False,kind='cubic',length_unit=1):
+    def rz2rmid(self,R,Z,t=False,sqrt=False,make_grid=False,rho=False,
+                kind='cubic',length_unit=1):
         """Maps the given points to the outboard midplane major radius, R_mid.
-        Wrapper for Equilibrium.rz2rmid masking timebase dependence.
+        Wrapper for 
+        :py:meth:`Equilibrium.rz2rmid <eqtools.core.Equilibrium.rz2rmid>` 
+        masking timebase dependence.
         
         Based on the IDL version efit_rz2rmid.pro by Steve Wolfe.
         
         Args:
-            R: Array-like or scalar float.
-                Values of the radial coordinate to
-                map to midplane radius. Must have the same shape as Z unless 
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to midplane radius. Must have the same shape as `Z` unless 
                 the make_grid keyword is set. If the make_grid keyword is True,
-                R must have shape (len_R,).
-            Z: Array-like or scalar float.
-                Values of the vertical coordinate to
-                map to midplane radius. Must have the same shape as R unless the
-                make_grid keyword is set. If the make_grid keyword is True, Z 
-                must have shape (len_Z,).
+                `R` must have shape (`len_R`,).
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to midplane radius. Must have the same shape as `R` unless 
+                the make_grid keyword is set. If the make_grid keyword is True, 
+                `Z` must have shape (`len_Z`,).
         
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            sqrt: Boolean.
-                Set to True to return the square root of midplane
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed t values either as an Arg or Kwarg are neglected.
+            sqrt (Boolean): Set to True to return the square root of midplane
                 radius. Only the square root of positive values is taken.
                 Negative values are replaced with zeros, consistent with Steve
                 Wolfe's IDL implementation efit_rz2rho.pro. Default is False
                 (return R_mid itself).
-            make_grid: Boolean.
-                Set to True to pass R and Z through meshgrid
-                before evaluating. If this is set to True, R and Z must each
-                only have a single dimension, but can have different lengths.
-                Default is False (do not form meshgrid).
-            rho: Boolean.
-                Set to True to return r/a (normalized minor radius)
-                instead of R_mid. Default is False (return major radius, R_mid).
-            kind: String or non-negative int.
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to R_mid. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+            make_grid (Boolean): Set to True to pass `R` and `Z` through 
+                meshgrid before evaluating. If this is set to True, `R` and `Z` 
+                must each only have a single dimension, but can have different 
+                lengths.  Default is False (do not form meshgrid).
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of `R_mid`. Default is False (return major radius, 
+                R_mid).
+            kind (String or non-negative int): Specifies the type of 
+                interpolation to be performed in getting from psinorm to R_mid. 
+                This is passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1.
-                Length unit that R and Z are being given
+            length_unit (String or 1): Length unit that R and Z are being given
                 in AND that R_mid is returned in. If a string is given, it
                 must be a valid unit specifier:
                 
@@ -1084,15 +1016,15 @@ class EqdskReader(Equilibrium):
                 'default'    meters
                 ===========  ===========
                 
-               If length_unit is 1 or None, meters are assumed. The default
+                If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters, R_mid returned in meters).
             
         Returns:
-            R_mid: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned. If R and Z both have the same shape then
-                R_mid has this shape as well. If the make_grid keyword was True
-                then R_mid has shape (len(Z), len(R)).
+            R_mid (Array or scalar float): If all of the input arguments are
+            scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned. If `R` and `Z` both have the same shape 
+            then `R_mid` has this shape as well. If the make_grid keyword 
+            was True then `R_mid` has shape (`len(Z)`, `len(R)`).
         
         Examples:
             All assume that Eq_instance is a valid instance of the appropriate
@@ -1118,33 +1050,30 @@ class EqdskReader(Equilibrium):
         return super(EqdskReader,self).rz2rmid(R,Z,t,**kwargs)
 
     def psinorm2rmid(self,psi_norm,t=False,rho=False,kind='cubic',length_unit=1):
-        """Calculates the outboard R_mid location corresponding to the passed psi_norm (normalized poloidal flux) values.
+        """Calculates the outboard R_mid location corresponding to the passed 
+        psi_norm (normalized poloidal flux) values.
         
         Args:
-            psi_norm: Array-like or scalar float.
-                Values of the normalized
+            psi_norm (Array-like or scalar float): Values of the normalized
                 poloidal flux to map to midplane radius.
 
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            rho: Boolean.
-                Set to True to return r/a (normalized minor radius)
-                instead of R_mid. Default is False (return major radius, R_mid).
-            kind: String or non-negative int.
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to R_mid. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed `t` values either as an Arg or Kwarg are neglected.
+            rho (Boolean): Set to True to return r/a (normalized minor radius)
+                instead of `R_mid`. Default is False (return major radius, 
+                `R_mid`).
+            kind (String or non-negative int):  Specifies the type of 
+                interpolation to be performed in getting from psinorm to `R_mid`. 
+                This is passed to scipy.interpolate.interp1d. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
                 Default value is 'cubic' (3rd order spline interpolation). On
                 some builds of scipy, this can cause problems, in which case
                 you should try 'linear' until you can rebuild your scipy install.
-            length_unit: String or 1.
-                Length unit that R_mid is returned in. If
-                a string is given, it must be a valid unit specifier:
+            length_unit (String or 1): Length unit that `R_mid` is returned in. 
+                If a string is given, it must be a valid unit specifier:
                 
                 ===========  ===========
                 'm'          meters
@@ -1159,13 +1088,13 @@ class EqdskReader(Equilibrium):
                 'default'    meters
                 ===========  ===========
                 
-                If length_unit is 1 or None, meters are assumed. The default
-                value is 1 (R_mid returned in meters).
+                If `length_unit` is 1 or None, meters are assumed. The default
+                value is 1 (`R_mid` returned in meters).
             
         Returns:
-            R_mid: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned.
+            R_mid (Array-like or scalar float): If all of the input arguments 
+            are scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned.
         
         Examples:
             All assume that Eq_instance is a valid instance of the appropriate
@@ -1186,29 +1115,32 @@ class EqdskReader(Equilibrium):
         return super(EqdskReader,self).psinorm2rmid(psi_norm,t,**kwargs)
 
     def psinorm2volnorm(self,*args,**kwargs):
-        """Calculates the outboard R_mid location corresponding to psi_norm (normalized poloidal flux) values.
-        Not implemented for EqdskReader, as necessary parameter
-        is not read from a/g-files.
+        """Calculates the outboard R_mid location corresponding to psi_norm 
+        (normalized poloidal flux) values.
+        
+        Not implemented for EqdskReader, as necessary parameter is not read 
+        from a/g-files.
+
+        Raises:
+            NotImplementedError: in all cases.            
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
     def psinorm2phinorm(self,psi_norm,t=False,kind='cubic'):
-        """Calculates the normalized toroidal flux corresponding to the passed psi_norm (normalized poloidal flux) values.
+        """Calculates the normalized toroidal flux corresponding to the passed 
+        psi_norm (normalized poloidal flux) values.
         
         Args:
-            psi_norm: Array-like or scalar float.
-                Values of the normalized
+            psi_norm (Array-like or scalar float): Values of the normalized
                 poloidal flux to map to normalized toroidal flux.
         
         Keyword Args:
-            t: indeterminant.
-                Provides duck typing for inclusion of t values. Passed t values
-                either as an Arg or Kwarg are neglected.
-            kind: String or non-negative int.
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to phinorm. This is
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                passed to scipy.interpolate.interp1d. Valid options are:
+            t (indeterminant): Provides duck typing for inclusion of t values. 
+                Passed `t` values either as an Arg or Kwarg are neglected.
+            kind (String or non-negative int): Specifies the type of 
+                interpolation to be performed in getting from psinorm to phinorm. 
+                This is 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 
+                'cubic' passed to scipy.interpolate.interp1d. Valid options are:
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
                 Default value is 'cubic' (3rd order spline interpolation). On
@@ -1216,9 +1148,9 @@ class EqdskReader(Equilibrium):
                 you should try 'linear' until you can rebuild your scipy install.
             
         Returns:
-            phinorm: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
-                instance is returned.
+            phinorm (Array-like or scalar float): If all of the input arguments 
+            are scalar, then a scalar is returned. Otherwise, a scipy Array
+            instance is returned.
         
         Examples:
             All assume that Eq_instance is a valid instance of the appropriate
@@ -1243,66 +1175,109 @@ class EqdskReader(Equilibrium):
     #################
 
     def getTimeBase(self):
-        """Returns EFIT time point
+        """Returns EFIT time point.
+
+        Returns:
+            time (Array): 1-element, 1D array of time in s.  Returns array for
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._time.copy()
 
     def getCurrentSign(self):
-        """Returns the sign of the current, based on the check in Steve Wolfe's IDL implementation efit_rz2psi.pro.
+        """Returns the sign of the current, based on the check in Steve Wolfe's 
+        IDL implementation efit_rz2psi.pro.
+
+        Returns:
+            currentSign (Int): 1 for positive current, -1 for reversed.
         """
         if self._currentSign is None:
             self._currentSign = 1 if scipy.mean(self.getIpCalc()) > 1e5 else -1
         return self._currentSign
 
     def getFluxGrid(self):
-        """Returns EFIT flux grid, [r,z]
+        """Returns EFIT flux grid.
+
+        Returns:
+            psiRZ (Array): [1,r,z] Array of flux values.  Includes 1-element
+            time axis for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` implementations 
+            with time variation.
         """
         return self._psiRZ.copy()
 
     def getRGrid(self,length_unit=1):
-        """Returns EFIT R-axis [r]
+        """Returns EFIT R-axis.
+
+        Returns:
+            R (Array): [r] array of R-axis values for RZ grid.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],length_unit)
         return unit_factor * self._rGrid.copy()
 
     def getZGrid(self,length_unit=1):
-        """Returns EFIT Z-axis [z]
+        """Returns EFIT Z-axis.
+
+        Returns:
+            Z (Array): [z] array of Z-axis values for RZ grid.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],length_unit)
         return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
-        """Returns psi on magnetic axis
+        """Returns psi on magnetic axis.
+
+        Returns:
+            psi0 (Array): [1] array of psi on magnetic axis.  Returns array for
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
         return -1. * self.getCurrentSign() * scipy.array(self._psiAxis)
 
     def getFluxLCFS(self):
-        """Returns psi at separatrix
+        """Returns psi at separatrix.
+
+        Returns:
+            psia (Array): [1] array of psi at separatrix.  Returns array for
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
         return -1 * self.getCurrentSign() * scipy.array(self._psiLCFS)
 
     def getRLCFS(self,length_unit=1):
-        """Returns array of R-values of LCFS
+        """Returns array of R-values of LCFS.
+
+        Returns:
+            RLCFS (Array): [1,n] array of R values describing LCFS.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` implementations 
+            with time variation.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'],length_unit)
         return unit_factor * self._RLCFS.copy()
 
     def getZLCFS(self,length_unit=1):
-        """Returns array of Z-values of LCFS
+        """Returns array of Z-values of LCFS.
+
+        Returns:
+            ZLCFS (Array): [1,n] array of Z values describing LCFS.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` implementations 
+            with time variation.
         """
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'],length_unit)
         return unit_factor * self._ZLCFS.copy()
         
     def remapLCFS(self,mask=False):
-        """Overwrites RLCFS, ZLCFS values pulled from EFIT with explicitly-calculated contour
-        of psinorm=1 surface.
+        """Overwrites RLCFS, ZLCFS values pulled from EFIT with 
+        explicitly-calculated contour of psinorm=1 surface.
 
         Keyword Args:
-            mask: Boolean.
-                Default False.  Set True to mask LCFS path to limiter outline (using inPolygon).
-                Set False to draw full contour of psi = psiLCFS.
+            mask (Boolean): Set True to mask LCFS path to limiter outline 
+                (using inPolygon).  Set False to draw full contour of 
+                psi = psiLCFS.  Defaults to False.
         """
         if not _has_plt:
             raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
@@ -1345,8 +1320,8 @@ class EqdskReader(Equilibrium):
             ZLCFS = ZLCFS[maskarr]
 
         npts = len(RLCFS)
-        self._RLCFS = RLCFS.reshape((npts,1))
-        self._ZLCFS = ZLCFS.reshape((npts,1))
+        self._RLCFS = RLCFS.reshape((1,npts))
+        self._ZLCFS = ZLCFS.reshape((1,npts))
         
         # cleanup
         plt.ion()
@@ -1355,11 +1330,24 @@ class EqdskReader(Equilibrium):
         plt.ioff()
 
     def getFluxVol(self):
-        #returns volume contained within a flux surface as function of psi, volp(psi,t)
+        """Returns volume contained within a flux surface as a function of psi.
+
+        Not implemented in :py:class:`EqdskReader`, as required data is not 
+        stored in g/a-files.
+
+        Raises:
+            NotImplementedError: in all cases.
+        """
         raise NotImplementedError()
 
     def getVolLCFS(self,length_unit=3):
         """Returns volume with LCFS.
+
+        Returns:
+            Vol (Array): [1] array of plasma volume.  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1373,35 +1361,66 @@ class EqdskReader(Equilibrium):
     def getRmidPsi(self):
         """Returns outboard-midplane major radius of flux surfaces.
         
-        Data not read from a/g-files, not implemented for EqdskReader.
+        Data not read from a/g-files, not implemented for :py:class:`EqdskReader`.
 
         Raises:
-            NotImplementedError: RmidPsi not read from a/g-files.
+            NotImplementedError: in all cases.
         """
         raise NotImplementedError('RmidPsi not read from a/g-files.')
 
     def getF(self):
-         """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov solutions  [psi,t]
+         """returns F=RB_{\Phi}(\Psi), calculated for grad-shafranov solutions  
+         [psi,t]
+
+        Returns:
+            F (Array): [1,n] array of F(\psi).  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """       
          return self._fpol.copy()
     
     def getFluxPres(self):
-        """Returns pressure on flux surface p(psi)
+        """Returns pressure on flux surface p(psi).
+
+        Returns:
+            p (Array): [1,n] array of pressure.  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._fluxPres.copy()
 
     def getFFPrime(self):
-        """returns FF' function used for grad-shafranov solutions [psi,t]
+        """returns FF' function used for grad-shafranov solutions.
+
+        Returns:
+            FF (Array): [1,n] array of FF'(\psi).  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._ffprim.copy()
 
     def getPPrime(self): 
-        """returns plasma pressure gradient as a function of psi [psi,t]
+        """returns plasma pressure gradient as a function of psi.
+
+        Returns: 
+            pp (Array): [1,n] array of pp'(\psi).  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._pprime.copy()
 
     def getElongation(self):
         """Returns elongation of LCFS.
+
+        Returns:
+            kappa (Array): [1] array of plasma elongation.  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1414,6 +1433,12 @@ class EqdskReader(Equilibrium):
     def getUpperTriangularity(self):
         """Returns upper triangularity of LCFS.
 
+        Returns:
+            delta (Array): [1] array of plasma upper triangularity.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1424,6 +1449,12 @@ class EqdskReader(Equilibrium):
 
     def getLowerTriangularity(self):
         """Returns lower triangularity of LCFS.
+
+        Returns:
+            delta (Array): [1] array of plasma lower triangularity.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1454,6 +1485,16 @@ class EqdskReader(Equilibrium):
     def getMagR(self,length_unit=1):
         """Returns major radius of magnetic axis.
 
+        Keyword Args:
+            length_unit (String or 1): length unit R is specified in.  Defaults
+                to 1 (default unit of rmagx, typically m).
+
+        Returns:
+            magR (Array): [1] array of major radius of magnetic axis.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1465,6 +1506,16 @@ class EqdskReader(Equilibrium):
 
     def getMagZ(self,length_unit=1):
         """Returns Z of magnetic axis.
+
+        Keyword Args:
+            length_unit (String or 1): length unit Z is specified in.  Defaults
+                to 1 (default unit of zmagx, typically m).
+
+        Returns:
+            magZ (Array): [1] array of Z of magnetic axis.  Returns array for
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1478,6 +1529,16 @@ class EqdskReader(Equilibrium):
     def getAreaLCFS(self,length_unit=2):
         """Returns surface area of LCFS.
 
+        Keyword Args:
+            length_unit (String or 2): unit area is specified in.  Defaults to 2
+                (default unit, typically m^2).
+
+        Returns:
+            AreaLCFS (Array): [1] array of surface area of LCFS.  Returns array 
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1489,6 +1550,13 @@ class EqdskReader(Equilibrium):
 
     def getAOut(self,length_unit=1):
         """Returns outboard-midplane minor radius of LCFS.
+
+        Keyword Args:
+            length_unit (String or 1): unit radius is specified in.  Defaults 
+                to 1 (default unit, typically m).
+
+        Returns:
+            AOut (Array): [1] array of outboard-midplane minor radius at LCFS.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1502,6 +1570,16 @@ class EqdskReader(Equilibrium):
     def getRmidOut(self,length_unit=1):
         """Returns outboard-midplane major radius of LCFS.
 
+        Keyword Args:
+            length_unit (String or 1): unit radius is specified in.  Defaults to 
+                1 (default unit, typically m).
+
+        Returns:
+            Rmid (Array): [1] array of outboard-midplane major radius at LCFS.  
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1513,12 +1591,14 @@ class EqdskReader(Equilibrium):
 
     def getGeometry(self,length_unit=None):
         """Pulls dimensional geometry parameters.
-        
-        Returns:
-            namedtuple containing [Rmag,Zmag,AreaLCFS,aOut,RmidOut]
 
         Keyword Args:
-            length_unit: TODO
+            length_unit (String): length unit parameters are specified in.  
+                Defaults to None, using default units for individual getter 
+                methods for constituent parameters.
+
+        Returns:
+            namedtuple containing [Rmag,Zmag,AreaLCFS,aOut,RmidOut]
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1536,11 +1616,19 @@ class EqdskReader(Equilibrium):
 
     def getQProfile(self):
         """Returns safety factor q(psi).
+
+        Returns:
+            qpsi (Array): [1,n] array of q(psi).
         """
         return self._qpsi.copy()
 
     def getQ0(self):
         """Returns safety factor q on-axis, q0.
+
+        Returns:
+            q0 (Array): [1] array of q(psi=0).  Returns array for consistency 
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1553,6 +1641,11 @@ class EqdskReader(Equilibrium):
     def getQ95(self):
         """Returns safety factor q at 95% flux surface.
 
+        Returns:
+            q95 (Array): [1] array of q(psi=0.95).  Returns array for consistency 
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1564,6 +1657,11 @@ class EqdskReader(Equilibrium):
     def getQLCFS(self):
         """Returns safety factor q at LCFS (interpolated).
 
+        Returns:
+            qLCFS (Array): [1] array of q* (interpolated).  Returns array for 
+            consistency with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not loaded.
         """
@@ -1574,6 +1672,16 @@ class EqdskReader(Equilibrium):
 
     def getQ1Surf(self,length_unit=1):
         """Returns outboard-midplane minor radius of q=1 surface.
+
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+                (default unit, typically m)
+
+        Returns:
+            qr1 (Array): [1] array of minor radius of q=1 surface.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1587,6 +1695,16 @@ class EqdskReader(Equilibrium):
     def getQ2Surf(self,length_unit=1):
         """Returns outboard-midplane minor radius of q=2 surface.
 
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+                (default unit, typically m)
+
+        Returns:
+            qr2 (Array): [1] array of minor radius of q=2 surface.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1599,6 +1717,16 @@ class EqdskReader(Equilibrium):
     def getQ3Surf(self,length_unit=1):
         """Returns outboard-midplane minor radius of q=3 surface.
 
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+                (default unit, typically m)
+
+        Returns:
+            qr3 (Array): [1] array of minor radius of q=3 surface.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1610,6 +1738,10 @@ class EqdskReader(Equilibrium):
 
     def getQs(self,length_unit=1):
         """Pulls q-profile data.
+
+        Keyword Args:
+            length_unit (String or 1): unit of minor radius.  Defaults to 1
+                (default unit, typically m)
         
         Returns:
             namedtuple containing [q0,q95,qLCFS,rq1,rq2,rq3]
@@ -1632,6 +1764,12 @@ class EqdskReader(Equilibrium):
     def getBtVac(self):
         """Returns vacuum toroidal field on-axis.
 
+        Returns:
+            BtVac (Array): [1] array of vacuum toroidal field.  Returns array 
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1643,6 +1781,12 @@ class EqdskReader(Equilibrium):
     def getBtPla(self):
         """Returns plasma toroidal field on-axis.
 
+        Returns:
+            BtPla (Array): [1] array of toroidal field including plasma effects.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1653,6 +1797,12 @@ class EqdskReader(Equilibrium):
 
     def getBpAvg(self):
         """Returns average poloidal field.
+
+        Returns:
+            BpAvg (Array): [1] array of average poloidal field.  Returns array 
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1682,11 +1832,23 @@ class EqdskReader(Equilibrium):
 
     def getIpCalc(self):
         """Returns EFIT-calculated plasma current.
+
+        Returns:
+            IpCalc (Array): [1] array of EFIT-reconstructed plasma current.
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
         """
         return self._IpCalc.copy()
 
     def getIpMeas(self):
         """Returns measured plasma current.
+
+        Returns:
+            IpMeas (Array): [1] array of measured plasma current.  Returns 
+            array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1699,15 +1861,21 @@ class EqdskReader(Equilibrium):
     def getJp(self):
         """Returns (r,z) grid of toroidal plasma current density.
         
-        Data not read from g-file, not implemented for EqdskReader.
+        Data not read from g-file, not implemented for :py:class:`EqdskReader`.
 
         Raises:
-            NotImplementedError: Jp not read from g-file.
+            NotImplementedError: In all cases.
         """
         raise NotImplementedError('Jp not read from g-file.')
 
     def getBetaT(self):
         """Returns EFIT-calculated toroidal beta.
+
+        Returns:
+            BetaT (Array): [1] array of average toroidal beta.  Returns array 
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1720,6 +1888,12 @@ class EqdskReader(Equilibrium):
     def getBetaP(self):
         """Returns EFIT-calculated poloidal beta.
 
+        Returns:
+            BetaP (Array): [1] array of average poloidal beta.  Returns array 
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read
         """
@@ -1730,6 +1904,12 @@ class EqdskReader(Equilibrium):
 
     def getLi(self):
         """Returns internal inductance of plasma.
+
+        Returns:
+            Li (Array): [1] array of internal inductance.  Returns array for 
+            consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1755,10 +1935,16 @@ class EqdskReader(Equilibrium):
             data = namedtuple('Betas',['betat','betap','Li'])
             return data(betat=betat,betap=betap,Li=Li)
         except ValueError:
-                raise ValueError('must read a-file for this data.')
+            raise ValueError('must read a-file for this data.')
             
     def getDiamagFlux(self):
         """Returns diamagnetic flux.
+
+        Returns:
+            Flux (Array): [1] array of measured diamagnetic flux.  Returns array 
+            for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1771,6 +1957,12 @@ class EqdskReader(Equilibrium):
     def getDiamagBetaT(self):
         """Returns diamagnetic-loop measured toroidal beta.
 
+        Returns:
+            BetaT (Array): [1] array of measured diamagnetic toroidal beta.   
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1781,6 +1973,12 @@ class EqdskReader(Equilibrium):
 
     def getDiamagBetaP(self):
         """Returns diamagnetic-loop measured poloidal beta.
+
+        Returns:
+            BetaP (Array): [1] array of measured diamagnetic poloidal beta.  
+            Returns array for consistency with 
+           :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1793,6 +1991,12 @@ class EqdskReader(Equilibrium):
     def getDiamagTauE(self):
         """Returns diamagnetic-loop energy confinement time.
 
+        Returns:
+            TauE (Array): [1] array of measured energy confinement time.  
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1804,6 +2008,12 @@ class EqdskReader(Equilibrium):
     def getDiamagWp(self):
         """Returns diamagnetic-loop measured stored energy.
 
+        Returns:
+            Wp (Array): [1] array of diamagnetic stored energy.  
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1813,7 +2023,8 @@ class EqdskReader(Equilibrium):
             return self._WDiamag.copy()
 
     def getDiamag(self):
-        """Pulls diamagnetic flux, diamag. measured toroidal and poloidal beta, stored energy, and energy confinement time.
+        """Pulls diamagnetic flux, diamag. measured toroidal and poloidal beta, 
+        stored energy, and energy confinement time.
         
         Returns:
             namedtuple containing [diaFlux,diaBetat,diaBetap,diaTauE,diaWp]
@@ -1835,6 +2046,12 @@ class EqdskReader(Equilibrium):
     def getWMHD(self):
         """Returns EFIT-calculated stored energy.
 
+        Returns:
+            WMHD (Array): [1] array of EFIT-reconstructed stored energy.  
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1845,6 +2062,12 @@ class EqdskReader(Equilibrium):
 
     def getTauMHD(self):
         """Returns EFIT-calculated energy confinement time.
+
+        Returns:
+            tauMHD (Array): [1] array of EFIT-reconstructed energy confinement
+            time.  Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1857,6 +2080,12 @@ class EqdskReader(Equilibrium):
     def getPinj(self):
         """Returns EFIT injected power.
 
+        Returns:
+            Pinj (Array): [1] array of EFIT-reconstructed injected power.  
+            Returns array for consistency with 
+            :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1867,6 +2096,11 @@ class EqdskReader(Equilibrium):
 
     def getWbdot(self):
         """Returns EFIT d/dt of magnetic stored energy
+
+        Returns:
+            dWdt (Array): [1] array of d(Wb)/dt.  Returns array for consistency 
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
 
         Raises:
             ValueError: if a-file data is not read.
@@ -1879,6 +2113,11 @@ class EqdskReader(Equilibrium):
     def getWpdot(self):
         """Returns EFIT d/dt of plasma stored energy.
 
+        Returns:
+            dWdt (Array): [1] array of d(Wp)/dt.  Returns array for consistency 
+            with :py:class:`Equilibrium <eqtools.core.Equilibrium>` 
+            implementations with time variation.
+
         Raises:
             ValueError: if a-file data is not read.
         """
@@ -1888,7 +2127,8 @@ class EqdskReader(Equilibrium):
             return self._Wpdot.copy()
 
     def getEnergy(self):
-        """Pulls EFIT stored energy, energy confinement time, injected power, and d/dt of magnetic and plasma stored energy.
+        """Pulls EFIT stored energy, energy confinement time, injected power, 
+        and d/dt of magnetic and plasma stored energy.
         
         Returns:
             namedtuple containing [WMHD,tauMHD,Pinj,Wbdot,Wpdot]
@@ -1908,13 +2148,17 @@ class EqdskReader(Equilibrium):
             raise ValueError('must read a-file for this data.')
 
     def getParam(self,name):
-        """Backup function, applying a direct path input for tree-like data storage access
-        for parameters not typically found in Equilbrium object.  Directly calls attributes
-        read from g/a-files in copy-safe manner.
+        """Backup function, applying a direct path input for tree-like data 
+        storage access for parameters not typically found in Equilbrium object.  
+        Directly calls attributes read from g/a-files in copy-safe manner.
 
         Args:
-            name: String.
-                Parameter name for value stored in EqdskReader instance.
+            name (String): Parameter name for value stored in EqdskReader 
+                instance.
+
+        Returns:
+            param (Array-like or scalar float): value stored as attribute in
+            :py:class:`EqdskReader`.
 
         Raises:
             AttributeError: raised if no attribute is found.
@@ -1932,18 +2176,27 @@ class EqdskReader(Equilibrium):
                 raise AttributeError('No attribute "_%s" found' % name)
         
     def getMachineCrossSection(self):
-        """Method to pull machine cross-section from data storage, convert to standard format for plotting routine.
+        """Method to pull machine cross-section from data storage, convert to 
+        standard format for plotting routine.
+
+        Returns:
+            (`R_limiter`, `Z_limiter`)
+
+            * **R_limiter** (`Array`) - [n] array of x-values for machine cross-section.
+            * **Z_limiter** (`Array`) - [n] array of y-values for machine cross-section.
         """
         return (self._xlim,self._ylim)
         
     def getMachineCrossSectionFull(self):
         """Returns vectorization of machine cross-section.
         
-        Absent additional data (not found in eqdsks) simply returns self.getMachineCrossSection().
+        Absent additional data (not found in eqdsks) simply returns 
+        self.getMachineCrossSection().
         """
         return self.getMachineCrossSection()
 
-    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, tunit='ms', title='EQTOOLS', nbbbs=100):
+    def gfile(self, time=None, nw=None, nh=None, shot=None, name=None, 
+              tunit='ms', title='EQTOOLS', nbbbs=100):
         """Generates an EFIT gfile with gfile naming convention
                   
         Keyword Args:
@@ -1986,9 +2239,6 @@ class EqdskReader(Equilibrium):
                 Eq_instance.gfile()
             
         """
-
-
-
         if time is None:
             time = self.getTimeBase()
 
@@ -2005,12 +2255,12 @@ class EqdskReader(Equilibrium):
         """streamlined plotting of flux contours directly from psi grid
 
         Keyword Args:
-            fill: Boolean.
-                Default True.  Set True to plot filled contours of flux delineated by black outlines.
-                Set False to instead plot color-coded line contours on a blank background.
-            mask: Boolean.
-                Default True.  Set True to draw a clipping mask based on the limiter outline for the flux contours.
-                Set False to draw the full RZ grid.
+            fill (Boolean): Default True.  Set True to plot filled contours of 
+                flux delineated by black outlines.  Set False to instead plot 
+                color-coded line contours on a blank background.
+            mask (Boolean): Default True.  Set True to draw a clipping mask 
+                based on the limiter outline for the flux contours.  Set False 
+                to draw the full RZ grid.
         """
         plt.ion()
 
@@ -2035,9 +2285,11 @@ class EqdskReader(Equilibrium):
 
         if fill:
             ax.contourf(rGrid,zGrid,psiRZ,50,zorder=2)
-            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid',zorder=3)
+            ax.contour(rGrid,zGrid,psiRZ,50,colors='k',linestyles='solid',
+                       zorder=3)
         else:
-            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2,zorder=2)
+            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2,
+                       zorder=2)
         ax.plot(RLCFS,ZLCFS,'r',linewidth=3)
 
         # generate graphical mask for limiter wall
@@ -2060,3 +2312,5 @@ class EqdskReader(Equilibrium):
 
         ax.plot(Rlim,Zlim,'k',linewidth=3,zorder=5)
         fig.show()
+
+        return fig

@@ -183,10 +183,10 @@ class ArrayEquilibrium(Equilibrium):
         return unit_factor * self._RmidLCFS.copy()
     
     def getRLCFS(self, length_unit=1):
-        TODO
+        raise NotImplementedError("getRLCFS not supported for ArrayEquilibrium!")
     
     def getZLCFS(self, length_unit=1):
-        TODO
+        raise NotImplementedError("getRLCFS not supported for ArrayEquilibrium!")
     
     def getCurrentSign(self):
         return 1
