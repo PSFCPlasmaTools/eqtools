@@ -111,17 +111,24 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                        0.,
                        obj.getRGrid()[0],
                        obj.getZGrid()[-1]/2.+obj.getZGrid()[0]/2.]))
-    
+
     rcent = obj.getMagRSpline()(tin)
     zcent = obj.getMagZSpline()(tin)
-    psiLCFS = -1*obj.getCurrentSign()*obj._getLCFSPsiSpline()(tin)
+
+    if obj._tricubic:
+        #THIS IS VERY SLOW DUE TO A LIMITATION IN THE INTERP1D FUNCTION
+        psiLCFS = -1*obj.getCurrentSign()*obj._getLCFSPsiSpline()(tin)
+        psi0 = -1*obj.getCurrentSign()*obj._getPsi0Spline()(tin)
+    else:
+        idx = obj._getNearestIdx(tin,obj.getTimeBase())
+        psiLCFS = obj.getFluxLCFS()[idx]
+        psi0 = obj.getFluxAxis()[idx]
 
     gfiler.write(_fmt([rcent,
                        zcent,
-                       -1*obj.getCurrentSign()*obj._getPsi0Spline()(tin),
+                       psi0,
                        psiLCFS,
-                       0.])) # need to get bzero getter...      
-
+                       0.])) # need to get bzero getter...   
     if obj._tricubic:
         temp = scipy.interpolate.interp1d(obj.getTimeBase(),
                                           obj.getIpCalc(),
@@ -129,11 +136,10 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                                           bounds_error=False)
         Ip = temp(tin)
     else:
-        idx = obj._getNearestIdx(tin,obj.getTimeBase())
         Ip = obj.getIpCalc()[idx]
                                           
     gfiler.write(_fmt([Ip,
-                       -1*obj.getCurrentSign()*obj._getPsi0Spline()(tin),
+                       psi0,
                        0.,
                        rcent,
                        0.]))
@@ -146,7 +152,6 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
     
     pts0 = scipy.linspace(0.,1.,obj.getRGrid().size) #find original nw
     pts1 = scipy.linspace(0.,1.,nw)
-    
     # this needs to be time mapped (sigh)
     if not obj._tricubic: 
 
