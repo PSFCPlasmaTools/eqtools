@@ -3911,10 +3911,12 @@ class Equilibrium(object):
             if single_time:
                 quan_norm = spline_func(time_idxs[0], kind=kind)(psi_norm)
             else:
-                # TODO: This can probaby be done a lot better!
                 quan_norm = scipy.zeros(psi_norm.shape)
-                for k in xrange(0, len(quan_norm)):
-                    quan_norm[k] = spline_func(time_idxs[k], kind=kind)(psi_norm[k])
+                
+                unique_t = scipy.unique(time_idxs)
+                for i in unique_t:
+                    t_mask = time_idxs == unique_t
+                    quan_norm[t_mask] = spline_func(i, kind=kind)(psi_norm[t_mask])
         else:
             quan_norm = spline_func(time_idxs).ev(time_idxs, psi_norm)
         
