@@ -624,16 +624,19 @@ class Equilibrium(object):
                                          make_grid=make_grid,
                                          each_t=each_t,
                                          length_unit=length_unit)
- 
+        
         # Optimized form for single t value case:
         if not self._tricubic:
             if single_time:
                 out_vals = self._getFluxBiSpline(time_idxs[0]).ev(Z, R)
             else:
                 out_vals = scipy.zeros(t.shape)
-                # Need to loop over time_idxs
-                for k in xrange(0, len(t)):
-                    out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k])
+                # Need to loop over time_idxs, but batch it in the unique ones
+                # to avoid repeated calls to the spline function.
+                unique_t = scipy.unique(time_idxs)
+                for i in unique_t:
+                    t_mask = time_idxs == unique_t
+                    out_vals[t_mask] = self._getFluxBiSpline(i).ev(Z[t_mask], R[t_mask])
         else:
             out_vals = self._getFluxTriSpline().ev(time_idxs,Z,R)
 
