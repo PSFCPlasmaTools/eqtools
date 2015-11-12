@@ -633,12 +633,10 @@ class Equilibrium(object):
                 out_vals = scipy.zeros(t.shape)
                 # Need to loop over time_idxs, but batch it in the unique ones
                 # to avoid repeated calls to the spline function.
-                for k in xrange(0, len(t)):
-                    out_vals[k] = self._getFluxBiSpline(time_idxs[k]).ev(Z[k], R[k])
-                # unique_t = scipy.unique(time_idxs)
-                # for i in unique_t:
-                #     t_mask = (time_idxs == unique_t)
-                #     out_vals[t_mask] = self._getFluxBiSpline(i).ev(Z[t_mask], R[t_mask])
+                unique_t = scipy.unique(time_idxs)
+                for i in unique_t:
+                    t_mask = (time_idxs == i)
+                    out_vals[t_mask] = self._getFluxBiSpline(i).ev(Z[t_mask], R[t_mask])
         else:
             out_vals = self._getFluxTriSpline().ev(time_idxs,Z,R)
 
@@ -3904,7 +3902,8 @@ class Equilibrium(object):
             time_idxs = scipy.reshape(time_idxs, -1)
             
             # TODO: This might waste more time than it saves with long time_idxs:
-            single_time = (len(scipy.unique(time_idxs)) == 1)
+            unique_t = scipy.unique(time_idxs)
+            single_time = (len(unique_t) == 1)
         
         if convert_roa:
             psi_norm = self._roa2rmid(psi_norm, time_idxs)
@@ -3915,12 +3914,9 @@ class Equilibrium(object):
             else:
                 quan_norm = scipy.zeros(psi_norm.shape)
                 
-                for k in xrange(0, len(quan_norm)):
-                    quan_norm[k] = spline_func(time_idxs[k], kind=kind)(psi_norm[k])
-                # unique_t = scipy.unique(time_idxs)
-                # for i in unique_t:
-                #     t_mask = (time_idxs == unique_t)
-                #     quan_norm[t_mask] = spline_func(i, kind=kind)(psi_norm[t_mask])
+                for i in unique_t:
+                    t_mask = (time_idxs == i)
+                    quan_norm[t_mask] = spline_func(i, kind=kind)(psi_norm[t_mask])
         else:
             quan_norm = spline_func(time_idxs).ev(time_idxs, psi_norm)
         
