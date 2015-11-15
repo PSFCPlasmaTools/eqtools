@@ -266,8 +266,25 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
             val (float array): evaluated spline at points (x[i], y[i]), i=0,...,len(x)-1
         """
         idx = self._check_bounds(xi, yi)
-        print(idx)
+        # print(idx)
         zi = self.fill_value*scipy.ones(xi.shape)
         zi[idx] = super(RectBivariateSpline, self).ev(scipy.atleast_1d(xi)[idx],
                                                       scipy.atleast_1d(yi)[idx])
         return zi
+
+class BivariateInterpolator(object):
+    """This class provides a wrapper for `scipy.interpolate.CloughTocher2DInterpolator`.
+    
+    This is necessary because `scipy.interpolate.SmoothBivariateSpline` cannot
+    be made to interpolate, and gives inaccurate answers near the boundaries.
+    """
+    def __init__(self, x, y, z):
+        self._ct_interp = scipy.interpolate.CloughTocher2DInterpolator(
+            scipy.hstack((scipy.atleast_2d(x).T, scipy.atleast_2d(y).T)),
+            z
+        )
+    
+    def ev(self, xi, yi):
+        return self._ct_interp(
+            scipy.hstack((scipy.atleast_2d(xi).T, scipy.atleast_2d(yi).T))
+        )
