@@ -6986,5 +6986,199 @@ class volnorm2roaTestCase(unittest.TestCase):
         diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
 
+class SqrtTestCase(unittest.TestCase):
+    """This is a regression test to make sure the bug in the sqrt=True case
+    doesn't pop up again.
+    """
+    
+    # RZ -> *
+    # TODO: rz2psi doesn't support sqrt (probably OK...)
+    # def test_rz2psi_sqrt(self):
+    #     self.assertAlmostEqual(
+    #         e.rz2psi(scalar_R, scalar_Z, scalar_t),
+    #         e.rz2psi(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+    #     )
+    
+    def test_rz2psinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.rz2psinorm(scalar_R, scalar_Z, scalar_t),
+            e.rz2psinorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_rz2phinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.rz2phinorm(scalar_R, scalar_Z, scalar_t),
+            e.rz2phinorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_rz2volnorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.rz2volnorm(scalar_R, scalar_Z, scalar_t),
+            e.rz2volnorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_rz2rmid_sqrt_rho_False(self):
+        self.assertAlmostEqual(
+            e.rz2rmid(scalar_R, scalar_Z, scalar_t),
+            e.rz2rmid(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_rz2rmid_sqrt_rho_True(self):
+        self.assertAlmostEqual(
+            e.rz2rmid(scalar_R, scalar_Z, scalar_t, rho=True),
+            e.rz2rmid(scalar_R, scalar_Z, scalar_t, rho=True, sqrt=True)**2,
+        )
+    
+    def test_rz2roa_sqrt(self):
+        self.assertAlmostEqual(
+            e.rz2roa(scalar_R, scalar_Z, scalar_t),
+            e.rz2roa(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+    
+    # psinorm -> *
+    def test_psinorm2phinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.psinorm2phinorm(scalar_psinorm, scalar_t),
+            e.psinorm2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_psinorm2volnorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.psinorm2volnorm(scalar_psinorm, scalar_t),
+            e.psinorm2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_psinorm2rmid_sqrt_rho_False(self):
+        self.assertAlmostEqual(
+            e.psinorm2rmid(scalar_psinorm, scalar_t),
+            e.psinorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_psinorm2rmid_sqrt_rho_True(self):
+        self.assertAlmostEqual(
+            e.psinorm2rmid(scalar_psinorm, scalar_t, rho=True),
+            e.psinorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
+        )
+    
+    def test_psinorm2roa_sqrt(self):
+        self.assertAlmostEqual(
+            e.psinorm2roa(scalar_psinorm, scalar_t),
+            e.psinorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    # phinorm -> *
+    def test_phinorm2psinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.phinorm2psinorm(scalar_psinorm, scalar_t),
+            e.phinorm2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_phinorm2volnorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.phinorm2volnorm(scalar_psinorm, scalar_t),
+            e.phinorm2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_phinorm2rmid_sqrt_rho_False(self):
+        self.assertAlmostEqual(
+            e.phinorm2rmid(scalar_psinorm, scalar_t),
+            e.phinorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_phinorm2rmid_sqrt_rho_True(self):
+        self.assertAlmostEqual(
+            e.phinorm2rmid(scalar_psinorm, scalar_t, rho=True),
+            e.phinorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
+        )
+    
+    def test_phinorm2roa_sqrt(self):
+        self.assertAlmostEqual(
+            e.phinorm2roa(scalar_psinorm, scalar_t),
+            e.phinorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    # volnorm -> *
+    def test_volnorm2psinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.volnorm2psinorm(scalar_psinorm, scalar_t),
+            e.volnorm2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_volnorm2phinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.volnorm2phinorm(scalar_psinorm, scalar_t),
+            e.volnorm2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_volnorm2rmid_sqrt_rho_False(self):
+        self.assertAlmostEqual(
+            e.volnorm2rmid(scalar_psinorm, scalar_t),
+            e.volnorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_volnorm2rmid_sqrt_rho_True(self):
+        self.assertAlmostEqual(
+            e.volnorm2rmid(scalar_psinorm, scalar_t, rho=True),
+            e.volnorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
+        )
+    
+    def test_volnorm2roa_sqrt(self):
+        self.assertAlmostEqual(
+            e.volnorm2roa(scalar_psinorm, scalar_t),
+            e.volnorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    # Rmid -> *
+    def test_rmid2psinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.rmid2psinorm(scalar_psinorm, scalar_t),
+            e.rmid2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_rmid2phinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.rmid2phinorm(scalar_psinorm, scalar_t),
+            e.rmid2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_rmid2volnorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.rmid2volnorm(scalar_psinorm, scalar_t),
+            e.rmid2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_rmid2roa_sqrt(self):
+        self.assertAlmostEqual(
+            e.rmid2roa(scalar_psinorm, scalar_t),
+            e.rmid2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    # roa -> *
+    def test_roa2psinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.roa2psinorm(scalar_psinorm, scalar_t),
+            e.roa2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_roa2phinorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.roa2phinorm(scalar_psinorm, scalar_t),
+            e.roa2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    def test_roa2volnorm_sqrt(self):
+        self.assertAlmostEqual(
+            e.roa2volnorm(scalar_psinorm, scalar_t),
+            e.roa2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+    
+    # TODO: Does not support sqrt keyword (probably doesn't need to, but should
+    # think about it...)
+    # def test_roa2rmid_sqrt_rho_False(self):
+    #     self.assertAlmostEqual(
+    #         e.roa2rmid(scalar_psinorm, scalar_t),
+    #         e.roa2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+    #     )
+
 if __name__ == '__main__':
     unittest.main()
