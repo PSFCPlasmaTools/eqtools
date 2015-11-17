@@ -29,6 +29,7 @@ vector_Rmid = e.getRmidPsi()[10, :]
 matrix_Rmid = e.getRmidPsi()[:len(vector_R), :len(vector_Z)]
 
 tol = 0.01
+places = 4
 
 class rz2psiTestCase(unittest.TestCase):
     # The following tests focus primarily on the consistency of the input/output
@@ -6998,11 +6999,19 @@ class SqrtTestCase(unittest.TestCase):
     #         e.rz2psi(scalar_R, scalar_Z, scalar_t),
     #         e.rz2psi(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
     #     )
+    #     self.assertAlmostEqual(
+    #         et.rz2psi(scalar_R, scalar_Z, scalar_t),
+    #         et.rz2psi(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+    #     )
     
     def test_rz2psinorm_sqrt(self):
         self.assertAlmostEqual(
             e.rz2psinorm(scalar_R, scalar_Z, scalar_t),
             e.rz2psinorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.rz2psinorm(scalar_R, scalar_Z, scalar_t),
+            et.rz2psinorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
         )
     
     def test_rz2phinorm_sqrt(self):
@@ -7010,11 +7019,19 @@ class SqrtTestCase(unittest.TestCase):
             e.rz2phinorm(scalar_R, scalar_Z, scalar_t),
             e.rz2phinorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.rz2phinorm(scalar_R, scalar_Z, scalar_t),
+            et.rz2phinorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
     
     def test_rz2volnorm_sqrt(self):
         self.assertAlmostEqual(
             e.rz2volnorm(scalar_R, scalar_Z, scalar_t),
             e.rz2volnorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.rz2volnorm(scalar_R, scalar_Z, scalar_t),
+            et.rz2volnorm(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
         )
     
     def test_rz2rmid_sqrt_rho_False(self):
@@ -7022,17 +7039,29 @@ class SqrtTestCase(unittest.TestCase):
             e.rz2rmid(scalar_R, scalar_Z, scalar_t),
             e.rz2rmid(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.rz2rmid(scalar_R, scalar_Z, scalar_t),
+            et.rz2rmid(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
     
     def test_rz2rmid_sqrt_rho_True(self):
         self.assertAlmostEqual(
             e.rz2rmid(scalar_R, scalar_Z, scalar_t, rho=True),
             e.rz2rmid(scalar_R, scalar_Z, scalar_t, rho=True, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.rz2rmid(scalar_R, scalar_Z, scalar_t, rho=True),
+            et.rz2rmid(scalar_R, scalar_Z, scalar_t, rho=True, sqrt=True)**2,
+        )
     
     def test_rz2roa_sqrt(self):
         self.assertAlmostEqual(
             e.rz2roa(scalar_R, scalar_Z, scalar_t),
             e.rz2roa(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.rz2roa(scalar_R, scalar_Z, scalar_t),
+            et.rz2roa(scalar_R, scalar_Z, scalar_t, sqrt=True)**2,
         )
     
     # psinorm -> *
@@ -7041,11 +7070,19 @@ class SqrtTestCase(unittest.TestCase):
             e.psinorm2phinorm(scalar_psinorm, scalar_t),
             e.psinorm2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.psinorm2phinorm(scalar_psinorm, scalar_t),
+            et.psinorm2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_psinorm2volnorm_sqrt(self):
         self.assertAlmostEqual(
             e.psinorm2volnorm(scalar_psinorm, scalar_t),
             e.psinorm2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.psinorm2volnorm(scalar_psinorm, scalar_t),
+            et.psinorm2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
     
     def test_psinorm2rmid_sqrt_rho_False(self):
@@ -7053,17 +7090,29 @@ class SqrtTestCase(unittest.TestCase):
             e.psinorm2rmid(scalar_psinorm, scalar_t),
             e.psinorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.psinorm2rmid(scalar_psinorm, scalar_t),
+            et.psinorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_psinorm2rmid_sqrt_rho_True(self):
         self.assertAlmostEqual(
             e.psinorm2rmid(scalar_psinorm, scalar_t, rho=True),
             e.psinorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.psinorm2rmid(scalar_psinorm, scalar_t, rho=True),
+            et.psinorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
+        )
     
     def test_psinorm2roa_sqrt(self):
         self.assertAlmostEqual(
             e.psinorm2roa(scalar_psinorm, scalar_t),
             e.psinorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.psinorm2roa(scalar_psinorm, scalar_t),
+            et.psinorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
     
     # phinorm -> *
@@ -7072,11 +7121,19 @@ class SqrtTestCase(unittest.TestCase):
             e.phinorm2psinorm(scalar_psinorm, scalar_t),
             e.phinorm2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.phinorm2psinorm(scalar_psinorm, scalar_t),
+            et.phinorm2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_phinorm2volnorm_sqrt(self):
         self.assertAlmostEqual(
             e.phinorm2volnorm(scalar_psinorm, scalar_t),
             e.phinorm2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.phinorm2volnorm(scalar_psinorm, scalar_t),
+            et.phinorm2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
     
     def test_phinorm2rmid_sqrt_rho_False(self):
@@ -7084,17 +7141,29 @@ class SqrtTestCase(unittest.TestCase):
             e.phinorm2rmid(scalar_psinorm, scalar_t),
             e.phinorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.phinorm2rmid(scalar_psinorm, scalar_t),
+            et.phinorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_phinorm2rmid_sqrt_rho_True(self):
         self.assertAlmostEqual(
             e.phinorm2rmid(scalar_psinorm, scalar_t, rho=True),
             e.phinorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.phinorm2rmid(scalar_psinorm, scalar_t, rho=True),
+            et.phinorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
+        )
     
     def test_phinorm2roa_sqrt(self):
         self.assertAlmostEqual(
             e.phinorm2roa(scalar_psinorm, scalar_t),
             e.phinorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.phinorm2roa(scalar_psinorm, scalar_t),
+            et.phinorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
     
     # volnorm -> *
@@ -7103,11 +7172,19 @@ class SqrtTestCase(unittest.TestCase):
             e.volnorm2psinorm(scalar_psinorm, scalar_t),
             e.volnorm2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.volnorm2psinorm(scalar_psinorm, scalar_t),
+            et.volnorm2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_volnorm2phinorm_sqrt(self):
         self.assertAlmostEqual(
             e.volnorm2phinorm(scalar_psinorm, scalar_t),
             e.volnorm2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.volnorm2phinorm(scalar_psinorm, scalar_t),
+            et.volnorm2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
     
     def test_volnorm2rmid_sqrt_rho_False(self):
@@ -7115,11 +7192,19 @@ class SqrtTestCase(unittest.TestCase):
             e.volnorm2rmid(scalar_psinorm, scalar_t),
             e.volnorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.volnorm2rmid(scalar_psinorm, scalar_t),
+            et.volnorm2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_volnorm2rmid_sqrt_rho_True(self):
         self.assertAlmostEqual(
             e.volnorm2rmid(scalar_psinorm, scalar_t, rho=True),
             e.volnorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.volnorm2rmid(scalar_psinorm, scalar_t, rho=True),
+            et.volnorm2rmid(scalar_psinorm, scalar_t, rho=True, sqrt=True)**2,
         )
     
     def test_volnorm2roa_sqrt(self):
@@ -7127,30 +7212,50 @@ class SqrtTestCase(unittest.TestCase):
             e.volnorm2roa(scalar_psinorm, scalar_t),
             e.volnorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.volnorm2roa(scalar_psinorm, scalar_t),
+            et.volnorm2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     # Rmid -> *
     def test_rmid2psinorm_sqrt(self):
         self.assertAlmostEqual(
-            e.rmid2psinorm(scalar_psinorm, scalar_t),
-            e.rmid2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+            e.rmid2psinorm(scalar_Rmid, scalar_t),
+            e.rmid2psinorm(scalar_Rmid, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.rmid2psinorm(scalar_Rmid, scalar_t),
+            et.rmid2psinorm(scalar_Rmid, scalar_t, sqrt=True)**2,
         )
     
     def test_rmid2phinorm_sqrt(self):
         self.assertAlmostEqual(
-            e.rmid2phinorm(scalar_psinorm, scalar_t),
-            e.rmid2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+            e.rmid2phinorm(scalar_Rmid, scalar_t),
+            e.rmid2phinorm(scalar_Rmid, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.rmid2phinorm(scalar_Rmid, scalar_t),
+            et.rmid2phinorm(scalar_Rmid, scalar_t, sqrt=True)**2,
         )
     
     def test_rmid2volnorm_sqrt(self):
         self.assertAlmostEqual(
-            e.rmid2volnorm(scalar_psinorm, scalar_t),
-            e.rmid2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+            e.rmid2volnorm(scalar_Rmid, scalar_t),
+            e.rmid2volnorm(scalar_Rmid, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.rmid2volnorm(scalar_Rmid, scalar_t),
+            et.rmid2volnorm(scalar_Rmid, scalar_t, sqrt=True)**2,
         )
     
     def test_rmid2roa_sqrt(self):
         self.assertAlmostEqual(
-            e.rmid2roa(scalar_psinorm, scalar_t),
-            e.rmid2roa(scalar_psinorm, scalar_t, sqrt=True)**2,
+            e.rmid2roa(scalar_Rmid, scalar_t),
+            e.rmid2roa(scalar_Rmid, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.rmid2roa(scalar_Rmid, scalar_t),
+            et.rmid2roa(scalar_Rmid, scalar_t, sqrt=True)**2,
         )
     
     # roa -> *
@@ -7159,17 +7264,29 @@ class SqrtTestCase(unittest.TestCase):
             e.roa2psinorm(scalar_psinorm, scalar_t),
             e.roa2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.roa2psinorm(scalar_psinorm, scalar_t),
+            et.roa2psinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_roa2phinorm_sqrt(self):
         self.assertAlmostEqual(
             e.roa2phinorm(scalar_psinorm, scalar_t),
             e.roa2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
+        self.assertAlmostEqual(
+            et.roa2phinorm(scalar_psinorm, scalar_t),
+            et.roa2phinorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
     
     def test_roa2volnorm_sqrt(self):
         self.assertAlmostEqual(
             e.roa2volnorm(scalar_psinorm, scalar_t),
             e.roa2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
+        )
+        self.assertAlmostEqual(
+            et.roa2volnorm(scalar_psinorm, scalar_t),
+            et.roa2volnorm(scalar_psinorm, scalar_t, sqrt=True)**2,
         )
     
     # TODO: Does not support sqrt keyword (probably doesn't need to, but should
@@ -7179,6 +7296,294 @@ class SqrtTestCase(unittest.TestCase):
     #         e.roa2rmid(scalar_psinorm, scalar_t),
     #         e.roa2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
     #     )
+    #     self.assertAlmostEqual(
+    #         et.roa2rmid(scalar_psinorm, scalar_t),
+    #         et.roa2rmid(scalar_psinorm, scalar_t, sqrt=True)**2,
+    #     )
+
+class PsinormConsistencyTestCase(unittest.TestCase):
+    def test_psinorm_to_phinorm(self):
+        self.assertAlmostEqual(
+            e.phinorm2psinorm(e.psinorm2phinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.phinorm2psinorm(et.psinorm2phinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_psinorm_to_volnorm(self):
+        self.assertAlmostEqual(
+            e.volnorm2psinorm(e.psinorm2volnorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.volnorm2psinorm(et.psinorm2volnorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_psinorm_to_rmid_rho_False(self):
+        self.assertAlmostEqual(
+            e.rmid2psinorm(e.psinorm2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.rmid2psinorm(et.psinorm2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_psinorm_to_rmid_rho_True(self):
+        # Need to use roa2psinorm, since there isn't a mirror option.
+        self.assertAlmostEqual(
+            e.roa2psinorm(e.psinorm2rmid(scalar_psinorm, scalar_t, rho=True), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.roa2psinorm(et.psinorm2rmid(scalar_psinorm, scalar_t, rho=True), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_psinorm_to_roa(self):
+        self.assertAlmostEqual(
+            e.roa2psinorm(e.psinorm2roa(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.roa2psinorm(et.psinorm2roa(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+
+class PhinormConsistencyTestCase(unittest.TestCase):
+    def test_phinorm_to_psinorm(self):
+        self.assertAlmostEqual(
+            e.psinorm2phinorm(e.phinorm2psinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.psinorm2phinorm(et.phinorm2psinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_phinorm_to_volnorm(self):
+        self.assertAlmostEqual(
+            e.volnorm2phinorm(e.phinorm2volnorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.volnorm2phinorm(et.phinorm2volnorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_phinorm_to_rmid_rho_False(self):
+        self.assertAlmostEqual(
+            e.rmid2phinorm(e.phinorm2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.rmid2phinorm(et.phinorm2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_phinorm_to_rmid_rho_True(self):
+        # Need to use roa2phinorm, since there isn't a mirror option.
+        self.assertAlmostEqual(
+            e.roa2phinorm(e.phinorm2rmid(scalar_psinorm, scalar_t, rho=True), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.roa2phinorm(et.phinorm2rmid(scalar_psinorm, scalar_t, rho=True), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_phinorm_to_roa(self):
+        self.assertAlmostEqual(
+            e.roa2phinorm(e.phinorm2roa(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.roa2phinorm(et.phinorm2roa(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+
+class VolnormConsistencyTestCase(unittest.TestCase):
+    def test_volnorm_to_psinorm(self):
+        self.assertAlmostEqual(
+            e.psinorm2volnorm(e.volnorm2psinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.psinorm2volnorm(et.volnorm2psinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_volnorm_to_phinorm(self):
+        self.assertAlmostEqual(
+            e.phinorm2volnorm(e.volnorm2phinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.phinorm2volnorm(et.volnorm2phinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_volnorm_to_rmid_rho_False(self):
+        self.assertAlmostEqual(
+            e.rmid2volnorm(e.volnorm2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.rmid2volnorm(et.volnorm2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_volnorm_to_rmid_rho_True(self):
+        # Need to use roa2volnorm, since there isn't a mirror option.
+        self.assertAlmostEqual(
+            e.roa2volnorm(e.volnorm2rmid(scalar_psinorm, scalar_t, rho=True), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.roa2volnorm(et.volnorm2rmid(scalar_psinorm, scalar_t, rho=True), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_volnorm_to_roa(self):
+        self.assertAlmostEqual(
+            e.roa2volnorm(e.volnorm2roa(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.roa2volnorm(et.volnorm2roa(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+
+class RmidConsistencyTestCase(unittest.TestCase):
+    def test_rmid_to_psinorm(self):
+        self.assertAlmostEqual(
+            e.psinorm2rmid(e.rmid2psinorm(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.psinorm2rmid(et.rmid2psinorm(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+    
+    def test_rmid_to_phinorm(self):
+        self.assertAlmostEqual(
+            e.phinorm2rmid(e.rmid2phinorm(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.phinorm2rmid(et.rmid2phinorm(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+    
+    def test_rmid_to_volnorm(self):
+        self.assertAlmostEqual(
+            e.volnorm2rmid(e.rmid2volnorm(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.volnorm2rmid(et.rmid2volnorm(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+    
+    def test_rmid_to_roa(self):
+        self.assertAlmostEqual(
+            e.roa2rmid(e.rmid2roa(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.roa2rmid(et.rmid2roa(scalar_Rmid, scalar_t), scalar_t),
+            scalar_Rmid,
+            places=places
+        )
+
+class RoaConsistencyTestCase(unittest.TestCase):
+    def test_roa_to_psinorm(self):
+        self.assertAlmostEqual(
+            e.psinorm2roa(e.roa2psinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.psinorm2roa(et.roa2psinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_roa_to_phinorm(self):
+        self.assertAlmostEqual(
+            e.phinorm2roa(e.roa2phinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.phinorm2roa(et.roa2phinorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_roa_to_volnorm(self):
+        self.assertAlmostEqual(
+            e.volnorm2roa(e.roa2volnorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.volnorm2roa(et.roa2volnorm(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+    
+    def test_roa_to_rmid_rho_False(self):
+        self.assertAlmostEqual(
+            e.rmid2roa(e.roa2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
+        self.assertAlmostEqual(
+            et.rmid2roa(et.roa2rmid(scalar_psinorm, scalar_t), scalar_t),
+            scalar_psinorm,
+            places=places
+        )
 
 if __name__ == '__main__':
     unittest.main()

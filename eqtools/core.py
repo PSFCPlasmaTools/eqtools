@@ -2597,7 +2597,7 @@ class Equilibrium(object):
             t,
             **kwargs
         )
-
+    
     def psinorm2roa(self, psi_norm, t, **kwargs):
         """Calculates the normalized minor radius location corresponding to the passed psi_norm (normalized poloidal flux) values.
         
