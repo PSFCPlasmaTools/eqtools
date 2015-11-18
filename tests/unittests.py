@@ -7585,5 +7585,103 @@ class RoaConsistencyTestCase(unittest.TestCase):
             places=places
         )
 
+class SelfConsistencyTestCase(unittest.TestCase):
+    """Test the internal self-consistency of the basic conversions.
+    """
+    def test_rz2psi(self):
+        R, Z = scipy.meshgrid(e.getRGrid(), e.getZGrid())
+        out = e.rz2psi(R, Z, e.getTimeBase())
+        out_t = et.rz2psi(R, Z, e.getTimeBase())
+        
+        # Psi gets its sign reversed, so I use plus here.
+        diff = scipy.sqrt(((out + e.getFluxGrid())**2).max()) / scipy.absolute(e.getFluxGrid()).max()
+        self.assertLessEqual(diff, tol)
+        
+        diff = scipy.sqrt(((out_t + et.getFluxGrid())**2).max()) / scipy.absolute(et.getFluxGrid()).max()
+        self.assertLessEqual(diff, tol)
+    
+    def test_rz2psinorm(self):
+        R, Z = scipy.meshgrid(e.getRGrid(), e.getZGrid())
+        out = e.rz2psinorm(R, Z, e.getTimeBase())
+        out_t = et.rz2psinorm(R, Z, e.getTimeBase())
+        
+        psinorm_grid = (
+            (-1 * e.getFluxGrid() - e.getFluxAxis()[:, scipy.newaxis, scipy.newaxis]) /
+            (e.getFluxLCFS()[:, scipy.newaxis, scipy.newaxis] - e.getFluxAxis()[:, scipy.newaxis, scipy.newaxis])
+        )
+        psinorm_grid_t = (
+            (-1 * et.getFluxGrid() - et.getFluxAxis()[:, scipy.newaxis, scipy.newaxis]) /
+            (et.getFluxLCFS()[:, scipy.newaxis, scipy.newaxis] - et.getFluxAxis()[:, scipy.newaxis, scipy.newaxis])
+        )
+        
+        diff = scipy.sqrt(((out - psinorm_grid)**2).max()) / scipy.absolute(psinorm_grid).max()
+        self.assertLessEqual(diff, tol)
+        
+        diff = scipy.sqrt(((out_t - psinorm_grid_t)**2).max()) / scipy.absolute(psinorm_grid_t).max()
+        self.assertLessEqual(diff, tol)
+    
+    def test_psinorm2volnorm(self):
+        psinorm_grid = scipy.linspace(0, 1, e.getFluxVol().shape[1])
+        psinorm_grid_t = scipy.linspace(0, 1, et.getFluxVol().shape[1])
+        
+        volnorm_grid = e.getFluxVol() / e.getFluxVol()[:, -1, scipy.newaxis]
+        volnorm_grid_t = et.getFluxVol() / et.getFluxVol()[:, -1, scipy.newaxis]
+        
+        out = e.psinorm2volnorm(psinorm_grid, e.getTimeBase())
+        out_t = et.psinorm2volnorm(psinorm_grid, et.getTimeBase())
+        
+        diff = scipy.sqrt(((out - volnorm_grid)**2).max()) / scipy.absolute(volnorm_grid).max()
+        self.assertLessEqual(diff, tol)
+        
+        diff = scipy.sqrt(((out_t - volnorm_grid_t)**2).max()) / scipy.absolute(volnorm_grid_t).max()
+        self.assertLessEqual(diff, tol)
+    
+    def test_psinorm2rmid(self):
+        psinorm_grid = scipy.linspace(0, 1, e.getRmidPsi().shape[1])
+        psinorm_grid_t = scipy.linspace(0, 1, et.getRmidPsi().shape[1])
+        
+        out = e.psinorm2rmid(psinorm_grid, e.getTimeBase())
+        out_t = et.psinorm2rmid(psinorm_grid, et.getTimeBase())
+        
+        # TODO: Fix NaN at 0!
+        # diff = scipy.sqrt(((out - e.getRmidPsi())**2).max()) / scipy.absolute(e.getRmidPsi()).max()
+        res2 = (out - e.getRmidPsi())**2
+        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(e.getRmidPsi()).max()
+        self.assertLessEqual(diff, tol)
+        
+        self.assertLessEqual(diff, tol)
+        
+        # diff = scipy.sqrt(((out_t - et.getRmidPsi())**2).max()) / scipy.absolute(et.getRmidPsi()).max()
+        res2 = (out_t - et.getRmidPsi())**2
+        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(et.getRmidPsi()).max()
+        self.assertLessEqual(diff, tol)
+        
+    def test_roa2rmid(self):
+        roa_grid = scipy.linspace(0, 1, len(e.getRGrid()))
+        out = e.roa2rmid(roa_grid, e.getTimeBase())
+        
+        rmid_grid = (
+            roa_grid[scipy.newaxis, :] * (e.getRmidOut()[:, scipy.newaxis] -
+            e.getMagR()[:, scipy.newaxis]) + e.getMagR()[:, scipy.newaxis]
+        )
+        
+        diff = scipy.sqrt(((out - rmid_grid)**2).max()) / scipy.absolute(rmid_grid).max()
+        self.assertLessEqual(diff, tol)
+        
+        roa_grid_t = scipy.linspace(0, 1, len(et.getRGrid()))
+        out_t = et.roa2rmid(roa_grid_t, et.getTimeBase())
+        
+        rmid_grid_t = (
+            roa_grid_t[scipy.newaxis, :] * (et.getRmidOut()[:, scipy.newaxis] -
+            et.getMagR()[:, scipy.newaxis]) + et.getMagR()[:, scipy.newaxis]
+        )
+        
+        diff = scipy.sqrt(((out_t - rmid_grid_t)**2).max()) / scipy.absolute(rmid_grid_t).max()
+        self.assertLessEqual(diff, tol)
+    
+    def test_psinorm2phinorm(self):
+        pass
+        # TODO: Write a good test for this.
+
 if __name__ == '__main__':
     unittest.main()
