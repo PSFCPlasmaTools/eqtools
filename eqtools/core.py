@@ -6499,6 +6499,8 @@ class Equilibrium(object):
             
             if self.getInfo().__dict__['tree'][: 3] == 'tcv':
                 _inTitle = 'LIUQE'
+                psi.set_xlim([0.5, 1.2])
+                psi.set_ylim([ - 0.8, 0.8])
             else:
                 _inTitle = 'EFIT'
             title.set_text(_inTitle + ' Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
