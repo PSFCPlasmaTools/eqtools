@@ -650,8 +650,8 @@ class Equilibrium(object):
                 out_vals = scipy.reshape(out_vals, original_shape)
         
         # Correct for current sign:
-        out_vals = -1.0 * out_vals * self.getCurrentSign()
-        
+        # out_vals = -1.0 * out_vals * self.getCurrentSign()
+        out_vals *= self.getCurrentSign()
         if return_t:
             if self._tricubic:
                 return out_vals, (t, single_time, single_val, original_shape)
@@ -6445,6 +6445,9 @@ class Equilibrium(object):
             macx = None
             macy = None
 
+        if self.getInfo().__dict__['tree'][:3] == 'tcv': 
+            mask = False
+
         #event handler for arrow key events in plot windows.  Pass slider object
         #to update as masked argument using lambda function
         #lambda evt: arrow_respond(my_slider,evt)
@@ -6459,11 +6462,20 @@ class Equilibrium(object):
         gs = mplgs.GridSpec(2,1,height_ratios=[30,1])
         psi = fluxPlot.add_subplot(gs[0,0])
         psi.set_aspect('equal')
+        if self.getInfo().__dict__['tree'][:3] == 'tcv': 
+            tilesP, vesselP = self.getMachineCrossSectionPatch()
+            psi.add_patch(tilesP)
+            psi.add_patch(vesselP)
+            psi.set_xlim([0.6, 1.2])
+            psi.set_ylim([ - 0.8, 0.8])
         timeSliderSub = fluxPlot.add_subplot(gs[1,0])
         title = fluxPlot.suptitle('')
 
         # dummy plot to get x,ylims
-        psi.contour(rGrid,zGrid,psiRZ[0],1)
+        if self.getInfo().__dict__['tree'][:3] == 'tcv': 
+            _c = psi.contour(rGrid,zGrid,psiRZ[0],10, colors = 'k')
+        else: 
+            _c = psi.contour(rGrid,zGrid,psiRZ[0],1)
 
         # generate graphical mask for limiter wall
         if mask:
@@ -6471,10 +6483,10 @@ class Equilibrium(object):
             ylim = psi.get_ylim()
             bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
             poly_verts = [(limx[i],limy[i]) for i in range(len(limx) - 1, -1, -1)]
-
+            
             bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
             poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
-
+            
             path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
             patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
 
@@ -6482,9 +6494,17 @@ class Equilibrium(object):
             psi.clear()
             t_idx = int(timeSlider.val)
 
-            title.set_text('EFIT Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
+            # we add a different title for the case of TCV. We use appropriate field
+            # save in the info
+            
+            if self.getInfo().__dict__['tree'][: 3] == 'tcv':
+                _inTitle = 'LIUQE'
+            else:
+                _inTitle = 'EFIT'
+            title.set_text(_inTitle + ' Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
             psi.set_xlabel('$R$ [m]')
             psi.set_ylabel('$Z$ [m]')
+
             if macx is not None:
                 psi.plot(macx,macy,'k',linewidth=3,zorder=5)
             elif limx is not None:
@@ -6498,11 +6518,22 @@ class Equilibrium(object):
                 psi.contourf(rGrid,zGrid,psiRZ[t_idx],50,zorder=2)
                 psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid',zorder=3)
             else:
-                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,linestyles='solid',zorder=2)
+                if self.getInfo().__dict__['tree'][: 3] != 'tcv':
+                    psi.contour(rGrid,zGrid,psiRZ[t_idx],50,linestyles='solid',zorder=2)
+                else: 
+                    psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors = 'k')
             if mask:
                 patchdraw = psi.add_patch(patch)
                 patchdraw.set_zorder(4)
+            if self.getInfo().__dict__['tree'][:3] == 'tcv': 
+                psi.add_patch(tilesP)
+                psi.add_patch(vesselP)
+                psi.set_xlim([0.5, 1.2])
+                psi.set_ylim([ - 0.8, 0.8])
+
             fluxPlot.canvas.draw()
+
+
 
         timeSlider = mplw.Slider(timeSliderSub,'t index',0,len(t)-1,valinit=0,valfmt="%d")
         timeSlider.on_changed(updateTime)
