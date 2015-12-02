@@ -523,7 +523,7 @@ class TCVLIUQETree(EFITTree):
 
                 #This should be faster through some vectorization/ shoving down to fortran matrix multiplication subroutines
                 rad = [scipy.ones(psiV.shape)]
-                for i in duData.shape[1]-1:
+                for i in range(duData.shape[1]-1):
                     rad += [rad[-1]*psiV]
                 rad = scipy.vstack(rad)
 
