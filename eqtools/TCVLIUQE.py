@@ -467,9 +467,9 @@ class TCVLIUQETree(EFITTree):
 
                 rad = [psiV]
                 for i in range(duData.shape[1]-1):
-                    rad += [rad[-1]*psiV*(i+1)/(i+1)]
+                    rad += [rad[-1]*psiV*(i+1)/(i+2)]
                 rad = scipy.vstack(rad)
-                self._fluxPres = scipy.reshape(self.getFluxAxis(),(self.getFluxAxis().size,1))*scipy.dot(duData,rad)
+                self._fluxPres = scipy.reshape(self.getFluxAxis(),(self.getFluxAxis().size,1))*scipy.dot(duData,rad)/(2*scipy.pi)
 
                 self._defaultUnits['_fluxPres'] = 'Pa'
             except TreeException:
