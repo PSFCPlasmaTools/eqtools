@@ -24,7 +24,6 @@ import scipy
 from collections import namedtuple
 from .EFIT import EFITTree
 from .core import PropertyAccessMixin, ModuleWarning
-import numpy as np
 import warnings
 
 try:
@@ -46,6 +45,38 @@ except Exception as _e_MDS:
                       % (_e_MDS.__class__, _e_MDS.message),
                       ModuleWarning)
     _has_MDS = False
+
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib.widgets as mplw
+    import matplotlib.gridspec as mplgs
+    import matplotlib.patches as mpatches
+    import matplotlib.path as mpath
+    from matplotlib.path import Path
+    from matplotlib.patches import PathPatch
+    from matplotlib.ticker import MaxNLocator
+    import matplotlib._cntr as cntr
+
+except Exception:
+    warnings.warn("matplotlib modules could not be loaded -- plotting and gfile"
+                  " writing will not be available.",
+                  ModuleWarning)
+
+# we need to define the green function area from the polygon
+# see http://stackoverflow.com/questions/22678990/how-can-i-calculate-the-area-within-a-contour-in-python-using-the-matplotlib
+# see also http://stackoverflow.com/questions/18304722/python-find-contour-lines-from-matplotlib-pyplot-contour
+# for how to compute the contours without calling matplotlib contours
+def greenArea(vs):
+    a = 0
+    x0,y0 = vs[0]
+    for [x1,y1] in vs[1:]:
+        dx = x1-x0
+        dy = y1-y0
+        a += 0.5*(y0*dx - x0*dy)
+        x0 = x1
+        y0 = y1
+    return a
+
 
 class TCVLIUQETree(EFITTree):
     """Inherits :py:class:`eqtools.EFIT.EFITTree` class. Machine-specific data
@@ -168,7 +199,7 @@ class TCVLIUQETree(EFITTree):
         if self._psiRZ is None:
             try:
                 psinode = self._MDSTree.getNode(self._root+'::psi')
-                self._psiRZ = psinode.data() / 2./ np.pi
+                self._psiRZ = psinode.data() / (2.*scipy.pi)
                 self._rGrid = psinode.dim_of(0).data()
                 self._zGrid = psinode.dim_of(1).data()
                 self._defaultUnits['_psiRZ'] = str(psinode.units)
@@ -228,7 +259,7 @@ class TCVLIUQETree(EFITTree):
         if self._psiAxis is None:
             try:
                 psiAxisNode = self._MDSTree.getNode(self._root+'::psi_axis')
-                self._psiAxis =  psiAxisNode.data() / 2./ np.pi
+                self._psiAxis =  psiAxisNode.data() / (2.*scipy.pi)
                 self._defaultUnits['_psiAxis'] = str(psiAxisNode.units)
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -249,7 +280,7 @@ class TCVLIUQETree(EFITTree):
                 # psiLCFSNode = self._MDSTree.getNode(self._root+'::surface_flux')
                 # self._psiLCFS = psiLCFSNode.data()
                 # self._defaultUnits['_psiLCFS'] = str(psiLCFSNode.units)
-                self._psiLCFS = np.zeros(self.getTimeBase().size)
+                self._psiLCFS = scipy.zeros(self.getTimeBase().size)
                 self._defaultUnits['_psiLCFS'] = 'T*m^2'
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -275,44 +306,29 @@ class TCVLIUQETree(EFITTree):
         """
         if self._fluxVol is None:
             try:
-                import matplotlib._cntr as cntr
-                # we need to define the green function area from the polygon
-                # see http://stackoverflow.com/questions/22678990/how-can-i-calculate-the-area-within-a-contour-in-python-using-the-matplotlib
-                # see also http://stackoverflow.com/questions/18304722/python-find-contour-lines-from-matplotlib-pyplot-contour
-                # for how to compute the contours without calling matplotlib contours
-                def greenArea(vs):
-                    a = 0
-                    x0,y0 = vs[0]
-                    for [x1,y1] in vs[1:]:
-                        dx = x1-x0
-                        dy = y1-y0
-                        a += 0.5*(y0*dx - x0*dy)
-                        x0 = x1
-                        y0 = y1
-                    return a
 
                 # first determine npsi
                 nPsi = self.getRmidPsi().shape[1]
                 # then the psi from psiGrid
                 psiRZ = self.getFluxGrid()
                 # the rGrid, zGrid in an appropriate mesh
-                x, y = np.meshgrid(self.getRGrid(), self.getZGrid())
+                R, Z = scipy.meshgrid(self.getRGrid(), self.getZGrid())
                 # read the LCFS Volume and Area and compute the appropriate twopi R
-                _rUsed = self.getVolLCFS() / self.getAreaLCFS()
+                rUsed = self.getVolLCFS() / self.getAreaLCFS()
                 # define the output
-                volumes = np.zeros((psiRZ.shape[0], nPsi))
+                volumes = scipy.zeros((psiRZ.shape[0], nPsi))
+                outArea = scipy.zeros(nPsi)
                 # now we start to iterate over the times
                 for i in range(psiRZ.shape[0]):
-                    z = psiRZ[i,: ,: ]
+                    psi = psiRZ[i]
                     # define the levels
-                    levels = np.linspace(z.max(), 0, nPsi)
-                    _outArea = np.zeros(nPsi)
-                    _c = cntr.Cntr(x, y, z)
+                    levels = scipy.linspace(psi.max(), 0, nPsi)
+                    c = cntr.Cntr(R, Z, psi)
                     for j in range(nPsi - 1):
-                        nlist = _c.trace(levels[j + 1])
+                        nlist = c.trace(levels[j + 1])
                         segs = nlist[: len(nlist) // 2]
-                        _outArea[j + 1] = np.abs(greenArea(np.asarray(segs)[0,: ,: ]))
-                    volumes[i,: ] = _outArea * 2 * np.pi * _rUsed[i]
+                        outArea[j + 1] = abs(greenArea(segs[0]))
+                    volumes[i,: ] = outArea * 2 * scipy.pi * rUsed[i]
                 # then the levels for the contours
                 self._fluxVol = volumes
                 # Units aren't properly stored in the tree for this one!
@@ -444,14 +460,17 @@ class TCVLIUQETree(EFITTree):
         if self._fluxPres is None:
             try:
                 fluxPPresNode = self._MDSTree.getNode(self._root+'::ppr_coeffs')
-                _duData = fluxPPresNode.data()
+                duData = fluxPPresNode.data()
                 # then we build an appropriate grid 
-                nPsi = self._RmidPsi.shape[1]
-                psiV = np.linspace(1,0,nPsi)
-                self._fluxPres =  np.asarray([self.getFluxAxis()[j] * np.sum(np.asarray([_duData[j , i] / (i + 1) * psiV ** (i +
-                                                                                                                    1)
-                                                                                for i in range(_duData.shape[1])]), axis = 0)
-                                                              for j in range(_duData.shape[0])]) / np.pi / 2.
+                nPsi = self.getRmidPsi().shape[1]
+                psiV = scipy.linspace(1,0,nPsi)
+
+                rad = [psiV]
+                for i in range(duData.shape[1]-1):
+                    rad += [rad[-1]*psiV*(i+1)/(i+2)]
+                rad = scipy.vstack(rad)
+                self._fluxPres = scipy.dot(duData,rad)/(2*scipy.pi)
+
                 self._defaultUnits['_fluxPres'] = 'Pa'
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -489,20 +508,26 @@ class TCVLIUQETree(EFITTree):
             ValueError: if module cannot retrieve data from MDS tree.
         """
         # raise NotImplementedError()
-        # in Liuqe pprime is not given in the appropriate flux surface but it is saved das coefficients
+        # in Liuqe pprime is not given in the appropriate flux surface but it is saved as coefficients
         # ppr_coeffs. So we need to build the derivative as
         # p' = p0 + p1 * phi + p2 * phi^2 + p3 * phi^3 with phi = (psi - psi_edge) / (psi_axis - psi_edge)
         # But conventionally psi_edge on TCV = 0 -->  phi = psi / psi_axis
         if self._pprime is None:
             try:
                 fluxPPresNode = self._MDSTree.getNode(self._root+'::ppr_coeffs')
-                _duData = fluxPPresNode.data()
+                duData = fluxPPresNode.data()
+
                 # then we build an appropriate grid 
-                nPsi = self._RmidPsi.shape[1]
-                psiV = np.linspace(1, 0, nPsi)
-                self._pprime = np.asarray([np.sum(np.asarray([_duData[j , i] * psiV ** i 
-                                                              for i in range(_duData.shape[1])]), axis = 0)
-                                           for j in range(_duData.shape[0])]) 
+                nPsi = self.getRmidPsi().shape[1]
+                psiV = scipy.linspace(1, 0, nPsi)
+
+                #This should be faster through some vectorization/ shoving down to fortran matrix multiplication subroutines
+                rad = [scipy.ones(psiV.shape)]
+                for i in duData.shape[1]-1:
+                    rad += [rad[-1]*psiV]
+                rad = scipy.vstack(rad)
+
+                self._pprime = scipy.dot(duData,rad)/(2*scipy.pi)
                 self._defaultUnits['_fluxPres'] = 'A/m^3'
             except TreeException:
                 raise ValueError('data retrieval failed.')
@@ -770,13 +795,10 @@ class TCVLIUQETree(EFITTree):
         """
         if self._btaxv is None:
             try:
-                c = MDSplus.Connection('tcvdata.epfl.ch')
-                c.openTree('tcv_shot', self._shot)
-                bt = c.get('tcv_eq("BZERO")').data()[0,: ] * .996/0.88
-                btTime = c.get('dim_of(tcv_eq("BZERO"))').data()
-                c.closeTree('tcv_shot', self._shot)
+                bt = self._MDSTree.get('tcv_eq("BZERO")').data()[0] * .996/0.88
+                btTime = self._MDSTree.get('dim_of(tcv_eq("BZERO"))').data()
                 # we need to interpolate on the time basis of LIUQE
-                btaxvNode = np.interp(self.getTimeBase(), btTime, bt)
+                btaxvNode = scipy.interp(self.getTimeBase(), btTime, bt)
                 self._defaultUnits['_btaxv'] = 'T'
             except (TreeException, AttributeError):
                 raise ValueError('data retrieval failed.')
@@ -833,12 +855,9 @@ class TCVLIUQETree(EFITTree):
         """
         if self._IpMeas is None:
             try:
-                c = MDSplus.Connection('tcvdata.epfl.ch')
-                c.openTree('tcv_shot', self._shot)
-                ip = c.get('tcv_ip()').data()
-                ipTime = c.get('dim_of(tcv_ip())').data()
-                c.closeTree('tcv_shot', self._shot)
-                self._IpMeas = np.interp(self.getTimeBase(), ipTime, ip)
+                ip = self._MDSTree.get('tcv_ip()').data()
+                ipTime = self._MDSTree.get('dim_of(tcv_ip())').data()
+                self._IpMeas = scipy.interp(self.getTimeBase(), ipTime, ip)
                 self._defaultUnits['_IpMeas'] = 'A'
             except (TreeException, AttributeError):
                 raise ValueError('data retrieval failed.')
@@ -956,7 +975,6 @@ class TCVLIUQETree(EFITTree):
         """
         #pull cross-section from tree
         try:
-            ccT = MDSplus.Tree('tcv_shot', self._shot)
             self._Rlimiter = MDSplus.Data.execute('static("r_t")').getValue().data()
             self._Zlimiter = MDSplus.Data.execute('static("z_t")').getValue().data()
         except MDSplus._treeshr.TreeException:
@@ -964,7 +982,7 @@ class TCVLIUQETree(EFITTree):
 
         return (self._Rlimiter,self._Zlimiter)
 
-    ## ---  59
+    ## ---  60
     def getMachineCrossSectionPatch(self):
         """Pulls TCV cross-section data from tree, converts it directly to
         a matplotlib patch which can be simply added to the approriate axes
@@ -978,7 +996,6 @@ class TCVLIUQETree(EFITTree):
         """
         #pull cross-section from tree
         try:
-            ccT = MDSplus.Tree('tcv_shot', self._shot)
             Rv_in = MDSplus.Data.execute('static("r_v:in")').getValue().data()
             Rv_out = MDSplus.Data.execute('static("r_v:out")').getValue().data()
             Zv_in = MDSplus.Data.execute('static("z_v:in")').getValue().data()
@@ -986,9 +1003,6 @@ class TCVLIUQETree(EFITTree):
         except MDSplus._treeshr.TreeException:
             raise ValueError('data load failed.')
 
-        from matplotlib.path import Path
-        from matplotlib.patches import PathPatch
-        from matplotlib.ticker import MaxNLocator
         # this is for the vessel
         verticesIn = [r for r in zip(Rv_in, Zv_in)]
         verticesIn.append(verticesIn[0])
@@ -1013,6 +1027,129 @@ class TCVLIUQETree(EFITTree):
 
         return (tiles_patch , vessel_patch)
 
+    ## ---  61        
+    def plotFlux(self, fill=True, mask=False):
+        """Plots LIQUE TCV flux contours directly from psi grid.
+        
+        Returns the Figure instance created and the time slider widget (in case
+        you need to modify the callback). `f.axes` contains the contour plot as
+        the first element and the time slice slider as the second element.
+        
+        Keyword Args:
+            fill (Boolean):
+                Set True to plot filled contours.  Set False (default) to plot white-background
+                color contours.
+        """
+        
+        try:
+            psiRZ = self.getFluxGrid()
+            rGrid = self.getRGrid(length_unit='m')
+            zGrid = self.getZGrid(length_unit='m')
+            t = self.getTimeBase()
+
+            RLCFS = self.getRLCFS(length_unit='m')
+            ZLCFS = self.getZLCFS(length_unit='m')
+        except ValueError:
+            raise AttributeError('cannot plot EFIT flux map.')
+        try:
+            limx, limy = self.getMachineCrossSection()
+        except NotImplementedError:
+            if self._verbose:
+                print('No machine cross-section implemented!')
+            limx = None
+            limy = None
+        try:
+            macx, macy = self.getMachineCrossSectionFull()
+        except:
+            macx = None
+            macy = None
+
+        #event handler for arrow key events in plot windows.  Pass slider object
+        #to update as masked argument using lambda function
+        #lambda evt: arrow_respond(my_slider,evt)
+        def arrowRespond(slider,event):
+            if event.key == 'right':
+                slider.set_val(min(slider.val+1, slider.valmax))
+            if event.key == 'left':
+                slider.set_val(max(slider.val-1, slider.valmin))
+
+        #make time-slice window
+        fluxPlot = plt.figure(figsize=(6,11))
+        gs = mplgs.GridSpec(2,1,height_ratios=[30,1])
+        psi = fluxPlot.add_subplot(gs[0,0])
+        psi.set_aspect('equal')
+        try:
+            tilesP, vesselP = self.getMachineCrossSectionPatch()
+            psi.add_patch(tilesP)
+            psi.add_patch(vesselP)
+        except NotImplementedError:
+            if self._verbose:
+                print('No machine cross-section implemented!')
+        psi.set_xlim([0.6, 1.2])
+        psi.set_ylim([-0.8, 0.8])
+
+
+        timeSliderSub = fluxPlot.add_subplot(gs[1,0])
+        title = fluxPlot.suptitle('')
+
+        # dummy plot to get x,ylims
+        psi.contour(rGrid,zGrid,psiRZ[0],10, colors='k')
+
+        # generate graphical mask for limiter wall
+        if mask:
+            xlim = psi.get_xlim()
+            ylim = psi.get_ylim()
+            bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
+            poly_verts = [(limx[i],limy[i]) for i in range(len(limx) - 1, -1, -1)]
+
+            bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
+            poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
+
+            path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
+            patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
+
+        def updateTime(val):
+            psi.clear()
+            t_idx = int(timeSlider.val)
+
+        
+            psi.set_xlim([0.5, 1.2])
+            psi.set_ylim([-0.8, 0.8])
+
+            title.set_text('LIUQE Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
+            psi.set_xlabel('$R$ [m]')
+            psi.set_ylabel('$Z$ [m]')
+            if macx is not None:
+                psi.plot(macx,macy,'k',linewidth=3,zorder=5)
+            elif limx is not None:
+                psi.plot(limx,limy,'k',linewidth=3,zorder=5)
+            # catch NaNs separating disjoint sections of R,ZLCFS in mask
+            maskarr = scipy.where(scipy.logical_or(RLCFS[t_idx] > 0.0,scipy.isnan(RLCFS[t_idx])))
+            RLCFSframe = RLCFS[t_idx,maskarr[0]]
+            ZLCFSframe = ZLCFS[t_idx,maskarr[0]]
+            psi.plot(RLCFSframe,ZLCFSframe,'r',linewidth=3,zorder=3)
+            if fill:
+                psi.contourf(rGrid,zGrid,psiRZ[t_idx],50,zorder=2)
+                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid',zorder=3)
+            else:
+                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k')
+            if mask:
+                patchdraw = psi.add_patch(patch)
+                patchdraw.set_zorder(4)
+
+            psi.add_patch(tilesP)
+            psi.add_patch(vesselP)
+            psi.set_xlim([0.5, 1.2])
+            psi.set_ylim([-0.8, 0.8])
+
+            fluxPlot.canvas.draw()
+
+        timeSlider = mplw.Slider(timeSliderSub,'t index',0,len(t)-1,valinit=0,valfmt="%d")
+        timeSlider.on_changed(updateTime)
+        updateTime(0)
+
+        plt.ion()
+        fluxPlot.show()
 
 
 class TCVLIUQETreeProp(TCVLIUQETree, PropertyAccessMixin):
