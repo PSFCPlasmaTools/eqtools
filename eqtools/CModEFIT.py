@@ -29,7 +29,11 @@ import warnings
 
 try:
     import MDSplus
-    from MDSplus._treeshr import TreeException
+    try: 
+        from MDSplus._treeshr import TreeException
+    except: 
+        from MDSplus.mdsExceptions.treeshrExceptions import TreeException
+
     _has_MDS = True
 except Exception as _e_MDS:
     if isinstance(_e_MDS, ImportError):
@@ -345,6 +349,25 @@ class CModEFITTree(EFITTree):
         y = scipy.array(y)
         return (x, y)
 
+    def getRCentr(self, length_unit=1):
+        """returns EFIT radius where Bcentr evaluated
+
+        Returns:
+            R: Radial position where Bcent calculated [m]
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
+        """
+        if self._RCentr is None:
+            try:
+                RCentrNode = self._MDSTree.getNode(self._root+self._afile+':RCENCM')
+                self._RCentr = RCentrNode.data()
+                self._defaultUnits['_RCentr'] = str(RCentrNode.units)
+            except (TreeException, AttributeError):
+                raise ValueError('data retrieval failed.')        
+    
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RCentr'], length_unit)
+        return unit_factor * self._RCentr.copy()
 
 class CModEFITTreeProp(CModEFITTree, PropertyAccessMixin):
     """CModEFITTree with the PropertyAccessMixin added to enable property-style

@@ -6315,6 +6315,22 @@ class Equilibrium(object):
         """
         raise NotImplementedError()
 
+    def getBCentr(self):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Returns Vacuum Toroidal magnetic field at Rcent point [t]
+        """
+        raise NotImplementedError()
+
+    def getRCentr(self):
+        """
+        Abstract method.  See child classes for implementation.
+        
+        Radial position for Vacuum Toroidal magnetic field calculation
+        """
+        raise NotImplementedError()
+
     def getEnergy(self):
         """
         Abstract method.  See child classes for implementation.
