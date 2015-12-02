@@ -698,7 +698,10 @@ class TCVLIUQETree(EFITTree):
         """
         if self._RmidLCFS is None:
             try:
-                self._RmidLCFS = self.getAOut()+0.88
+                # this variable is not saved in the pulse file.
+                # we compute this by adding the Major radius of the machine to the computed AOut()
+                RMaj = 0.88/0.996 # almost 0.88
+                self._RmidLCFS = self.getAOut()+RMaj
                 # The units aren't properly stored in the tree for this one!
                 # Should be meters.
                 self._defaultUnits['_RmidLCFS'] = 'm'
@@ -795,10 +798,13 @@ class TCVLIUQETree(EFITTree):
         """
         if self._btaxv is None:
             try:
-                bt = self._MDSTree.get('tcv_eq("BZERO")').data()[0] * .996/0.88
+                # constant is due to a detailed measurements on the vacuum vessel major radius
+                # introduce to be consistent with TDI function tcv_eq.fun
+                RMaj = 0.88/0.996 # almost 0.88 m
+                bt = self._MDSTree.get('tcv_eq("BZERO")').data()[0]/RMaj
                 btTime = self._MDSTree.get('dim_of(tcv_eq("BZERO"))').data()
                 # we need to interpolate on the time basis of LIUQE
-                btaxvNode = scipy.interp(self.getTimeBase(), btTime, bt)
+                self._btaxv = scipy.interp(self.getTimeBase(), btTime, bt)
                 self._defaultUnits['_btaxv'] = 'T'
             except (TreeException, AttributeError):
                 raise ValueError('data retrieval failed.')
