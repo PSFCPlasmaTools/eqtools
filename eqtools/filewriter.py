@@ -108,7 +108,7 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
     
     gfiler.write(_fmt([obj.getRGrid()[-1]-obj.getRGrid()[0],
                        obj.getZGrid()[-1]-obj.getZGrid()[0],
-                       0.,
+                       obj.getRCentr(),
                        obj.getRGrid()[0],
                        obj.getZGrid()[-1]/2.+obj.getZGrid()[0]/2.]))
 
@@ -119,16 +119,24 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
         #THIS IS VERY SLOW DUE TO A LIMITATION IN THE INTERP1D FUNCTION
         psiLCFS = -1*obj.getCurrentSign()*obj._getLCFSPsiSpline()(tin)
         psi0 = -1*obj.getCurrentSign()*obj._getPsi0Spline()(tin)
+        bcent = scipy.interpolate.interp1d(obj.getTimeBase(),
+                                           obj.getBCentr(),
+                                           kind = 'cubic',
+                                           bounds_error=False)
+        bcent0 = bcent(tin)
+
     else:
         idx = obj._getNearestIdx(tin,obj.getTimeBase())
         psiLCFS = obj.getFluxLCFS()[idx]
         psi0 = obj.getFluxAxis()[idx]
-
+        bcent0 = obj.getBCentr()[idx]
+        
     gfiler.write(_fmt([rcent,
                        zcent,
                        psi0,
                        psiLCFS,
-                       0.])) # need to get bzero getter...   
+                       bcent0]))
+
     if obj._tricubic:
         temp = scipy.interpolate.interp1d(obj.getTimeBase(),
                                           obj.getIpCalc(),
