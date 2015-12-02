@@ -28,11 +28,12 @@ from .core import PropertyAccessMixin, ModuleWarning
 import warnings
 
 try:
-    import MDSplus
+    import MDSplus 
     try: 
         from MDSplus._treeshr import TreeException
     except: 
         from MDSplus.mdsExceptions.treeshrExceptions import TreeException
+
     _has_MDS = True
 except Exception as _e_MDS:
     if isinstance(_e_MDS, ImportError):

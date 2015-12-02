@@ -33,6 +33,7 @@ try:
         from MDSplus._treeshr import TreeException
     except: 
         from MDSplus.mdsExceptions.treeshrExceptions import TreeException
+
     _has_MDS = True
 except Exception as _e_MDS:
     if isinstance(_e_MDS, ImportError):
@@ -138,6 +139,7 @@ class EFITTree(Equilibrium):
         self._btaxp = None                                                   #Bt on-axis, with plasma (t)
         self._btaxv = None                                                   #Bt on-axis, vacuum (t)
         self._bpolav = None                                                  #avg poloidal field (t)
+        self._BCentr = None                                                  #Bt at RCentr, vacuum (for gfiles) (t)
 
         #plasma current
         self._IpCalc = None                                                  #EFIT-calculated plasma current (t)
@@ -166,6 +168,7 @@ class EFITTree(Equilibrium):
         self._areaLCFS = None                                                #LCFS surface area (t)
         self._RLCFS = None                                                   #R-positions of LCFS (t,n)
         self._ZLCFS = None                                                   #Z-positions of LCFS (t,n)
+        self._RCentr = None                                                  #Radius for BCentr calculation (for gfiles) (t)
         
         #machine geometry parameters
         self._Rlimiter = None                                                #R-positions of vacuum-vessel wall (t)
@@ -1439,6 +1442,44 @@ class EFITTree(Equilibrium):
             except (TreeException, AttributeError):
                 raise ValueError('data retrieval failed.')
         return self._Wpdot.copy()
+
+    def getBCentr(self):
+        """returns EFIT-Vacuum toroidal magnetic field in Tesla at Rcentr
+
+        Returns:
+            B_cent (Array): [nt] array of B_t at center [T]
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
+        """
+        if self._BCentr is None:
+            try:
+                BCentrNode = self._MDSTree.getNode(self._root+self._gfile+':bcentr')
+                self._BCentr = BCentrNode.data()
+                self._defaultUnits['_BCentr'] = str(BCentrNode.units)
+            except (TreeException, AttributeError):
+                raise ValueError('data retrieval failed.')
+        return self._BCentr.copy()
+
+    def getRCentr(self, length_unit=1):
+        """returns EFIT radius where Bcentr evaluated
+
+        Returns:
+            R: Radial position where Bcent calculated [m]
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
+        """
+        if self._Rcentr is None:
+            try:
+                RCentrNode = self._MDSTree.getNode(self._root+self._gfile+':rcentr')
+                self._RCentr = RCentrNode.data()
+                self._defaultUnits['_RCentr'] = str(RCentrNode.units)
+            except (TreeException, AttributeError):
+                raise ValueError('data retrieval failed.')        
+    
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RCentr'], length_unit)
+        return unit_factor * self._RCentr.copy()
 
     def getEnergy(self):
         """pulls EFIT-calculated energy parameters - stored energy, tau_E, 
