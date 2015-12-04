@@ -248,7 +248,8 @@ class EqdskReader(Equilibrium):
             line = re.findall('-?\d\.\d*[eE][-+]\d*',line)     # regex magic!
             xdim = float(line[0])     # width of R-axis in grid
             zdim = float(line[1])     # height of Z-axis in grid
-            #rzero = float(line[2])    # zero point of R grid
+            self._RCentr = float(line[2])    # rcentr for Bcentr
+            self._defaultUnits['_RCentr'] = 'm'
             rgrid0 = float(line[3])   # start point of R grid
             zmid = float(line[4])     # midpoint of Z grid
 
@@ -269,7 +270,7 @@ class EqdskReader(Equilibrium):
             self._defaultUnits['_zmag'] = 'm'
             self._psiAxis = scipy.array([float(line[2])])
             self._psiLCFS = scipy.array([float(line[3])])
-            self._bzero = scipy.array([float(line[4])])
+            self._BCentr = scipy.array([float(line[4])])
             self._defaultUnits['_psiAxis'] = 'Wb/rad'
             self._defaultUnits['_psiLCFS'] = 'Wb/rad'
 
@@ -2125,6 +2126,31 @@ class EqdskReader(Equilibrium):
             raise ValueError('must read a-file for this data.')
         else:
             return self._Wpdot.copy()
+
+    def getBCentr(self):
+        """returns Vacuum toroidal magnetic field in Tesla at Rcentr
+
+        Returns:
+            B_cent (Array): [nt] array of B_t at center [T]
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
+        """
+
+        return self._BCentr.copy()
+
+    def getRCentr(self, length_unit=1):
+        """returns radius where Bcentr evaluated
+
+        Returns:
+            R: Radial position where Bcent calculated [m]
+
+        Raises:
+            ValueError: if module cannot retrieve data from MDS tree.
+        """
+
+        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RCentr'], length_unit)
+        return unit_factor * self._RCentr.copy()
 
     def getEnergy(self):
         """Pulls EFIT stored energy, energy confinement time, injected power, 
