@@ -25,8 +25,6 @@ import scipy.integrate
 import re
 import warnings
 
-__version__ = '1.2'
-
 class ModuleWarning(Warning):
     """Warning class to notify the user of unavailable modules.
     """
