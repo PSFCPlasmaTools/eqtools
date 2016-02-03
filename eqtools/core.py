@@ -4934,9 +4934,9 @@ class Equilibrium(object):
                 return (scipy.absolute(a - v)).argmin()
         else:
             try:
-                return scipy.digitize(v,(a[1:]+a[:-1])/2.0)
+                return scipy.digitize(v, (a[1:] + a[:-1]) / 2.0)
             except ValueError:
-                return scipy.digitize(scipy.atleast_1d(v),(a[1:]+a[:-1])/2.0).reshape(())
+                return scipy.digitize(scipy.atleast_1d(v), (a[1:] + a[:-1]) / 2.0).reshape(())
     
     def _getFluxBiSpline(self, idx):
         """Gets the spline corresponding to the given time index, generating as needed.

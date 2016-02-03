@@ -3,10 +3,22 @@ import scipy
 
 import eqtools
 
-shot = 1120914027
-# Run tests with both of these to be sure that tspline does everything right:
-e = eqtools.CModEFITTree(shot)
-et = eqtools.CModEFITTree(shot, tspline=True)
+try:
+    shot = 1120914027
+    # Run tests with both of these to be sure that tspline does everything right:
+    e = eqtools.CModEFITTree(shot)
+    et = eqtools.CModEFITTree(shot, tspline=True)
+except:
+    import warnings
+    warnings.warn(
+        "Could not access MDSplus data. Defaulting to pickled data. You may want "
+        "to modify unittests.py to use your own local data system to ensure "
+        "consistency for your use case.",
+        RuntimeWarning
+    )
+    import cPickle as pkl
+    with open('test_data.pkl', 'rb') as f:
+        shot, e, et = pkl.load(f)
 
 scalar_R = 0.75
 scalar_Z = 0.1
