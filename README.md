@@ -30,7 +30,7 @@ Two tests are included:
 
 - `test.py` uses the module `SolovievEFIT` to compare the result from `eqtools` to Soloviev's analytic solution to the Grad-Shafranov equation for circular flux surfaces. Running this script in an interactive Python session will yield a number of plots, where you can verify that the analytic and `eqtools` results agree.
 - `unittests.py` contains many tests of the internal consistency of the coordinate mapping routines. By default, it will try to access data from the Alcator C-Mod tree. If this is not possible, it will try to load its data from the file `test_data.pkl`. You may wish to modify the script to pull in data from your own local site to make sure the specific version you need is working properly. To run these tests, from the directory containing `unittests.py` and `test_data.pkl`, run the command::
-
+    
     python unittests.py
 
 Summary of Files
