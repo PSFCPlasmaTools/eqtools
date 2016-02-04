@@ -11,15 +11,15 @@ Full documentation is available at http://eqtools.readthedocs.org/
 Installation
 ------------
 
-The easiest way to install the latest release version is with pip::
+The easiest way to install the latest release version is with pip:
     
     pip install eqtools
 
-To install from source, uncompress the source files and, from the directory containing `setup.py`, run the following command::
+To install from source, uncompress the source files and, from the directory containing `setup.py`, run the following command:
     
     python setup.py install
 
-Or, to build in place, run::
+Or, to build in place, run:
     
     python setup.py build_ext --inplace
 
@@ -29,7 +29,7 @@ Running Tests
 Two tests are included:
 
 - `test.py` uses the module `SolovievEFIT` to compare the result from `eqtools` to Soloviev's analytic solution to the Grad-Shafranov equation for circular flux surfaces. Running this script in an interactive Python session will yield a number of plots, where you can verify that the analytic and `eqtools` results agree.
-- `unittests.py` contains many tests of the internal consistency of the coordinate mapping routines. By default, it will try to access data from the Alcator C-Mod tree. If this is not possible, it will try to load its data from the file `test_data.pkl`. You may wish to modify the script to pull in data from your own local site to make sure the specific version you need is working properly. To run these tests, from the directory containing `unittests.py` and `test_data.pkl`, run the command::
+- `unittests.py` contains many tests of the internal consistency of the coordinate mapping routines. By default, it will try to access data from the Alcator C-Mod tree. If this is not possible, it will try to load its data from the file `test_data.pkl`. You may wish to modify the script to pull in data from your own local site to make sure the specific version you need is working properly. To run these tests, from the directory containing `unittests.py` and `test_data.pkl`, run the command:
         
         python unittests.py
 
@@ -65,3 +65,4 @@ Test scripts are provided in the `tests` directory:
 - `SolovievEFIT.py`: Contains classes to construct analytic Soloviev equilibria with circular flux surfaces.
 - `test.py`: Compares the analytical solution to the results from `eqtools` for Soloviev's solution to the Grad-Shafranov equation with circular flux surfaces.
 - `unittests.py`: Conducts extensive consistency checks on all of the coordinate mapping routines.
+- `demo.py`: Contains a very bare-bones demo to make sure `eqtools` is working. For a more detailed tutorial, refer to the documentation at http://eqtools.readthedocs.org/
