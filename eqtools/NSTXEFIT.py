@@ -105,8 +105,13 @@ class NSTXEFITTree(EFITTree):
         root = '\\'+tree+'::top.results.'
 
         if not _has_MDS:
-            print("ERROR: MDSplus module did not load properly. Exception is below:")
-            raise _e_MDS
+            print("MDSplus module did not load properly. Exception is below:")
+            print(_e_MDS.__class__)
+            print(_e_MDS.message)
+            print(
+                "Most functionality will not be available! (But pickled data "
+                "will still be accessible.)"
+            )
 
         super(NSTXEFITTree, self).__init__(shot,
                                            tree,

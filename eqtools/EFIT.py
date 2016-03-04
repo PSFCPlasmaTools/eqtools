@@ -111,8 +111,13 @@ class EFITTree(Equilibrium):
     def __init__(self, shot, tree, root, length_unit='m', gfile = 'g_eqdsk', 
                  afile='a_eqdsk', tspline=False, monotonic=True):
         if not _has_MDS:
-            print("ERROR: MDSplus module did not load properly. Exception is below:")
-            raise _e_MDS
+            print("MDSplus module did not load properly. Exception is below:")
+            print(_e_MDS.__class__)
+            print(_e_MDS.message)
+            print(
+                "Most functionality will not be available! (But pickled data "
+                "will still be accessible.)"
+            )
 
         super(EFITTree, self).__init__(length_unit=length_unit, tspline=tspline, 
                                        monotonic=monotonic)
