@@ -8,6 +8,16 @@ Python tools for magnetic equilibria in tokamak plasmas.  Provides framework for
 
 Full documentation is available at http://eqtools.readthedocs.org/
 
+Package Dependencies
+--------------------
+The following packages are required and/or recommended:
+
+- NumPy: Required.
+- SciPy: Required.
+- F2PY: Optional, needed to build the optional `trispline` module.
+- matplotlib: Optional, needed to produce plot of flux surfaces.
+- MDSplus: Optional, needed to use data stored in MDSplus trees.
+
 Installation
 ------------
 
