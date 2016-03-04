@@ -10,7 +10,7 @@ Full documentation is available at http://eqtools.readthedocs.org/
 
 Package Dependencies
 --------------------
-The following packages are required and/or recommended:
+The following packages are required or recommended:
 
 - NumPy: Required.
 - SciPy: Required.
