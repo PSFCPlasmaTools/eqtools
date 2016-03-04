@@ -18,6 +18,10 @@ The following packages are required or recommended:
 - matplotlib: Optional, needed to produce plot of flux surfaces.
 - MDSplus: Optional, needed to use data stored in MDSplus trees.
 
+All of these should be available via pip (and should be installed automatically if you run `pip install eqtools` as described in the next section). If you wish to build in place, you may first need to run:
+    
+    pip install numpy scipy f2py matplotlib
+
 Installation
 ------------
 
@@ -32,6 +36,10 @@ To install from source, uncompress the source files and, from the directory cont
 Or, to build in place, run:
     
     python setup.py build_ext --inplace
+
+If you build in place, you will also need to add your eqtools folder to your PYTHONPATH shell variable:
+    
+    export PYTHONPATH=$PYTHONPATH:/path/to/where/you/put/eqtools/
 
 Running Tests
 -------------
