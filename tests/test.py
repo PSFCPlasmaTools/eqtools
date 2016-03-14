@@ -35,7 +35,7 @@ plt.ion()
 # we'll use a volume-averaged toroidal beta of 0.2 as well.
 # leave default length unit in meters, and use a 257x257 grid (default)
 
-equil = sefit.CircSolovievEFIT(0.69,0.22,5.4,1.0,0.2,npts=20)
+equil = sefit.CircSolovievEFIT(0.69, 0.22, 5.4, 1.0, 0.2, npts=20)
 
 # show off our nice equilibrium!
 equil.plotFlux(False)
@@ -52,7 +52,7 @@ Z = equil.getZGrid()
 rGrid,zGrid = scipy.meshgrid(R,Z)
 
 # construct face points as meshgrid
-rFace,zFace = scipy.meshgrid((R[:-1]+R[1:])/2.,(Z[:-1]+Z[1:])/2.)
+rFace,zFace = scipy.meshgrid((R[:-1] + R[1:]) / 2.0, (Z[:-1] + Z[1:]) / 2.0)
 print rFace.shape
 
 # plot illustration

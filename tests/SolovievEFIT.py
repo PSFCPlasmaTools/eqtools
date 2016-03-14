@@ -76,7 +76,7 @@ class CircSolovievEFIT(Equilibrium):
     def __init__(self,R,a,B0,Ip,betat,length_unit='m',npts=257):
         # instantiate superclass, forcing time splining to false (no time variation
         # in equilibrium)
-        super(CircSolovievEFIT,self).__init__(length_unit=length_unit,tspline=False)
+        super(CircSolovievEFIT,self).__init__(length_unit=length_unit, tspline=False, monotonic=False)
 
         self._defaultUnits = {}
 
@@ -156,23 +156,30 @@ class CircSolovievEFIT(Equilibrium):
             * **r** - array with same dimension as `R`, `Z` of minor-radius values
             * **theta** - array with same dimension as `R`, `Z` of polar angle values
         """
-        (R,
-        Z,
-        t,
-        idx,
-        oshape,
-        single_val,
-        single_time) = self._processRZt(R,Z,0.0,
-                                        make_grid=make_grid,
-                                        each_t=True,
-                                        check_space=False)
-
-        R = scipy.reshape(R,oshape)
-        Z = scipy.reshape(Z,oshape)
-
+        (
+            R,
+            Z,
+            t,
+            time_idxs,
+            unique_idxs,
+            single_time,
+            single_val,
+            oshape
+        ) = self._processRZt(
+            R,
+            Z,
+            0.0,
+            make_grid=make_grid,
+            each_t=True,
+            check_space=False
+        )
+        
+        R = scipy.reshape(R, oshape)
+        Z = scipy.reshape(Z, oshape)
+        
         r = scipy.sqrt((R - self._R)**2 + (Z)**2)
-        theta = scipy.arctan2(Z,(R - self._R))
-        return (r,theta)
+        theta = scipy.arctan2(Z, (R - self._R))
+        return (r, theta)
 
     def rz2psi_analytic(self,R,Z,length_unit='m',make_grid=False):
         """analytic formulation for flux calculation in Soloviev equilibrium.
