@@ -44,6 +44,14 @@ eqtools.NSTXEFIT module
     :undoc-members:
     :show-inheritance:
 
+eqtools.TCVLIUQE module
+-----------------------
+
+.. automodule:: eqtools.TCVLIUQE
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 eqtools.afilereader module
 --------------------------
 
