@@ -13,7 +13,7 @@ tricub = Extension('eqtools._tricub',['eqtools/_tricub.pyf','eqtools/_tricub.c']
 
 setup(
     name='eqtools',
-    version='1.2.1',
+    version='1.3',
     packages=['eqtools',],
     install_requires=['scipy', 'numpy', 'matplotlib'],
     author=['Mark Chilenski','Ian Faust','John Walk'],
