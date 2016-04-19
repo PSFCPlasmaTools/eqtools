@@ -7390,8 +7390,13 @@ class Equilibrium(object):
             
                 F_mat = Eq_instance.rz2F(R, Z, 0.2, make_grid=True)
         """
+        return_t = kwargs.get('return_t', False)
         unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
-        F = self.rz2F(R, Z, t, **kwargs)
+        out = self.rz2F(R, Z, t, **kwargs)
+        if return_t:
+            F, blob = out
+        else:
+            F = out
         
         B_T = F / R
         
@@ -7440,8 +7445,11 @@ class Equilibrium(object):
                         tmp_out[mask] = self.getBtVac()[t_idx] * self.getMagR()[t_idx] / R[t_mask][mask]
                         B_T[t_mask] = tmp_out
                     B_T = scipy.reshape(B_T, original_shape)
-            
-        return unit_factor * B_T
+        
+        if return_t:
+            return unit_factor * B_T, blob
+        else:
+            return unit_factor * B_T
     
     ############################
     # Current density routines #
@@ -8781,8 +8789,17 @@ class Equilibrium(object):
                 if num_good < 1:
                     raise ValueError('_processRZt: No valid points!')
                 
-                scipy.place(R, ~good_points, scipy.nan)
-                scipy.place(Z, ~good_points, scipy.nan)
+                # Handle bug in older scipy:
+                if R.ndim == 0:
+                    if not good_points:
+                        R = scipy.nan
+                else:
+                    scipy.place(R, ~good_points, scipy.nan)
+                if Z.ndim == 0:
+                    if not good_points:
+                        Z = scipy.nan
+                else:
+                    scipy.place(Z, ~good_points, scipy.nan)
         
         if self._tricubic:
             # When using tricubic spline interpolation, the arrays must be
