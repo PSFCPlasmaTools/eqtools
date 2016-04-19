@@ -332,6 +332,7 @@ class Equilibrium(object):
         self._pSpline = {}
         self._pPrimeSpline = {}
         self._vSpline = {}
+        self._BtVacSpline = {}
     
     def __str__(self):
         """String representation of this instance.
@@ -363,6 +364,7 @@ class Equilibrium(object):
         self._pSpline = {}
         self._pPrimeSpline = {}
         self._vSpline = {}
+        self._BtVacSpline = {}
         
         return self.__dict__
     
@@ -7283,7 +7285,11 @@ class Equilibrium(object):
         
         Uses :math:`B_\phi = F / R`.
         
-        By default, EFIT only computes this inside the LCFS.
+        By default, EFIT only computes this inside the LCFS. To approximate the
+        field outside of the LCFS, :math:`B_\phi \approx B_{t, vac} R_0 / R` is
+        used, where :math:`B_{t, vac}` is obtained with :py:meth:`getBtVac` and
+        :math:`R_0` is the major radius of the magnetic axis obtained from
+        :py:meth:`getMagR`.
         
         The coordinate system used is right-handed, such that "forward" field on
         Alcator C-Mod (clockwise when seen from above) has negative BT.
@@ -7385,7 +7391,57 @@ class Equilibrium(object):
                 F_mat = Eq_instance.rz2F(R, Z, 0.2, make_grid=True)
         """
         unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
-        return unit_factor * self.rz2F(R, Z, t, **kwargs) / R
+        F = self.rz2F(R, Z, t, **kwargs)
+        
+        B_T = F / R
+        
+        # This will have NaN anywhere outside of the LCFS. Only handle if we
+        # we need to.
+        if scipy.isnan(B_T).any():
+            warnings.warn(
+                "Flux function F not provided outside of LCFS, assuming field "
+                "goes like 1/R there to compute BT! This may be inaccurate!",
+                RuntimeWarning
+            )
+            # This unfortunately requires a second call to _processRZt:
+            R, Z, t, time_idxs, unique_idxs, single_time, single_val, original_shape = self._processRZt(
+                R, Z, t,
+                make_grid=kwargs.get('make_grid', False),
+                each_t=kwargs.get('each_t', True),
+                length_unit=kwargs.get('length_unit', 1),
+                compute_unique=True
+            )
+            if self._tricubic:
+                B_T = B_T.ravel()
+                mask = scipy.isnan(B_T)
+                B_T[mask] = self.getBtVacSpline()(t) * self.getMagRSpline()(t) / R[mask]
+                B_T = scipy.reshape(B_T, original_shape)
+            else:
+                if single_time:
+                    B_T = B_T.ravel()
+                    mask = scipy.isnan(B_T)
+                    B_T[mask] = self.getBtVac()[time_idxs] * self.getMagR()[time_idxs] / R[mask]
+                    if single_val:
+                        B_T = B_T[0]
+                    else:
+                        B_T = scipy.reshape(B_T, original_shape)
+                elif kwargs.get('each_t', True):
+                    for idx, t_idx in enumerate(time_idxs):
+                        tmp_out = B_T[idx].ravel()
+                        mask = scipy.isnan(tmp_out)
+                        tmp_out[mask] = self.getBtVac()[t_idx] * self.getMagR()[t_idx] / R[mask]
+                        B_T[idx] = scipy.reshape(tmp_out, original_shape)
+                else:
+                    B_T = B_T.ravel()
+                    for t_idx in unique_idxs:
+                        t_mask = (time_idxs == t_idx)
+                        tmp_out = B_T[t_mask]
+                        mask = scipy.isnan(tmp_out)
+                        tmp_out[mask] = self.getBtVac()[t_idx] * self.getMagR()[t_idx] / R[t_mask][mask]
+                        B_T[t_mask] = tmp_out
+                    B_T = scipy.reshape(B_T, original_shape)
+            
+        return unit_factor * B_T
     
     ############################
     # Current density routines #
@@ -10101,7 +10157,53 @@ class Equilibrium(object):
                 )
             
             return self._AOutSpline
-
+    
+    def getBtVacSpline(self, kind='nearest'):
+        """Gets the univariate spline to interpolate BtVac as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Keyword Args:
+            kind (String or non-negative int):
+                Specifies the type of interpolation
+                to be performed in getting from t to BtVac. This is
+                passed to scipy.interpolate.interp1d. Valid options are:
+                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
+                If this keyword is an integer, it specifies the order of spline
+                to use. See the documentation for interp1d for more details.
+                Default value is 'cubic' (3rd order spline interpolation). On
+                some builds of scipy, this can cause problems, in which case
+                you should try 'linear' until you can rebuild your scipy install.
+        
+        Returns:
+            scipy.interpolate.interp1d to convert from t to BtVac.
+        """
+        if self._BtVacSpline:
+            return self._BtVacSpline
+        else:
+            if kind == 'nearest' and self._tricubic:
+                kind = 'cubic'
+            try:
+                self._BtVacSpline = scipy.interpolate.interp1d(
+                    self.getTimeBase(),
+                    self.getBtVac(),
+                    kind=kind,
+                    bounds_error=False
+                )
+            except ValueError:
+                # created to allow for single time (such as gfiles) to properly call this method
+                kind = 'zero'
+                fill_value = self.getBtVac()
+                self._BtVacSpline = scipy.interpolate.interp1d(
+                    [0.],
+                    [0.],
+                    kind=kind,
+                    bounds_error=False,
+                    fill_value=fill_value
+                )
+            
+            return self._BtVacSpline
+    
     def getInfo(self):
         """
         Abstract method.  See child classes for implementation.

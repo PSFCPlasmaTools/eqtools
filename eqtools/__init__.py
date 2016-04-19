@@ -19,7 +19,7 @@
 """Provides classes for interacting with magnetic equilibrium data in a variety of formats.
 """
 
-__version__ = '1.3.0'
+__version__ = '1.3.1_dev'
 
 from .core import *
 from .EFIT import *
