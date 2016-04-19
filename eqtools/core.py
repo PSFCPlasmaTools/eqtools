@@ -8928,8 +8928,12 @@ class Equilibrium(object):
             except KeyError:
                 # Insert zero at beginning because older versions of cumtrapz don't
                 # support the initial keyword to make the initial value zero:
+                # we need to add the psi axis
                 phi_norm_meas = scipy.insert(
-                    scipy.integrate.cumtrapz(self.getQProfile()[idx]),
+                    scipy.integrate.cumtrapz(self.getQProfile()[idx],
+                                             x=scipy.linspace(0, 1,
+                                                              num=self.getQProfile()[idx].size) \
+                                             *(self.getFluxLCFS()[idx]-self.getFluxAxis()[idx])),
                     0,
                     0
                 )
