@@ -309,7 +309,11 @@ class EFITTree(Equilibrium):
 
     def getFluxGrid(self):
         """returns EFIT flux grid.
-
+        
+        Note that this method preserves whatever sign convention is used in the
+        tree. For C-Mod, this means that the result should be multiplied by
+        -1 * :py:meth:`getCurrentSign()` in most cases.
+        
         Returns:
             psiRZ (Array): [nt,nz,nr] array of (non-normalized) flux on grid.
 
@@ -609,6 +613,10 @@ class EFITTree(Equilibrium):
     def getF(self):
         """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov 
         solutions.
+        
+        Note that this method preserves whatever sign convention is used in the
+        tree. For C-Mod, this means that the result should be multiplied by
+        -1 * :py:meth:`getCurrentSign()` in most cases.
 
         Returns:
             F (Array): [nt,npsi] array of F=RB_{\Phi}(\Psi)

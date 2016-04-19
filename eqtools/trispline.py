@@ -69,7 +69,12 @@ class Spline():
             output = map.ev(z1, y1, x1)
     
     """
-    def __init__(self, z, y, x, f, regular=True, fast=False):
+    def __init__(self, z, y, x, f, regular=True, fast=False, dx=0, dy=0, dz=0):
+        if dx != 0 or dy != 0 or dz != 0:
+            raise NotImplementedError(
+                "Trispline derivatives are not implemented, do not use tricubic "
+                "interpolation if you need to compute magnetic fields!"
+            )
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
         self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
         # faces
