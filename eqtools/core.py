@@ -822,7 +822,11 @@ class Equilibrium(object):
         psi_norm = (psi - psi_0) / (psi_boundary - psi_0)
         
         if sqrt:
-            scipy.place(psi_norm, psi_norm < 0, 0)
+            if psi_norm.ndim == 0:
+                if psi_norm < 0.0:
+                    psi_norm = 0.0
+            else:
+                scipy.place(psi_norm, psi_norm < 0, 0)
             out = scipy.sqrt(psi_norm)
         else:
             out = psi_norm
@@ -1629,7 +1633,11 @@ class Equilibrium(object):
                 roa = self._rmid2roa(R_mid, time_idxs).reshape(original_shape)
         
         if sqrt:
-            scipy.place(roa, roa < 0, 0.0)
+            if roa.ndim == 0:
+                if roa < 0:
+                    roa = 0.0
+            else:
+                scipy.place(roa, roa < 0, 0.0)
             roa = scipy.sqrt(roa)
         
         if return_t:
@@ -7939,7 +7947,11 @@ class Equilibrium(object):
                         quan_norm[t_mask] = tmp
                     quan_norm = quan_norm.reshape(original_shape)
             if sqrt:
-                scipy.place(quan_norm, quan_norm < 0, 0.0)
+                if quan_norm.ndim == 0:
+                    if quan_norm < 0.0:
+                        quan_norm = 0.0
+                else:
+                    scipy.place(quan_norm, quan_norm < 0, 0.0)
                 quan_norm = scipy.sqrt(quan_norm)
             
             if return_t:
@@ -8000,7 +8012,11 @@ class Equilibrium(object):
                     quan_norm = quan_norm.reshape(original_shape)
             
             if sqrt:
-                scipy.place(quan_norm, quan_norm < 0, 0.0)
+                if quan_norm.ndim == 0:
+                    if quan_norm < 0:
+                        quan_norm = 0.0
+                else:
+                    scipy.place(quan_norm, quan_norm < 0, 0.0)
                 quan_norm = scipy.sqrt(quan_norm)
             
             if return_t:
