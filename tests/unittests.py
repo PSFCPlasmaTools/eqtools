@@ -1881,7 +1881,6 @@ class rz2rmidTestCase(unittest.TestCase):
         self.assertFalse(scipy.isinf(out_t).any())
         
         # TODO: The trispline case has an extra non-NaN seven points here.
-        # TODO: Why is this only good to 1 place?
         # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
         res2 = (out - out_t)**2
         diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
@@ -5075,19 +5074,17 @@ class phinorm2volnormTestCase(unittest.TestCase):
         out_t = et.phinorm2volnorm(vector_psinorm, scalar_t)
         
         self.assertEqual(out.shape, (len(vector_psinorm),))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_psinorm),))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out_t).any())
+        self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2volnorm_vector_psinorm_scalar_t_each_t_False(self):
@@ -5095,19 +5092,17 @@ class phinorm2volnormTestCase(unittest.TestCase):
         out_t = et.phinorm2volnorm(vector_psinorm, scalar_t, each_t=False)
         
         self.assertEqual(out.shape, (len(vector_psinorm),))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_psinorm),))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out_t).any())
+        self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     # matrix psinorm, scalar t:
@@ -5116,19 +5111,17 @@ class phinorm2volnormTestCase(unittest.TestCase):
         out_t = et.phinorm2volnorm(matrix_psinorm, scalar_t)
         
         self.assertEqual(out.shape, matrix_psinorm.shape)
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, matrix_psinorm.shape)
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out_t).any())
+        self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2volnorm_matrix_psinorm_scalar_t_each_t_False(self):
@@ -5136,19 +5129,17 @@ class phinorm2volnormTestCase(unittest.TestCase):
         out_t = et.phinorm2volnorm(matrix_psinorm, scalar_t, each_t=False)
         
         self.assertEqual(out.shape, matrix_psinorm.shape)
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, matrix_psinorm.shape)
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out_t).any())
+        self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     # scalar psinorm, vector t:
@@ -5179,8 +5170,7 @@ class phinorm2volnormTestCase(unittest.TestCase):
         out_t = et.phinorm2volnorm(vector_psinorm, vector_t)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
@@ -5206,8 +5196,7 @@ class phinorm2volnormTestCase(unittest.TestCase):
         out_t = et.phinorm2volnorm(matrix_psinorm, vector_t)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
@@ -5521,18 +5510,17 @@ class phinorm2rmidTestCase(unittest.TestCase):
         out_t = et.phinorm2rmid(vector_psinorm, vector_t)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: Fix NaN at center!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2rmid_vector_psinorm_vector_t_each_t_False_rho_False(self):
@@ -5546,18 +5534,17 @@ class phinorm2rmidTestCase(unittest.TestCase):
         out_t = et.phinorm2rmid(vector_psinorm, vector_t, rho=True)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: Fix NaN at origin!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2rmid_vector_psinorm_vector_t_each_t_False_rho_True(self):
@@ -5572,18 +5559,17 @@ class phinorm2rmidTestCase(unittest.TestCase):
         out_t = et.phinorm2rmid(matrix_psinorm, vector_t)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: Fix NaN at center!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2rmid_matrix_psinorm_vector_t_each_t_False_rho_False(self):
@@ -5597,18 +5583,17 @@ class phinorm2rmidTestCase(unittest.TestCase):
         out_t = et.phinorm2rmid(matrix_psinorm, vector_t, rho=True)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: Fix NaN at origin!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2rmid_matrix_psinorm_vector_t_each_t_False_rho_True(self):
@@ -5808,18 +5793,17 @@ class phinorm2roaTestCase(unittest.TestCase):
         out_t = et.phinorm2roa(vector_psinorm, vector_t)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: I need to gracefully handle the NaN at 0 here!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2roa_vector_psinorm_vector_t_each_t_False(self):
@@ -5834,18 +5818,17 @@ class phinorm2roaTestCase(unittest.TestCase):
         out_t = et.phinorm2roa(matrix_psinorm, vector_t)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: I need to gracefully handle the NaN at 0 here!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_phinorm2roa_matrix_psinorm_vector_t_each_t_False(self):
@@ -6115,18 +6098,17 @@ class volnorm2phinormTestCase(unittest.TestCase):
         out_t = et.volnorm2phinorm(vector_psinorm, scalar_t)
         
         self.assertEqual(out.shape, (len(vector_psinorm),))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_psinorm),))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_volnorm2phinorm_vector_psinorm_scalar_t_each_t_False(self):
@@ -6134,18 +6116,17 @@ class volnorm2phinormTestCase(unittest.TestCase):
         out_t = et.volnorm2phinorm(vector_psinorm, scalar_t, each_t=False)
         
         self.assertEqual(out.shape, (len(vector_psinorm),))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_psinorm),))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     # matrix psinorm, scalar t:
@@ -6154,18 +6135,17 @@ class volnorm2phinormTestCase(unittest.TestCase):
         out_t = et.volnorm2phinorm(matrix_psinorm, scalar_t)
         
         self.assertEqual(out.shape, matrix_psinorm.shape)
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, matrix_psinorm.shape)
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_volnorm2phinorm_matrix_psinorm_scalar_t_each_t_False(self):
@@ -6173,18 +6153,17 @@ class volnorm2phinormTestCase(unittest.TestCase):
         out_t = et.volnorm2phinorm(matrix_psinorm, scalar_t, each_t=False)
         
         self.assertEqual(out.shape, matrix_psinorm.shape)
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, matrix_psinorm.shape)
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     # scalar psinorm, vector t:
@@ -6215,8 +6194,7 @@ class volnorm2phinormTestCase(unittest.TestCase):
         out_t = et.volnorm2phinorm(vector_psinorm, vector_t)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
@@ -6242,8 +6220,7 @@ class volnorm2phinormTestCase(unittest.TestCase):
         out_t = et.volnorm2phinorm(matrix_psinorm, vector_t)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
@@ -6275,18 +6252,17 @@ class volnorm2phinormTestCase(unittest.TestCase):
         out_t = et.volnorm2phinorm(matrix_psinorm, matrix_t, each_t=False)
         
         self.assertEqual(out.shape, matrix_psinorm.shape)
-        # TODO: Fix boundary!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, matrix_psinorm.shape)
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
 
 class volnorm2rmidTestCase(unittest.TestCase):
@@ -6558,18 +6534,17 @@ class volnorm2rmidTestCase(unittest.TestCase):
         out_t = et.volnorm2rmid(vector_psinorm, vector_t)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: Fix NaN!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_volnorm2rmid_vector_psinorm_vector_t_each_t_False_rho_False(self):
@@ -6583,18 +6558,17 @@ class volnorm2rmidTestCase(unittest.TestCase):
         out_t = et.volnorm2rmid(vector_psinorm, vector_t, rho=True)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: Fix NaN!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_volnorm2rmid_vector_psinorm_vector_t_each_t_False_rho_True(self):
@@ -6609,18 +6583,17 @@ class volnorm2rmidTestCase(unittest.TestCase):
         out_t = et.volnorm2rmid(matrix_psinorm, vector_t)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: Fix NaN at zero!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_volnorm2rmid_matrix_psinorm_vector_t_each_t_False_rho_False(self):
@@ -6634,18 +6607,17 @@ class volnorm2rmidTestCase(unittest.TestCase):
         out_t = et.volnorm2rmid(matrix_psinorm, vector_t, rho=True)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: Fix NaN at 0!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_volnorm2rmid_matrix_psinorm_vector_t_each_t_False_rho_True(self):
@@ -6845,18 +6817,17 @@ class volnorm2roaTestCase(unittest.TestCase):
         out_t = et.volnorm2roa(vector_psinorm, vector_t)
         
         self.assertEqual(out.shape, (len(vector_t), len(vector_psinorm)))
-        # TODO: Fix NaN!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, (len(vector_t), len(vector_psinorm)))
         self.assertFalse(scipy.isnan(out_t).any())
         self.assertFalse(scipy.isinf(out_t).any())
         
-        # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
-        res2 = (out - out_t)**2
-        diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
+        diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        # res2 = (out - out_t)**2
+        # diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)
     
     def test_volnorm2roa_vector_psinorm_vector_t_each_t_False(self):
@@ -6871,8 +6842,7 @@ class volnorm2roaTestCase(unittest.TestCase):
         out_t = et.volnorm2roa(matrix_psinorm, vector_t)
         
         self.assertEqual(out.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
-        # TODO: Fix NaN!
-        # self.assertFalse(scipy.isnan(out).any())
+        self.assertFalse(scipy.isnan(out).any())
         self.assertFalse(scipy.isinf(out).any())
         
         self.assertEqual(out_t.shape, tuple([len(vector_t),] + list(matrix_psinorm.shape)))
@@ -6880,7 +6850,7 @@ class volnorm2roaTestCase(unittest.TestCase):
         self.assertFalse(scipy.isinf(out_t).any())
         
         # diff = scipy.sqrt(((out - out_t)**2).max()) / scipy.absolute(out).max()
-        # self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
+        self.assertTrue((scipy.isnan(out) == scipy.isnan(out_t)).all())
         res2 = (out - out_t)**2
         diff = scipy.sqrt((res2[~scipy.isnan(res2)]).max()) / scipy.absolute(out[~scipy.isnan(out)]).max()
         self.assertLessEqual(diff, tol)

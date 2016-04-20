@@ -456,17 +456,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid/phinorm/volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -905,17 +896,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting psinorm to phinorm.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1024,17 +1006,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting psinorm to volnorm.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1145,17 +1118,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting psinorm to Rmid.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1275,17 +1239,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting psinorm to Rmid.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1419,17 +1374,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid/phinorm/volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1688,17 +1634,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1789,17 +1726,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1882,17 +1810,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -1990,17 +1909,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to volnorm or phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2253,17 +2163,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to volnorm or phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2326,17 +2227,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to volnorm or phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2399,17 +2291,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to volnorm or phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2508,17 +2391,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to volnorm or phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2605,17 +2479,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2690,17 +2555,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2764,17 +2620,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2837,17 +2684,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -2948,17 +2786,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid/phinorm/volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3051,17 +2880,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                psinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3124,17 +2944,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                psinorm and psinorm to volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3217,17 +3028,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).            
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                psinorm and psinorm to Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3301,17 +3103,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                psinorm and psinorm to Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3413,17 +3206,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                Rmid/phinorm/volnorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3515,17 +3299,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                psinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3588,17 +3363,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                psinorm and psinorm to phinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3681,17 +3447,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).            
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                psinorm and psinorm to Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3761,17 +3518,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                psinorm and psinorm to Rmid. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -3873,17 +3621,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                Rmid/phinorm/psinorm. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`rho`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `rho` with nearest-neighbor
@@ -4108,17 +3847,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                q. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`q`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `q` with nearest-neighbor
@@ -4183,17 +3913,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to q. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`q`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `q` with nearest-neighbor
@@ -4258,17 +3979,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                q. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`q`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `q` with nearest-neighbor
@@ -4333,17 +4045,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                q. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`q`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `q` with nearest-neighbor
@@ -4408,17 +4111,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                q. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`q`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `q` with nearest-neighbor
@@ -4610,17 +4304,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                F. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`F`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `F` with nearest-neighbor
@@ -4685,17 +4370,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to F. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`F`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `F` with nearest-neighbor
@@ -4760,17 +4436,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                F. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`F`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `F` with nearest-neighbor
@@ -4835,17 +4502,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                F. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`F`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `F` with nearest-neighbor
@@ -4910,17 +4568,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                F. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`F`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `F` with nearest-neighbor
@@ -5112,17 +4761,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                FFPrime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`FFPrime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `FFPrime` with nearest-neighbor
@@ -5187,17 +4827,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to FFPrime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`FFPrime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `FFPrime` with nearest-neighbor
@@ -5262,17 +4893,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                FFPrime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`FFPrime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `FFPrime` with nearest-neighbor
@@ -5337,17 +4959,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                FFPrime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`FFPrime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `FFPrime` with nearest-neighbor
@@ -5412,17 +5025,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                FFPrime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`FFPrime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `FFPrime` with nearest-neighbor
@@ -5614,17 +5218,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                p. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`p`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `p` with nearest-neighbor
@@ -5689,17 +5284,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to p. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`p`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `p` with nearest-neighbor
@@ -5764,17 +5350,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                p. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`p`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `p` with nearest-neighbor
@@ -5839,17 +5416,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                p. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`p`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `p` with nearest-neighbor
@@ -5914,17 +5482,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                p. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`p`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `p` with nearest-neighbor
@@ -6116,17 +5675,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                pprime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`pprime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `pprime` with nearest-neighbor
@@ -6191,17 +5741,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to pprime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`pprime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `pprime` with nearest-neighbor
@@ -6266,17 +5807,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                pprime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`pprime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `pprime` with nearest-neighbor
@@ -6341,17 +5873,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                pprime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`pprime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `pprime` with nearest-neighbor
@@ -6416,17 +5939,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                pprime. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`pprime`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `pprime` with nearest-neighbor
@@ -6618,17 +6132,8 @@ class Equilibrium(object):
                 
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                v. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`p`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `p` with nearest-neighbor
@@ -6693,17 +6198,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `roa`
                 or be a scalar. Default is True (evaluate ALL `roa` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from Rmid to
-                psinorm and psinorm to v. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`v`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `v` with nearest-neighbor
@@ -6768,17 +6264,8 @@ class Equilibrium(object):
                 be a scalar). If False, `t` must match the shape of `psi_norm` or be
                 a scalar. Default is True (evaluate ALL `psi_norm` at EACH element in
                 `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                v. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`v`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `v` with nearest-neighbor
@@ -6843,17 +6330,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `phinorm`
                 or be a scalar. Default is True (evaluate ALL `phinorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from phinorm to
-                v. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.            
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`v`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `v` with nearest-neighbor
@@ -6918,17 +6396,8 @@ class Equilibrium(object):
                 (or be a scalar). If False, `t` must match the shape of `volnorm`
                 or be a scalar. Default is True (evaluate ALL `volnorm` at EACH
                 element in `t`).
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from volnorm to
-                v. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             return_t (Boolean): Set to True to return a tuple of (`v`,
                 `time_idxs`), where `time_idxs` is the array of time indices
                 actually used in evaluating `v` with nearest-neighbor
@@ -7814,7 +7283,7 @@ class Equilibrium(object):
     ###########################
     
     def _psinorm2Quan(self, spline_func, psi_norm, t, each_t=True, return_t=False,
-                      sqrt=False, rho=False, kind='cubic', blob=None,
+                      sqrt=False, rho=False, k=3, blob=None,
                       check_space=False, convert_only=True, length_unit=1,
                       convert_roa=False):
         """Convert psinorm to a given quantity.
@@ -7851,17 +7320,8 @@ class Equilibrium(object):
                 instead of Rmid. Default is False (return major radius, Rmid).            
                 Note that this will have unexpected results if `spline_func`
                 returns anything other than R_mid.
-            kind (String or non-negative int): Specifies the type of
-                interpolation to be performed in getting from psinorm to
-                `rho`. This is passed to
-                :py:class:`scipy.interpolate.interp1d`. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for :py:class:`interp1d` for more
-                details. Default value is 'cubic' (3rd order spline
-                interpolation). On some builds of scipy, this can cause problems,
-                in which case you should try 'linear' until you can rebuild your
-                scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             time_idxs (Array with same shape as `psi_norm` or None):
                 The time indices to use (as computed by :py:meth:`_processRZt`).
                 Default is None (compute time indices in method).
@@ -7915,7 +7375,7 @@ class Equilibrium(object):
                 if single_time:
                     if convert_roa:
                         psi_norm = self._roa2rmid(psi_norm, time_idxs[0])
-                    quan_norm = spline_func(time_idxs[0], kind=kind)(psi_norm)
+                    quan_norm = spline_func(time_idxs[0], k=k)(psi_norm)
                     if rho:
                         quan_norm = self._rmid2roa(quan_norm, time_idxs[0])
                     if single_val:
@@ -7931,7 +7391,7 @@ class Equilibrium(object):
                             psi_tmp = self._roa2rmid(psi_norm, t_idx)
                         else:
                             psi_tmp = psi_norm
-                        tmp = spline_func(t_idx, kind=kind)(psi_tmp)
+                        tmp = spline_func(t_idx, k=k)(psi_tmp)
                         if rho:
                             tmp = self._rmid2roa(tmp, t_idx)
                         quan_norm[idx] = tmp.reshape(original_shape)
@@ -7941,7 +7401,7 @@ class Equilibrium(object):
                     quan_norm = scipy.zeros_like(t, dtype=float)
                     for t_idx in unique_idxs:
                         t_mask = (time_idxs == t_idx)
-                        tmp = spline_func(t_idx, kind=kind)(psi_norm[t_mask])
+                        tmp = spline_func(t_idx, k=k)(psi_norm[t_mask])
                         if rho:
                             tmp = self._rmid2roa(tmp, t_idx)
                         quan_norm[t_mask] = tmp
@@ -7985,7 +7445,7 @@ class Equilibrium(object):
                     if each_t:
                         psi_norm = psi_norm_flat.reshape(-1)
                 if single_time:
-                    quan_norm = spline_func(time_idxs[0], kind=kind)(psi_norm_flat)
+                    quan_norm = spline_func(time_idxs[0], k=k)(psi_norm_flat)
                     if rho:
                         quan_norm = self._rmid2roa(quan_norm, time_idxs[0])
                     if single_val:
@@ -7997,7 +7457,7 @@ class Equilibrium(object):
                         scipy.concatenate(([len(time_idxs),], original_shape))
                     )
                     for idx, t_idx in enumerate(time_idxs):
-                        tmp = spline_func(t_idx, kind=kind)(psi_norm[idx].reshape(-1))
+                        tmp = spline_func(t_idx, k=k)(psi_norm[idx].reshape(-1))
                         if rho:
                             tmp = self._rmid2roa(tmp, t_idx)
                         quan_norm[idx] = tmp.reshape(original_shape)
@@ -8005,7 +7465,7 @@ class Equilibrium(object):
                     quan_norm = scipy.zeros_like(time_idxs, dtype=float)
                     for t_idx in unique_idxs:
                         t_mask = (time_idxs == t_idx)
-                        tmp = spline_func(t_idx, kind=kind)(psi_norm_flat[t_mask])
+                        tmp = spline_func(t_idx, k=k)(psi_norm_flat[t_mask])
                         if rho:
                             tmp = self._rmid2roa(tmp, t_idx)
                         quan_norm[t_mask] = tmp
@@ -8160,16 +7620,8 @@ class Equilibrium(object):
                 instead of R_mid. Default is False (return major radius, R_mid).
                 Note that this will have unexpected results if spline_func
                 returns anything other than R_mid.
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to Quan. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             length_unit (String or 1):
                 Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
@@ -8206,7 +7658,7 @@ class Equilibrium(object):
         kwargs['return_t'] = True
         
         # Not used by rz2psinorm:
-        kind = kwargs.pop('kind', 'cubic')
+        k = kwargs.pop('k', 3)
         rho = kwargs.pop('rho', False)
         
         # Make sure we don't convert to sqrtpsinorm first!
@@ -8227,7 +7679,7 @@ class Equilibrium(object):
             psi_norm,
             t,
             blob=blob,
-            kind=kind,
+            k=k,
             **kwargs
         )
     
@@ -8276,16 +7728,8 @@ class Equilibrium(object):
                 are replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False (return Quan
                 itself).
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to Quan. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             length_unit (String or 1):
                 Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
@@ -8316,7 +7760,7 @@ class Equilibrium(object):
         kwargs['return_t'] = True
         
         # Not used by rmid2psinorm:
-        kind = kwargs.pop('kind', 'cubic')
+        k = kwargs.pop('k', 3)
         rho = kwargs.pop('rho', False)
         
         sqrt = kwargs.pop('sqrt', False)
@@ -8328,7 +7772,7 @@ class Equilibrium(object):
         kwargs.pop('convert_roa', False)
         
         kwargs['blob'] = blob
-        kwargs['kind'] = kind
+        kwargs['k'] = k
         kwargs['return_t'] = return_t
         kwargs['rho'] = rho
         
@@ -8387,16 +7831,8 @@ class Equilibrium(object):
                 are replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False (return Quan
                 itself).
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from `psinorm` to `Quan`. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
         
         Returns:
             Quan: Array or scalar float. If all of the input arguments are
@@ -8410,7 +7846,7 @@ class Equilibrium(object):
         kwargs['return_t'] = True
         
         # Not used by phinorm2psinorm:
-        kind = kwargs.pop('kind', 'cubic')
+        k = kwargs.pop('k', 3)
         rho = kwargs.pop('rho', False)
         
         sqrt = kwargs.pop('sqrt', False)
@@ -8421,7 +7857,7 @@ class Equilibrium(object):
         
         kwargs['return_t'] = return_t
         kwargs['rho'] = rho
-        kwargs['kind'] = kind
+        kwargs['k'] = k
         
         # Not used by _psinorm2Quan
         kwargs.pop('length_unit', 1)
@@ -8477,16 +7913,8 @@ class Equilibrium(object):
                 are replaced with zeros, consistent with Steve Wolfe's IDL
                 implementation efit_rz2rho.pro. Default is False (return Quan
                 itself).
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from `volnorm` to `Quan`. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
         
         Returns:
             Quan: Array or scalar float. If all of the input arguments are
@@ -8500,7 +7928,7 @@ class Equilibrium(object):
         kwargs['return_t'] = True
         
         # Not used by phinorm2psinorm:
-        kind = kwargs.pop('kind', 'cubic')
+        k = kwargs.pop('k', 3)
         rho = kwargs.pop('rho', False)
         
         sqrt = kwargs.pop('sqrt', False)
@@ -8511,7 +7939,7 @@ class Equilibrium(object):
         
         kwargs['return_t'] = return_t
         kwargs['rho'] = rho
-        kwargs['kind'] = kind
+        kwargs['k'] = k
         
         # Not used by _psinorm2Quan
         kwargs.pop('length_unit', 1)
@@ -8982,7 +8410,7 @@ class Equilibrium(object):
             )
             return self._psiOfRZSpline
     
-    def _getPhiNormSpline(self, idx, kind='cubic'):
+    def _getPhiNormSpline(self, idx, k=3):
         """Get spline to convert psinorm to phinorm.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -8995,61 +8423,52 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to phinorm. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._phiNormSpline[idx][kind]
+                return self._phiNormSpline[idx][k]
             except KeyError:
-                # Insert zero at beginning because older versions of cumtrapz don't
-                # support the initial keyword to make the initial value zero:
+                # Insert zero at beginning because older versions of cumtrapz
+                # don't support the initial keyword to make the initial value
+                # zero:
                 # we need to add the psi axis
+                x = (
+                    scipy.linspace(0, 1, num=self.getQProfile()[idx].size) *
+                    (self.getFluxLCFS()[idx] - self.getFluxAxis()[idx])
+                )
                 phi_norm_meas = scipy.insert(
-                    scipy.integrate.cumtrapz(self.getQProfile()[idx],
-                                             x=scipy.linspace(0, 1,
-                                                              num=self.getQProfile()[idx].size) \
-                                             *(self.getFluxLCFS()[idx]-self.getFluxAxis()[idx])),
-                    0,
-                    0
+                    scipy.integrate.cumtrapz(self.getQProfile()[idx], x=x), 0, 0
                 )
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
                 
-                spline = scipy.interpolate.interp1d(
-                    scipy.linspace(0, 1, len(phi_norm_meas)),
+                spline = trispline.UnivariateInterpolator(
+                    scipy.linspace(0.0, 1.0, len(phi_norm_meas)),
                     phi_norm_meas,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
+                
                 try:
-                    self._phiNormSpline[idx][kind] = spline
+                    self._phiNormSpline[idx][k] = spline
                 except KeyError:
-                    self._phiNormSpline[idx] = {kind: spline}
-                return self._phiNormSpline[idx][kind]
+                    self._phiNormSpline[idx] = {k: spline}
+                return self._phiNormSpline[idx][k]
         else:
             if self._phiNormSpline:
                 return self._phiNormSpline
             else:
-                # Insert zero at beginning because older versions of cumtrapz don't
-                # support the initial keyword to make the initial value zero:
+                # Insert zero at beginning because older versions of cumtrapz
+                # don't support the initial keyword to make the initial value
+                # zero:
                 phi_norm_meas = scipy.insert(
                     scipy.integrate.cumtrapz(self.getQProfile(), axis=1),
-                    0,
-                    0,
-                    axis=1
+                    0, 0, axis=1
                 )
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[:, -1, scipy.newaxis]
                 self._phiNormSpline = trispline.RectBivariateSpline(
@@ -9061,7 +8480,7 @@ class Equilibrium(object):
                 )
                 return self._phiNormSpline
     
-    def _getPhiNormToPsiNormSpline(self, idx, kind='cubic'):
+    def _getPhiNormToPsiNormSpline(self, idx, k=3):
         """Get spline to convert phinorm to psinorm.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9074,52 +8493,49 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to phinorm. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._phiNormToPsiNormSpline[idx][kind]
+                return self._phiNormToPsiNormSpline[idx][k]
             except KeyError:
-                # Insert zero at beginning because older versions of cumtrapz don't
-                # support the initial keyword to make the initial value zero:
+                # Insert zero at beginning because older versions of cumtrapz
+                # don't support the initial keyword to make the initial value
+                # zero:
+                x = (
+                    scipy.linspace(0, 1, num=self.getQProfile()[idx].size) *
+                    (self.getFluxLCFS()[idx] - self.getFluxAxis()[idx])
+                )
                 phi_norm_meas = scipy.insert(
-                    scipy.integrate.cumtrapz(self.getQProfile()[idx]),
-                    0,
-                    0
+                    scipy.integrate.cumtrapz(self.getQProfile()[idx], x=x),
+                    0, 0
                 )
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
                 
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     phi_norm_meas,
-                    scipy.linspace(0, 1, len(phi_norm_meas)),
-                    kind=kind,
-                    bounds_error=False
+                    scipy.linspace(0.0, 1.0, len(phi_norm_meas)),
+                    k=k
                 )
+                
                 try:
-                    self._phiNormToPsiNormSpline[idx][kind] = spline
+                    self._phiNormToPsiNormSpline[idx][k] = spline
                 except KeyError:
-                    self._phiNormToPsiNormSpline[idx] = {kind: spline}
-                return self._phiNormToPsiNormSpline[idx][kind]
+                    self._phiNormToPsiNormSpline[idx] = {k: spline}
+                return self._phiNormToPsiNormSpline[idx][k]
         else:
             if self._phiNormToPsiNormSpline:
                 return self._phiNormToPsiNormSpline
             else:
-                # Insert zero at beginning because older versions of cumtrapz don't
-                # support the initial keyword to make the initial value zero:
+                # Insert zero at beginning because older versions of cumtrapz
+                # don't support the initial keyword to make the initial value
+                # zero:
                 phi_norm_meas = scipy.insert(
                     scipy.integrate.cumtrapz(self.getQProfile(), axis=1),
                     0,
@@ -9138,7 +8554,7 @@ class Equilibrium(object):
                 )
                 return self._phiNormToPsiNormSpline
     
-    def _getVolNormSpline(self, idx, kind='cubic'):
+    def _getVolNormSpline(self, idx, k=3):
         """Get spline to convert psinorm to volnorm.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9151,40 +8567,31 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to volnorm. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._volNormSpline[idx][kind]
+                return self._volNormSpline[idx][k]
             except KeyError:
                 vol_norm_meas = self.getFluxVol()[idx]
                 vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
                 
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     scipy.linspace(0, 1, len(vol_norm_meas)),
                     vol_norm_meas,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
                 try:
-                    self._volNormSpline[idx][kind] = spline
+                    self._volNormSpline[idx][k] = spline
                 except KeyError:
-                    self._volNormSpline[idx] = {kind: spline}
-                return self._volNormSpline[idx][kind]
+                    self._volNormSpline[idx] = {k: spline}
+                return self._volNormSpline[idx][k]
         else:
             # BiSpline for time variant interpolation
             if self._volNormSpline:
@@ -9201,7 +8608,7 @@ class Equilibrium(object):
                 )
                 return self._volNormSpline
     
-    def _getVolNormToPsiNormSpline(self, idx, kind='cubic'):
+    def _getVolNormToPsiNormSpline(self, idx, k=3):
         """Get spline to convert volnorm to psinorm.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9214,40 +8621,31 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to volnorm. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._volNormToPsiNormSpline[idx][kind]
+                return self._volNormToPsiNormSpline[idx][k]
             except KeyError:
                 vol_norm_meas = self.getFluxVol()[idx]
                 vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
                 
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     vol_norm_meas,
-                    scipy.linspace(0, 1, len(vol_norm_meas)),
-                    kind=kind,
-                    bounds_error=False
+                    scipy.linspace(0.0, 1.0, len(vol_norm_meas)),
+                    k=k
                 )
                 try:
-                    self._volNormToPsiNormSpline[idx][kind] = spline
+                    self._volNormToPsiNormSpline[idx][k] = spline
                 except KeyError:
-                    self._volNormToPsiNormSpline[idx] = {kind: spline}
-                return self._volNormToPsiNormSpline[idx][kind]
+                    self._volNormToPsiNormSpline[idx] = {k: spline}
+                return self._volNormToPsiNormSpline[idx][k]
         else:
             #BiSpline for time variant interpolation
             if self._volNormToPsiNormSpline:
@@ -9267,7 +8665,7 @@ class Equilibrium(object):
                 )
                 return self._volNormToPsiNormSpline
     
-    def _getRmidSpline(self, idx, kind='cubic'):
+    def _getRmidSpline(self, idx, k=3):
         """Returns the spline object corresponding to the passed time index idx,
         generating it if it does not already exist.
         
@@ -9291,29 +8689,22 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to R_mid. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._RmidSpline[idx][kind]
+                return self._RmidSpline[idx][k]
             except KeyError:
-                # New approach: create a fairly dense radial grid from the global
-                # flux grid to avoid 1d interpolation problems in the core. The
-                # bivariate spline seems to be a little more robust in this respect.
+                # New approach: create a fairly dense radial grid from the
+                # global flux grid to avoid 1d interpolation problems in the
+                # core. The bivariate spline seems to be a little more robust
+                # in this respect.
                 resample_factor = 3
                 R_grid = scipy.linspace(
                     self.getMagR(length_unit='m')[idx],
@@ -9328,18 +8719,21 @@ class Equilibrium(object):
                 )
                 # Correct for the slight issues at the magnetic axis:
                 psi_norm_on_grid[0] = 0.0
+                # Find if it ever goes non-monotonic: psinorm is assumed to be
+                # strictly INCREASING from the magnetic axis out.
+                decr_idx, = scipy.where((psi_norm_on_grid[1:] - psi_norm_on_grid[:-1]) < 0)
+                if len(decr_idx) > 0:
+                    psi_norm_on_grid = psi_norm_on_grid[:decr_idx[0] + 1]
+                    R_grid = R_grid[:decr_idx[0] + 1]
                 
-                spline = scipy.interpolate.interp1d(
-                    psi_norm_on_grid,
-                    R_grid,
-                    kind=kind,
-                    bounds_error=False
+                spline = trispline.UnivariateInterpolator(
+                    psi_norm_on_grid, R_grid, k=k
                 )
                 try:
-                    self._RmidSpline[idx][kind] = spline
+                    self._RmidSpline[idx][k] = spline
                 except KeyError:
-                    self._RmidSpline[idx] = {kind: spline}
-                return self._RmidSpline[idx][kind]
+                    self._RmidSpline[idx] = {k: spline}
+                return self._RmidSpline[idx][k]
         else:
             if self._RmidSpline:
                 return self._RmidSpline
@@ -9380,7 +8774,7 @@ class Equilibrium(object):
                 
                 return self._RmidSpline
     
-    def _getRmidToPsiNormSpline(self, idx, kind='cubic'):
+    def _getRmidToPsiNormSpline(self, idx, k=3):
         """Returns the spline object corresponding to the passed time index idx,
         generating it if it does not already exist.
         
@@ -9404,25 +8798,17 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from R_mid to psinorm. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._RmidToPsiNormSpline[idx][kind]
+                return self._RmidToPsiNormSpline[idx][k]
             except KeyError:
                 # New approach: create a fairly dense radial grid from the global
                 # flux grid to avoid 1d interpolation problems in the core. The
@@ -9441,17 +8827,14 @@ class Equilibrium(object):
                     self.getTimeBase()[idx]
                 )
                 
-                spline = scipy.interpolate.interp1d(
-                    R_grid,
-                    psi_norm_on_grid,
-                    kind=kind,
-                    bounds_error=False
+                spline = trispline.UnivariateInterpolator(
+                    R_grid, psi_norm_on_grid, k=k
                 )
                 try:
-                    self._RmidToPsiNormSpline[idx][kind] = spline
+                    self._RmidToPsiNormSpline[idx][k] = spline
                 except KeyError:
-                    self._RmidToPsiNormSpline[idx] = {kind: spline}
-                return self._RmidToPsiNormSpline[idx][kind]
+                    self._RmidToPsiNormSpline[idx] = {k: spline}
+                return self._RmidToPsiNormSpline[idx][k]
         else:
             if self._RmidToPsiNormSpline:
                 return self._RmidToPsiNormSpline
@@ -9486,96 +8869,7 @@ class Equilibrium(object):
                 
                 return self._RmidToPsiNormSpline
     
-    def _getPsi0Spline(self, kind='cubic'):
-        """Gets the univariate spline to interpolate psi0 as a function of time.
-        
-        Only used if the instance was created with keyword tspline=True.
-        
-        Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from t to psi0. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
-        
-        Returns:
-            scipy.interpolate.interp1d to convert from t to psi0.
-        """
-        if self._psiOfPsi0Spline:
-            return self._psiOfPsi0Spline
-        else:
-            
-            try:
-                self._psiOfPsi0Spline = scipy.interpolate.interp1d(
-                    self.getTimeBase(),
-                    self.getFluxAxis(),
-                    kind=kind,
-                    bounds_error=False
-                )
-            except ValueError:
-                # created to allow for single time (such as gfiles) to properly call this method
-                kind = 'zero'
-                fill_value = self.getFluxAxis()
-                self._psiOfPsi0Spline = scipy.interpolate.interp1d(
-                    [0.],
-                    [0.],
-                    kind=kind,
-                    bounds_error=False,
-                    fill_value=fill_value
-                )
-            
-            return self._psiOfPsi0Spline
-    
-    def _getLCFSPsiSpline(self, kind='cubic'):
-        """Gets the univariate spline to interpolate psi_a as a function of time.
-        
-        Only used if the instance was created with keyword tspline=True.
-        
-        Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from t to psi_a. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
-        
-        Returns:
-            scipy.interpolate.interp1d to convert from t to psi_a.
-        """
-        if self._psiOfLCFSSpline:
-            return self._psiOfLCFSSpline
-        else:
-            try:
-                self._psiOfLCFSSpline = scipy.interpolate.interp1d(
-                    self.getTimeBase(),
-                    self.getFluxLCFS(),
-                    kind=kind,
-                    bounds_error=False
-                )
-            except ValueError:
-                # created to allow for single time (such as gfiles) to properly call this method
-                kind = 'zero'
-                fill_value = self.getFluxLCFS()
-                self._psiOfLCFSSpline = scipy.interpolate.interp1d(
-                    [0.],
-                    [0.],
-                    kind=kind,
-                    bounds_error=False,
-                    fill_value=fill_value
-                )
-            
-            return self._psiOfLCFSSpline
-    
-    def _getQSpline(self, idx, kind='cubic'):
+    def _getQSpline(self, idx, k=3):
         """Get spline to convert psinorm to q.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9588,38 +8882,29 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to q. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._qSpline[idx][kind]
+                return self._qSpline[idx][k]
             except KeyError:
                 q = self.getQProfile()[idx]
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     scipy.linspace(0.0, 1.0, len(q)),
                     q,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
                 try:
-                    self._qSpline[idx][kind] = spline
+                    self._qSpline[idx][k] = spline
                 except KeyError:
-                    self._qSpline[idx] = {kind: spline}
-                return self._qSpline[idx][kind]
+                    self._qSpline[idx] = {k: spline}
+                return self._qSpline[idx][k]
         else:
             if self._qSpline:
                 return self._qSpline
@@ -9634,7 +8919,7 @@ class Equilibrium(object):
                 )
                 return self._qSpline
     
-    def _getFSpline(self, idx, kind='cubic'):
+    def _getFSpline(self, idx, k=3):
         """Get spline to convert psinorm to F.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9647,38 +8932,29 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to F. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._FSpline[idx][kind]
+                return self._FSpline[idx][k]
             except KeyError:
                 F = self.getF()[idx]
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     scipy.linspace(0.0, 1.0, len(F)),
                     F,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
                 try:
-                    self._FSpline[idx][kind] = spline
+                    self._FSpline[idx][k] = spline
                 except KeyError:
-                    self._FSpline[idx] = {kind: spline}
-                return self._FSpline[idx][kind]
+                    self._FSpline[idx] = {k: spline}
+                return self._FSpline[idx][k]
         else:
             if self._FSpline:
                 return self._FSpline
@@ -9693,7 +8969,7 @@ class Equilibrium(object):
                 )
                 return self._FSpline
     
-    def _getFFPrimeSpline(self, idx, kind='cubic'):
+    def _getFFPrimeSpline(self, idx, k=3):
         """Get spline to convert psinorm to FFPrime.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9706,38 +8982,29 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to FFPrime. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._FFPrimeSpline[idx][kind]
+                return self._FFPrimeSpline[idx][k]
             except KeyError:
                 FFPrime = self.getFFPrime()[idx]
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     scipy.linspace(0.0, 1.0, len(FFPrime)),
                     FFPrime,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
                 try:
-                    self._FFPrimeSpline[idx][kind] = spline
+                    self._FFPrimeSpline[idx][k] = spline
                 except KeyError:
-                    self._FFPrimeSpline[idx] = {kind: spline}
-                return self._FFPrimeSpline[idx][kind]
+                    self._FFPrimeSpline[idx] = {k: spline}
+                return self._FFPrimeSpline[idx][k]
         else:
             if self._FFPrimeSpline:
                 return self._FFPrimeSpline
@@ -9752,7 +9019,7 @@ class Equilibrium(object):
                 )
                 return self._FFPrimeSpline
     
-    def _getPSpline(self, idx, kind='cubic'):
+    def _getPSpline(self, idx, k=3):
         """Get spline to convert psinorm to pressure.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9765,38 +9032,29 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to p. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._pSpline[idx][kind]
+                return self._pSpline[idx][k]
             except KeyError:
                 p = self.getFluxPres()[idx]
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     scipy.linspace(0.0, 1.0, len(p)),
                     p,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
                 try:
-                    self._pSpline[idx][kind] = spline
+                    self._pSpline[idx][k] = spline
                 except KeyError:
-                    self._pSpline[idx] = {kind: spline}
-                return self._pSpline[idx][kind]
+                    self._pSpline[idx] = {k: spline}
+                return self._pSpline[idx][k]
         else:
             if self._pSpline:
                 return self._pSpline
@@ -9811,7 +9069,7 @@ class Equilibrium(object):
                 )
                 return self._pSpline
     
-    def _getPPrimeSpline(self, idx, kind='cubic'):
+    def _getPPrimeSpline(self, idx, k=3):
         """Get spline to convert psinorm to pressure gradient.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9824,38 +9082,29 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to pprime. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._pPrimeSpline[idx][kind]
+                return self._pPrimeSpline[idx][k]
             except KeyError:
                 pprime = self.getPPrime()[idx]
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     scipy.linspace(0.0, 1.0, len(pprime)),
                     pprime,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
                 try:
-                    self._pPrimeSpline[idx][kind] = spline
+                    self._pPrimeSpline[idx][k] = spline
                 except KeyError:
-                    self._pPrimeSpline[idx] = {kind: spline}
-                return self._pPrimeSpline[idx][kind]
+                    self._pPrimeSpline[idx] = {k: spline}
+                return self._pPrimeSpline[idx][k]
         else:
             if self._pPrimeSpline:
                 return self._pPrimeSpline
@@ -9870,7 +9119,7 @@ class Equilibrium(object):
                 )
                 return self._pPrimeSpline
     
-    def _getVSpline(self, idx, kind='cubic'):
+    def _getVSpline(self, idx, k=3):
         """Get spline to convert psinorm to flux surface volume.
         
         Returns the spline object corresponding to the passed time index idx,
@@ -9883,38 +9132,29 @@ class Equilibrium(object):
                 self.getFluxGrid(), otherwise an IndexError will be raised.
         
         Keyword Args:
-            kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from psinorm to v. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
         
         Returns:
-            scipy.interpolate.interp1d or tripline.RectBivariateSpline depending
-                on whether or not the instance was created with the tspline
-                keyword.
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
         """
         if not self._tricubic:
             try:
-                return self._vSpline[idx][kind]
+                return self._vSpline[idx][k]
             except KeyError:
                 v = self.getFluxVol()[idx]
-                spline = scipy.interpolate.interp1d(
+                spline = trispline.UnivariateInterpolator(
                     scipy.linspace(0.0, 1.0, len(v)),
                     v,
-                    kind=kind,
-                    bounds_error=False
+                    k=k
                 )
                 try:
-                    self._vSpline[idx][kind] = spline
+                    self._vSpline[idx][k] = spline
                 except KeyError:
-                    self._vSpline[idx] = {kind: spline}
-                return self._vSpline[idx][kind]
+                    self._vSpline[idx] = {k: spline}
+                return self._vSpline[idx][k]
         else:
             if self._vSpline:
                 return self._vSpline
@@ -9928,6 +9168,76 @@ class Equilibrium(object):
                     s=0
                 )
                 return self._vSpline
+    
+    def _getPsi0Spline(self, k=3):
+        """Gets the univariate spline to interpolate psi0 as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Keyword Args:
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
+        
+        Returns:
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`scipy.interpolate.interp1d`
+        """
+        if self._psiOfPsi0Spline:
+            return self._psiOfPsi0Spline
+        else:
+            try:
+                self._psiOfPsi0Spline = trispline.UnivariateInterpolator(
+                    self.getTimeBase(),
+                    self.getFluxAxis(),
+                    k=k
+                )
+            except ValueError:
+                # created to allow for single time (such as gfiles) to properly
+                # call this method
+                self._psiOfPsi0Spline = scipy.interpolate.interp1d(
+                    [0.],
+                    [0.],
+                    kind='zero',
+                    bounds_error=False,
+                    fill_value=self.getFluxAxis()
+                )
+            
+            return self._psiOfPsi0Spline
+    
+    def _getLCFSPsiSpline(self, k=3):
+        """Gets the univariate spline to interpolate psi_a as a function of time.
+        
+        Only used if the instance was created with keyword tspline=True.
+        
+        Keyword Args:
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
+        
+        Returns:
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`scipy.interpolate.interp1d`
+        """
+        if self._psiOfLCFSSpline:
+            return self._psiOfLCFSSpline
+        else:
+            try:
+                self._psiOfLCFSSpline = trispline.UnivariateInterpolator(
+                    self.getTimeBase(),
+                    self.getFluxLCFS(),
+                    k=k
+                )
+            except ValueError:
+                # created to allow for single time (such as gfiles) to properly
+                # call this method
+                self._psiOfLCFSSpline = scipy.interpolate.interp1d(
+                    [0.],
+                    [0.],
+                    kind='zero',
+                    bounds_error=False,
+                    fill_value=self.getFluxLCFS()
+                )
+            
+            return self._psiOfLCFSSpline
     
     def getMagRSpline(self, length_unit=1, kind='nearest'):
         """Gets the univariate spline to interpolate R_mag as a function of time.
@@ -9955,15 +9265,14 @@ class Equilibrium(object):
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from t to R_mag. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+                Specifies the type of interpolation to be performed in getting
+                from t to R_mag. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+                Default value is 'cubic' (3rd order spline interpolation) when
+                `trispline` is True, 'nearest' otherwise.
         
         Returns:
             scipy.interpolate.interp1d to convert from t to R_mid.
@@ -9981,15 +9290,14 @@ class Equilibrium(object):
                     bounds_error=False
                 )
             except ValueError:
-                # created to allow for single time (such as gfiles) to properly call this method
-                kind = 'zero'
-                fill_value = self.getMagR(length_unit=length_unit)
+                # created to allow for single time (such as gfiles) to properly
+                # call this method
                 self._magRSpline = scipy.interpolate.interp1d(
                     [0.],
                     [0.],
-                    kind=kind,
+                    kind='zero',
                     bounds_error=False,
-                    fill_value=fill_value
+                    fill_value=self.getMagR(length_unit=length_unit)
                 )
             
             return self._magRSpline
@@ -10021,15 +9329,14 @@ class Equilibrium(object):
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from t to R_mag. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+                Specifies the type of interpolation to be performed in getting
+                from t to Z_mag. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+                Default value is 'cubic' (3rd order spline interpolation) when
+                `trispline` is True, 'nearest' otherwise.
         
         Returns:
             scipy.interpolate.interp1d to convert from t to R_mid.
@@ -10048,15 +9355,14 @@ class Equilibrium(object):
                     bounds_error=False
                 )
             except ValueError:
-                # created to allow for single time (such as gfiles) to properly call this method
-                kind = 'zero'
-                fill_value = self.getMagZ(length_unit=length_unit)
+                # created to allow for single time (such as gfiles) to properly
+                # call this method
                 self._magZSpline = scipy.interpolate.interp1d(
                     [0.],
                     [0.],
-                    kind=kind,
+                    kind='zero',
                     bounds_error=False,
-                    fill_value=fill_value
+                    fill_value=self.getMagZ(length_unit=length_unit)
                 )
             
             return self._magZSpline
@@ -10088,15 +9394,14 @@ class Equilibrium(object):
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R_out returned in meters).
             kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from t to R_mag. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+                Specifies the type of interpolation to be performed in getting
+                from t to R_mid_out. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+                Default value is 'cubic' (3rd order spline interpolation) when
+                `trispline` is True, 'nearest' otherwise.
         
         Returns:
             scipy.interpolate.interp1d to convert from t to R_mid.
@@ -10115,15 +9420,14 @@ class Equilibrium(object):
                     bounds_error=False
                 )
             except ValueError:
-                # created to allow for single time (such as gfiles) to properly call this method
-                kind = 'zero'
-                fill_value = self.getRmidOut(length_unit=length_unit)
+                # created to allow for single time (such as gfiles) to properly
+                # call this method
                 self._RmidOutSpline = scipy.interpolate.interp1d(
                     [0.],
                     [0.],
-                    kind=kind,
+                    kind='zero',
                     bounds_error=False,
-                    fill_value=fill_value
+                    fill_value=self.getRmidOut(length_unit=length_unit)
                 )
             
             return self._RmidOutSpline
@@ -10152,15 +9456,14 @@ class Equilibrium(object):
                 If `length_unit` is 1 or None, meters are assumed. The default
                 value is 1 (a_out returned in meters).
             kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from t to a_out. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+                Specifies the type of interpolation to be performed in getting
+                from t to a_out. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+                Default value is 'cubic' (3rd order spline interpolation) when
+                `trispline` is True, 'nearest' otherwise.
         
         Returns:
             scipy.interpolate.interp1d to convert from t to a_out.
@@ -10178,15 +9481,14 @@ class Equilibrium(object):
                     bounds_error=False
                 )
             except ValueError:
-                # created to allow for single time (such as gfiles) to properly call this method
-                kind = 'zero'
-                fill_value = self.getAOut(length_unit=length_unit)
+                # created to allow for single time (such as gfiles) to properly
+                # call this method
                 self._RmidOutSpline = scipy.interpolate.interp1d(
                     [0.],
                     [0.],
-                    kind=kind,
+                    kind='zero',
                     bounds_error=False,
-                    fill_value=fill_value
+                    fill_value=self.getAOut(length_unit=length_unit)
                 )
             
             return self._AOutSpline
@@ -10198,15 +9500,14 @@ class Equilibrium(object):
         
         Keyword Args:
             kind (String or non-negative int):
-                Specifies the type of interpolation
-                to be performed in getting from t to BtVac. This is
-                passed to scipy.interpolate.interp1d. Valid options are:
+                Specifies the type of interpolation to be performed in getting
+                from t to BtVac. This is passed to
+                :py:class:`scipy.interpolate.interp1d`. Valid options are:
                 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
                 If this keyword is an integer, it specifies the order of spline
                 to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+                Default value is 'cubic' (3rd order spline interpolation) when
+                `trispline` is True, 'nearest' otherwise.
         
         Returns:
             scipy.interpolate.interp1d to convert from t to BtVac.
@@ -10224,15 +9525,14 @@ class Equilibrium(object):
                     bounds_error=False
                 )
             except ValueError:
-                # created to allow for single time (such as gfiles) to properly call this method
-                kind = 'zero'
-                fill_value = self.getBtVac()
+                # created to allow for single time (such as gfiles) to properly
+                # call this method
                 self._BtVacSpline = scipy.interpolate.interp1d(
                     [0.],
                     [0.],
-                    kind=kind,
+                    kind='zero',
                     bounds_error=False,
-                    fill_value=fill_value
+                    fill_value=self.getBtVac()
                 )
             
             return self._BtVacSpline

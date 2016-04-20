@@ -851,7 +851,7 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def rz2rho(self,method,R,Z,t=False,sqrt=False,make_grid=False,kind='cubic',
+    def rz2rho(self,method,R,Z,t=False,sqrt=False,make_grid=False,k=3,
                length_unit=1):
         """Convert the passed (R, Z) coordinates into one of several 
         normalized coordinates.  Wrapper for 
@@ -889,16 +889,8 @@ class EqdskReader(Equilibrium):
                 before evaluating. If this is set to True, R and Z must each
                 only have a single dimension, but can have different lengths.
                 Default is False (do not form meshgrid).
-            kind (phinorm and volnorm only): String or non-negative int.
-                Specifies the type of interpolation to be performed in getting
-                from psinorm to phinorm or volnorm. This is passed to
-                scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             length_unit (String or 1): Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
                 
@@ -951,14 +943,14 @@ class EqdskReader(Equilibrium):
         if method == 'psinorm':
             kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'length_unit':length_unit}
         else:
-            kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':False,'kind':kind,'length_unit':length_unit}
+            kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':False,'k':k,'length_unit':length_unit}
         if method == 'volnorm':
             raise ValueError('Cannot calculate volnorm from g-file equilibria.')
         else:
             return super(EqdskReader,self).rz2rho(method,R,Z,t,**kwargs)
 
     def rz2rmid(self,R,Z,t=False,sqrt=False,make_grid=False,rho=False,
-                kind='cubic',length_unit=1):
+                k=3,length_unit=1):
         """Maps the given points to the outboard midplane major radius, R_mid.
         Wrapper for 
         :py:meth:`Equilibrium.rz2rmid <eqtools.core.Equilibrium.rz2rmid>` 
@@ -991,15 +983,8 @@ class EqdskReader(Equilibrium):
             rho (Boolean): Set to True to return r/a (normalized minor radius)
                 instead of `R_mid`. Default is False (return major radius, 
                 R_mid).
-            kind (String or non-negative int): Specifies the type of 
-                interpolation to be performed in getting from psinorm to R_mid. 
-                This is passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             length_unit (String or 1): Length unit that R and Z are being given
                 in AND that R_mid is returned in. If a string is given, it
                 must be a valid unit specifier:
@@ -1047,10 +1032,10 @@ class EqdskReader(Equilibrium):
                 R_mid_mat = Eq_instance.rz2rmid(R, Z, make_grid=True)
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':rho,'kind':kind,'length_unit':length_unit}
+        kwargs = {'return_t':False,'sqrt':sqrt,'make_grid':make_grid,'rho':rho,'k':k,'length_unit':length_unit}
         return super(EqdskReader,self).rz2rmid(R,Z,t,**kwargs)
 
-    def psinorm2rmid(self,psi_norm,t=False,rho=False,kind='cubic',length_unit=1):
+    def psinorm2rmid(self,psi_norm,t=False,rho=False,k=3,length_unit=1):
         """Calculates the outboard R_mid location corresponding to the passed 
         psi_norm (normalized poloidal flux) values.
         
@@ -1064,15 +1049,8 @@ class EqdskReader(Equilibrium):
             rho (Boolean): Set to True to return r/a (normalized minor radius)
                 instead of `R_mid`. Default is False (return major radius, 
                 `R_mid`).
-            kind (String or non-negative int):  Specifies the type of 
-                interpolation to be performed in getting from psinorm to `R_mid`. 
-                This is passed to scipy.interpolate.interp1d. Valid options are:
-                'linear', 'nearest', 'zero', 'slinear', 'quadratic', 'cubic'
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             length_unit (String or 1): Length unit that `R_mid` is returned in. 
                 If a string is given, it must be a valid unit specifier:
                 
@@ -1112,7 +1090,7 @@ class EqdskReader(Equilibrium):
                 R_mid_arr = Eq_instance.psinorm2rmid([0.5, 0.7])
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':False,'rho':rho,'kind':kind,'length_unit':length_unit}
+        kwargs = {'return_t':False,'rho':rho,'k':k,'length_unit':length_unit}
         return super(EqdskReader,self).psinorm2rmid(psi_norm,t,**kwargs)
 
     def psinorm2volnorm(self,*args,**kwargs):
@@ -1127,7 +1105,7 @@ class EqdskReader(Equilibrium):
         """
         raise NotImplementedError('Cannot calculate volnorm from g-file equilibria.')
 
-    def psinorm2phinorm(self,psi_norm,t=False,kind='cubic'):
+    def psinorm2phinorm(self,psi_norm,t=False,k=3):
         """Calculates the normalized toroidal flux corresponding to the passed 
         psi_norm (normalized poloidal flux) values.
         
@@ -1138,15 +1116,8 @@ class EqdskReader(Equilibrium):
         Keyword Args:
             t (indeterminant): Provides duck typing for inclusion of t values. 
                 Passed `t` values either as an Arg or Kwarg are neglected.
-            kind (String or non-negative int): Specifies the type of 
-                interpolation to be performed in getting from psinorm to phinorm. 
-                This is 'linear', 'nearest', 'zero', 'slinear', 'quadratic', 
-                'cubic' passed to scipy.interpolate.interp1d. Valid options are:
-                If this keyword is an integer, it specifies the order of spline
-                to use. See the documentation for interp1d for more details.
-                Default value is 'cubic' (3rd order spline interpolation). On
-                some builds of scipy, this can cause problems, in which case
-                you should try 'linear' until you can rebuild your scipy install.
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
             
         Returns:
             phinorm (Array-like or scalar float): If all of the input arguments 
@@ -1168,7 +1139,7 @@ class EqdskReader(Equilibrium):
                 phinorm_arr = Eq_instance.psinorm2phinorm([0.5, 0.7])
         """
         t = self.getTimeBase()[0]
-        kwargs = {'return_t':False,'kind':kind}
+        kwargs = {'return_t':False,'k':3}
         return super(EqdskReader,self).psinorm2phinorm(psi_norm,t,**kwargs)
 
     #################

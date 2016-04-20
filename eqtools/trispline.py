@@ -293,3 +293,28 @@ class BivariateInterpolator(object):
         return self._ct_interp(
             scipy.hstack((scipy.atleast_2d(xi).T, scipy.atleast_2d(yi).T))
         )
+
+class UnivariateInterpolator(scipy.interpolate.InterpolatedUnivariateSpline):
+    """Interpolated spline class which overcomes the shortcomings of interp1d
+    (inaccurate near edges) and InterpolatedUnivariateSpline (can't set NaN
+    where it extrapolates).
+    """
+    def __init__(self, *args, **kwargs):
+        self.min_val = kwargs.pop('minval', None)
+        self.max_val = kwargs.pop('maxval', None)
+        if kwargs.pop('enforce_y', True):
+            if self.min_val is None:
+                self.min_val = min(args[1])
+            if self.max_val is None:
+                self.max_val = max(args[1])
+        super(UnivariateInterpolator, self).__init__(*args, **kwargs)
+    
+    def __call__(self, x, *args, **kwargs):
+        x = scipy.asarray(x, dtype=float)
+        out = super(UnivariateInterpolator, self).__call__(x, *args, **kwargs)
+        if self.min_val is not None:
+            out[out < self.min_val] = self.min_val
+        if self.max_val is not None:
+            out[out > self.max_val] = self.max_val
+        out[(x < self.get_knots().min()) | (x > self.get_knots().max())] = scipy.nan
+        return out
