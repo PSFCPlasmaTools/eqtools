@@ -26,6 +26,7 @@ import scipy.constants
 import re
 import warnings
 
+# Constants to determine how plot labels are formatted:
 B_LABEL = '$B$ [T]'
 J_LABEL = '$j$ [MA/m$^2$]'
 
@@ -335,6 +336,7 @@ class Equilibrium(object):
         self._AOutSpline = {}
         self._qSpline = {}
         self._FSpline = {}
+        self._FToPsinormSpline = {}
         self._FFPrimeSpline = {}
         self._pSpline = {}
         self._pPrimeSpline = {}
@@ -367,6 +369,7 @@ class Equilibrium(object):
         self._AOutSpline = {}
         self._qSpline = {}
         self._FSpline = {}
+        self._FToPsinormSpline = {}
         self._FFPrimeSpline = {}
         self._pSpline = {}
         self._pPrimeSpline = {}
@@ -4617,6 +4620,76 @@ class Equilibrium(object):
         """
         return self._volnorm2Quan(self._getFSpline, volnorm, t, **kwargs)
     
+    def Fnorm2psinorm(self, F, t, **kwargs):
+        """Calculates the psinorm (normalized poloidal flux) corresponding to the passed normalized flux function :math:`F=RB_{\phi}` values.
+        
+        This is provided as a convenience method to plot current lines with the
+        correct spacing: current lines launched from a grid uniformly-spaced in
+        Fnorm will have spacing directly proportional to the magnitude.
+        
+        By default, EFIT only computes this inside the LCFS. Furthermore, it is
+        truncated at the radius at which is becomes non-monotonic.
+        
+        Args:
+            F (Array-like or scalar float): Values of F to map to psinorm.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `volnorm`. If the `each_t` keyword is True, then `t` must be scalar
+                or have exactly one dimension. If the `each_t` keyword is False,
+                `t` must have the same shape as `volnorm`.
+        
+        Keyword Args:
+            sqrt (Boolean): Set to True to return the square root of psinorm. 
+                Only the square root of positive values is taken. Negative 
+                values are replaced with zeros, consistent with Steve Wolfe's
+                IDL implementation efit_rz2rho.pro. Default is False.
+            each_t (Boolean): When True, the elements in `F` are evaluated at
+                each value in `t`. If True, `t` must have only one dimension (or
+                be a scalar). If False, `t` must match the shape of `F` or be a
+                scalar. Default is True (evaluate ALL `volnorm` at EACH element
+                in `t`).
+            k (positive int): The degree of polynomial spline interpolation to
+                use in converting coordinates.
+            return_t (Boolean): Set to True to return a tuple of (`psinorm`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `psinorm` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `psinorm`).
+        
+        Returns:
+            `psinorm` or (`psinorm`, `time_idxs`)
+            
+            * **psinorm** (`Array or scalar float`) - The normalized poloidal
+              flux. If all of the input arguments are scalar, then a scalar is
+              returned. Otherwise, a scipy Array is returned.
+            * **time_idxs** (Array with same shape as `psinorm`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
+            
+            Find single psinorm value for F=0.7, t=0.26s::
+            
+                psinorm_val = Eq_instance.F2psinorm(0.7, 0.26)
+            
+            Find psinorm values at F values of 0.5 and 0.7 at the single time
+            t=0.26s::
+            
+                psinorm_arr = Eq_instance.F2psinorm([0.5, 0.7], 0.26)
+            
+            Find psinorm values at F=0.5 at times t=[0.2s, 0.3s]::
+            
+                psinorm_arr = Eq_instance.F2psinorm(0.5, [0.2, 0.3])
+            
+            Find psinorm values at (F, t) points (0.6, 0.2s) and (0.5, 0.3s)::
+            
+                psinorm_arr = Eq_instance.F2psinorm([0.6, 0.5], [0.2, 0.3], each_t=False)
+        """
+        return self._psinorm2Quan(self._getFNormToPsiNormSpline, F, t, **kwargs)
+    
     # Flux function ("FF'") profile:
     
     def rz2FFPrime(self, R, Z, t, **kwargs):
@@ -7034,6 +7107,7 @@ class Equilibrium(object):
             
                 B_mat = Eq_instance.rz2B(R, Z, 0.2, make_grid=True)
         """
+        # TODO: This doesn’t handle return_t properly!
         BR = self.rz2BR(R, Z, t, **kwargs)
         BZ = self.rz2BZ(R, Z, t, **kwargs)
         BT = self.rz2BT(R, Z, t, **kwargs)
@@ -7147,6 +7221,7 @@ class Equilibrium(object):
                 
                 jR_mat = Eq_instance.rz2jR(R, Z, 0.2, make_grid=True)
         """
+        # TODO: This doesn’t handle return_t properly!
         # NOTE: Alcator C-Mod requires the extra factor to correct FF'.
         # You should check this for your implementation.
         return -1.0 * self.getCurrentSign() * (
@@ -7264,6 +7339,7 @@ class Equilibrium(object):
                 
                 jZ_mat = Eq_instance.rz2jZ(R, Z, 0.2, make_grid=True)
         """
+        # TODO: This doesn’t handle return_t properly!
         # NOTE: Alcator C-Mod requires the extra factor to correct FF'.
         # You should check this for your implementation.
         return -1.0 * self.getCurrentSign() * (
@@ -7380,6 +7456,7 @@ class Equilibrium(object):
                 
                 jT_mat = Eq_instance.rz2jT(R, Z, 0.2, make_grid=True)
         """
+        # TODO: This doesn’t handle return_t properly!
         # NOTE: Alcator C-Mod requires the extra factor to correct FF'.
         # You should check this for your implementation.
         unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
@@ -7489,6 +7566,7 @@ class Equilibrium(object):
                 
                 j_mat = Eq_instance.rz2j(R, Z, 0.2, make_grid=True)
         """
+        # TODO: This doesn’t handle return_t properly!
         jR = self.rz2jR(R, Z, t, **kwargs)
         jZ = self.rz2jZ(R, Z, t, **kwargs)
         jT = self.rz2jT(R, Z, t, **kwargs)
@@ -7598,9 +7676,9 @@ class Equilibrium(object):
             t (float): Time to trace field line at.
         
         Keyword Args:
-            origin ({'psinorm', 'phinorm', 'volnorm', 'r/a', 'Rmid'}): The flux
-                surface coordinates which `rho` is given in. Default is
-                'psinorm'.
+            origin ({'psinorm', 'phinorm', 'volnorm', 'r/a', 'Rmid', 'Fnorm'}):
+                The flux surface coordinates which `rhovals` is given in.
+                Default is 'psinorm'.
             phi0 (float): Toroidal angle of starting point in radians. Default
                 is 0.0.
             field ({'B', 'j'}): The field to use. Can be magnetic field ('B') or
@@ -7624,6 +7702,10 @@ class Equilibrium(object):
         Returns:
             array, (`nsteps` + 1, 3): Containing the (R, Z, phi) coordinates.
         """
+        # Handle Fnorm specially since it doesn't support all of the routines:
+        if origin == 'Fnorm':
+            rho = self.Fnorm2psinorm(rho, t)
+            origin = 'psinorm'
         Rmid = self.rho2rho(origin, 'Rmid', rho, t)
         Zmid = self.getMagZSpline()(t)
         # Intercept the poloidal rev_method here to avoid numerical issues at
@@ -7634,9 +7716,9 @@ class Equilibrium(object):
             kwargs['num_rev'] = kwargs.get('num_rev', 1.0) * q
         return self.rz2FieldLineTrace(Rmid, Zmid, t, **kwargs)
     
-    def plotField(self, t, rhovals=6, color='b', cmap='plasma', alpha=0.5,
-                  arrows=True, linewidth=1.0, arrowlinewidth=3.0, a=None,
-                  **kwargs):
+    def plotField(self, t, rhovals=6, rhomin=0.05, rhomax=0.95, color='b',
+                  cmap='plasma', alpha=0.5, arrows=True, linewidth=1.0,
+                  arrowlinewidth=3.0, a=None, **kwargs):
         """Plot the field lines starting from a number of points.
         
         The field lines are started at the outboard midplane.
@@ -7650,8 +7732,12 @@ class Equilibrium(object):
         
         Keyword Args:
             rhovals (int or array of int): The number of uniformly-spaced rho
-                points between 0.05 and 0.95 to use, or an explicit grid of rho
+                points between `rhomin` and `rhomax` to use, or an explicit grid of rho
                 points to use. Default is 6.
+            rhomin (float): The minimum value of rho to use when using a
+                uniformly-spaced grid. Default is 0.05.
+            rhomax (float): The maximum value of rho to use when using a
+                uniformly-spaced grid. Default is 0.95.
             color (str): The color to plot the field lines in. Default is 'b'.
                 If set to 'sequential', each field line will be a different
                 color, in the sequence matplotlib assigns them. If set to
@@ -7670,10 +7756,12 @@ class Equilibrium(object):
             arrowlinewidth (float): The line width to use when plotting the
                 arrows. Default is 3.0
             a (:py:class:`matplotlib.axes._subplots.Axes3DSubplot`): The axes to
-                plot the field lines on. Default is to make a new figure.
-            origin ({'psinorm', 'phinorm', 'volnorm', 'r/a', 'Rmid'}): The flux
-                surface coordinates which `rhovals` is given in. Default is
-                'psinorm'.
+                plot the field lines on. Default is to make a new figure. Note
+                that a colorbar will be drawn when `color` is magnitude, but
+                only if `a` is not provided.
+            origin ({'psinorm', 'phinorm', 'volnorm', 'r/a', 'Rmid', 'Fnorm'}):
+                The flux surface coordinates which `rhovals` is given in.
+                Default is 'psinorm'.
             phi0 (float): Toroidal angle of starting point in radians. Default
                 is 0.0.
             field ({'B', 'j'}): The field to use. Can be magnetic field ('B') or
@@ -7699,7 +7787,7 @@ class Equilibrium(object):
         """
         rhovals = scipy.asarray(rhovals, dtype=float)
         if rhovals.ndim == 0:
-            rhovals = scipy.linspace(0.05, 0.95, int(rhovals))
+            rhovals = scipy.linspace(rhomin, rhomax, int(rhovals))
         
         rzt = []
         for rho in rhovals:
@@ -9312,7 +9400,9 @@ class Equilibrium(object):
                 return self._RmidSpline
     
     def _getRmidToPsiNormSpline(self, idx, k=3):
-        """Returns the spline object corresponding to the passed time index idx,
+        """Get the spline which converts Rmid to psinorm.
+        
+        Returns the spline object corresponding to the passed time index idx,
         generating it if it does not already exist.
         
         There are two approaches that come to mind:
@@ -9505,6 +9595,64 @@ class Equilibrium(object):
                     s=0
                 )
                 return self._FSpline
+    
+    def _getFNormToPsiNormSpline(self, idx, k=3):
+        """Get spline to convert normalized F to psinorm.
+        
+        This is provided to help plot current densities.
+        
+        Returns the spline object corresponding to the passed time index idx,
+        generating it if it does not already exist.
+        
+        Args:
+            idx (Scalar int):
+                The time index to retrieve the spline for. This is ASSUMED to be
+                a valid index for the first dimension of :py:meth:`getFluxGrid`,
+                otherwise an :py:class:`IndexError` will be raised.
+        
+        Keyword Args:
+            k (positive int)
+                Polynomial degree of spline to use. Default is 3.
+        
+        Returns:
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`tripline.RectBivariateSpline` depending on whether or
+                not the instance was created with the `tspline` keyword.
+        """
+        if not self._tricubic:
+            try:
+                return self._FToPsinormSpline[idx][k]
+            except KeyError:
+                F = self.getF()[idx]
+                F = (F - F.min()) / (F.max() - F.min())
+                psinorm_grid = scipy.linspace(0.0, 1.0, len(F))
+                # Find if it ever goes non-monotonic: F hacked to be
+                # strictly INCREASING from the magnetic axis out.
+                decr_idx, = scipy.where((F[1:] - F[:-1]) < 0)
+                if len(decr_idx) > 0:
+                    F = F[:decr_idx[0] + 1]
+                    psinorm_grid = psinorm_grid[:decr_idx[0] + 1]
+                
+                spline = trispline.UnivariateInterpolator(F, psinorm_grid, k=k)
+                try:
+                    self._FToPsinormSpline[idx][k] = spline
+                except KeyError:
+                    self._FToPsinormSpline[idx] = {k: spline}
+                return self._FToPsinormSpline[idx][k]
+        else:
+            if self._FToPsinormSpline:
+                return self._FToPsinormSpline
+            else:
+                F = self.getF()
+                F = (F - F.min(axis=1)[:, None]) / (F.max(axis=1) - F.min(axis=1))[:, None]
+                self._FToPsinormSpline = trispline.RectBivariateSpline(
+                    self.getTimeBase(),
+                    F,
+                    scipy.linspace(0.0, 1.0, F.shape[1]),
+                    bounds_error=False,
+                    s=0
+                )
+                return self._FToPsinormSpline
     
     def _getFFPrimeSpline(self, idx, k=3):
         """Get spline to convert psinorm to FFPrime.
