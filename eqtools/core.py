@@ -26,6 +26,9 @@ import scipy.constants
 import re
 import warnings
 
+B_LABEL = '$B$ [T]'
+J_LABEL = '$j$ [MA/m$^2$]'
+
 class ModuleWarning(Warning):
     """Warning class to notify the user of unavailable modules.
     """
@@ -47,6 +50,10 @@ try:
     import matplotlib.patches as mpatches
     import matplotlib.path as mpath
     import filewriter
+    from mpl_toolkits.mplot3d import Axes3D
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    from matplotlib.colorbar import ColorbarBase
+    from matplotlib.colors import Normalize
 except Exception:
     warnings.warn("matplotlib modules could not be loaded -- plotting and gfile"
                   " writing will not be available.",
@@ -6832,10 +6839,10 @@ class Equilibrium(object):
             * **BT** (`Array or scalar float`) - The toroidal magnetic field.
               If all of the input arguments are scalar, then a scalar is
               returned. Otherwise, a scipy Array is returned. If `R` and `Z`
-              both have the same shape then `F` has this shape as well,
-              unless the `make_grid` keyword was True, in which case `F`
+              both have the same shape then `BT` has this shape as well,
+              unless the `make_grid` keyword was True, in which case `BT`
               has shape (len(`Z`), len(`R`)).
-            * **time_idxs** (Array with same shape as `F`) - The indices 
+            * **time_idxs** (Array with same shape as `BT`) - The indices 
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
               True.
@@ -6844,28 +6851,28 @@ class Equilibrium(object):
             All assume that `Eq_instance` is a valid instance of the
             appropriate extension of the :py:class:`Equilibrium` abstract class.
             
-            Find single F value at R=0.6m, Z=0.0m, t=0.26s::
+            Find single BT value at R=0.6m, Z=0.0m, t=0.26s::
             
-                F_val = Eq_instance.rz2F(0.6, 0, 0.26)
+                BT_val = Eq_instance.rz2BT(0.6, 0, 0.26)
             
-            Find F values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+            Find BT values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
             single time t=0.26s. Note that the `Z` vector must be fully specified,
             even if the values are all the same::
             
-                F_arr = Eq_instance.rz2F([0.6, 0.8], [0, 0], 0.26)
+                BT_arr = Eq_instance.rz2BT([0.6, 0.8], [0, 0], 0.26)
             
-            Find F values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+            Find BT values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
             
-                F_arr = Eq_instance.rz2F(0.6, 0, [0.2, 0.3])
+                BT_arr = Eq_instance.rz2BT(0.6, 0, [0.2, 0.3])
             
-            Find F values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
+            Find BT values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
             
-                F_arr = Eq_instance.rz2F([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
+                BT_arr = Eq_instance.rz2BT([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
             
-            Find F values on grid defined by 1D vector of radial positions `R`
+            Find BT values on grid defined by 1D vector of radial positions `R`
             and 1D vector of vertical positions `Z` at time t=0.2s::
             
-                F_mat = Eq_instance.rz2F(R, Z, 0.2, make_grid=True)
+                BT_mat = Eq_instance.rz2BT(R, Z, 0.2, make_grid=True)
         """
         return_t = kwargs.get('return_t', False)
         unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
@@ -6927,6 +6934,110 @@ class Equilibrium(object):
             return unit_factor * B_T, blob
         else:
             return unit_factor * B_T
+    
+    def rz2B(self, R, Z, t, **kwargs):
+        r"""Calculates the magnitude of the magnetic field at the given (R, Z, t).
+        
+        Args:
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to B. If `R` and `Z` are both scalar values, they are used
+                as the coordinate pair for all of the values in `t`. Must have
+                the same shape as `Z` unless the `make_grid` keyword is set. If
+                the `make_grid` keyword is True, `R` must have exactly one
+                dimension.
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to B. If `R` and `Z` are both scalar values, they are used
+                as the coordinate pair for all of the values in `t`. Must have
+                the same shape as `R` unless the `make_grid` keyword is set. If
+                the `make_grid` keyword is True, `Z` must have exactly one
+                dimension.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `R`, `Z`. If the `each_t` keyword is True, then `t` must be
+                scalar or have exactly one dimension. If the `each_t` keyword is
+                False, `t` must have the same shape as `R` and `Z` (or their
+                meshgrid if `make_grid` is True).
+        
+        Keyword Args:
+            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `R` and
+                `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
+                EACH element in `t`).
+            make_grid (Boolean): Set to True to pass `R` and `Z` through
+                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                True, `R` and `Z` must each only have a single dimension, but
+                can have different lengths. Default is False (do not form
+                meshgrid).
+            length_unit (String or 1): Length unit that `R`, `Z` are given in.
+                If a string is given, it must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (use meters).
+            return_t (Boolean): Set to True to return a tuple of (`B`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `B` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `B`).
+        
+        Returns:
+            `B` or (`B`, `time_idxs`)
+            
+            * **B** (`Array or scalar float`) - The magnitude of the magnetic
+              field. If all of the input arguments are scalar, then a scalar is
+              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              both have the same shape then `B` has this shape as well, unless
+              the `make_grid` keyword was True, in which case `B` has shape
+              (len(`Z`), len(`R`)).
+            * **time_idxs** (Array with same shape as `B`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the
+            appropriate extension of the :py:class:`Equilibrium` abstract class.
+            
+            Find single B value at R=0.6m, Z=0.0m, t=0.26s::
+            
+                B_val = Eq_instance.rz2B(0.6, 0, 0.26)
+            
+            Find B values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+            single time t=0.26s. Note that the `Z` vector must be fully specified,
+            even if the values are all the same::
+            
+                B_arr = Eq_instance.rz2B([0.6, 0.8], [0, 0], 0.26)
+            
+            Find B values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+            
+                B_arr = Eq_instance.rz2B(0.6, 0, [0.2, 0.3])
+            
+            Find B values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
+            
+                B_arr = Eq_instance.rz2B([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
+            
+            Find B values on grid defined by 1D vector of radial positions `R`
+            and 1D vector of vertical positions `Z` at time t=0.2s::
+            
+                B_mat = Eq_instance.rz2B(R, Z, 0.2, make_grid=True)
+        """
+        BR = self.rz2BR(R, Z, t, **kwargs)
+        BZ = self.rz2BZ(R, Z, t, **kwargs)
+        BT = self.rz2BT(R, Z, t, **kwargs)
+        return scipy.sqrt(BR**2.0 + BZ**2.0 + BT**2.0)
     
     ############################
     # Current density routines #
@@ -7277,6 +7388,432 @@ class Equilibrium(object):
             R / unit_factor * self.rz2pprime(R, Z, t, **kwargs) +
             unit_factor * self.rz2FFPrime(R, Z, t, **kwargs) / (scipy.constants.mu_0 * R)
         )
+    
+    def rz2j(self, R, Z, t, **kwargs):
+        r"""Calculates the magnitude of the current density at the given (R, Z, t) coordinates.
+        
+        Args:
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to current density magnitude. If `R` and `Z` are both scalar
+                values, they are used as the coordinate pair for all of the
+                values in `t`. Must have the same shape as `Z` unless the
+                `make_grid` keyword is set. If the `make_grid` keyword is True,
+                `R` must have exactly one dimension.
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to current density magnitude. If `R` and `Z` are both scalar
+                values, they are used as the coordinate pair for all of the
+                values in `t`. Must have the same shape as `R` unless the
+                `make_grid` keyword is set. If the `make_grid` keyword is True,
+                `Z` must have exactly one dimension.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `R`, `Z`. If the `each_t` keyword is True, then `t` must be
+                scalar or have exactly one dimension. If the `each_t` keyword is
+                False, `t` must have the same shape as `R` and `Z` (or their
+                meshgrid if `make_grid` is True).
+        
+        Keyword Args:
+            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `R` and
+                `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
+                EACH element in `t`).
+            make_grid (Boolean): Set to True to pass `R` and `Z` through
+                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                True, `R` and `Z` must each only have a single dimension, but
+                can have different lengths. Default is False (do not form
+                meshgrid).
+            length_unit (String or 1): Length unit that `R`, `Z` are given in.
+                If a string is given, it must be a valid unit specifier:
+                    
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (use meters).
+            return_t (Boolean): Set to True to return a tuple of (`j`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `j` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `j`).
+        
+        Returns:
+            `j` or (`j`, `time_idxs`)
+            
+            * **j** (`Array or scalar float`) - The magnitude of the current
+              density. If all of the input arguments are scalar, then a scalar
+              is returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              both have the same shape then `j` has this shape as well, unless
+              the `make_grid` keyword was True, in which case `j` has shape
+              (len(`Z`), len(`R`)).
+            * **time_idxs** (Array with same shape as `j`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
+            
+            Find single j value at R=0.6m, Z=0.0m, t=0.26s::
+                
+                j_val = Eq_instance.rz2j(0.6, 0, 0.26)
+            
+            Find j values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+            single time t=0.26s. Note that the `Z` vector must be fully
+            specified, even if the values are all the same::
+                
+                j_arr = Eq_instance.rz2j([0.6, 0.8], [0, 0], 0.26)
+            
+            Find j values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+                
+                j_arr = Eq_instance.rz2j(0.6, 0, [0.2, 0.3])
+            
+            Find j values at (R, Z, t) points (0.6m, 0m, 0.2s) and
+            (0.5m, 0.2m, 0.3s)::
+                
+                j_arr = Eq_instance.rz2j([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
+            
+            Find j values on grid defined by 1D vector of radial positions `R`
+            and 1D vector of vertical positions `Z` at time t=0.2s::
+                
+                j_mat = Eq_instance.rz2j(R, Z, 0.2, make_grid=True)
+        """
+        jR = self.rz2jR(R, Z, t, **kwargs)
+        jZ = self.rz2jZ(R, Z, t, **kwargs)
+        jT = self.rz2jT(R, Z, t, **kwargs)
+        return scipy.sqrt(jR**2.0 + jZ**2.0 + jT**2.0)
+    
+    ##########################
+    # Field mapping routines #
+    ##########################
+    def _fl_func(self, phi, RZ, t, field='B'):
+        r"""Function which implements the differential equation for field line tracing.
+        
+        .. math::
+            
+            \frac{dR}{d\phi} = \frac{u_R}{u_\phi}R
+            
+            \frac{dZ}{d\phi} = \frac{u_Z}{u_\phi}R
+        
+        Args:
+            phi (float): Toroidal location to use.
+            RZ (array of float, (2,)): Array containing R, Z.
+            t (float): The time to use.
+        
+        Keyword Args:
+            field ({'B', 'j'}): The field to use. Can be magnetic field ('B') or
+                current density ('j'). Default is 'B' (magnetic field).
+        
+        Returns:
+            list: containing [:math:`dR/d\phi`, :math:`dZ/d\phi`]
+        """
+        R = RZ[0]
+        Z = RZ[1]
+        if field == 'B':
+            uR = self.rz2BR(R, Z, t)
+            uZ = self.rz2BZ(R, Z, t)
+            uT = self.rz2BT(R, Z, t)
+        elif field == 'j':
+            uR = self.rz2jR(R, Z, t)
+            uZ = self.rz2jZ(R, Z, t)
+            uT = self.rz2jT(R, Z, t)
+        
+        return [uR * R / uT, uZ * R / uT]
+    
+    def rz2FieldLineTrace(self, R0, Z0, t, phi0=0.0, field='B', num_rev=1.0,
+                          rev_method='toroidal', dphi=2.0 * scipy.pi / 100.0,
+                          integrator='dopri5'):
+        """Trace a field line starting from a given (R, phi, Z) point.
+        
+        Args:
+            R0 (float): Major radial coordinate of starting point.
+            Z0 (float): Vertical coordinate of starting point.
+            t (float): Time to trace field line at.
+        
+        Keyword Args:
+            phi0 (float): Toroidal angle of starting point in radians. Default
+                is 0.0.
+            field ({'B', 'j'}): The field to use. Can be magnetic field ('B') or
+                current density ('j'). Default is 'B' (magnetic field).
+            num_rev (float): The number of revolutions to trace the field line
+                through. Whether this refers to toroidal or poloidal revolutions
+                is determined by the `rev_method` keyword. Default is 1.0.
+            rev_method ('toroidal', 'poloidal'): Whether `num_rev` refers to the
+                number of toroidal or poloidal revolutions the field line should
+                make. Note that 'poloidal' only makes sense for close field
+                lines. Default is 'toroidal'.
+            dphi (float): Toroidal step size, in radians. Default is 0.02*pi.
+                The number of steps taken is then 2*pi times the number of
+                toroidal rotations divided by dphi.
+            integrator (str): The integrator to use with
+                :py:class:`scipy.integrate.ode`. Default is 'dopri5' (explicit
+                Dormand-Prince of order (4)5). Can also be an instance of
+                :py:class:`scipy.integrate.ode` for which the integrator and its
+                options has been set.
+        
+        Returns:
+            array, (`nsteps` + 1, 3): Containing the (R, Z, phi) coordinates.
+        """
+        if field not in ['B', 'j']:
+            raise ValueError("Invalid field {field}!".format(field=field))
+        if rev_method not in ['toroidal', 'poloidal']:
+            raise ValueError("Invalid rev_method {rm}!".format(rm=rev_method))
+        if rev_method == 'poloidal':
+            q = self.rz2q(R0, Z0, t)
+            num_rev = num_rev * q
+        nsteps = int(scipy.ceil(num_rev * 2.0 * scipy.pi / dphi))
+        
+        if isinstance(integrator, scipy.integrate.ode):
+            r = integrator
+        else:
+            r = scipy.integrate.ode(self._fl_func)
+            r.set_integrator(integrator)
+        r.set_f_params(t, field)
+        r.set_initial_value([R0, Z0], phi0)
+        out = scipy.zeros((nsteps + 1, 3)) # R, Z, Phi
+        out[0, :] = [R0, Z0, phi0]
+        for i in xrange(1, nsteps + 1):
+            out[i, 0:2] = r.integrate(r.t + dphi)
+            out[i, 2] = r.t
+        return out
+    
+    def rho2FieldLineTrace(self, rho, t, origin='psinorm', **kwargs):
+        """Trace a field line starting from a given normalized coordinate point.
+        
+        The field line is started at the outboard midplane.
+        
+        Args:
+            rho (float): Flux surface label of starting point.
+            t (float): Time to trace field line at.
+        
+        Keyword Args:
+            origin ({'psinorm', 'phinorm', 'volnorm', 'r/a', 'Rmid'}): The flux
+                surface coordinates which `rho` is given in. Default is
+                'psinorm'.
+            phi0 (float): Toroidal angle of starting point in radians. Default
+                is 0.0.
+            field ({'B', 'j'}): The field to use. Can be magnetic field ('B') or
+                current density ('j'). Default is 'B' (magnetic field).
+            num_rev (float): The number of revolutions to trace the field line
+                through. Whether this refers to toroidal or poloidal revolutions
+                is determined by the `rev_method` keyword. Default is 1.0.
+            rev_method ('toroidal', 'poloidal'): Whether `num_rev` refers to the
+                number of toroidal or poloidal revolutions the field line should
+                make. Note that 'poloidal' only makes sense for close field
+                lines. Default is 'toroidal'.
+            dphi (float): Toroidal step size, in radians. Default is 0.02*pi.
+                The number of steps taken is then 2*pi times the number of
+                toroidal rotations divided by dphi.
+            integrator (str): The integrator to use with
+                :py:class:`scipy.integrate.ode`. Default is 'dopri5' (explicit
+                Dormand-Prince of order (4)5). Can also be an instance of
+                :py:class:`scipy.integrate.ode` for which the integrator and its
+                options has been set.
+        
+        Returns:
+            array, (`nsteps` + 1, 3): Containing the (R, Z, phi) coordinates.
+        """
+        Rmid = self.rho2rho(origin, 'Rmid', rho, t)
+        Zmid = self.getMagZSpline()(t)
+        # Intercept the poloidal rev_method here to avoid numerical issues at
+        # the boundaries:
+        if kwargs.get('rev_method', 'toroidal') == 'poloidal':
+            kwargs['rev_method'] = 'toroidal'
+            q = self.rho2rho(origin, 'q', rho, t)
+            kwargs['num_rev'] = kwargs.get('num_rev', 1.0) * q
+        return self.rz2FieldLineTrace(Rmid, Zmid, t, **kwargs)
+    
+    def plotField(self, t, rhovals=6, color='b', cmap='plasma', alpha=0.5,
+                  arrows=True, linewidth=1.0, arrowlinewidth=3.0, a=None,
+                  **kwargs):
+        """Plot the field lines starting from a number of points.
+        
+        The field lines are started at the outboard midplane.
+        
+        If uniformly-spaced psinorm points are used, the spacing of the magnetic
+        field lines will be directly proportional to the field strength,
+        assuming a sufficient number of revolutions is traced.
+        
+        Args:
+            t (float): Time to trace field line at.
+        
+        Keyword Args:
+            rhovals (int or array of int): The number of uniformly-spaced rho
+                points between 0.05 and 0.95 to use, or an explicit grid of rho
+                points to use. Default is 6.
+            color (str): The color to plot the field lines in. Default is 'b'.
+                If set to 'sequential', each field line will be a different
+                color, in the sequence matplotlib assigns them. If set to
+                'magnitude', the coloring will be proportional to the magnitude
+                of the field. Note that this is very time-consuming, as the
+                limitations of matplotlib mean that each line segment must be
+                plotted individually.
+            cmap (str): The colormap to use when `color` is 'magnitude'. Default
+                is 'plasma', a perceptually uniform sequential colormap.
+            alpha (float): The transparency to plot the field lines with.
+                Default is 0.5.
+            arrows (bool): If True, an arrowhead indicating the field direction
+                will be drawn at the start of each field line. Default is True.
+            linewidth (float): The line width to use when plotting the field
+                lines. Default is 1.0.
+            arrowlinewidth (float): The line width to use when plotting the
+                arrows. Default is 3.0
+            a (:py:class:`matplotlib.axes._subplots.Axes3DSubplot`): The axes to
+                plot the field lines on. Default is to make a new figure.
+            origin ({'psinorm', 'phinorm', 'volnorm', 'r/a', 'Rmid'}): The flux
+                surface coordinates which `rhovals` is given in. Default is
+                'psinorm'.
+            phi0 (float): Toroidal angle of starting point in radians. Default
+                is 0.0.
+            field ({'B', 'j'}): The field to use. Can be magnetic field ('B') or
+                current density ('j'). Default is 'B' (magnetic field).
+            num_rev (float): The number of revolutions to trace the field line
+                through. Whether this refers to toroidal or poloidal revolutions
+                is determined by the `rev_method` keyword. Default is 1.0.
+            rev_method ('toroidal', 'poloidal'): Whether `num_rev` refers to the
+                number of toroidal or poloidal revolutions the field line should
+                make. Note that 'poloidal' only makes sense for close field
+                lines. Default is 'toroidal'.
+            dphi (float): Toroidal step size, in radians. Default is 0.02*pi.
+                The number of steps taken is then 2*pi times the number of
+                toroidal rotations divided by dphi.
+            integrator (str): The integrator to use with
+                :py:class:`scipy.integrate.ode`. Default is 'dopri5' (explicit
+                Dormand-Prince of order (4)5). Can also be an instance of
+                :py:class:`scipy.integrate.ode` for which the integrator and its
+                options has been set.
+        
+        Returns:
+            (figure, axis): The figure and axis which the field lines were plotted in.
+        """
+        rhovals = scipy.asarray(rhovals, dtype=float)
+        if rhovals.ndim == 0:
+            rhovals = scipy.linspace(0.05, 0.95, int(rhovals))
+        
+        rzt = []
+        for rho in rhovals:
+            rzt.append(self.rho2FieldLineTrace(rho, t, **kwargs))
+        
+        if a is None:
+            f = plt.figure()
+            if color == 'magnitude':
+                gs = mplgs.GridSpec(1, 2, width_ratios=[10, 1])
+                a = f.add_subplot(gs[0, 0], projection='3d')
+                a_cb = f.add_subplot(gs[0, 1])
+            else:
+                a = f.add_subplot(111, projection='3d')
+        else:
+            f = a.get_figure()
+            # Don't make colorbar for existing figure:
+            if color == 'magnitude':
+                a_cb = None
+        
+        # Need to do this ahead of time to get the right scaling for all lines:
+        if color == 'magnitude':
+            mag_max = 0.0
+            mag_min = scipy.inf
+            mag = []
+            for v in rzt:
+                if kwargs.get('field', 'B') == 'B':
+                    mag.append(self.rz2B(v[:, 0], v[:, 1], t))
+                else:
+                    mag.append(self.rz2j(v[:, 0], v[:, 1], t))
+                m = mag[-1].max()
+                if m > mag_max:
+                    mag_max = m
+                m = mag[-1].min()
+                if m < mag_min:
+                    mag_min = m
+            if a_cb is not None:
+                scale = 1.0 if kwargs.get('field', 'B') == 'B' else 1e-6
+                cb = ColorbarBase(
+                    a_cb,
+                    cmap=plt.get_cmap(cmap),
+                    norm=Normalize(vmin=mag_min * scale, vmax=mag_max * scale),
+                    label=B_LABEL if kwargs.get('field', 'B') == 'B' else J_LABEL
+                )
+        
+        v_ext = max(scipy.absolute(self.getRGrid()).max(), scipy.absolute(self.getZGrid()).max())
+        
+        for j, v in enumerate(rzt):
+            if color == 'magnitude':
+                # Hack from https://stackoverflow.com/questions/15617207/line-colour-of-3d-parametric-curve-in-pythons-matplotlib-pyplot
+                for i in range(0, v.shape[0] - 1):
+                    c = plt.get_cmap(cmap)(
+                        int(
+                            scipy.around(
+                                255 * ((mag[j][i] + mag[j][i + 1]) / 2.0 - mag_min) / (mag_max - mag_min)
+                            )
+                        )
+                    )[:3]
+                    a.plot(
+                        v[i:i + 2, 0] * scipy.cos(v[i:i + 2, 2]),
+                        v[i:i + 2, 0] * scipy.sin(v[i:i + 2, 2]),
+                        v[i:i + 2, 1],
+                        color=c,
+                        alpha=alpha,
+                        linewidth=linewidth
+                    )
+            else:
+                l, = a.plot(
+                    v[:, 0] * scipy.cos(v[:, 2]),
+                    v[:, 0] * scipy.sin(v[:, 2]),
+                    v[:, 1],
+                    color=None if color == 'sequential' else color,
+                    alpha=alpha,
+                    linewidth=linewidth
+                )
+                c = l.get_color()
+            
+            if arrows:
+                if kwargs.get('field', 'B') == 'B':
+                    uR = self.rz2BR(v[0, 0], v[0, 1], t)
+                    uZ = self.rz2BZ(v[0, 0], v[0, 1], t)
+                    uT = self.rz2BT(v[0, 0], v[0, 1], t)
+                else:
+                    uR = self.rz2jR(v[0, 0], v[0, 1], t)
+                    uZ = self.rz2jZ(v[0, 0], v[0, 1], t)
+                    uT = self.rz2jT(v[0, 0], v[0, 1], t)
+                u = scipy.sqrt(uR**2.0 + uZ**2.0 + uT**2.0)
+                a.quiver(
+                    v[0, 0] * scipy.cos(v[0, 2]),
+                    v[0, 0] * scipy.sin(v[0, 2]),
+                    v[0, 1],
+                    (uR * scipy.cos(v[0, 2]) - uT * scipy.sin(v[0, 2])) / u,
+                    (uR * scipy.sin(v[0, 2]) + uT * scipy.cos(v[0, 2])) / u,
+                    uZ / u,
+                    color=c,
+                    alpha=alpha,
+                    length=v_ext / 10.0,
+                    arrow_length_ratio=1.0,
+                    pivot='tail',
+                    linewidth=arrowlinewidth
+                )
+        
+        a.set_aspect('equal')
+        # equal doesn't equalize the Z-axis, so fake it with axis limits:
+        a.set_xlim(-v_ext, v_ext)
+        a.set_ylim(-v_ext, v_ext)
+        a.set_zlim(-v_ext, v_ext)
+        a.set_xlabel('$X$ [m]')
+        a.set_ylabel('$Y$ [m]')
+        a.set_zlabel('$Z$ [m]')
+        
+        plt.ion()
+        f.show()
+        
+        return f, a
     
     ###########################
     # Backend Mapping Drivers #
