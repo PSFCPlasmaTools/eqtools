@@ -7107,7 +7107,7 @@ class Equilibrium(object):
             
                 B_mat = Eq_instance.rz2B(R, Z, 0.2, make_grid=True)
         """
-        # TODO: This doesn’t handle return_t properly!
+        # TODO: This doesn't handle return_t properly!
         BR = self.rz2BR(R, Z, t, **kwargs)
         BZ = self.rz2BZ(R, Z, t, **kwargs)
         BT = self.rz2BT(R, Z, t, **kwargs)
@@ -7221,7 +7221,7 @@ class Equilibrium(object):
                 
                 jR_mat = Eq_instance.rz2jR(R, Z, 0.2, make_grid=True)
         """
-        # TODO: This doesn’t handle return_t properly!
+        # TODO: This doesn't handle return_t properly!
         # NOTE: Alcator C-Mod requires the extra factor to correct FF'.
         # You should check this for your implementation.
         return -1.0 * self.getCurrentSign() * (
@@ -7339,7 +7339,7 @@ class Equilibrium(object):
                 
                 jZ_mat = Eq_instance.rz2jZ(R, Z, 0.2, make_grid=True)
         """
-        # TODO: This doesn’t handle return_t properly!
+        # TODO: This doesn't handle return_t properly!
         # NOTE: Alcator C-Mod requires the extra factor to correct FF'.
         # You should check this for your implementation.
         return -1.0 * self.getCurrentSign() * (
@@ -7456,7 +7456,7 @@ class Equilibrium(object):
                 
                 jT_mat = Eq_instance.rz2jT(R, Z, 0.2, make_grid=True)
         """
-        # TODO: This doesn’t handle return_t properly!
+        # TODO: This doesn't handle return_t properly!
         # NOTE: Alcator C-Mod requires the extra factor to correct FF'.
         # You should check this for your implementation.
         unit_factor = self._getLengthConversionFactor('m', kwargs.get('length_unit', 1))
@@ -7566,7 +7566,7 @@ class Equilibrium(object):
                 
                 j_mat = Eq_instance.rz2j(R, Z, 0.2, make_grid=True)
         """
-        # TODO: This doesn’t handle return_t properly!
+        # TODO: This doesn't handle return_t properly!
         jR = self.rz2jR(R, Z, t, **kwargs)
         jZ = self.rz2jZ(R, Z, t, **kwargs)
         jT = self.rz2jT(R, Z, t, **kwargs)
