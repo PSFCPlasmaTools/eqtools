@@ -535,7 +535,10 @@ class Equilibrium(object):
             raise ValueError("rho2rho: Unsupported origin coordinate method '%s'!" % origin)
     
     def rz2psi(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
-        """Converts the passed R, Z, t arrays to psi (unnormalized poloidal flux) values.
+        r"""Converts the passed R, Z, t arrays to psi (unnormalized poloidal flux) values.
+        
+        What is usually returned by EFIT is the stream function,
+        :math:`\psi=\psi_p/(2\pi)` which has units of Wb/rad.
         
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
@@ -7633,7 +7636,8 @@ class Equilibrium(object):
                 lines. Default is 'toroidal'.
             dphi (float): Toroidal step size, in radians. Default is 0.02*pi.
                 The number of steps taken is then 2*pi times the number of
-                toroidal rotations divided by dphi.
+                toroidal rotations divided by dphi. This can be negative to
+                trace a field line clockwise instead of counterclockwise.
             integrator (str): The integrator to use with
                 :py:class:`scipy.integrate.ode`. Default is 'dopri5' (explicit
                 Dormand-Prince of order (4)5). Can also be an instance of
@@ -7650,7 +7654,7 @@ class Equilibrium(object):
         if rev_method == 'poloidal':
             q = self.rz2q(R0, Z0, t)
             num_rev = num_rev * q
-        nsteps = int(scipy.ceil(num_rev * 2.0 * scipy.pi / dphi))
+        nsteps = int(scipy.absolute(scipy.ceil(num_rev * 2.0 * scipy.pi / dphi)))
         
         if isinstance(integrator, scipy.integrate.ode):
             r = integrator
@@ -7692,7 +7696,8 @@ class Equilibrium(object):
                 lines. Default is 'toroidal'.
             dphi (float): Toroidal step size, in radians. Default is 0.02*pi.
                 The number of steps taken is then 2*pi times the number of
-                toroidal rotations divided by dphi.
+                toroidal rotations divided by dphi. This can be negative to
+                trace a field line clockwise instead of counterclockwise.
             integrator (str): The integrator to use with
                 :py:class:`scipy.integrate.ode`. Default is 'dopri5' (explicit
                 Dormand-Prince of order (4)5). Can also be an instance of
@@ -7775,7 +7780,8 @@ class Equilibrium(object):
                 lines. Default is 'toroidal'.
             dphi (float): Toroidal step size, in radians. Default is 0.02*pi.
                 The number of steps taken is then 2*pi times the number of
-                toroidal rotations divided by dphi.
+                toroidal rotations divided by dphi. This can be negative to
+                trace a field line clockwise instead of counterclockwise.
             integrator (str): The integrator to use with
                 :py:class:`scipy.integrate.ode`. Default is 'dopri5' (explicit
                 Dormand-Prince of order (4)5). Can also be an instance of
@@ -9628,10 +9634,19 @@ class Equilibrium(object):
                 psinorm_grid = scipy.linspace(0.0, 1.0, len(F))
                 # Find if it ever goes non-monotonic: F hacked to be
                 # strictly INCREASING from the magnetic axis out.
-                decr_idx, = scipy.where((F[1:] - F[:-1]) < 0)
-                if len(decr_idx) > 0:
-                    F = F[:decr_idx[0] + 1]
-                    psinorm_grid = psinorm_grid[:decr_idx[0] + 1]
+                if self.getCurrentSign() == 1.0:
+                    incr_idx, = scipy.where((F[1:] - F[:-1]) > 0)
+                    if len(incr_idx) > 0:
+                        F = F[:incr_idx[0] + 1]
+                        psinorm_grid = psinorm_grid[:incr_idx[0] + 1]
+                    # Flip it to be INCREASING:
+                    F = F[::-1]
+                    psinorm_grid = psinorm_grid[::-1]
+                else:
+                    decr_idx, = scipy.where((F[1:] - F[:-1]) < 0)
+                    if len(decr_idx) > 0:
+                        F = F[:decr_idx[0] + 1]
+                        psinorm_grid = psinorm_grid[:decr_idx[0] + 1]
                 
                 spline = trispline.UnivariateInterpolator(F, psinorm_grid, k=k)
                 try:
