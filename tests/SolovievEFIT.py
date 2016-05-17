@@ -92,7 +92,8 @@ class CircSolovievEFIT(Equilibrium):
         self._npts = npts
 
         self._currentSign = -1 if Ip > 0 else 1
-        self._qstar = (2.*scipy.pi * a**2 * B0) / (4.*scipy.pi*1.e-1) * R * Ip
+        # Remember: Ip is in MA.
+        self._qstar = (2.*scipy.pi * a**2 * B0) / (4.*scipy.pi*1.e-1 * R * Ip)
 
         # flux definitions
         self._psiLCFS = scipy.array([0.0])
