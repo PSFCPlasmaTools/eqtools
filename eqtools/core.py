@@ -10828,7 +10828,7 @@ class Equilibrium(object):
                          title=title,
                          nbbbs=nbbbs)
 
-    def plotFlux(self, fill=True, mask=True, lw=3):
+    def plotFlux(self, fill=True, mask=True, lw=3.0, add_title=True):
         """Plots flux contours directly from psi grid.
         
         Returns the Figure instance created and the time slider widget (in case
@@ -10839,6 +10839,13 @@ class Equilibrium(object):
             fill (Boolean):
                 Set True to plot filled contours.  Set False (default) to plot white-background
                 color contours.
+            mask (Boolean):
+                Set True (default) to mask the contours according to the vacuum
+                vessel outline.
+            lw (float):
+                Linewidth when plotting LCFS. Default is 3.0.
+            add_title (Boolean):
+                Set True (default) to add a figure title with the time indicated.
         """
         
         try:
@@ -10879,7 +10886,8 @@ class Equilibrium(object):
         psi = fluxPlot.add_subplot(gs[0,0])
         psi.set_aspect('equal')
         timeSliderSub = fluxPlot.add_subplot(gs[1,0])
-        title = fluxPlot.suptitle('')
+        if add_title:
+            title = fluxPlot.suptitle('')
 
         # dummy plot to get x,ylims
         psi.contour(rGrid,zGrid,psiRZ[0],1)
@@ -10900,8 +10908,10 @@ class Equilibrium(object):
         def updateTime(val):
             psi.clear()
             t_idx = int(timeSlider.val)
-
-            title.set_text('EFIT Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
+            
+            if add_title:
+                title.set_text('EFIT Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
+            
             psi.set_xlabel('$R$ [m]')
             psi.set_ylabel('$Z$ [m]')
             if macx is not None:
