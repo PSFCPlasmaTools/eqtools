@@ -52,10 +52,10 @@ eqtools.TCVLIUQE module
     :undoc-members:
     :show-inheritance:
 
-eqtools.AUGDATA module
+eqtools.AUGData module
 -----------------------
 
-.. automodule:: eqtools.AUGDATA
+.. automodule:: eqtools.AUGData
     :members:
     :undoc-members:
     :show-inheritance:
