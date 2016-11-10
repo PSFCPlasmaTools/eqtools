@@ -97,7 +97,6 @@
 %
 \let\py@OldTableofcontents=\tableofcontents
 \renewcommand{\tableofcontents}{%
-  \pagenumbering{roman}%
   \setcounter{page}{1}%
   \pagebreak%
   \pagestyle{plain}%
@@ -115,7 +114,7 @@
   \pagenumbering{arabic}%
   \@ifundefined{fancyhf}{}{\pagestyle{normal}}%
 }
-\pagenumbering{alph}
+\pagenumbering{roman}
 
 % This is needed to get the width of the section # area wide enough in the
 % library reference.  Doing it here keeps it the same for all the manuals.

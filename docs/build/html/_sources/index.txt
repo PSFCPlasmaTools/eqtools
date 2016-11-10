@@ -15,6 +15,21 @@ Overview
 
 The main class of :py:mod:`eqtools` is the :py:class:`~eqtools.core.Equilibrium`, which contains all of the coordinate mapping functions as well as templates for methods to fetch data (primarily dictated to the quantities computed by EFIT). Subclasses such as :py:class:`~eqtools.EFIT.EFITTree`, :py:class:`~eqtools.CModEFIT.CModEFITTree`, :py:class:`~eqtools.NSTXEFIT.NSTXEFITTree` and :py:class:`~eqtools.eqdskreader.EqdskReader` implement specific methods to access the data and convert it to the form needed for the routines in :py:class:`~eqtools.core.Equilibrium`. These classes are smart about caching intermediate results, so you will get a performance boost by using the same instance throughout your analysis of a given shot.
 
+Installation
+------------
+
+The easiest way to install the latest release version is with `pip`::
+    
+    pip install eqtools
+
+To install from source, uncompress the source files and, from the directory containing `setup.py`, run the following command::
+    
+    python setup.py install
+
+Or, to build in place, run::
+    
+    python setup.py build_ext --inplace
+
 Tutorial: Performing Coordinate Transforms on Alcator C-Mod Data
 ----------------------------------------------------------------
 

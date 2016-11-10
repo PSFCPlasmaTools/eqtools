@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>eqtools: Tools for interacting with magnetic equilibria &mdash; eqtools 1.0 documentation</title>
+    <title>eqtools: Tools for interacting with magnetic equilibria &mdash; eqtools 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="eqtools 1.0 documentation" href="#" />
+    <link rel="top" title="eqtools 1.1 documentation" href="#" />
     <link rel="next" title="eqtools package" href="eqtools.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="eqtools.html" title="eqtools package"
              accesskey="N">next</a> |</li>
-        <li><a href="#">eqtools 1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">eqtools 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -56,51 +56,63 @@
 <p><a class="reference internal" href="eqtools.html#module-eqtools" title="eqtools"><tt class="xref py py-mod docutils literal"><span class="pre">eqtools</span></tt></a> is a Python package for working with magnetic equilibrium reconstructions from magnetic plasma confinement devices. At present, interfaces exist for data from the Alcator C-Mod and NSTX MDSplus trees as well as eqdsk a- and g-files. <a class="reference internal" href="eqtools.html#module-eqtools" title="eqtools"><tt class="xref py py-mod docutils literal"><span class="pre">eqtools</span></tt></a> is designed to be flexible and extensible such that it can become a uniform interface to perform mapping operations and accessing equilibrium data for any magnetic confinement device, regardless of how the data are accessed.</p>
 <p>The main class of <a class="reference internal" href="eqtools.html#module-eqtools" title="eqtools"><tt class="xref py py-mod docutils literal"><span class="pre">eqtools</span></tt></a> is the <a class="reference internal" href="eqtools.html#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">Equilibrium</span></tt></a>, which contains all of the coordinate mapping functions as well as templates for methods to fetch data (primarily dictated to the quantities computed by EFIT). Subclasses such as <a class="reference internal" href="eqtools.html#eqtools.EFIT.EFITTree" title="eqtools.EFIT.EFITTree"><tt class="xref py py-class docutils literal"><span class="pre">EFITTree</span></tt></a>, <a class="reference internal" href="eqtools.html#eqtools.CModEFIT.CModEFITTree" title="eqtools.CModEFIT.CModEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">CModEFITTree</span></tt></a>, <a class="reference internal" href="eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree" title="eqtools.NSTXEFIT.NSTXEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">NSTXEFITTree</span></tt></a> and <a class="reference internal" href="eqtools.html#eqtools.eqdskreader.EqdskReader" title="eqtools.eqdskreader.EqdskReader"><tt class="xref py py-class docutils literal"><span class="pre">EqdskReader</span></tt></a> implement specific methods to access the data and convert it to the form needed for the routines in <a class="reference internal" href="eqtools.html#eqtools.core.Equilibrium" title="eqtools.core.Equilibrium"><tt class="xref py py-class docutils literal"><span class="pre">Equilibrium</span></tt></a>. These classes are smart about caching intermediate results, so you will get a performance boost by using the same instance throughout your analysis of a given shot.</p>
 </div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way to install the latest release version is with <cite>pip</cite>:</p>
+<div class="highlight-python"><pre>pip install eqtools</pre>
+</div>
+<p>To install from source, uncompress the source files and, from the directory containing <cite>setup.py</cite>, run the following command:</p>
+<div class="highlight-python"><pre>python setup.py install</pre>
+</div>
+<p>Or, to build in place, run:</p>
+<div class="highlight-python"><pre>python setup.py build_ext --inplace</pre>
+</div>
+</div>
 <div class="section" id="tutorial-performing-coordinate-transforms-on-alcator-c-mod-data">
 <h2>Tutorial: Performing Coordinate Transforms on Alcator C-Mod Data<a class="headerlink" href="#tutorial-performing-coordinate-transforms-on-alcator-c-mod-data" title="Permalink to this headline">¶</a></h2>
 <p>The basic class for manipulating EFIT results stored in the Alcator C-Mod MDSplus tree is <a class="reference internal" href="eqtools.html#eqtools.CModEFIT.CModEFITTree" title="eqtools.CModEFIT.CModEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">CModEFITTree</span></tt></a>. To load the data from a specific shot, simply create the <a class="reference internal" href="eqtools.html#eqtools.CModEFIT.CModEFITTree" title="eqtools.CModEFIT.CModEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">CModEFITTree</span></tt></a> object with the shot number as the argument:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span> <span class="o">=</span> <span class="n">eqtools</span><span class="o">.</span><span class="n">CModEFITTree</span><span class="p">(</span><span class="mi">1140729030</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">e</span> <span class="o">=</span> <span class="n">eqtools</span><span class="o">.</span><span class="n">CModEFITTree</span><span class="p">(</span><span class="mi">1140729030</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The default EFIT to use is &#8220;ANALYSIS.&#8221; If you want to use a different tree, such as &#8220;EFIT20,&#8221; then you simply set this with the <cite>tree</cite> keyword:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span> <span class="o">=</span> <span class="n">eqtools</span><span class="o">.</span><span class="n">CModEFITTree</span><span class="p">(</span><span class="mi">1140729030</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="s">&#39;EFIT20&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">e</span> <span class="o">=</span> <span class="n">eqtools</span><span class="o">.</span><span class="n">CModEFITTree</span><span class="p">(</span><span class="mi">1140729030</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="s1">&#39;EFIT20&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="eqtools.html#module-eqtools" title="eqtools"><tt class="xref py py-mod docutils literal"><span class="pre">eqtools</span></tt></a> understands units. The default is to convert all lengths to meters (whereas quantities in the tree are inconsistent &#8211; some are meters, some centimeters). If you want to specify a different default unit, use the <cite>length_unit</cite> keyword:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span> <span class="o">=</span> <span class="n">eqtools</span><span class="o">.</span><span class="n">CModEFITTree</span><span class="p">(</span><span class="mi">1140729030</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;cm&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">e</span> <span class="o">=</span> <span class="n">eqtools</span><span class="o">.</span><span class="n">CModEFITTree</span><span class="p">(</span><span class="mi">1140729030</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;cm&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Once this is loaded, you can access the data you would normally have to pull from specific nodes in the tree using convenient getter methods. For instance, to get the elongation as a function of time, you can run:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">kappa</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">getElongation</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">kappa</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">getElongation</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The timebase used for quantities like this is accessed with:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>For length/area/volume quantities, <a class="reference internal" href="eqtools.html#module-eqtools" title="eqtools"><tt class="xref py py-mod docutils literal"><span class="pre">eqtools</span></tt></a> understands units. The default is to return in whatever units you specified when creating the <a class="reference internal" href="eqtools.html#eqtools.CModEFIT.CModEFITTree" title="eqtools.CModEFIT.CModEFITTree"><tt class="xref py py-class docutils literal"><span class="pre">CModEFITTree</span></tt></a>, but you can override this with the <cite>length_unit</cite> keyword. For instance, to get the vertical position of the magnetic axis in mm, you can run:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Z_mag</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">getMagZ</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="s">&#39;mm&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Z_mag</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">getMagZ</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;mm&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="eqtools.html#module-eqtools" title="eqtools"><tt class="xref py py-mod docutils literal"><span class="pre">eqtools</span></tt></a> can map from almost any coordinate to any common flux surface label. For instance, say you want to know what the square root of normalized toroidal flux corresponding to a normalized flux surface volume of 0.5 is at t=1.0s. You can simply call:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">rho</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">volnorm2phinorm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">sqrt</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">rho</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">volnorm2phinorm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">sqrt</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If a list of times is provided, the default behavior is to evaluate all of the points to be converted at each of the times. So, to follow the mapping of normalized poloidal flux values [0.1, 0.5, 1.0] to outboard midplane major radius at time points [1.0, 1.25, 1.5, 1.75], you could call:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">psinorm</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.75</span><span class="p">])</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">psinorm</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.75</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>This will return a 4-by-3 array: one row for each time, one column for each location. If you want to override this behavior and instead consider a sequence of (psi, t) points, set the <cite>each_t</cite> keyword to False:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">psinorm</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">],</span> <span class="n">each_t</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">psinorm</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">psinorm2rmid</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">],</span> <span class="n">each_t</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will return a two-element array with the Rmid values for (psinorm=0.3, t=1.0) and (psinorm=0.35, t=1.1).</p>
 <p>For programmatically mapping between coordinates, the <a class="reference internal" href="eqtools.html#eqtools.core.Equilibrium.rho2rho" title="eqtools.core.Equilibrium.rho2rho"><tt class="xref py py-meth docutils literal"><span class="pre">rho2rho()</span></tt></a> method is quite useful. To map from outboard midplane major radius to normalized flux surface volume, you can simply call:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span><span class="o">.</span><span class="n">rho2rho</span><span class="p">(</span><span class="s">&#39;Rmid&#39;</span><span class="p">,</span> <span class="s">&#39;volnorm&#39;</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">e</span><span class="o">.</span><span class="n">rho2rho</span><span class="p">(</span><span class="s1">&#39;Rmid&#39;</span><span class="p">,</span> <span class="s1">&#39;volnorm&#39;</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Finally, to get a look at the flux surfaces, simply run:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span><span class="o">.</span><span class="n">plotFlux</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">e</span><span class="o">.</span><span class="n">plotFlux</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -111,9 +123,12 @@
 <li class="toctree-l1"><a class="reference internal" href="eqtools.html">eqtools package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#module-eqtools.CModEFIT">eqtools.CModEFIT module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eqtools.html#eqtools-d3defit-module">eqtools.D3DEFIT module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#module-eqtools.EFIT">eqtools.EFIT module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#module-eqtools.FromArrays">eqtools.FromArrays module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#module-eqtools.NSTXEFIT">eqtools.NSTXEFIT module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eqtools.html#eqtools-tcvliuqe-module">eqtools.TCVLIUQE module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eqtools.html#eqtools-augdata-module">eqtools.AUGDATA module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#module-eqtools.afilereader">eqtools.afilereader module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#module-eqtools.core">eqtools.core module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eqtools.html#module-eqtools.eqdskreader">eqtools.eqdskreader module</a></li>
@@ -146,8 +161,11 @@
   <ul>
 <li><a class="reference internal" href="#">eqtools: Tools for interacting with magnetic equilibria</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#tutorial-performing-coordinate-transforms-on-alcator-c-mod-data">Tutorial: Performing Coordinate Transforms on Alcator C-Mod Data</a></li>
-<li><a class="reference internal" href="#package-reference">Package Reference</a></li>
+<li><a class="reference internal" href="#package-reference">Package Reference</a><ul>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
@@ -190,12 +208,12 @@
         <li class="right" >
           <a href="eqtools.html" title="eqtools package"
              >next</a> |</li>
-        <li><a href="#">eqtools 1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">eqtools 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Mark Chilenski, Ian Faust and John Walk.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
     </div>
   </body>
 </html>

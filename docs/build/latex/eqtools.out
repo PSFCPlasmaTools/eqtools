@@ -1,19 +1,23 @@
 \BOOKMARK [0][-]{chapter.1}{Overview}{}% 1
-\BOOKMARK [0][-]{chapter.2}{Tutorial: Performing Coordinate Transforms on Alcator C-Mod Data}{}% 2
-\BOOKMARK [0][-]{chapter.3}{Package Reference}{}% 3
-\BOOKMARK [1][-]{section.3.1}{eqtools package}{chapter.3}% 4
-\BOOKMARK [2][-]{subsection.3.1.1}{Submodules}{section.3.1}% 5
-\BOOKMARK [2][-]{subsection.3.1.2}{eqtools.CModEFIT module}{section.3.1}% 6
-\BOOKMARK [2][-]{subsection.3.1.3}{eqtools.EFIT module}{section.3.1}% 7
-\BOOKMARK [2][-]{subsection.3.1.4}{eqtools.FromArrays module}{section.3.1}% 8
-\BOOKMARK [2][-]{subsection.3.1.5}{eqtools.NSTXEFIT module}{section.3.1}% 9
-\BOOKMARK [2][-]{subsection.3.1.6}{eqtools.afilereader module}{section.3.1}% 10
-\BOOKMARK [2][-]{subsection.3.1.7}{eqtools.core module}{section.3.1}% 11
-\BOOKMARK [2][-]{subsection.3.1.8}{eqtools.eqdskreader module}{section.3.1}% 12
-\BOOKMARK [2][-]{subsection.3.1.9}{eqtools.filewriter module}{section.3.1}% 13
-\BOOKMARK [2][-]{subsection.3.1.10}{eqtools.pfilereader module}{section.3.1}% 14
-\BOOKMARK [2][-]{subsection.3.1.11}{eqtools.trispline module}{section.3.1}% 15
-\BOOKMARK [2][-]{subsection.3.1.12}{Module contents}{section.3.1}% 16
-\BOOKMARK [0][-]{chapter.4}{Indices and tables}{}% 17
-\BOOKMARK [0][-]{section*.345}{Python Module Index}{}% 18
-\BOOKMARK [0][-]{section*.346}{Index}{}% 19
+\BOOKMARK [0][-]{chapter.2}{Installation}{}% 2
+\BOOKMARK [0][-]{chapter.3}{Tutorial: Performing Coordinate Transforms on Alcator C-Mod Data}{}% 3
+\BOOKMARK [0][-]{chapter.4}{Package Reference}{}% 4
+\BOOKMARK [1][-]{section.4.1}{eqtools package}{chapter.4}% 5
+\BOOKMARK [2][-]{subsection.4.1.1}{Submodules}{section.4.1}% 6
+\BOOKMARK [2][-]{subsection.4.1.2}{eqtools.CModEFIT module}{section.4.1}% 7
+\BOOKMARK [2][-]{subsection.4.1.3}{eqtools.D3DEFIT module}{section.4.1}% 8
+\BOOKMARK [2][-]{subsection.4.1.4}{eqtools.EFIT module}{section.4.1}% 9
+\BOOKMARK [2][-]{subsection.4.1.5}{eqtools.FromArrays module}{section.4.1}% 10
+\BOOKMARK [2][-]{subsection.4.1.6}{eqtools.NSTXEFIT module}{section.4.1}% 11
+\BOOKMARK [2][-]{subsection.4.1.7}{eqtools.TCVLIUQE module}{section.4.1}% 12
+\BOOKMARK [2][-]{subsection.4.1.8}{eqtools.AUGDATA module}{section.4.1}% 13
+\BOOKMARK [2][-]{subsection.4.1.9}{eqtools.afilereader module}{section.4.1}% 14
+\BOOKMARK [2][-]{subsection.4.1.10}{eqtools.core module}{section.4.1}% 15
+\BOOKMARK [2][-]{subsection.4.1.11}{eqtools.eqdskreader module}{section.4.1}% 16
+\BOOKMARK [2][-]{subsection.4.1.12}{eqtools.filewriter module}{section.4.1}% 17
+\BOOKMARK [2][-]{subsection.4.1.13}{eqtools.pfilereader module}{section.4.1}% 18
+\BOOKMARK [2][-]{subsection.4.1.14}{eqtools.trispline module}{section.4.1}% 19
+\BOOKMARK [2][-]{subsection.4.1.15}{Module contents}{section.4.1}% 20
+\BOOKMARK [0][-]{chapter.5}{Indices and tables}{}% 21
+\BOOKMARK [0][-]{section*.333}{Python Module Index}{}% 22
+\BOOKMARK [0][-]{section*.334}{Index}{}% 23

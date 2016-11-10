@@ -52,6 +52,14 @@ eqtools.TCVLIUQE module
     :undoc-members:
     :show-inheritance:
 
+eqtools.AUGDATA module
+-----------------------
+
+.. automodule:: eqtools.AUGDATA
+    :members:
+    :undoc-members:
+    :show-inheritance:
+       
 eqtools.afilereader module
 --------------------------
 
