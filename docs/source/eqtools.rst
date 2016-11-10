@@ -4,6 +4,14 @@ eqtools package
 Submodules
 ----------
 
+eqtools.AUGData module
+----------------------
+
+.. automodule:: eqtools.AUGData
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 eqtools.CModEFIT module
 -----------------------
 
@@ -52,14 +60,6 @@ eqtools.TCVLIUQE module
     :undoc-members:
     :show-inheritance:
 
-eqtools.AUGData module
------------------------
-
-.. automodule:: eqtools.AUGData
-    :members:
-    :undoc-members:
-    :show-inheritance:
-       
 eqtools.afilereader module
 --------------------------
 
