@@ -108,7 +108,7 @@ class EqdskReader(Equilibrium):
                  verbose=True):
         # instantiate superclass, forcing time splining to false 
         # (eqdsk only contains single time slice)
-        super(EqdskReader,self).__init__(length_unit=length_unit,tspline=False)
+        super(EqdskReader,self).__init__(length_unit=length_unit,tspline=False,monotonic=False)
         self._verbose = bool(verbose)
 
         # dict to store default units of length-scale parameters, 
@@ -248,7 +248,7 @@ class EqdskReader(Equilibrium):
             line = re.findall('-?\d\.\d*[eE][-+]\d*',line)     # regex magic!
             xdim = float(line[0])     # width of R-axis in grid
             zdim = float(line[1])     # height of Z-axis in grid
-            self._RCentr = float(line[2])    # rcentr for Bcentr
+            self._RCentr = scipy.array(float(line[2]))    # rcentr for Bcentr
             self._defaultUnits['_RCentr'] = 'm'
             rgrid0 = float(line[3])   # start point of R grid
             zmid = float(line[4])     # midpoint of Z grid
@@ -731,7 +731,7 @@ class EqdskReader(Equilibrium):
             
                 psi_mat = Eq_instance.rz2psi(R, Z, make_grid=True)
         """
-        t = self.getTimeBase()[0]
+        t = self.getTimeBase()
         return super(EqdskReader,self).rz2psi(R,Z,t,**kwargs)
 
     def rz2psinorm(self,R,Z,*args,**kwargs):

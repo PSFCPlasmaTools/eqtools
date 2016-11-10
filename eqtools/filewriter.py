@@ -126,7 +126,11 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
         bcent0 = bcent(tin)
 
     else:
-        idx = obj._getNearestIdx(tin,obj.getTimeBase())
+        try:
+            idx = obj._getNearestIdx(tin,obj.getTimeBase())
+        except ValueError: #correction necessary for eqdskfiles
+            idx = 0
+    
         psiLCFS = obj.getFluxLCFS()[idx]
         psi0 = obj.getFluxAxis()[idx]
         bcent0 = obj.getBCentr()[idx]
@@ -158,16 +162,15 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                        0.,
                        0.]))
     
-    pts0 = scipy.linspace(0.,1.,obj.getRGrid().size) #find original nw
     pts1 = scipy.linspace(0.,1.,nw)
     # this needs to be time mapped (sigh)
     if not obj._tricubic: 
-
         for i in [obj.getF(),
                   obj.getFluxPres(),
                   obj.getFFPrime(),
                   obj.getPPrime()]:
 
+            pts0 = scipy.linspace(0.,1.,i.shape[-1]) #find original nw
             temp = scipy.interpolate.interp1d(pts0,
                                               scipy.atleast_2d(i)[idx],
                                               kind='nearest',
@@ -236,11 +239,11 @@ def _findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
 
     ang = scipy.linspace(-scipy.pi,scipy.pi,nbbbs)
 
-    plt.ioff()  
+    plt.ioff()
     fig = plt.figure()
     cs = plt.contour(rgrid,
                      zgrid,
-                     psiRZ,
+                     scipy.squeeze(psiRZ),
                      scipy.atleast_1d(psiLCFS)) 
     
     splines = []
