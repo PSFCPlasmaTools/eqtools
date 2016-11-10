@@ -24,6 +24,7 @@ __version__ = '1.3.2_dev'
 from .core import *
 from .EFIT import *
 from .CModEFIT import *
+from .AUGData import *
 from .NSTXEFIT import *
 from .D3DEFIT import *
 from .eqdskreader import *
