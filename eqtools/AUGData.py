@@ -311,15 +311,15 @@ class AUGDDData(Equilibrium):
         """
         if self._psiRZ is None:
             try:
-                psinode = self._MDSTree('PFM',calibrated=False) #calibrated signal causes seg faults (SERIOUSLY WHAT THE FUCK ASDEX)
-                self._psiRZ = psinode.data[:self._timeidxend]
-                self._defaultUnits['_psiRZ'] = 'Vs' #HARDCODED DUE TO CALIBRATED=FALSE
                 psinode = self._MDSTree('Ri')
                 self._rGrid = psinode.data[0] #assumes data from first is correct (WHY IS IT EVEN DUPICATED???)
                 self._defaultUnits['_rGrid'] = str(psinode.unit)
                 psinode = self._MDSTree('Zj')
                 self._zGrid = psinode.data[0]
                 self._defaultUnits['_zGrid'] = str(psinode.unit)
+                psinode = self._MDSTree('PFM',calibrated=False) #calibrated signal causes seg faults (SERIOUSLY WHAT THE FUCK ASDEX)
+                self._psiRZ = psinode.data[:self._timeidxend,:len(self._zGrid),:len(self._rGrid)]
+                self._defaultUnits['_psiRZ'] = 'Vs' #HARDCODED DUE TO CALIBRATED=FALSE
 
             except PyddError:
                 raise ValueError('data retrieval failed.')
