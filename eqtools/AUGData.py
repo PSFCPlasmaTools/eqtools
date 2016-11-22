@@ -227,7 +227,6 @@ class AUGDDData(Equilibrium):
 
         #AUG SV file flag
         self._SSQ = None
-        self._SSQname = None
         
         # Call the get functions to preload the data. Add any other calls you
         # want to preload here.
