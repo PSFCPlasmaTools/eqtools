@@ -142,7 +142,7 @@ class AUGDDData(Equilibrium):
                                       edition=edition,
                                       experiment=experiment)
         except (KeyError,PyddError):
-            warning.warn('Companion SV not valid, extracting from '+self._tree+':SSQ', RuntimeWarning)
+            warnings.warn('Companion SV not valid, extracting from '+self._tree+':SSQ', RuntimeWarning)
 
         self._defaultUnits = {}
         
