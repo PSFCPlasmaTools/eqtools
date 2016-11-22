@@ -131,19 +131,18 @@ class AUGDDData(Equilibrium):
                                     self._shot,
                                     edition=edition,
                                     experiment=experiment)
-        
+            
         try:
-            self._MDSTree2 = dd.shotfile(self._relatedSVFile[self._tree],
-                                         self._shot,
-                                         edition=edition,
-                                         experiment=experiment)
-        except KeyError:
-            self._MDSTree2 = dd.shotfile(shotfile2,
-                                         self._shot,
-                                         edition=edition,
-                                         experiment=experiment)
-        except PyddError:
-            raise ValueError('Specify valid companion SV shotfile.')
+            if shotfile2 is None:
+                shotfile2 = self._relatedSVFile[self._tree]
+
+            #Overwrite getSSQ with a shotfile with same capabilities
+            self.getSSQ = dd.shotfile(shotfile2,
+                                      self._shot,
+                                      edition=edition,
+                                      experiment=experiment)
+        except (KeyError,PyddError):
+            warning.warn('Companion SV not valid, extracting from '+self._tree+':SSQ', RuntimeWarning)
 
         self._defaultUnits = {}
         
@@ -225,6 +224,10 @@ class AUGDDData(Equilibrium):
         self._volLCFS = None                                                 #volume within LCFS (t)
         self._qpsi = None                                                    #q profile (psi,t)
         self._RmidPsi = None                                                 #max major radius of flux surface (t,psi)
+
+        #AUG SV file flag
+        self._SSQ = None
+
         
         # Call the get functions to preload the data. Add any other calls you
         # want to preload here.
@@ -474,14 +477,14 @@ class AUGDDData(Equilibrium):
         """
         if self._RLCFS is None:
             try:
-                rgeo = self._MDSTree2('Rgeo')
-                RLCFSNode = self._MDSTree2('rays')
+                rgeo = self.getSSQ('Rgeo')
+                RLCFSNode = self.getSSQ('rays')
                 RLCFStemp = scipy.hstack((scipy.atleast_2d(RLCFSNode.data[:,-1]).T,RLCFSNode.data))
                 templen = RLCFSNode.data.shape
-
-                self._RLCFS = scipy.tile(rgeo.data,(templen[1]+1,1)).T + RLCFStemp*scipy.cos(scipy.tile((scipy.linspace(0,2*scipy.pi,templen[1]+1)),(templen[0],1))) #construct a 2d grid of angles, take cos, multiply by radius
                 
+                self._RLCFS = scipy.tile(rgeo.data,(templen[1]+1,1)).T + RLCFStemp*scipy.cos(scipy.tile((scipy.linspace(0,2*scipy.pi,templen[1]+1)),(templen[0],1))) #construct a 2d grid of angles, take cos, multiply by radius                
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.unit)
+                    
             except PyddError:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
@@ -498,8 +501,8 @@ class AUGDDData(Equilibrium):
         """
         if self._ZLCFS is None:
             try:
-                zgeo = self._MDSTree2('Zgeo')
-                ZLCFSNode = self._MDSTree2('rays')
+                zgeo = self.getSSQ('Zgeo')
+                ZLCFSNode = self.getSSQ('rays')
                 ZLCFStemp = scipy.hstack((scipy.atleast_2d(ZLCFSNode.data[:,-1]).T,ZLCFSNode.data))
                 templen = ZLCFSNode.data.shape
                 
@@ -703,7 +706,7 @@ class AUGDDData(Equilibrium):
         """
         if self._kappa is None:
             try:
-                kappaNode = self._MDSTree2('k')
+                kappaNode = self.getSSQ('k')
                 self._kappa = kappaNode.data
                 self._defaultUnits['_kappa'] = str(kappaNode.unit)
             except PyddError:
@@ -721,7 +724,7 @@ class AUGDDData(Equilibrium):
         """
         if self._dupper is None:
             try:
-                dupperNode = self._MDSTree2('delRoben')
+                dupperNode = self.getSSQ('delRoben')
                 self._dupper = dupperNode.data
                 self._defaultUnits['_dupper'] = str(dupperNode.unit)
             except PyddError:
@@ -739,7 +742,7 @@ class AUGDDData(Equilibrium):
         """
         if self._dlower is None:
             try:
-                dlowerNode = self._MDSTree2('delRuntn')
+                dlowerNode = self.getSSQ('delRuntn')
                 self._dlower = dlowerNode.data
                 self._defaultUnits['_dlower']  = str(dlowerNode.unit)
             except PyddError:
@@ -775,7 +778,7 @@ class AUGDDData(Equilibrium):
         """
         if self._rmag is None:
             try:
-                rmagNode = self._MDSTree2('Rmag')
+                rmagNode = self.getSSQ('Rmag')
                 self._rmag = rmagNode.data
                 self._defaultUnits['_rmag'] = str(rmagNode.unit)
             except (PyddError,AttributeError):
@@ -794,7 +797,7 @@ class AUGDDData(Equilibrium):
         """
         if self._zmag is None:
             try:
-                zmagNode = self._MDSTree2('Zmag')
+                zmagNode = self.getSSQ('Zmag')
                 self._zmag = zmagNode.data
                 self._defaultUnits['_zmag'] = str(zmagNode.unit)
             except PyddError:
@@ -841,7 +844,7 @@ class AUGDDData(Equilibrium):
         """
         if self._aLCFS is None:
             try:
-                aLCFSNode = self._MDSTree2('ahor')
+                aLCFSNode = self.getSSQ('ahor')
                 self._aLCFS = aLCFSNode.data
                 self._defaultUnits['_aLCFS'] = str(aLCFSNode.unit)
             except PyddError:
@@ -912,7 +915,7 @@ class AUGDDData(Equilibrium):
         """
         if self._q0 is None:
             try:
-                q0Node = self._MDSTree2('q0')
+                q0Node = self.getSSQ('q0')
                 self._q0 = q0Node.data
                 self._defaultUnits['_q0'] = str(q0Node.unit)
             except (PyddError, AttributeError):
@@ -930,7 +933,7 @@ class AUGDDData(Equilibrium):
         """
         if self._q95 is None:
             try:
-                q95Node = self._MDSTree2('q95')
+                q95Node = self.getSSQ('q95')
                 self._q95 = q95Node.data
                 self._defaultUnits['_q95'] = str(q95Node.unit)
             except (PyddError, AttributeError):
@@ -1099,7 +1102,7 @@ class AUGDDData(Equilibrium):
         """
         if self._betap is None:
             try:
-                betapNode = self._MDSTree2('betpol')
+                betapNode = self.getSSQ('betpol')
                 self._betap = betapNode.data
                 self._defaultUnits['_betap'] = str(betapNode.unit)
             except (PyddError, AttributeError):
@@ -1118,7 +1121,7 @@ class AUGDDData(Equilibrium):
         """
         if self._Li is None:
             try:
-                LiNode = self._MDSTree2('li')
+                LiNode = self.getSSQ('li')
                 self._Li = LiNode.data
                 self._defaultUnits['_Li'] = str(LiNode.unit)
             except (PyddError, AttributeError):
@@ -1200,7 +1203,7 @@ class AUGDDData(Equilibrium):
         """
         if self._WMHD is None:
             try:
-                WMHDNode = self._MDSTree2('Wmhd')
+                WMHDNode = self.getSSQ('Wmhd')
                 self._WMHD = WMHDNode.data
                 self._defaultUnits['_WMHD'] = str(WMHDNode.unit)
             except (PyddError, AttributeError):
@@ -1345,7 +1348,41 @@ class AUGDDData(Equilibrium):
         """ 
         raise NotImplementedError("self.getEnergy not implemented.")
 
+    def getSSQ(self, inp, **kwargs):
+        """returns single value quantities in the case SV file doesn't exist
+        and coniditions the data in a way that is expected from a dd SV
+        shotfile. This seamlessly hides the lack of an SV file.
 
+        Returns:
+            signal (dd.signal Object): corresponding data
+
+        Raises:
+            ValueError: if module cannot retrieve data from the AUG AFS system.
+        """
+        if self._SSQ is None:
+            try:
+                SSQnameNode = self._MDSTree('SSQname',calibrated=False)
+                #create a dict mapping the various quantities to positions in the in the data array
+                self._SSQname = scipy.char.strip(SSQnameNode.data.view('S'+str(SSQnameNode.data.shape[1]))) #concatenate and strip blanks
+                self._SSQname = self._SSQname[self._SSQname != ''] #remove empty entries
+                self._SSQname = dict(zip(self._SSQname,scipy.arange(self._SSQname.shape[0]))) #zip the dict together
+
+                self._SSQ = self._MDSTree('SSQ').data
+                
+                
+            except (PyddError, AttributeError):
+                raise ValueError('data retrieval failed.')
+
+        try:    
+            if inp == 'rays':
+                data = self._SSQ[:self._timeidxend,self._SSQname['rays015']:self._SSQname['rays000']] #really hackish. This line might break at some point
+                signal = dd.signalGroup(inp, ' ', data)
+            else:
+                signal = dd.signal(inp, ' ', self._SSQ[:self._timeidxend,self._SSQname[inp]])
+
+        except KeyError:
+            raise ValueError('data retrieval failed.')
+        return signal
 
 class YGCAUGInterface(object):
 
