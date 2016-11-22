@@ -1360,9 +1360,14 @@ class AUGDDData(Equilibrium):
         """
         if self._SSQ is None:
             try:
-                SSQnameNode = self._MDSTree('SSQname',calibrated=False)
+                SSQnameNode = self._MDSTree('SSQnam', calibrated=False)
                 #create a dict mapping the various quantities to positions in the in the data array
-                self._SSQname = scipy.char.strip(SSQnameNode.data.view('S'+str(SSQnameNode.data.shape[1]))) #concatenate and strip blanks
+                self._SSQname = SSQnameNode.data
+                try:
+                    self._SSQname = scipy.char.strip(SSQnameNode.data.view('S'+str(SSQnameNode.data.shape[1]))) #concatenate and strip blanks
+                except ValueError:
+                    self._SSQname = scipy.char.strip(SSQnameNode.data.T.view('S'+str(SSQnameNode.data.shape[0]))) #concatenate and strip blanks
+
                 self._SSQname = self._SSQname[self._SSQname != ''] #remove empty entries
                 self._SSQname = dict(zip(self._SSQname,scipy.arange(self._SSQname.shape[0]))) #zip the dict together
 
