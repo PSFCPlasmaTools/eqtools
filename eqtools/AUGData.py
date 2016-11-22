@@ -483,7 +483,10 @@ class AUGDDData(Equilibrium):
                 
                 self._RLCFS = scipy.tile(rgeo.data,(templen[1]+1,1)).T + RLCFStemp*scipy.cos(scipy.tile((scipy.linspace(0,2*scipy.pi,templen[1]+1)),(templen[0],1))) #construct a 2d grid of angles, take cos, multiply by radius                
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.unit)
-                    
+            except KeyError:
+                self.remapLCFS()
+                self._defaultUnits['_RLCFS'] = str('m')
+                self._defaultUnits['_ZLCFS'] = str('m')                
             except PyddError:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
@@ -507,6 +510,10 @@ class AUGDDData(Equilibrium):
                 
                 self._ZLCFS =  scipy.tile(zgeo.data,(templen[1]+1,1)).T + ZLCFStemp*scipy.sin(scipy.tile((scipy.linspace(0,2*scipy.pi,templen[1]+1)),(templen[0],1))) #construct a 2d grid of angles, take sin, multiply by radius
                 self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.unit)
+            except KeyError:
+                self.remapLCFS()
+                self._defaultUnits['_RLCFS'] = str('m')
+                self._defaultUnits['_ZLCFS'] = str('m')
             except PyddError:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
@@ -1382,10 +1389,11 @@ class AUGDDData(Equilibrium):
                 data = self._SSQ[:self._timeidxend,self._SSQname['rays015']:self._SSQname['rays000']] #really hackish. This line might break at some point
                 signal = dd.signalGroup(inp, ' ', data)
             else:
-                signal = dd.signal(inp, ' ', self._SSQ[:self._timeidxend,self._SSQname[inp]])
+                try:
+                    signal = dd.signal(inp, ' ', self._SSQ[:self._timeidxend,self._SSQname[inp]])
 
-        except KeyError:
-            raise ValueError('data retrieval failed.')
+                except KeyError:
+                    raise ValueError('data retrieval failed.')
         return signal
 
 class YGCAUGInterface(object):
