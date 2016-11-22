@@ -1384,16 +1384,15 @@ class AUGDDData(Equilibrium):
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
 
-        try:    
-            if inp == 'rays':
-                data = self._SSQ[:self._timeidxend,self._SSQname['rays015']:self._SSQname['rays000']] #really hackish. This line might break at some point
-                signal = dd.signalGroup(inp, ' ', data)
-            else:
-                try:
-                    signal = dd.signal(inp, ' ', self._SSQ[:self._timeidxend,self._SSQname[inp]])
-
-                except KeyError:
-                    raise ValueError('data retrieval failed.')
+        if inp == 'rays':
+            data = self._SSQ[:self._timeidxend,self._SSQname['rays015']:self._SSQname['rays000']] #really hackish. This line might break at some point
+            signal = dd.signalGroup(inp, ' ', data)
+        else:
+            try:
+                signal = dd.signal(inp, ' ', self._SSQ[:self._timeidxend,self._SSQname[inp]])
+                
+            except KeyError:
+                raise ValueError('data retrieval failed.')
         return signal
 
 class YGCAUGInterface(object):
