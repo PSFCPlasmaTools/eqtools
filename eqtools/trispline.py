@@ -87,7 +87,7 @@ class Spline():
         self.bounds_error = bounds_error
         self.fill_value = fill_value
 
-        if self._f.shape != (self._x.size,self._y.size,self._z.size):
+        if f.shape != (self._x.size,self._y.size,self._z.size):
             raise ValueError("dimensions do not match f")
             
         if _tricub.ismonotonic(self._x) and _tricub.ismonotonic(self._y) and _tricub.ismonotonic(self._z):
