@@ -36,13 +36,13 @@ class Spline():
     Create a new Spline instance.
 
     Args:
-        z (1-dimensional float array): Values of the positions of the 1st
+        x (1-dimensional float array): Values of the positions of the 1st
             Dimension of f. Must be monotonic without duplicates.
         y (1-dimensional float array): Values of the positions of the 2nd
             dimension of f. Must be monotonic without duplicates.
-        x (1-dimensional float array): Values of the positions of the 3rd
+        z (1-dimensional float array): Values of the positions of the 3rd
             dimension of f. Must be monotonic without duplicates.
-        f (3-dimensional float array): f[z,y,x]. NaN and Inf will hamper
+        f (3-dimensional float array): f[x,y,z]. NaN and Inf will hamper
             performance and affect interpolation in 4x4x4 space about its value.
     
     Keyword Args:
@@ -62,24 +62,45 @@ class Spline():
             
         Generate a Trispline instance map with data x, y, z and f::
             
-            map = Spline(z, y, x, f)
+            map = Spline(x, y, z, f)
     
         Evaluate Trispline instance map at x1, y1, z1::
             
-            output = map.ev(z1, y1, x1)
+            output = map.ev(x1, y1, z1)
     
     """
-    def __init__(self, z, y, x, f, regular=True, boundary = 'natural', dx=0, dy=0, dz=0):
+    def __init__(self, x, y, z, f, boundary = 'natural', dx=0, dy=0, dz=0, bounds_error=True, fill_value=scipy.nan):
         if dx != 0 or dy != 0 or dz != 0:
             raise NotImplementedError(
                 "Trispline derivatives are not implemented, do not use tricubic "
                 "interpolation if you need to compute magnetic fields!"
             )
 
+        
+        self._x = scipy.array(x,dtype=float)
+        self._y = scipy.array(y,dtype=float)
+        self._z = scipy.array(z,dtype=float)
 
+        self._xlim = scipy.array((x.min(), x.max()))
+        self._ylim = scipy.array((y.min(), y.max()))
+        self._zlim = scipy.array((z.min(), z.max()))
+        self.bounds_error = bounds_error
+        self.fill_value = fill_value
+
+        if self._f.shape != (self._x.size,self._y.size,self._z.size):
+            raise ValueError("dimensions do not match f")
+            
+        if _tricub.ismonotonic(self._x) and _tricub.ismonotonic(self._y) and _tricub.ismonotonic(self._z):
+            self._x = scipy.insert(self._x,0,2*self._x[0]-self._x[1])
+            self._x = scipy.append(self._x,2*self._x[-1]-self._x[-2])
+            self._y = scipy.insert(self._y,0,2*self._y[0]-self._y[1])
+            self._y = scipy.append(self._y,2*self._y[-1]-self._y[-2])
+            self._z = scipy.insert(self._z,0,2*self._z[0]-self._z[1])
+            self._z = scipy.append(self._z,2*self._z[-1]-self._z[-2])
+
+        
         self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2))
         self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
-        #self._f = f
         
         if boundary == 'clamped':
             # faces
@@ -104,84 +125,89 @@ class Spline():
             #corners
             self._f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] = 8*f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] -f[(1,1,1,1,-2,-2,-2,-2),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] -f[(0,0,0,0,-1,-1,-1,-1),(1,1,-2,-2,1,1,-2,-2),(0,-1,0,-1,0,-1,0,-1)] -f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(1,-2,1,-2,1,-2,1,-2)] -f[(1,1,1,1,-2,-2,-2,-2),(1,1,-2,-2,1,1,-2,-2),(0,-1,0,-1,0,-1,0,-1)] -f[(0,0,0,0,-1,-1,-1,-1),(1,1,-2,-2,1,1,-2,-2),(1,-2,1,-2,1,-2,1,-2)] -f[(1,1,1,1,-2,-2,-2,-2),(0,0,-1,-1,0,0,-1,-1),(1,-2,1,-2,1,-2,1,-2)] -f[(1,1,1,1,-2,-2,-2,-2),(1,1,-2,-2,1,1,-2,-2),(1,-2,1,-2,1,-2,1,-2)]
 
-         
-        if len(x) == self._f.shape[2] - 2:
-            self._x = scipy.array(x,dtype=float)
-            if not _tricub.ismonotonic(self._x):
-                raise ValueError("x is not monotonic")
-            # add pad values to x for evaluation
-            self._x = scipy.insert(self._x,0,2*self._x[0]-self._x[1])
-            self._x = scipy.append(self._x,2*self._x[-1]-self._x[-2])
-        else:
-            raise ValueError("dimension of x does not match that of f ")
+        if _tricub.isregular(self._x) and _tricub.isregular(self._y) and _tricub.isregular(self._z):
+            self._regular = True
 
-        if len(y) == self._f.shape[1] - 2:
-            self._y = scipy.array(y,dtype=float)
-            if not _tricub.ismonotonic(self._y):
-                raise ValueError("y is not monotonic")
-            # add pad values for y for evaluation
-            self._y = scipy.insert(self._y,0,2*self._y[0]-self._y[1])
-            self._y = scipy.append(self._y,2*self._y[-1]-self._y[-2])
-        else:
-            raise ValueError("dimension of y does not match that of f ")
-        
-        if len(z) == self._f.shape[0] - 2:
-            self._z = scipy.array(z,dtype=float)
-            if not _tricub.ismonotonic(self._z):
-                raise ValueError("z is not monotonic")
-            # add pad values for z for evaluation
-            self._z = scipy.insert(self._z,0,2*self._z[0]-self._z[1])
-            self._z = scipy.append(self._z,2*self._z[-1]-self._z[-2])
-        else:
-            raise ValueError("dimension of z does not match that of f ")
-
-        self._regular = regular
-        self._fast = False
-       # if not regular:
-       #     for i in x,y,z:
-       #         regular = regular or bool(_tricub.isregular(i))
-       #     self._regular = regular
-
-    def ev(self, z1, y1, x1):
-        """evaluates tricubic spline at point (x1,y1,z1) which is f[z1,y1,x1].
+            
+    def _check_bounds(self, x_new, y_new, z_new):
+        """Check the inputs for being in the bounds of the interpolated data.
 
         Args:
-            z1 (scalar float or 1-dimensional float): Position in z dimension.
+            x_new (float array):
+            
+            y_new (float array):
+
+        Returns:
+            out_of_bounds (Boolean array): The mask on x_new and y_new of
+            values that are NOT of bounds.
+        """
+        below_bounds_x = x_new < self._xlim[0]
+        above_bounds_x = x_new > self._xlim[1]
+
+        below_bounds_y = y_new < self._ylim[0]
+        above_bounds_y = y_new > self._ylim[1]
+      
+        below_bounds_z = z_new < self._zlim[0]
+        above_bounds_z = z_new > self._zlim[1]
+
+        # !! Could provide more information about which values are out of bounds
+        if self.bounds_error and below_bounds_x.any():
+            raise ValueError("A value in x is below the interpolation "
+                "range.")
+        if self.bounds_error and above_bounds_x.any():
+            raise ValueError("A value in x is above the interpolation "
+                "range.")
+        if self.bounds_error and below_bounds_y.any():
+            raise ValueError("A value in y is below the interpolation "
+                "range.")
+        if self.bounds_error and above_bounds_y.any():
+            raise ValueError("A value in y is above the interpolation "
+                "range.")
+        if self.bounds_error and below_bounds_z.any():
+            raise ValueError("A value in z is below the interpolation "
+                "range.")
+        if self.bounds_error and above_bounds_z.any():
+            raise ValueError("A value in z is above the interpolation "
+                "range.")
+
+        out_of_bounds = scipy.logical_not(scipy.logical_or(scipy.logical_or(scipy.logical_or(below_bounds_x, above_bounds_x),
+                                                                            scipy.logical_or(below_bounds_y, above_bounds_y)),
+                                                           scipy.logical_or(below_bounds_z, above_bounds_z)))
+        return out_of_bounds
+
+
+            
+    def ev(self, xi, yi, zi):
+        """evaluates tricubic spline at point (xi,yi,zi) which is f[xi,yi,zi].
+
+        Args:
+            xi (scalar float or 1-dimensional float): Position in x dimension.
                This is the first dimension of 3d-valued grid.
-            y1 (scalar float or 1-dimensional float): Position in y dimension.
+            yi (scalar float or 1-dimensional float): Position in y dimension.
                This is the second dimension of 3d-valued grid.
-            x1 (scalar float or 1-dimensional float): Position in x dimension. 
+            zi (scalar float or 1-dimensional float): Position in z dimension. 
                This is the third dimension of 3d-valued grid.
 
         Returns:
-            val (array or scalar float): The interpolated value at (x1,y1,z1).
+            val (array or scalar float): The interpolated value at (xi,yi,zi).
             
         Raises:
             ValueError: If any of the dimensions exceed the evaluation boundary
                 of the grid
         
         """
-        x = scipy.atleast_1d(x1)
-        y = scipy.atleast_1d(y1)
-        z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
-        val = scipy.nan*scipy.zeros(x.shape)
+        x = scipy.atleast_1d(xi)
+        y = scipy.atleast_1d(yi)
+        z = scipy.atleast_1d(zi) # This will not modify x1,y1,z1.
 
-        #if scipy.any(x < self._x[1]) or scipy.any(x > self._x[-2]):
-        #    raise ValueError('x value exceeds bounds of interpolation grid ')
-        #if scipy.any(y < self._y[1]) or scipy.any(y > self._y[-2]):
-        #    raise ValueError('y value exceeds bounds of interpolation grid ')
-        #if scipy.any(z < self._z[1]) or scipy.any(z > self._z[-2]):
-        #    raise ValueError('z value exceeds bounds of interpolation grid ')
+        val = self.fill_value*scipy.ones(x.shape)
+        idx = self._check_bounds(x, y, z)
 
-        xinp = scipy.array(scipy.where(scipy.isfinite(x)))
-        yinp = scipy.array(scipy.where(scipy.isfinite(y)))
-        zinp = scipy.array(scipy.where(scipy.isfinite(z)))
-        inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
         if inp.size != 0:
             if self._regular:
-                val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
+                val[idx] = _tricub.reg_ev(z[idx], y[idx], x[idx], self._f, self._z, self._y, self._x)  
             else:
-                val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
+                val[idx] = _tricub.nonreg_ev(z[idx], y[idx], x[idx], self._f, self._z, self._y, self._x)
 
         return val
 
