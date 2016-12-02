@@ -69,26 +69,43 @@ class Spline():
             output = map.ev(z1, y1, x1)
     
     """
-    def __init__(self, z, y, x, f, regular=True, fast=False, dx=0, dy=0, dz=0):
+    def __init__(self, z, y, x, f, regular=True, boundary = 'natural', dx=0, dy=0, dz=0):
         if dx != 0 or dy != 0 or dz != 0:
             raise NotImplementedError(
                 "Trispline derivatives are not implemented, do not use tricubic "
                 "interpolation if you need to compute magnetic fields!"
             )
-        self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2)) #pad the f array so as to force the Neumann Boundary Condition
-        self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
-        # faces
-        self._f[(0,-1),1:-1,1:-1] = f[(0,-1),:,:] 
-        self._f[1:-1,(0,-1),1:-1] = f[:,(0,-1),:]
-        self._f[1:-1,1:-1,(0,-1)] = f[:,:,(0,-1)]
-        #verticies
-        self._f[(0,0,-1,-1),(0,-1,0,-1),1:-1] = f[(0,0,-1,-1),(0,-1,0,-1),:] 
-        self._f[(0,0,-1,-1),1:-1,(0,-1,0,-1)] = f[(0,0,-1,-1),:,(0,-1,0,-1)]
-        self._f[1:-1,(0,0,-1,-1),(0,-1,0,-1)] = f[:,(0,0,-1,-1),(0,-1,0,-1)]
-        #corners
-        self._f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] = f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)]
 
-        if len(x) == self._f.shape[2]-2:
+
+        self._f = scipy.zeros(scipy.array(f.shape)+(2,2,2))
+        self._f[1:-1,1:-1,1:-1] = scipy.array(f) # place f in center, so that it is padded by unfilled values on all sides
+        #self._f = f
+        
+        if boundary == 'clamped':
+            # faces
+            self._f[(0,-1),1:-1,1:-1] = f[(0,-1),:,:] 
+            self._f[1:-1,(0,-1),1:-1] = f[:,(0,-1),:]
+            self._f[1:-1,1:-1,(0,-1)] = f[:,:,(0,-1)]
+            #verticies
+            self._f[(0,0,-1,-1),(0,-1,0,-1),1:-1] = f[(0,0,-1,-1),(0,-1,0,-1),:] 
+            self._f[(0,0,-1,-1),1:-1,(0,-1,0,-1)] = f[(0,0,-1,-1),:,(0,-1,0,-1)]
+            self._f[1:-1,(0,0,-1,-1),(0,-1,0,-1)] = f[:,(0,0,-1,-1),(0,-1,0,-1)]
+            #corners
+            self._f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] = f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)]
+        elif boundary == 'natural':
+            # faces
+            self._f[(0,-1),1:-1,1:-1] = 2*f[(0,-1),:,:] - f[(1,-2),:,:]
+            self._f[1:-1,(0,-1),1:-1] = 2*f[:,(0,-1),:] - f[:,(1,-2),:]
+            self._f[1:-1,1:-1,(0,-1)] = 2*f[:,:,(0,-1)] - f[:,:,(1,-2)]
+            #verticies
+            self._f[(0,0,-1,-1),(0,-1,0,-1),1:-1] = 4*f[(0,0,-1,-1),(0,-1,0,-1),:] - f[(1,1,-2,-2),(0,-1,0,-1),:] - f[(0,0,-1,-1),(1,-2,1,-2),:] - f[(1,1,-2,-2),(1,-2,1,-2),:]
+            self._f[(0,0,-1,-1),1:-1,(0,-1,0,-1)] = 4*f[(0,0,-1,-1),:,(0,-1,0,-1)] - f[(1,1,-2,-2),:,(0,-1,0,-1)] - f[(0,0,-1,-1),:,(1,-2,1,-2)] - f[(1,1,-2,-2),:,(1,-2,1,-2)]
+            self._f[1:-1,(0,0,-1,-1),(0,-1,0,-1)] = 4*f[:,(0,0,-1,-1),(0,-1,0,-1)] - f[:,(1,1,-2,-2),(0,-1,0,-1)] - f[:,(0,0,-1,-1),(1,-2,1,-2)] - f[:,(1,1,-2,-2),(1,-2,1,-2)]
+            #corners
+            self._f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] = 8*f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] -f[(1,1,1,1,-2,-2,-2,-2),(0,0,-1,-1,0,0,-1,-1),(0,-1,0,-1,0,-1,0,-1)] -f[(0,0,0,0,-1,-1,-1,-1),(1,1,-2,-2,1,1,-2,-2),(0,-1,0,-1,0,-1,0,-1)] -f[(0,0,0,0,-1,-1,-1,-1),(0,0,-1,-1,0,0,-1,-1),(1,-2,1,-2,1,-2,1,-2)] -f[(1,1,1,1,-2,-2,-2,-2),(1,1,-2,-2,1,1,-2,-2),(0,-1,0,-1,0,-1,0,-1)] -f[(0,0,0,0,-1,-1,-1,-1),(1,1,-2,-2,1,1,-2,-2),(1,-2,1,-2,1,-2,1,-2)] -f[(1,1,1,1,-2,-2,-2,-2),(0,0,-1,-1,0,0,-1,-1),(1,-2,1,-2,1,-2,1,-2)] -f[(1,1,1,1,-2,-2,-2,-2),(1,1,-2,-2,1,1,-2,-2),(1,-2,1,-2,1,-2,1,-2)]
+
+         
+        if len(x) == self._f.shape[2] - 2:
             self._x = scipy.array(x,dtype=float)
             if not _tricub.ismonotonic(self._x):
                 raise ValueError("x is not monotonic")
@@ -98,7 +115,7 @@ class Spline():
         else:
             raise ValueError("dimension of x does not match that of f ")
 
-        if len(y) == self._f.shape[1]-2:
+        if len(y) == self._f.shape[1] - 2:
             self._y = scipy.array(y,dtype=float)
             if not _tricub.ismonotonic(self._y):
                 raise ValueError("y is not monotonic")
@@ -108,7 +125,7 @@ class Spline():
         else:
             raise ValueError("dimension of y does not match that of f ")
         
-        if len(z) == self._f.shape[0]-2:
+        if len(z) == self._f.shape[0] - 2:
             self._z = scipy.array(z,dtype=float)
             if not _tricub.ismonotonic(self._z):
                 raise ValueError("z is not monotonic")
@@ -119,7 +136,7 @@ class Spline():
             raise ValueError("dimension of z does not match that of f ")
 
         self._regular = regular
-        self._fast = fast
+        self._fast = False
        # if not regular:
        #     for i in x,y,z:
        #         regular = regular or bool(_tricub.isregular(i))
@@ -142,48 +159,29 @@ class Spline():
         Raises:
             ValueError: If any of the dimensions exceed the evaluation boundary
                 of the grid
-
+        
         """
         x = scipy.atleast_1d(x1)
         y = scipy.atleast_1d(y1)
         z = scipy.atleast_1d(z1) # This will not modify x1,y1,z1.
         val = scipy.nan*scipy.zeros(x.shape)
 
-        if scipy.any(x < self._x[1]) or scipy.any(x > self._x[-2]):
-            raise ValueError('x value exceeds bounds of interpolation grid ')
-        if scipy.any(y < self._y[1]) or scipy.any(y > self._y[-2]):
-            raise ValueError('y value exceeds bounds of interpolation grid ')
-        if scipy.any(z < self._z[1]) or scipy.any(z > self._z[-2]):
-            raise ValueError('z value exceeds bounds of interpolation grid ')
+        #if scipy.any(x < self._x[1]) or scipy.any(x > self._x[-2]):
+        #    raise ValueError('x value exceeds bounds of interpolation grid ')
+        #if scipy.any(y < self._y[1]) or scipy.any(y > self._y[-2]):
+        #    raise ValueError('y value exceeds bounds of interpolation grid ')
+        #if scipy.any(z < self._z[1]) or scipy.any(z > self._z[-2]):
+        #    raise ValueError('z value exceeds bounds of interpolation grid ')
 
         xinp = scipy.array(scipy.where(scipy.isfinite(x)))
         yinp = scipy.array(scipy.where(scipy.isfinite(y)))
         zinp = scipy.array(scipy.where(scipy.isfinite(z)))
         inp = scipy.intersect1d(scipy.intersect1d(xinp, yinp), zinp)
         if inp.size != 0:
-            
-            if self._fast:
-                ix = scipy.clip(scipy.digitize(x[inp],self._x),2,self._x.size - 2) - 1
-                iy = scipy.clip(scipy.digitize(y[inp],self._y),2,self._y.size - 2) - 1
-                iz = scipy.clip(scipy.digitize(z[inp],self._z),2,self._z.size - 2) - 1
-                pos = ix - 1 + self._f.shape[1]*((iy - 1) + self._f.shape[2]*(iz - 1))
-                indx = scipy.argsort(pos) # I believe this is much faster...
-
-                if self._regular:
-                    dx =  (x[inp]-self._x[ix])/(self._x[ix+1]-self._x[ix])
-                    dy =  (y[inp]-self._y[iy])/(self._y[iy+1]-self._y[iy])
-                    dz =  (z[inp]-self._z[iz])/(self._z[iz+1]-self._z[iz])
-                    val[inp] = _tricub.reg_eval(dx,dy,dz,self._f,pos,indx)
-
-                else:
-                    val[inp] = _tricub.nonreg_eval(x[inp],y[inp],z[inp],self._f,self._x,self._y,self._z,pos,indx,ix,iy,iz)
-                    
+            if self._regular:
+                val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
             else:
-                
-                if self._regular:
-                    val[inp] = _tricub.reg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)  
-                else:
-                    val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
+                val[inp] = _tricub.nonreg_ev(x[inp], y[inp], z[inp], self._f, self._x, self._y, self._z)
 
         return val
 

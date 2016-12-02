@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /*****************************************************************
  
@@ -153,6 +154,12 @@ int A_v2[64][64] = {
 {-12,12,12,-12,12,-12,-12,12,-8,-4, 8, 4, 8, 4,-8,-4,-6, 6,-6, 6, 6,-6, 6,-6,-6, 6, 6,-6,-6, 6, 6,-6,-4,-2,-4,-2, 4, 2, 4, 2,-4,-2, 4, 2,-4,-2, 4, 2,-3, 3,-3, 3,-3, 3,-3, 3,-2,-1,-2,-1,-2,-1,-2,-1},
 { 8,-8,-8, 8,-8, 8, 8,-8, 4, 4,-4,-4,-4,-4, 4, 4, 4,-4, 4,-4,-4, 4,-4, 4, 4,-4,-4, 4, 4,-4,-4, 4, 2, 2, 2, 2,-2,-2,-2,-2, 2, 2,-2,-2, 2, 2,-2,-2, 2,-2, 2,-2, 2,-2, 2,-2, 1, 1, 1, 1, 1, 1, 1, 1}};
 
+int clip(int x, int a)
+{
+  return x > a - 1 ? a - 1 : (x < 0 ? 0 : x);
+}
+
+
 
 int ismonotonic(double val[], int ix)
 {   /* while loop based check of monotonicity,
@@ -181,7 +188,6 @@ int isregular(double val[], int ix)
   double temp = val[counter] - val[counter + 1];
   while( counter )
     { counter--;
-
       if(abs((val[counter] - val[counter + 1])/temp - 1) >= eps)
 	{
 	  counter = 0;
@@ -255,6 +261,28 @@ void int_argsort(int outvec[], int invec[], int len)
 }
 
 
+void voxel(double fin[], double f[], int tempx0, int tempx1, int tempx2, int ix0, int ix1, int ix2)
+{
+  int findx, l, k, j, templ, tempk, tempj;
+  findx = 0;
+  
+  for(j = tempx2 - 1; j < tempx2 + 3; j++)
+    {
+      tempj = clip(j,ix2);
+      for(k = tempx1 - 1; k < tempx1 + 3; k++)
+	{ 
+	  tempk = clip(k,ix1);
+	  for(l = tempx0 - 1; l < tempx0 + 3; l++)
+	    {
+	      templ = clip(l,ix0);
+	      fin[findx] = *(f + templ + ix0*(tempk + ix1*tempj));
+	      findx++;
+	    }
+	}	  
+    }
+} 
+
+
 void _nonreg_x_construct(double val[], double inmat[], int shape[])
 {
   int k,j,i,idx0,idx1,gap0,gap1;
@@ -270,8 +298,8 @@ void _nonreg_x_construct(double val[], double inmat[], int shape[])
 	  for(i=0;i<2;i++)
 	    {
 	      val[idx1] = inmat[idx0];
-	      //printf(" %f %i %i %i \n",val[idx1],idx0,gap0,gap1);
-	      idx1 = idx1++;
+	      //printf(" %f %f %i %i \n",val[idx1],inmat[idx0],idx0,idx1);
+	      idx1++;
 	      idx0++;
 	    }
 	  idx0 = idx0 + gap0;
@@ -282,7 +310,7 @@ void _nonreg_x_construct(double val[], double inmat[], int shape[])
 }
 
 
-void tridiff(double outmat[], double inmat[], double x[4], int shapeout[3], int shapein[3], int dim)
+void tridiff(double outmat[], double inmat[], double x[4], int shapeout[3], int shapein[3], int dim, double spacing)
 {
   /*outmat is the matrix reduced by 2 (derivatives calculated along same base or centered)
    dimension of derivative is specified by 'dim', the shape of the input array is described by
@@ -324,8 +352,7 @@ void tridiff(double outmat[], double inmat[], double x[4], int shapeout[3], int 
 	  for(x0=0; x0<x0lim; x0++)
 	    { 
 	      idx = ixin/gap % 4;
-	      outmat[ixout] = (inmat[ixin + gap] - inmat[ixin - gap])/(x[idx + 1] - x[idx - 1]);
-	      //printf(" %f %f %f %f\n",outmat[ixout],inmat[ixin + gap],inmat[ixin - gap],x[idx + 1] - x[idx - 1]);
+	      outmat[ixout] = spacing*(inmat[ixin + gap] - inmat[ixin - gap])/(x[idx + 1] - x[idx - 1]);
 	      ixout++;
 	      ixin++;
 	    }
@@ -338,6 +365,7 @@ void tridiff(double outmat[], double inmat[], double x[4], int shapeout[3], int 
 
 void _gen_nonreg_x(double val[], double f[], double x0[4], double x1[4], double x2[4])
 { /*initialize necessary derivatives */
+  double dx0gap, dx1gap, dx2gap;
   double dfdx0[32];//[2][4][4];
   double dfdx1[16];//[2][2][4];
   double dfdx2[8];//[2][2][2];
@@ -347,45 +375,47 @@ void _gen_nonreg_x(double val[], double f[], double x0[4], double x1[4], double 
   double dfdx012[8];//[2][2][2];
   /* i think i need to modify tridiff to intelligently deal with the different sizes  */
 
+  dx0gap = x0[2]-x0[1];
+  dx1gap = x1[2]-x1[1];
+  dx2gap = x2[2]-x2[1];
+   
   int in[3] = {4,4,4};
-
-  _nonreg_x_construct(&val[0],&f[21],in);
-
-  int out[3] = {2,4,4};
-
   
+  _nonreg_x_construct(&val[0],&f[21],in);
+ 
+  int out[3] = {2,4,4};
+ 
   /* x0 derivative */
-  tridiff(dfdx0, f, x0, out, in, 0);
+  tridiff(dfdx0, f, x0, out, in, 0, dx0gap);
   _nonreg_x_construct(&val[8], &dfdx0[10], out);
 
   /* x1 derivative */
   out[1] = 2;
 
-  tridiff(dfdx1, f, x1, out, in, 1);
+  tridiff(dfdx1, f, x1, out, in, 1, dx1gap);
   _nonreg_x_construct(&val[16], &dfdx1[4], out);
   
   in[0] = 2;
-  tridiff(dfdx01, dfdx0, x1, out, in, 1);
+  tridiff(dfdx01, dfdx0, x1, out, in, 1, dx1gap);
   _nonreg_x_construct(&val[32], &dfdx01[4], out);
 
   /* x2 derivative */
   out[2] = 2;
  
   in[0] = 4;
-  tridiff(dfdx2, f, x2, out, in, 2);
+  tridiff(dfdx2, f, x2, out, in, 2, dx2gap);
   _nonreg_x_construct(&val[24], &dfdx2[0], out);  
   
   in[0] = 2;
-  tridiff(dfdx02, dfdx0, x2, out, in, 2);
+  tridiff(dfdx02, dfdx0, x2, out, in, 2, dx2gap);
   _nonreg_x_construct(&val[40], &dfdx02[0], out);    
 
   in[1] = 2;
-  tridiff(dfdx12, dfdx1, x2, out, in, 2);
+  tridiff(dfdx12, dfdx1, x2, out, in, 2, dx2gap);
   _nonreg_x_construct(&val[48], &dfdx12[0], out);
   
-  tridiff(dfdx012, dfdx01, x2, out, in, 2);
+  tridiff(dfdx012, dfdx01, x2, out, in, 2, dx2gap);
   _nonreg_x_construct(&val[56], &dfdx012[0], out);    
-
 }
 
 
@@ -405,230 +435,93 @@ void tricubic_get_coeff_stacked(double a[64], double x[64])
 }
 
 
-void tricubic_get_coeff_stacked_nonreg(double a[64], double f[64], double x0[], double x1[], double x2[])
+void tricubic_get_coeff_stacked_nonreg(double a[64], double f[64], double fx0[], double fx1[], double fx2[])
 {
   int i,j;
   double x[64];
-  for(i=0;i<4;i++)
-    {
-      //printf(" %f %f %f \n",x0[i],x1[i],x2[i]);
-    }
-  _gen_nonreg_x(x, f, x0, x1, x2);
+
+  _gen_nonreg_x(x, f, fx0, fx1, fx2);
+
   for (i=0;i<64;i++) 
-    { //printf(" %f \n",x[j]);
+    { 
       a[i]=(double)(0.0);
       for (j=0;j<64;j++) 
 	{
 	  a[i]+=A_v2[i][j]*x[j];
 	}
-      // printf(" %f %i \n",a[i],i);
     }
 }
-
-
-void _reg_ev(double val[], double dx0[], double dx1[], double dx2[], double f[], int pos[], int indx[], int ix0, int ix1, int ix2, int ix)
-{
-  int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
-  double fin[64],a[64];
-
-  /* THIS IS THE ORGINALLY IMPELEMENTED TRICUBIC SPLINE EVALUATOR, NOW OUT OF DATE AND IS LEGACY*/
-  gap1 = ix0 - 4;
-  gap2 = ix0*(ix1 - 4);
-
- 
-  for(i=0;i < ix; i++)
-    {
-      
-      /* generate matrix for input into interp, this
-       is the first attempt at trying to speed up the 
-      equation by forcing it more onto the C side*/
-      loc = indx[i];
-      if(iter != pos[loc])
-	{ 
-	  findx = 0;
-	  iter = pos[loc];
-	    /* iter provides a unique identifier to the voxel of
-		interest, and the code generates the interpolating
-		coefficients once per voxel (at max). The evaluated points
-		are sorted such that all values of a voxel are calculated
-		in direct sequence. */
-		
-	  for(l = 0;l < 4; l++)
-	    {
-	      for(k = 0;k < 4; k++)
-		{
-		  for(j = 0;j < 4; j++)
-		    { 
-		      fin[findx] = *(f + iter);
-		      findx++;
-		      iter++;
-		    }
-		  iter = iter + gap1;
-		}	  
-	      iter = iter + gap2;
-	    }
-	  iter = pos[loc];
-	  tricubic_get_coeff_stacked(a,fin);
-
-
-	}
-      val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
-
-    }
-}
-
-
-void nonreg_eval(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int pos[], int indx[], int in0[], int in1[], int in2[], int ix0, int ix1, int ix2, int ix)
-{
-  int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
-  double fin[64],a[64];
-
-  gap1 = ix0 - 4;
-  gap2 = ix0*(ix1 - 4);
- 
-  for(i=0;i < ix; i++)
-    {
-      
-      /* generate matrix for input into interp, this
-       is the first attempt at trying to speed up the 
-      equation by forcing it more onto the C side*/
-      loc = indx[i];
-      if(iter != pos[loc])
-	{ 
-	  findx = 0;
-	  iter = pos[loc];
-	    /* iter provides a unique identifier to the voxel of
-		interest, and the code generates the interpolating
-		coefficients once per voxel (at max). The evaluated points
-		are sorted such that all values of a voxel are calculated
-		in direct sequence. */
-		
-	  for(l = 0;l < 4; l++)
-	    {
-	      for(k = 0;k < 4; k++)
-		{
-		  for(j = 0;j < 4; j++)
-		    { 
-		      fin[findx] = *(f + iter);
-		      findx++;
-		      iter++;
-		    }
-		  iter = iter + gap1;
-		}	  
-	      iter = iter + gap2;
-	    }
-	  iter = pos[loc];
-	  tricubic_get_coeff_stacked_nonreg(a,fin,&fx0[in0[loc]-1],&fx1[in1[loc]-1],&fx2[in2[loc]-1]);
-
-	}
-
-      val[loc] = tricubic_eval(a,(x0[loc] - fx0[in0[loc]]),(x1[loc] - fx1[in1[loc]]),(x2[loc] - fx2[in2[loc]]));
-
-    }
-
-}
-
 
 
 void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
 {
-  int k;
+  int i,iter = -1,loc;
+  double fin[64],a[64], dx0gap, dx1gap, dx2gap;
 
-  int* in0 = malloc(ix*sizeof(int));
-  int* in1 = malloc(ix*sizeof(int));
-  int* in2 = malloc(ix*sizeof(int));
+  
+  int* tempx0 = malloc(ix*sizeof(int));
+  int* tempx1 = malloc(ix*sizeof(int));
+  int* tempx2 = malloc(ix*sizeof(int));
   int* pos = malloc(ix*sizeof(int));
   int* indx = malloc(ix*sizeof(int));
 
   /* solve for indexes */
-  for(k=0;k<ix;k++)
+  for(i=0;i<ix;i++)
     {
-      in0[k] = (int)((double*) bsearch(&x0[k], fx0, ix0, sizeof(double), _bin_double) - &fx0[0]);
-      in1[k] = (int)((double*) bsearch(&x1[k], fx1, ix1, sizeof(double), _bin_double) - &fx1[0]);
-      in2[k] = (int)((double*) bsearch(&x2[k], fx2, ix2, sizeof(double), _bin_double) - &fx2[0]);
-      /* bounds checking required here, modify in* values */
-      if(in0[k] < 1) in0[k] = 1;
-      else if( in0[k] > ix0 - 3) in0[k] = (double)ix0 - 3;
-      if(in1[k] < 1) in1[k] = 1;
-      else if( in1[k] > ix1 - 3) in1[k] = (double)ix1 - 3;
-      if(in2[k] < 1) in2[k] = 1;
-      else if( in2[k] > ix2 - 3) in2[k] = (double)ix2 - 3;
+      tempx0[i] = clip((int)((double*) bsearch(&x0[i], fx0, ix0, sizeof(double), _bin_double) - &fx0[0]), ix0);
+      tempx1[i] = clip((int)((double*) bsearch(&x1[i], fx1, ix1, sizeof(double), _bin_double) - &fx1[0]), ix1);
+      tempx2[i] = clip((int)((double*) bsearch(&x2[i], fx2, ix2, sizeof(double), _bin_double) - &fx2[0]), ix2);
+      /* bounds checking required here, modify in* values, subtle boundary error here that I will need to come back to */
 
-      pos[k] = (in0[k] - 1) + ix0*((in1[k] - 1) + ix1*(in2[k] - 1)); 
+      pos[i] = tempx0[i] + ix0*(tempx1[i] + ix1*tempx2[i]); 
     }
   int_argsort(indx, pos, ix);
-  nonreg_eval(val,x0,x1,x2,f,fx0,fx1,fx2,pos,indx,in0,in1,in2,ix0,ix1,ix2,ix);
+
+  for(i=0;i < ix; i++)
+    {
+      
+      /* generate matrix for input into interp, this
+       is the first attempt at trying to speed up the 
+      equation by forcing it more onto the C side*/
+      loc = indx[i];
+      if(iter != pos[loc])
+	{
+	  iter = pos[loc];
+	  voxel(fin, f, tempx0[loc], tempx1[loc], tempx2[loc], ix0, ix1, ix2);
+	  tricubic_get_coeff_stacked_nonreg(a, fin, &fx0[tempx0[loc]-1], &fx1[tempx1[loc]-1], &fx2[tempx2[loc]-1]);
+
+	  dx0gap = fx0[tempx0[loc]+1] - fx0[tempx0[loc]];
+	  dx1gap = fx1[tempx1[loc]+1] - fx1[tempx1[loc]];
+	  dx2gap = fx2[tempx2[loc]+1] - fx2[tempx2[loc]];	  
+	}
+      
+      val[loc] = tricubic_eval(a,
+			       (x0[loc] - fx0[tempx0[loc]])/dx0gap,
+			       (x1[loc] - fx1[tempx1[loc]])/dx1gap,
+			       (x2[loc] - fx2[tempx2[loc]])/dx2gap);
+    }
 
   /*generate pos and loc */
 
-  free(in0);
-  free(in1);
-  free(in2);
+  free(tempx0);
+  free(tempx1);
+  free(tempx2);
   free(pos);
   free(indx);
 
 }
 
 
-void reg_eval(double val[], double dx0[], double dx1[], double dx2[] , double f[], int pos[], int indx[], int ix0, int ix1, int ix2, int ix)
-{
-  int i,j,k,l,iter = -1,gap1,gap2,loc,findx;
-  double fin[64],a[64];
-  gap1 = ix0 - 4;
-  gap2 = ix0*(ix1 - 4);
-  for(i=0;i < ix; i++)
-    {
-      
-      /* generate matrix for input into interp, this
-       is the first attempt at trying to speed up the 
-      equation by forcing it more onto the C side*/
-      loc = indx[i];
-      if(iter != pos[loc])
-	{ 
-	  findx = 0;
-	  iter = pos[loc];
-	    /* iter provides a unique identifier to the voxel of
-		interest, and the code generates the interpolating
-		coefficients once per voxel (at max). The evaluated points
-		are sorted such that all values of a voxel are calculated
-		in direct sequence. */
-		
-	    /* the padding of f (from python) allows for a lot of
-	    	simplifcation, as its starts 1 off on every dimension */
-	  for(l = 0;l < 4; l++)
-	    {
-	      for(k = 0;k < 4; k++)
-		{
-		  for(j = 0;j < 4; j++)
-		    { 
-		      fin[findx] = *(f + iter);
-		      /*printf(" %i %i %f \n",findx,iter,fin[findx])*/
-		      findx++;
-		      iter++;
-		    }
-		  iter = iter + gap1;
-		}	  
-	      iter = iter + gap2;
-	    }
-	  iter = pos[loc];
-	  tricubic_get_coeff_stacked(a,fin);
-
-
-	}
-      val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
-
-    }
-
-}
-
-
 void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
 {
-  int idx;
-  double dx0gap,dx1gap,dx2gap,tempx0,tempx1,tempx2;
+  int i, iter=-1, loc;
+  double dx0gap, dx1gap, dx2gap, temp, a[64], fin[64];
   double* dx0 = malloc(ix*sizeof(double));
   double* dx1 = malloc(ix*sizeof(double));
   double* dx2 = malloc(ix*sizeof(double));    
+  double* tempx0 = malloc(ix*sizeof(double));
+  double* tempx1 = malloc(ix*sizeof(double));
+  double* tempx2 = malloc(ix*sizeof(double));
   int* pos = malloc(ix*sizeof(int));
   int* indx = malloc(ix*sizeof(int));
   
@@ -637,58 +530,54 @@ void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], dou
   dx2gap = fx2[1] - fx2[0];
   
   /*generate indicies*/
-  for(idx=0;idx<ix;idx++)
+  for(i=0;i<ix;i++)
     {
-      dx0[idx] = modf((x0[idx] - fx0[0])/dx0gap,&tempx0);
-      dx1[idx] = modf((x1[idx] - fx1[0])/dx1gap,&tempx1);
-      dx2[idx] = modf((x2[idx] - fx2[0])/dx2gap,&tempx2);
+      temp = (x0[i] - fx0[0])/dx0gap;
+      dx0[i] = modf(temp,&tempx0[i]);
+      tempx0[i] = (double)clip((int)tempx0[i], ix0);
+      dx0[i] = temp - tempx0[i];
+      
+      temp = (x1[i] - fx1[0])/dx1gap;
+      dx1[i] = modf(temp,&tempx1[i]);
+      tempx1[i] = (double)clip((int)tempx1[i], ix1);
+      dx1[i] = temp - tempx1[i];
+      
+      temp = (x2[i] - fx2[0])/dx2gap;
+      dx2[i] = modf(temp,&tempx2[i]);
+      tempx2[i] = (double)clip((int)tempx2[i], ix2);
+      dx2[i] = temp - tempx2[i];
 
-      /*bounds checking so that the grid can be properly evaluated */
-      if(tempx0 < 1)
-	{
-	  dx0[idx] = dx0[idx] - 1 + tempx0; 
-	  tempx0 = 1; 
-	}
-      else if(tempx0 > (double)ix0 - 3)
-	{
-	  dx0[idx] = dx0[idx] + (tempx0 - ((double)ix0 - 3));
-	  tempx0 = (double)ix0 - 3;
-	}
-
-      if(tempx1 < 1) 
-	{
-	  dx1[idx] = dx1[idx] - 1 + tempx1; 
-	  tempx1 = 1;
-	}
-      else if(tempx1 > (double)ix1 - 3)
-	{
-	  dx1[idx] = dx1[idx] + (tempx1 - ((double)ix1 - 3));
-	  tempx1 = (double)ix1 - 3;
-	}
-
-      if(tempx2 < 1) 
-	{
-	  dx2[idx] = dx2[idx] - 1 + tempx2; 
-	  tempx2 = 1;
-	}
-      else if(tempx2 > (double)ix2 - 3) 
-	{
-          dx2[idx] = dx2[idx] + (tempx2 - ((double)ix2 - 3));
-	  tempx2 = (double)ix2 - 3;
-	}
-
-      pos[idx] = (int)tempx0 - 1 + ix0*((int)tempx1 - 1 + ix1*((int)tempx2 - 1));
+      pos[i] = (int)tempx0[i] + ix0*((int)tempx1[i] + ix1*((int)tempx2[i]));
+      
     }
+
+  // find the right order for the evaluation to try and save time
   int_argsort(indx, pos, ix);
-  reg_eval(val, dx0, dx1, dx2, f, pos, indx, ix0, ix1, ix2, ix);
+
+  for(i=0;i < ix; i++)
+    {
+      
+      /* generate matrix for input into interp, this
+       is the first attempt at trying to speed up the 
+      equation by forcing it more onto the C side*/
+      loc = indx[i];
+      if(iter != pos[loc])
+	{
+	  iter = pos[loc];
+	  voxel(fin, f, (int)tempx0[i], (int)tempx1[i], (int)tempx2[i], ix0, ix1, ix2);
+	  tricubic_get_coeff_stacked(a,fin);
+	}
+      val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
+    }
  
   free(dx0);
   free(dx1);
   free(dx2);
   free(pos);
   free(indx);
-
-
+  free(tempx0);
+  free(tempx1);
+  free(tempx2);
 }
 
 
