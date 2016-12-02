@@ -203,7 +203,7 @@ class Spline():
         val = self.fill_value*scipy.ones(x.shape)
         idx = self._check_bounds(x, y, z)
 
-        if inp.size != 0:
+        if z[idx].size != 0:
             if self._regular:
                 val[idx] = _tricub.reg_ev(z[idx], y[idx], x[idx], self._f, self._z, self._y, self._x)  
             else:
