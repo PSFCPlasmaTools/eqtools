@@ -1265,10 +1265,16 @@ class AUGDDData(Equilibrium):
         """
         if self._BCentr is None:
             try:
-                temp = dd.shotfile('MBI',self._shot)
-                BCentrNode = temp('BTFABB')
-                self._BCentr = BCentrNode.data[self._getNearestIdx(self.getTimeBase(),BCentrNode.time)]
-                self._defaultUnits['_BCentr'] = str(BCentrNode.unit)
+                try:
+                    temp = dd.shotfile('MBI',self._shot)
+                    BCentrNode = temp('BTFABB')
+                    self._BCentr = BCentrNode.data[self._getNearestIdx(self.getTimeBase(),BCentrNode.time)]
+                    self._defaultUnits['_BCentr'] = str(BCentrNode.unit)
+                except PyddError:
+                    temp = dd.shotfile('MBI',self._shot)
+                    BCentrNode = temp('BTF')
+                    self._BCentr = BCentrNode.data[self._getNearestIdx(self.getTimeBase(),BCentrNode.time)]
+                    self._defaultUnits['_BCentr'] = str(BCentrNode.unit)
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
 

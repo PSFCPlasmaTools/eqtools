@@ -9974,21 +9974,26 @@ class Equilibrium(object):
                 Default value is 'cubic' (3rd order spline interpolation) when
                 `trispline` is True, 'nearest' otherwise.
         
-        Returns:
-            scipy.interpolate.interp1d to convert from t to R_mid.
+        Returns:            
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`scipy.interpolate.interp1d` to convert from t to MagR.
         """
         if self._magRSpline:
             return self._magRSpline
         else:
-            if kind == 'nearest' and self._tricubic:
-                kind = 'cubic'
+
             try:
-                self._magRSpline = scipy.interpolate.interp1d(
-                    self.getTimeBase(),
-                    self.getMagR(length_unit=length_unit),
-                    kind=kind,
-                    bounds_error=False
-                )
+                if self._tricubic:
+                    self._magRSpline = trispline.UnivariateInterpolator(self.getTimeBase(),
+                                                                        self.getMagR(length_unit=length_unit)
+                                                                        k=3)
+                else:                
+                    self._magRSpline = scipy.interpolate.interp1d(
+                        self.getTimeBase(),
+                        self.getMagR(length_unit=length_unit),
+                        kind=kind,
+                        bounds_error=False
+                    )
             except ValueError:
                 # created to allow for single time (such as gfiles) to properly
                 # call this method
@@ -10039,21 +10044,25 @@ class Equilibrium(object):
                 `trispline` is True, 'nearest' otherwise.
         
         Returns:
-            scipy.interpolate.interp1d to convert from t to R_mid.
+
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`scipy.interpolate.interp1d` to convert from t to MagZ.
         """
         if self._magZSpline:
             return self._magZSpline
         else:
-            if kind == 'nearest' and self._tricubic:
-                kind = 'cubic'
-            
             try:
-                self._magZSpline = scipy.interpolate.interp1d(
-                    self.getTimeBase(),
-                    self.getMagZ(length_unit=length_unit),
-                    kind=kind,
-                    bounds_error=False
-                )
+                if self._tricubic:
+                    self._magZSpline = = trispline.UnivariateInterpolator(self.getTimeBase(),
+                                                                          self.getMagZ(length_unit=length_unit),
+                                                                          k=3)
+                else:
+                    self._magZSpline = scipy.interpolate.interp1d(
+                        self.getTimeBase(),
+                        self.getMagZ(length_unit=length_unit),
+                        kind=kind,
+                        bounds_error=False
+                    )
             except ValueError:
                 # created to allow for single time (such as gfiles) to properly
                 # call this method
@@ -10103,22 +10112,25 @@ class Equilibrium(object):
                 Default value is 'cubic' (3rd order spline interpolation) when
                 `trispline` is True, 'nearest' otherwise.
         
-        Returns:
-            scipy.interpolate.interp1d to convert from t to R_mid.
+        Returns:            
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`scipy.interpolate.interp1d` to convert from t to R_mid.
         """
         if self._RmidOutSpline:
             return self._RmidOutSpline
-        else:
-            if kind == 'nearest' and self._tricubic:
-                kind = 'cubic'
-            
+        else:     
             try:
-                self._RmidOutSpline = scipy.interpolate.interp1d(
-                    self.getTimeBase(),
-                    self.getRmidOut(length_unit=length_unit),
-                    kind=kind,
-                    bounds_error=False
-                )
+                if self._tricubic:
+                    self._RmidOutSpline = trispline.UnivariateInterpolator(self.getTimeBase(),
+                                                                           self.getRmidOut(length_unit=length_unit),
+                                                                           k = 3)
+                else:
+                    self._RmidOutSpline = scipy.interpolate.interp1d(
+                        self.getTimeBase(),
+                        self.getRmidOut(length_unit=length_unit),
+                        kind=kind,
+                        bounds_error=False
+                    )
             except ValueError:
                 # created to allow for single time (such as gfiles) to properly
                 # call this method
@@ -10166,20 +10178,25 @@ class Equilibrium(object):
                 `trispline` is True, 'nearest' otherwise.
         
         Returns:
-            scipy.interpolate.interp1d to convert from t to a_out.
+            
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`scipy.interpolate.interp1d` to convert from t to a_out.
         """
         if self._AOutSpline:
             return self._AOutSpline
         else:
-            if kind == 'nearest' and self._tricubic:
-                kind = 'cubic'
             try:
-                self._AOutSpline = scipy.interpolate.interp1d(
-                    self.getTimeBase(),
-                    self.getAOut(length_unit=length_unit),
-                    kind=kind,
-                    bounds_error=False
-                )
+                if self._tricubic:
+                    self._AOutSpline = trispline.UnivariateInterpolator(self.getTimeBase(),
+                                                                        self.getAOut(length_unit=length_unit),
+                                                                        k=3)
+                else:
+                    self._AOutSpline = scipy.interpolate.interp1d(
+                        self.getTimeBase(),
+                        self.getAOut(length_unit=length_unit),
+                        kind=kind,
+                        bounds_error=False
+                    )
             except ValueError:
                 # created to allow for single time (such as gfiles) to properly
                 # call this method
@@ -10210,20 +10227,25 @@ class Equilibrium(object):
                 `trispline` is True, 'nearest' otherwise.
         
         Returns:
-            scipy.interpolate.interp1d to convert from t to BtVac.
+            
+            :py:class:`trispline.UnivariateInterpolator` or
+                :py:class:`scipy.interpolate.interp1d` to convert from t to BtVac.
         """
         if self._BtVacSpline:
             return self._BtVacSpline
         else:
-            if kind == 'nearest' and self._tricubic:
-                kind = 'cubic'
             try:
-                self._BtVacSpline = scipy.interpolate.interp1d(
-                    self.getTimeBase(),
-                    self.getBtVac(),
-                    kind=kind,
-                    bounds_error=False
-                )
+                if self._tricubic:
+                    self._BtVacSpline= trispline.UnivariateInterpolator(self.getTimeBase(),
+                                                                        self.getBtVac(),
+                                                                        k=3)
+                else:
+                    self._BtVacSpline = scipy.interpolate.interp1d(
+                        self.getTimeBase(),
+                        self.getBtVac(),
+                        kind=kind,
+                        bounds_error=False
+                    )
             except ValueError:
                 # created to allow for single time (such as gfiles) to properly
                 # call this method

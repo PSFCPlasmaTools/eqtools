@@ -116,13 +116,11 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
     zcent = obj.getMagZSpline()(tin)
 
     if obj._tricubic:
-        #THIS IS VERY SLOW DUE TO A LIMITATION IN THE INTERP1D FUNCTION
         psiLCFS = -1*obj.getCurrentSign()*obj._getLCFSPsiSpline()(tin)
         psi0 = -1*obj.getCurrentSign()*obj._getPsi0Spline()(tin)
-        bcent = scipy.interpolate.interp1d(obj.getTimeBase(),
-                                           obj.getBCentr(),
-                                           kind = 'cubic',
-                                           bounds_error=False)
+        bcent = trispline.UnivariateInterpolator(obj.getTimeBase(),
+                                                   obj.getBCentr(),
+                                                   k=k)
         bcent0 = bcent(tin)
 
     else:
@@ -142,10 +140,9 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                        bcent0]))
 
     if obj._tricubic:
-        temp = scipy.interpolate.interp1d(obj.getTimeBase(),
-                                          obj.getIpCalc(),
-                                          kind='cubic',
-                                          bounds_error=False)
+        temp = trispline.UnivariateInterpolator(obj.getTimeBase(),
+                                                obj.getIpCalc(),
+                                                k=k)
         Ip = temp(tin)
     else:
         Ip = obj.getIpCalc()[idx]
@@ -184,6 +181,7 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
                   obj.getFFPrime(),
                   obj.getPPrime()]:
 
+            pts0 = scipy.linspace(0.,1.,i.shape[-1]) #find original nw
             temp = scipy.interpolate.RectBivariateSpline(obj.getTimeBase(),
                                                          pts0,
                                                          scipy.atleast_2d(i))
