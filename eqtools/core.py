@@ -10123,7 +10123,7 @@ class Equilibrium(object):
                 if self._tricubic:
                     self._RmidOutSpline = trispline.UnivariateInterpolator(self.getTimeBase(),
                                                                            self.getRmidOut(length_unit=length_unit),
-                                                                           k = 3)
+                                                                           k=3)
                 else:
                     self._RmidOutSpline = scipy.interpolate.interp1d(
                         self.getTimeBase(),
