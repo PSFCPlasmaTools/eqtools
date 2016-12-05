@@ -120,7 +120,7 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
         psi0 = -1*obj.getCurrentSign()*obj._getPsi0Spline()(tin)
         bcent = trispline.UnivariateInterpolator(obj.getTimeBase(),
                                                    obj.getBCentr(),
-                                                   k=k)
+                                                   k=3)
         bcent0 = bcent(tin)
 
     else:
@@ -142,7 +142,7 @@ def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title=
     if obj._tricubic:
         temp = trispline.UnivariateInterpolator(obj.getTimeBase(),
                                                 obj.getIpCalc(),
-                                                k=k)
+                                                k=3)
         Ip = temp(tin)
     else:
         Ip = obj.getIpCalc()[idx]
