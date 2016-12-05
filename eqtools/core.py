@@ -10053,9 +10053,9 @@ class Equilibrium(object):
         else:
             try:
                 if self._tricubic:
-                    self._magZSpline = = trispline.UnivariateInterpolator(self.getTimeBase(),
-                                                                          self.getMagZ(length_unit=length_unit),
-                                                                          k=3)
+                    self._magZSpline = trispline.UnivariateInterpolator(self.getTimeBase(),
+                                                                        self.getMagZ(length_unit=length_unit),
+                                                                        k=3)
                 else:
                     self._magZSpline = scipy.interpolate.interp1d(
                         self.getTimeBase(),
@@ -10236,9 +10236,9 @@ class Equilibrium(object):
         else:
             try:
                 if self._tricubic:
-                    self._BtVacSpline= trispline.UnivariateInterpolator(self.getTimeBase(),
-                                                                        self.getBtVac(),
-                                                                        k=3)
+                    self._BtVacSpline = trispline.UnivariateInterpolator(self.getTimeBase(),
+                                                                         self.getBtVac(),
+                                                                         k=3)
                 else:
                     self._BtVacSpline = scipy.interpolate.interp1d(
                         self.getTimeBase(),
