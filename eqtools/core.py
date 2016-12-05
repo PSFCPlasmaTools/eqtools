@@ -9985,7 +9985,7 @@ class Equilibrium(object):
             try:
                 if self._tricubic:
                     self._magRSpline = trispline.UnivariateInterpolator(self.getTimeBase(),
-                                                                        self.getMagR(length_unit=length_unit)
+                                                                        self.getMagR(length_unit=length_unit),
                                                                         k=3)
                 else:                
                     self._magRSpline = scipy.interpolate.interp1d(
