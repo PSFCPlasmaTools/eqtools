@@ -50,7 +50,7 @@ try:
     import matplotlib.gridspec as mplgs
     import matplotlib.patches as mpatches
     import matplotlib.path as mpath
-    import filewriter
+    from .filewriter import gfile
     from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     from matplotlib.colorbar import ColorbarBase
@@ -10840,15 +10840,17 @@ class Equilibrium(object):
             
         """
 
-        filewriter.gfile(self,
-                         time,
-                         nw=nw,
-                         nh=nh,
-                         shot=shot,
-                         name=name,
-                         tunit=tunit,
-                         title=title,
-                         nbbbs=nbbbs)
+        gfile(
+            self,
+            time,
+            nw=nw,
+            nh=nh,
+            shot=shot,
+            name=name,
+            tunit=tunit,
+            title=title,
+            nbbbs=nbbbs
+        )
 
     def plotFlux(self, fill=True, mask=True, lw=3.0, add_title=True):
         """Plots flux contours directly from psi grid.
