@@ -28,11 +28,6 @@ import warnings
 
 try:
     import MDSplus
-    try: 
-        from MDSplus._treeshr import TreeException
-    except: 
-        from MDSplus.mdsExceptions.treeshrExceptions import TreeException
-    _has_MDS = True
 except Exception as _e_MDS:
     if isinstance(_e_MDS, ImportError):
         warnings.warn("MDSplus module could not be loaded -- classes that use "
@@ -183,7 +178,7 @@ class TCVLIUQETree(EFITTree):
                 psinode = self._MDSTree.getNode(self._root+'::psi')
                 self._time = psinode.getDimensionAt(2).data()
                 self._defaultUnits['_time'] = 's'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._time.copy()
 
@@ -206,7 +201,7 @@ class TCVLIUQETree(EFITTree):
                 self._defaultUnits['_psiRZ'] = str(psinode.units)
                 self._defaultUnits['_rGrid'] = 'm'
                 self._defaultUnits['_zGrid'] = 'm'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # the transpose is needed as psi is saved as (R, Z, t) in the pulse file
         return self._psiRZ.copy()
@@ -262,7 +257,7 @@ class TCVLIUQETree(EFITTree):
                 psiAxisNode = self._MDSTree.getNode(self._root+'::psi_axis')
                 self._psiAxis =  psiAxisNode.data() / (2.*scipy.pi)
                 self._defaultUnits['_psiAxis'] = str(psiAxisNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._psiAxis.copy()
     
@@ -283,7 +278,7 @@ class TCVLIUQETree(EFITTree):
                 # self._defaultUnits['_psiLCFS'] = str(psiLCFSNode.units)
                 self._psiLCFS = scipy.zeros(self.getTimeBase().size)
                 self._defaultUnits['_psiLCFS'] = 'T*m^2'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._psiLCFS.copy()
 
@@ -334,7 +329,7 @@ class TCVLIUQETree(EFITTree):
                 self._fluxVol = volumes
                 # Units aren't properly stored in the tree for this one!
                 self._defaultUnits['_fluxVol'] = 'm^3'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # Default units are m^3, but aren't stored in the tree!
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
@@ -359,7 +354,7 @@ class TCVLIUQETree(EFITTree):
                 volLCFSNode = self._MDSTree.getNode(self._root+'::volume')
                 self._volLCFS = volLCFSNode.data()
                 self._defaultUnits['_volLCFS'] = str(volLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # Default units should be 'cm^3':
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
@@ -389,7 +384,7 @@ class TCVLIUQETree(EFITTree):
                     self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
         return unit_factor * self._RmidPsi.copy()
@@ -409,7 +404,7 @@ class TCVLIUQETree(EFITTree):
                 RLCFSNode = self._MDSTree.getNode(self._root+'::r_contour')
                 self._RLCFS = RLCFSNode.data()
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
         return unit_factor * self._RLCFS.copy()
@@ -429,7 +424,7 @@ class TCVLIUQETree(EFITTree):
                 ZLCFSNode = self._MDSTree.getNode(self._root+'::z_contour')
                 self._ZLCFS = ZLCFSNode.data()
                 self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
         return unit_factor * self._ZLCFS.copy()
@@ -473,7 +468,7 @@ class TCVLIUQETree(EFITTree):
                 self._fluxPres = scipy.reshape(self.getFluxAxis(),(self.getFluxAxis().size,1))*scipy.dot(duData,rad)/(2*scipy.pi)
 
                 self._defaultUnits['_fluxPres'] = 'Pa'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
 
@@ -493,7 +488,7 @@ class TCVLIUQETree(EFITTree):
         #         FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
         #         self._ffprim = FFPrimeNode.data()
         #         self._defaultUnits['_ffprim'] = str(FFPrimeNode.units)
-        #     except TreeException:
+        #     except:
         #         raise ValueError('data retrieval failed.')
         # return self._ffprim.copy()
 
@@ -531,7 +526,7 @@ class TCVLIUQETree(EFITTree):
 
                 self._pprime = scipy.dot(duData, rad)
                 self._defaultUnits['_fluxPres'] = 'A/m^3'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._pprime.copy()
 
@@ -550,7 +545,7 @@ class TCVLIUQETree(EFITTree):
                 kappaNode = self._MDSTree.getNode(self._root+'::kappa_edge')
                 self._kappa = kappaNode.data()
                 self._defaultUnits['_kappa'] = ' '
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._kappa.copy()
 
@@ -569,7 +564,7 @@ class TCVLIUQETree(EFITTree):
                 dupperNode = self._MDSTree.getNode(self._root+'::delta_ed_top')
                 self._dupper = dupperNode.data()
                 self._defaultUnits['_dupper'] = str(dupperNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._dupper.copy()
         
@@ -588,7 +583,7 @@ class TCVLIUQETree(EFITTree):
                 dlowerNode = self._MDSTree.getNode(self._root+'::delta_ed_bot')
                 self._dlower = dlowerNode.data()
                 self._defaultUnits['_dlower'] = str(dlowerNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._dlower.copy()
 
@@ -607,7 +602,7 @@ class TCVLIUQETree(EFITTree):
                 rmagNode = self._MDSTree.getNode(self._root+'::r_axis')
                 self._rmag = rmagNode.data()
                 self._defaultUnits['_rmag'] = str(rmagNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rmag'], length_unit)
         return unit_factor * self._rmag.copy()
@@ -627,7 +622,7 @@ class TCVLIUQETree(EFITTree):
                 zmagNode = self._MDSTree.getNode(self._root+'::z_axis')
                 self._zmag = zmagNode.data()
                 self._defaultUnits['_zmag'] = str(zmagNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zmag'], length_unit)
         return unit_factor * self._zmag.copy()
@@ -651,7 +646,7 @@ class TCVLIUQETree(EFITTree):
                 areaLCFSNode = self._MDSTree.getNode(self._root+'::area')
                 self._areaLCFS = areaLCFSNode.data()
                 self._defaultUnits['_areaLCFS'] = str(areaLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # Units should be cm^2:
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_areaLCFS'], length_unit)
@@ -678,7 +673,7 @@ class TCVLIUQETree(EFITTree):
                 _dummy = self.getRmidPsi()
                 self._aLCFS = _dummy[:, _dummy.shape[1] - 1]
                 self._defaultUnits['_aLCFS']='m'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_aLCFS'], length_unit)
         return unit_factor * self._aLCFS.copy()
@@ -706,7 +701,7 @@ class TCVLIUQETree(EFITTree):
                 # The units aren't properly stored in the tree for this one!
                 # Should be meters.
                 self._defaultUnits['_RmidLCFS'] = 'm'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidLCFS'], length_unit)
         return unit_factor * self._RmidLCFS.copy()
@@ -726,7 +721,7 @@ class TCVLIUQETree(EFITTree):
                 qpsiNode = self._MDSTree.getNode(self._root+'::q_psi')
                 self._qpsi = qpsiNode.data()
                 self._defaultUnits['_qpsi'] = str(qpsiNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._qpsi.copy()
 
@@ -745,7 +740,7 @@ class TCVLIUQETree(EFITTree):
                 q0Node = self._MDSTree.getNode(self._root+'::q_zero')
                 self._q0 = q0Node.data()
                 self._defaultUnits['_q0'] = str(q0Node.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._q0.copy()
 
@@ -764,7 +759,7 @@ class TCVLIUQETree(EFITTree):
                 q95Node = self._MDSTree.getNode(self._root+'::q_95')
                 self._q95 = q95Node.data()
                 self._defaultUnits['_q95'] = str(q95Node.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._q95.copy()
 
@@ -783,7 +778,7 @@ class TCVLIUQETree(EFITTree):
                 qLCFSNode = self._MDSTree.getNode(self._root+'::q_edge')
                 self._qLCFS = qLCFSNode.data()
                 self._defaultUnits['_qLCFS'] = str(qLCFSNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._qLCFS.copy()
     
@@ -812,7 +807,7 @@ class TCVLIUQETree(EFITTree):
                 # we need to interpolate on the time basis of LIUQE
                 self._btaxv = scipy.interp(self.getTimeBase(), btTime, bt)
                 self._defaultUnits['_btaxv'] = 'T'
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._btaxv.copy()
 
@@ -832,7 +827,7 @@ class TCVLIUQETree(EFITTree):
         #         btaxpNode = self._MDSTree.getNode(self._root+self._afile+':btaxp')
         #         self._btaxp = btaxpNode.data()
         #         self._defaultUnits['_btaxp'] = str(btaxpNode.units)
-        #     except (TreeException,AttributeError):
+        #     except:
         #         raise ValueError('data retrieval failed.')
         # return self._btaxp.copy()
         
@@ -851,7 +846,7 @@ class TCVLIUQETree(EFITTree):
                 IpCalcNode = self._MDSTree.getNode(self._root + '::i_p')
                 self._IpCalc = IpCalcNode.data()
                 self._defaultUnits['_IpCalc'] = str(IpCalcNode.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._IpCalc.copy()
         
@@ -874,7 +869,7 @@ class TCVLIUQETree(EFITTree):
                 conn.closeTree(self._tree, self._shot)
                 self._IpMeas = scipy.interp(self.getTimeBase(), ipTime, ip)
                 self._defaultUnits['_IpMeas'] = 'A'
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._IpMeas.copy()
 
@@ -893,7 +888,7 @@ class TCVLIUQETree(EFITTree):
                 betatNode = self._MDSTree.getNode(self._root+'::beta_tor')
                 self._betat = betatNode.data()
                 self._defaultUnits['_betat'] = str(betatNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._betat.copy()
 
@@ -912,7 +907,7 @@ class TCVLIUQETree(EFITTree):
                 betapNode = self._MDSTree.getNode(self._root+'::beta_pol')
                 self._betap = betapNode.data()
                 self._defaultUnits['_betap'] = str(betapNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._betap.copy()
     
@@ -932,7 +927,7 @@ class TCVLIUQETree(EFITTree):
                 LiNode = self._MDSTree.getNode(self._root+'::l_i')
                 self._Li = LiNode.data()
                 self._defaultUnits['_Li'] = str(LiNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._Li.copy()
     
@@ -951,7 +946,7 @@ class TCVLIUQETree(EFITTree):
                 WDiamagNode = self._MDSTree.getNode(self._root+'::total_energy')
                 self._WDiamag = WDiamagNode.data()
                 self._defaultUnits['_WDiamag'] = str(WDiamagNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._WDiamag.copy()
 
@@ -970,7 +965,7 @@ class TCVLIUQETree(EFITTree):
                 tauMHDNode = self._MDSTree.getNode(self._root+'::tau_e')
                 self._tauMHD = tauMHDNode.data()
                 self._defaultUnits['_tauMHD'] = str(tauMHDNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._tauMHD.copy()
 
@@ -992,7 +987,7 @@ class TCVLIUQETree(EFITTree):
         try:
             self._Rlimiter = MDSplus.Data.execute('static("r_t")').getValue().data()
             self._Zlimiter = MDSplus.Data.execute('static("z_t")').getValue().data()
-        except MDSplus._treeshr.TreeException:
+        except:
             raise ValueError('data load failed.')
 
         return (self._Rlimiter,self._Zlimiter)
@@ -1015,7 +1010,7 @@ class TCVLIUQETree(EFITTree):
             Rv_out = MDSplus.Data.execute('static("r_v:out")').getValue().data()
             Zv_in = MDSplus.Data.execute('static("z_v:in")').getValue().data()
             Zv_out = MDSplus.Data.execute('static("z_v:out")').getValue().data()
-        except MDSplus._treeshr.TreeException:
+        except:
             raise ValueError('data load failed.')
 
         # this is for the vessel

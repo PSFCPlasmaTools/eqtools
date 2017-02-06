@@ -29,11 +29,6 @@ import warnings
 
 try:
     import MDSplus
-    try: 
-        from MDSplus._treeshr import TreeException
-    except: 
-        from MDSplus.mdsExceptions.treeshrExceptions import TreeException
-
     _has_MDS = True
 except Exception as _e_MDS:
     if isinstance(_e_MDS, ImportError):
@@ -138,7 +133,7 @@ class CModEFITTree(EFITTree):
                     self._defaultUnits['_fluxVol'] = str(fluxVolNode.units)
                 else:
                     self._defaultUnits['_fluxVol'] = 'm^3'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # Default units are m^3, but aren't stored in the tree!
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
@@ -167,7 +162,7 @@ class CModEFITTree(EFITTree):
                     self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
         return unit_factor * self._RmidPsi.copy()
@@ -187,7 +182,7 @@ class CModEFITTree(EFITTree):
                 fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
                 self._fpol = fNode.data().T
                 self._defaultUnits['_fpol'] = str(fNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._fpol.copy()
     
@@ -205,7 +200,7 @@ class CModEFITTree(EFITTree):
                 fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
                 self._fluxPres = fluxPresNode.data().T
                 self._defaultUnits['_fluxPres'] = str(fluxPresNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
 
@@ -223,7 +218,7 @@ class CModEFITTree(EFITTree):
                 FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
                 self._ffprim = FFPrimeNode.data().T
                 self._defaultUnits['_ffprim'] = str(FFPrimeNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._ffprim.copy()
 
@@ -242,7 +237,7 @@ class CModEFITTree(EFITTree):
                 pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
                 self._pprime = pPrimeNode.data().T
                 self._defaultUnits['_pprime'] = str(pPrimeNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._pprime.copy()
 
@@ -260,7 +255,7 @@ class CModEFITTree(EFITTree):
                 qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
                 self._qpsi = qpsiNode.data().T
                 self._defaultUnits['_qpsi'] = str(qpsiNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._qpsi.copy()
 
@@ -278,7 +273,7 @@ class CModEFITTree(EFITTree):
                 RLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':rbbbs')
                 self._RLCFS = RLCFSNode.data().T
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
         return unit_factor * self._RLCFS.copy()
@@ -297,7 +292,7 @@ class CModEFITTree(EFITTree):
                 ZLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':zbbbs')
                 self._ZLCFS = ZLCFSNode.data().T
                 self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
         return unit_factor * self._ZLCFS.copy()
@@ -324,7 +319,7 @@ class CModEFITTree(EFITTree):
             yvctr = ccT.getNode(path+'YTILE').data()
             nvctr = ccT.getNode(path+'NSEG').data()
             lvctr = ccT.getNode(path+'PTS_PER_SEG').data()
-        except MDSplus._treeshr.TreeException:
+        except:
             raise ValueError('data load failed.')
 
         #xvctr, yvctr stored as [nvctr,npts] ndarray.  Each of [nvctr] rows
@@ -363,7 +358,7 @@ class CModEFITTree(EFITTree):
                 RCentrNode = self._MDSTree.getNode(self._root+self._afile+':RCENCM')
                 self._RCentr = RCentrNode.data()
                 self._defaultUnits['_RCentr'] = str(RCentrNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')        
     
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RCentr'], length_unit)

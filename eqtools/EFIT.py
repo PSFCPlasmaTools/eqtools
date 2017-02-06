@@ -29,11 +29,6 @@ import warnings
 
 try:
     import MDSplus
-    try: 
-        from MDSplus._treeshr import TreeException
-    except: 
-        from MDSplus.mdsExceptions.treeshrExceptions import TreeException
-
     _has_MDS = True
 except Exception as _e_MDS:
     if isinstance(_e_MDS, ImportError):
@@ -303,7 +298,7 @@ class EFITTree(Equilibrium):
                 timeNode = self._MDSTree.getNode(self._root+self._afile+':time')
                 self._time = timeNode.data()
                 self._defaultUnits['_time'] = str(timeNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._time.copy()
 
@@ -329,7 +324,7 @@ class EFITTree(Equilibrium):
                 self._defaultUnits['_psiRZ'] = str(psinode.units)
                 self._defaultUnits['_rGrid'] = str(psinode.dim_of(0).units)
                 self._defaultUnits['_zGrid'] = str(psinode.dim_of(1).units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._psiRZ.copy()
 
@@ -381,7 +376,7 @@ class EFITTree(Equilibrium):
                 psiAxisNode = self._MDSTree.getNode(self._root+self._afile+':simagx')
                 self._psiAxis = psiAxisNode.data()
                 self._defaultUnits['_psiAxis'] = str(psiAxisNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._psiAxis.copy()
 
@@ -399,7 +394,7 @@ class EFITTree(Equilibrium):
                 psiLCFSNode = self._MDSTree.getNode(self._root+self._afile+':sibdry')
                 self._psiLCFS = psiLCFSNode.data()
                 self._defaultUnits['_psiLCFS'] = str(psiLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._psiLCFS.copy()
 
@@ -425,7 +420,7 @@ class EFITTree(Equilibrium):
                     self._defaultUnits['_fluxVol'] = str(fluxVolNode.units)
                 else:
                     self._defaultUnits['_fluxVol'] = 'm^3'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # Default units are m^3, but aren't stored in the tree!
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
@@ -449,7 +444,7 @@ class EFITTree(Equilibrium):
                 volLCFSNode = self._MDSTree.getNode(self._root+self._afile+':vout')
                 self._volLCFS = volLCFSNode.data()
                 self._defaultUnits['_volLCFS'] = str(volLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # Default units should be 'cm^3':
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
@@ -478,7 +473,7 @@ class EFITTree(Equilibrium):
                     self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
         return unit_factor * self._RmidPsi.copy()
@@ -497,7 +492,7 @@ class EFITTree(Equilibrium):
                 RLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':rbbbs')
                 self._RLCFS = RLCFSNode.data()
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
         return unit_factor * self._RLCFS.copy()
@@ -516,7 +511,7 @@ class EFITTree(Equilibrium):
                 ZLCFSNode = self._MDSTree.getNode(self._root+self._gfile+':zbbbs')
                 self._ZLCFS = ZLCFSNode.data()
                 self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
         return unit_factor * self._ZLCFS.copy()
@@ -629,7 +624,7 @@ class EFITTree(Equilibrium):
                 fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
                 self._fpol = fNode.data()
                 self._defaultUnits['_fpol'] = str(fNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._fpol.copy()
 
@@ -647,7 +642,7 @@ class EFITTree(Equilibrium):
                 fluxPresNode = self._MDSTree.getNode(self._root+self._gfile+':pres')
                 self._fluxPres = fluxPresNode.data()
                 self._defaultUnits['_fluxPres'] = str(fluxPresNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
 
@@ -665,7 +660,7 @@ class EFITTree(Equilibrium):
                 FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':ffprim')
                 self._ffprim = FFPrimeNode.data()
                 self._defaultUnits['_ffprim'] = str(FFPrimeNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._ffprim.copy()
 
@@ -684,7 +679,7 @@ class EFITTree(Equilibrium):
                 pPrimeNode = self._MDSTree.getNode(self._root+self._gfile+':pprime')
                 self._pprime = pPrimeNode.data()
                 self._defaultUnits['_pprime'] = str(pPrimeNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._pprime.copy()
 
@@ -702,7 +697,7 @@ class EFITTree(Equilibrium):
                 kappaNode = self._MDSTree.getNode(self._root+self._afile+':eout')
                 self._kappa = kappaNode.data()
                 self._defaultUnits['_kappa'] = str(kappaNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._kappa.copy()
 
@@ -720,7 +715,7 @@ class EFITTree(Equilibrium):
                 dupperNode = self._MDSTree.getNode(self._root+self._afile+':doutu')
                 self._dupper = dupperNode.data()
                 self._defaultUnits['_dupper'] = str(dupperNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._dupper.copy()
 
@@ -738,7 +733,7 @@ class EFITTree(Equilibrium):
                 dlowerNode = self._MDSTree.getNode(self._root+self._afile+':doutl')
                 self._dlower = dlowerNode.data()
                 self._defaultUnits['_dlower']  = str(dlowerNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._dlower.copy()
 
@@ -774,7 +769,7 @@ class EFITTree(Equilibrium):
                 rmagNode = self._MDSTree.getNode(self._root+self._afile+':rmagx')
                 self._rmag = rmagNode.data()
                 self._defaultUnits['_rmag'] = str(rmagNode.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rmag'], length_unit)
         return unit_factor * self._rmag.copy()
@@ -793,7 +788,7 @@ class EFITTree(Equilibrium):
                 zmagNode = self._MDSTree.getNode(self._root+self._afile+':zmagx')
                 self._zmag = zmagNode.data()
                 self._defaultUnits['_zmag'] = str(zmagNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zmag'], length_unit)
         return unit_factor * self._zmag.copy()
@@ -816,7 +811,7 @@ class EFITTree(Equilibrium):
                 areaLCFSNode = self._MDSTree.getNode(self._root+self._afile+':areao')
                 self._areaLCFS = areaLCFSNode.data()
                 self._defaultUnits['_areaLCFS'] = str(areaLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         # Units should be cm^2:
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_areaLCFS'], length_unit)
@@ -840,7 +835,7 @@ class EFITTree(Equilibrium):
                 aLCFSNode = self._MDSTree.getNode(self._root+self._afile+':aout')
                 self._aLCFS = aLCFSNode.data()
                 self._defaultUnits['_aLCFS'] = str(aLCFSNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_aLCFS'], length_unit)
         return unit_factor * self._aLCFS.copy()
@@ -868,7 +863,7 @@ class EFITTree(Equilibrium):
                     self._defaultUnits['_RmidLCFS'] = str(RmidLCFSNode.units)
                 else:
                     self._defaultUnits['_RmidLCFS'] = 'm'
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidLCFS'], length_unit)
         return unit_factor * self._RmidLCFS.copy()
@@ -907,7 +902,7 @@ class EFITTree(Equilibrium):
                 qpsiNode = self._MDSTree.getNode(self._root+self._gfile+':qpsi')
                 self._qpsi = qpsiNode.data()
                 self._defaultUnits['_qpsi'] = str(qpsiNode.units)
-            except TreeException:
+            except:
                 raise ValueError('data retrieval failed.')
         return self._qpsi.copy()
 
@@ -925,7 +920,7 @@ class EFITTree(Equilibrium):
                 q0Node = self._MDSTree.getNode(self._root+self._afile+':qqmagx')
                 self._q0 = q0Node.data()
                 self._defaultUnits['_q0'] = str(q0Node.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._q0.copy()
 
@@ -943,7 +938,7 @@ class EFITTree(Equilibrium):
                 q95Node = self._MDSTree.getNode(self._root+self._afile+':qpsib')
                 self._q95 = q95Node.data()
                 self._defaultUnits['_q95'] = str(q95Node.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._q95.copy()
 
@@ -961,7 +956,7 @@ class EFITTree(Equilibrium):
                 qLCFSNode = self._MDSTree.getNode(self._root+self._afile+':qout')
                 self._qLCFS = qLCFSNode.data()
                 self._defaultUnits['_qLCFS'] = str(qLCFSNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._qLCFS.copy()
 
@@ -983,7 +978,7 @@ class EFITTree(Equilibrium):
                 rq1Node = self._MDSTree.getNode(self._root+self._afile+':aaq1')
                 self._rq1 = rq1Node.data()
                 self._defaultUnits['_rq1'] = str(rq1Node.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rq1'], length_unit)
         return unit_factor * self._rq1.copy()
@@ -1006,7 +1001,7 @@ class EFITTree(Equilibrium):
                 rq2Node = self._MDSTree.getNode(self._root+self._afile+':aaq2')
                 self._rq2 = rq2Node.data()
                 self._defaultUnits['_rq2'] = str(rq2Node.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rq2'], length_unit)
         return unit_factor * self._rq2.copy()
@@ -1029,7 +1024,7 @@ class EFITTree(Equilibrium):
                 rq3Node = self._MDSTree.getNode(self._root+self._afile+':aaq3')
                 self._rq3 = rq3Node.data()
                 self._defaultUnits['_rq3'] = str(rq3Node.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rq3'], length_unit)
         return unit_factor * self._rq3.copy()
@@ -1069,7 +1064,7 @@ class EFITTree(Equilibrium):
                 btaxvNode = self._MDSTree.getNode(self._root+self._afile+':btaxv')
                 self._btaxv = btaxvNode.data()
                 self._defaultUnits['_btaxv'] = str(btaxvNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._btaxv.copy()
 
@@ -1087,7 +1082,7 @@ class EFITTree(Equilibrium):
                 btaxpNode = self._MDSTree.getNode(self._root+self._afile+':btaxp')
                 self._btaxp = btaxpNode.data()
                 self._defaultUnits['_btaxp'] = str(btaxpNode.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._btaxp.copy()
 
@@ -1105,7 +1100,7 @@ class EFITTree(Equilibrium):
                 bpolavNode = self._MDSTree.getNode(self._root+self._afile+':bpolav')
                 self._bpolav = bpolavNode.data()
                 self._defaultUnits['_bpolav'] = str(bpolavNode.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._bpolav.copy()
 
@@ -1141,7 +1136,7 @@ class EFITTree(Equilibrium):
                 IpCalcNode = self._MDSTree.getNode(self._root+self._afile+':cpasma')
                 self._IpCalc = IpCalcNode.data()
                 self._defaultUnits['_IpCalc'] = str(IpCalcNode.units)
-            except (TreeException,AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._IpCalc.copy()
 
@@ -1159,7 +1154,7 @@ class EFITTree(Equilibrium):
                 IpMeasNode = self._MDSTree.getNode(self._root+self._afile+':pasmat')
                 self._IpMeas = IpMeasNode.data()
                 self._defaultUnits['_IpMeas'] = str(IpMeasNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._IpMeas.copy()
 
@@ -1179,7 +1174,7 @@ class EFITTree(Equilibrium):
                 # Units come in as 'a': am I missing something about the
                 # definition of this quantity?
                 self._defaultUnits['_Jp'] = str(JpNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._Jp.copy()
 
@@ -1197,7 +1192,7 @@ class EFITTree(Equilibrium):
                 betatNode = self._MDSTree.getNode(self._root+self._afile+':betat')
                 self._betat = betatNode.data()
                 self._defaultUnits['_betat'] = str(betatNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._betat.copy()
 
@@ -1215,7 +1210,7 @@ class EFITTree(Equilibrium):
                 betapNode = self._MDSTree.getNode(self._root+self._afile+':betap')
                 self._betap = betapNode.data()
                 self._defaultUnits['_betap'] = str(betapNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._betap.copy()
 
@@ -1233,7 +1228,7 @@ class EFITTree(Equilibrium):
                 LiNode = self._MDSTree.getNode(self._root+self._afile+':ali')
                 self._Li = LiNode.data()
                 self._defaultUnits['_Li'] = str(LiNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._Li.copy()
 
@@ -1269,7 +1264,7 @@ class EFITTree(Equilibrium):
                 diamagNode = self._MDSTree.getNode(self._root+self._afile+':diamag')
                 self._diamag = diamagNode.data()
                 self._defaultUnits['_diamag'] = str(diamagNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._diamag.copy()
 
@@ -1287,7 +1282,7 @@ class EFITTree(Equilibrium):
                 betatdNode = self._MDSTree.getNode(self._root+self._afile+':betatd')
                 self._betatd = betatdNode.data()
                 self._defaultUnits['_betatd'] = str(betatdNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._betatd.copy()
 
@@ -1305,7 +1300,7 @@ class EFITTree(Equilibrium):
                 betapdNode = self._MDSTree.getNode(self._root+self._afile+':betapd')
                 self._betapd = betapdNode.data()
                 self._defaultUnits['_betapd'] = str(betapdNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._betapd.copy()
 
@@ -1323,7 +1318,7 @@ class EFITTree(Equilibrium):
                 tauDiamagNode = self._MDSTree.getNode(self._root+self._afile+':taudia')
                 self._tauDiamag = tauDiamagNode.data()
                 self._defaultUnits['_tauDiamag'] = str(tauDiamagNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._tauDiamag.copy()
 
@@ -1341,7 +1336,7 @@ class EFITTree(Equilibrium):
                 WDiamagNode = self._MDSTree.getNode(self._root+self._afile+':wplasmd')
                 self._WDiamag = WDiamagNode.data()
                 self._defaultUnits['_WDiamag'] = str(WDiamagNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._WDiamag.copy()
 
@@ -1380,7 +1375,7 @@ class EFITTree(Equilibrium):
                 WMHDNode = self._MDSTree.getNode(self._root+self._afile+':wplasm')
                 self._WMHD = WMHDNode.data()
                 self._defaultUnits['_WMHD'] = str(WMHDNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._WMHD.copy()
 
@@ -1398,7 +1393,7 @@ class EFITTree(Equilibrium):
                 tauMHDNode = self._MDSTree.getNode(self._root+self._afile+':taumhd')
                 self._tauMHD = tauMHDNode.data()
                 self._defaultUnits['_tauMHD'] = str(tauMHDNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._tauMHD.copy()
 
@@ -1416,7 +1411,7 @@ class EFITTree(Equilibrium):
                 PinjNode = self._MDSTree.getNode(self._root+self._afile+':pbinj')
                 self._Pinj = PinjNode.data()
                 self._defaultUnits['_Pinj'] = str(PinjNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._Pinj.copy()
 
@@ -1434,7 +1429,7 @@ class EFITTree(Equilibrium):
                 WbdotNode = self._MDSTree.getNode(self._root+self._afile+':wbdot')
                 self._Wbdot = WbdotNode.data()
                 self._defaultUnits['_Wbdot'] = str(WbdotNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._Wbdot.copy()
 
@@ -1452,7 +1447,7 @@ class EFITTree(Equilibrium):
                 WpdotNode = self._MDSTree.getNode(self._root+self._afile+':wpdot')
                 self._Wpdot = WpdotNode.data()
                 self._defaultUnits['_Wpdot'] = str(WpdotNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._Wpdot.copy()
 
@@ -1470,7 +1465,7 @@ class EFITTree(Equilibrium):
                 BCentrNode = self._MDSTree.getNode(self._root+self._gfile+':bcentr')
                 self._BCentr = BCentrNode.data()
                 self._defaultUnits['_BCentr'] = str(BCentrNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')
         return self._BCentr.copy()
 
@@ -1488,7 +1483,7 @@ class EFITTree(Equilibrium):
                 RCentrNode = self._MDSTree.getNode(self._root+self._gfile+':rcentr')
                 self._RCentr = RCentrNode.data()
                 self._defaultUnits['_RCentr'] = str(RCentrNode.units)
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError('data retrieval failed.')        
     
         unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RCentr'], length_unit)
@@ -1537,7 +1532,7 @@ class EFITTree(Equilibrium):
                     
                 self._Rlimiter = xlim[0:limitr]
                 self._Zlimiter = ylim[0:limitr]
-            except (TreeException, AttributeError):
+            except:
                 raise ValueError("data retrieval failed.")
         return (self._Rlimiter,self._Zlimiter)
 
@@ -1589,5 +1584,5 @@ class EFITTree(Equilibrium):
             return var
         except AttributeError:
             raise ValueError('invalid MDS tree.')
-        except TreeException:
+        except:
             raise ValueError('path '+EFITpath+' is not valid.')
