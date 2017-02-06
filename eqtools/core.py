@@ -50,11 +50,11 @@ try:
     import matplotlib.gridspec as mplgs
     import matplotlib.patches as mpatches
     import matplotlib.path as mpath
-    from .filewriter import gfile
     from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     from matplotlib.colorbar import ColorbarBase
     from matplotlib.colors import Normalize
+    from .filewriter import gfile
 except Exception:
     warnings.warn("matplotlib modules could not be loaded -- plotting and gfile"
                   " writing will not be available.",
