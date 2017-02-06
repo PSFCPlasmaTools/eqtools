@@ -24,8 +24,12 @@ import core
 import matplotlib.pyplot as plt
 try:
     import trispline
+    _has_trispline = True
 except ImportError:
-    pass
+    warnings.warn("trispline module could not be loaded -- tricubic spline "
+                  "interpolation will not be available.",
+                  ModuleWarning)
+    _has_trispline = False
 
 def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title='EQTOOLS', nbbbs=100):
     """Generates an EFIT gfile with gfile naming convention

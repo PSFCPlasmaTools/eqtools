@@ -24,7 +24,11 @@ contains an enhanced bivariate spline which generates bounds errors.
 
 import scipy 
 import scipy.interpolate
-import _tricub
+try:
+    import _tricub
+except:
+    # Won't be able to use actual trispline, but still can use other routines.
+    pass
 
 
 class Spline():
