@@ -22,7 +22,10 @@ import warnings
 import time
 import core
 import matplotlib.pyplot as plt
-import trispline
+try:
+    import trispline
+except ImportError:
+    pass
 
 def gfile(obj, tin, nw=None, nh=None, shot=None, name=None, tunit = 'ms', title='EQTOOLS', nbbbs=100):
     """Generates an EFIT gfile with gfile naming convention
