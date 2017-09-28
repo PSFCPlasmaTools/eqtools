@@ -663,7 +663,7 @@ class Equilibrium(object):
                     out_vals = scipy.reshape(out_vals, original_shape)
             elif each_t:
                 out_vals = scipy.zeros(
-                    scipy.concatenate(([len(time_idxs),], original_shape))
+                    scipy.concatenate(([len(time_idxs),], original_shape)).astype(int)
                 )
                 for idx, t_idx in enumerate(time_idxs):
                     out_vals[idx] = self._getFluxBiSpline(t_idx).ev(Z, R).reshape(original_shape)
@@ -1584,7 +1584,7 @@ class Equilibrium(object):
                     roa = roa.reshape(original_shape)
             elif each_t:
                 roa = scipy.zeros(
-                    scipy.concatenate(([len(time_idxs),], original_shape))
+                    scipy.concatenate(([len(time_idxs),], original_shape)).astype(int)
                 )
                 for idx, t_idx in enumerate(time_idxs):
                     roa[idx] = self._rmid2roa(R_mid, t_idx).reshape(original_shape)
@@ -2013,7 +2013,7 @@ class Equilibrium(object):
                                          "t must have only one dimension.")
                     R_mid = scipy.tile(
                         R_mid,
-                        scipy.concatenate(([len(t),], scipy.ones_like(scipy.shape(R_mid), dtype=float)))
+                        scipy.concatenate(([len(t),], scipy.ones_like(scipy.shape(R_mid), dtype=float))) #may need to be declared as ints
                     )
                     # TODO: Is there a clever way to do this without a loop?
                     Z_mid_temp = scipy.ones_like(R_mid, dtype=float)
@@ -2137,7 +2137,7 @@ class Equilibrium(object):
                     R_mid = R_mid.reshape(original_shape)
             elif each_t:
                 R_mid = scipy.zeros(
-                    scipy.concatenate(([len(time_idxs),], original_shape))
+                    scipy.concatenate(([len(time_idxs),], original_shape)).astype(int)
                 )
                 for idx, t_idx in enumerate(time_idxs):
                     R_mid[idx] = self._roa2rmid(roa, t_idx).reshape(original_shape)
@@ -6657,7 +6657,7 @@ class Equilibrium(object):
                     out_vals = scipy.reshape(out_vals, original_shape)
             elif each_t:
                 out_vals = scipy.zeros(
-                    scipy.concatenate(([len(time_idxs),], original_shape))
+                    scipy.concatenate(([len(time_idxs),], original_shape)).astype(int)
                 )
                 for idx, t_idx in enumerate(time_idxs):
                     out_vals[idx] = scipy.reshape(
@@ -6815,7 +6815,7 @@ class Equilibrium(object):
                     out_vals = scipy.reshape(out_vals, original_shape)
             elif each_t:
                 out_vals = scipy.zeros(
-                    scipy.concatenate(([len(time_idxs),], original_shape))
+                    scipy.concatenate(([len(time_idxs),], original_shape)).astype(int)
                 )
                 for idx, t_idx in enumerate(time_idxs):
                     out_vals[idx] = scipy.reshape(
@@ -8015,7 +8015,7 @@ class Equilibrium(object):
                         quan_norm = scipy.reshape(quan_norm, original_shape)
                 elif each_t:
                     quan_norm = scipy.zeros(
-                        scipy.concatenate(([len(time_idxs),], original_shape))
+                        scipy.concatenate(([len(time_idxs),], original_shape)).astype(int)
                     )
                     for idx, t_idx in enumerate(time_idxs):
                         if convert_roa:
@@ -8085,7 +8085,7 @@ class Equilibrium(object):
                         quan_norm = scipy.reshape(quan_norm, original_shape)
                 elif each_t:
                     quan_norm = scipy.zeros(
-                        scipy.concatenate(([len(time_idxs),], original_shape))
+                        scipy.concatenate(([len(time_idxs),], original_shape)).astype(int)
                     )
                     for idx, t_idx in enumerate(time_idxs):
                         tmp = spline_func(t_idx, k=k)(psi_norm[idx].reshape(-1))
