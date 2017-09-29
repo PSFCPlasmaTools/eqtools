@@ -155,10 +155,9 @@ int A_v2[64][64] = {
 { 8,-8,-8, 8,-8, 8, 8,-8, 4, 4,-4,-4,-4,-4, 4, 4, 4,-4, 4,-4,-4, 4,-4, 4, 4,-4,-4, 4, 4,-4,-4, 4, 2, 2, 2, 2,-2,-2,-2,-2, 2, 2,-2,-2, 2, 2,-2,-2, 2,-2, 2,-2, 2,-2, 2,-2, 1, 1, 1, 1, 1, 1, 1, 1}};
 
 int clip(int x, int a)
-{
+{ /* use of a set of ternary operators to bound a value x between 0 and a */
   return x > a - 1 ? a - 1 : (x < 0 ? 0 : x);
 }
-
 
 
 int ismonotonic(double val[], int ix)
@@ -457,7 +456,6 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
 {
   int i,iter = -1,loc;
   double fin[64],a[64], dx0gap, dx1gap, dx2gap;
-
   
   int* tempx0 = malloc(ix*sizeof(int));
   int* tempx1 = malloc(ix*sizeof(int));
@@ -467,12 +465,13 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
 
   /* solve for indexes */
   for(i=0;i<ix;i++)
-    {
-      tempx0[i] = clip((int)((double*) bsearch(&x0[i], fx0, ix0, sizeof(double), _bin_double) - &fx0[0]), ix0);
-      tempx1[i] = clip((int)((double*) bsearch(&x1[i], fx1, ix1, sizeof(double), _bin_double) - &fx1[0]), ix1);
-      tempx2[i] = clip((int)((double*) bsearch(&x2[i], fx2, ix2, sizeof(double), _bin_double) - &fx2[0]), ix2);
+    { /* I had to add a subtraction to the nitems of the bsearch to get the upper boundary to respond properly, which fixes the boundary
+	 error listed underneath*/
+      tempx0[i] = clip((int)((double*) bsearch(&x0[i], fx0, ix0-1, sizeof(double), _bin_double) - &fx0[0]), ix0);
+      tempx1[i] = clip((int)((double*) bsearch(&x1[i], fx1, ix1-1, sizeof(double), _bin_double) - &fx1[0]), ix1);
+      tempx2[i] = clip((int)((double*) bsearch(&x2[i], fx2, ix2-1, sizeof(double), _bin_double) - &fx2[0]), ix2);
       /* bounds checking required here, modify in* values, subtle boundary error here that I will need to come back to */
-
+     
       pos[i] = tempx0[i] + ix0*(tempx1[i] + ix1*tempx2[i]); 
     }
   int_argsort(indx, pos, ix);
