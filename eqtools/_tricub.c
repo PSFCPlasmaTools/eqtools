@@ -154,6 +154,8 @@ int A_v2[64][64] = {
 {-12,12,12,-12,12,-12,-12,12,-8,-4, 8, 4, 8, 4,-8,-4,-6, 6,-6, 6, 6,-6, 6,-6,-6, 6, 6,-6,-6, 6, 6,-6,-4,-2,-4,-2, 4, 2, 4, 2,-4,-2, 4, 2,-4,-2, 4, 2,-3, 3,-3, 3,-3, 3,-3, 3,-2,-1,-2,-1,-2,-1,-2,-1},
 { 8,-8,-8, 8,-8, 8, 8,-8, 4, 4,-4,-4,-4,-4, 4, 4, 4,-4, 4,-4,-4, 4,-4, 4, 4,-4,-4, 4, 4,-4,-4, 4, 2, 2, 2, 2,-2,-2,-2,-2, 2, 2,-2,-2, 2, 2,-2,-2, 2,-2, 2,-2, 2,-2, 2,-2, 1, 1, 1, 1, 1, 1, 1, 1}};
 
+double factorial[4] = {1.0,1.0,2.0,6.0}; /* value needed for derivatives, and a lookup table is the easiest/fastest method */
+
 int clip(int x, int a)
 { /* use of a set of ternary operators to bound a value x between 0 and a */
   return x > a - 1 ? a - 1 : (x < 0 ? 0 : x);
@@ -202,6 +204,31 @@ int ijk2n(int i, int j, int k)
   return(i+4*j+16*k);
 }
 
+double tricubic_eval_full(double a[64], double x, double y, double z, double multi, int dx, int dy, int dz)
+{
+  int i,j,k;
+  double ret=(double)(0.0);
+  double factx, facty, factz;
+  
+  /* TRICUBIC EVAL FULL
+     It is used to compute the value of the function or derivative at a given point (x,y,z).
+     The extra arguments, dx, dy, dz give the order of the derivative in that direction.
+     multi is the scaling multiplier needed so that the proper scaling can be applied.
+  */
+  
+  for (i=dx;i<4;i++)
+    { factx = factorial[i]/factorial[i-dx];
+      for (j=dy;j<4;j++) 
+	{ facty = factx*factorial[j]/factorial[j-dy];
+	  for (k=dz;k<4;k++) 
+	    { factz = facty*factorial[k]/factorial[k-dz];
+	      ret+=factz*multi*a[ijk2n(i, j, k)]*pow(x, i-dx)*pow(y, j-dy)*pow(z, k-dz); /* needs factorial inclusion */
+	    }
+	}
+    }
+  return(ret);
+}
+
 
 double tricubic_eval(double a[64], double x, double y, double z)
 {
@@ -218,7 +245,7 @@ double tricubic_eval(double a[64], double x, double y, double z)
 	{
 	  for (k=0;k<4;k++) 
 	    {
-	      ret+=a[ijk2n(i,j,k)]*pow(x,i)*pow(y,j)*pow(z,k);
+	      ret+=a[ijk2n(i, j, k)]*pow(x, i)*pow(y, j)*pow(z, k);
 	    }
 	}
     }
@@ -245,13 +272,13 @@ void int_argsort(int outvec[], int invec[], int len)
   int** temp = malloc(len * sizeof(int*));
   /* temp is constructed to reference invec, temp will
      be the modified order. outvec is the difference
-     from the start to provide indicies for other matricies*/
+     from the start to provide indices for other matricies*/
   for(i=0; i<len; i++)
     {
       temp[i] = &invec[i];
     }
 
-  qsort(temp,len,sizeof(int*),_compare_fun);
+  qsort(temp, len, sizeof(int*), _compare_fun);
   for(i=0; i<len; i++)
     {
       outvec[i] = (int)(temp[i] - &invec[0]);
@@ -285,7 +312,7 @@ void voxel(double fin[], double f[], int tempx0, int tempx1, int tempx2, int ix0
 void _nonreg_x_construct(double val[], double inmat[], int shape[])
 {
   int k,j,i,idx0,idx1,gap0,gap1;
-  gap0 = shape[0]-2;
+  gap0 = shape[0] - 2;
   gap1 = (shape[1]-2)*shape[0];
   idx0 = 0;
   idx1 = 0;
@@ -511,6 +538,72 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
 }
 
 
+void nonreg_ev_full(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix, int d0, int d1, int d2)
+{
+  int i,iter = -1,loc;
+  double fin[64],a[64], dx0gap, dx1gap, dx2gap, multi;
+  
+  
+  int* tempx0 = malloc(ix*sizeof(int));
+  int* tempx1 = malloc(ix*sizeof(int));
+  int* tempx2 = malloc(ix*sizeof(int));
+  int* pos = malloc(ix*sizeof(int));
+  int* indx = malloc(ix*sizeof(int));
+
+  /* solve for indexes */
+  for(i=0;i<ix;i++)
+    { /* I had to add a subtraction to the nitems of the bsearch to get the upper boundary to respond properly, which fixes the boundary
+	 error listed underneath*/
+      tempx0[i] = clip((int)((double*) bsearch(&x0[i], fx0, ix0-1, sizeof(double), _bin_double) - &fx0[0]), ix0);
+      tempx1[i] = clip((int)((double*) bsearch(&x1[i], fx1, ix1-1, sizeof(double), _bin_double) - &fx1[0]), ix1);
+      tempx2[i] = clip((int)((double*) bsearch(&x2[i], fx2, ix2-1, sizeof(double), _bin_double) - &fx2[0]), ix2);
+      /* bounds checking required here, modify in* values, subtle boundary error here that I will need to come back to */
+     
+      pos[i] = tempx0[i] + ix0*(tempx1[i] + ix1*tempx2[i]); 
+    }
+  int_argsort(indx, pos, ix);
+
+  for(i=0;i < ix; i++)
+    {
+      
+      /* generate matrix for input into interp, this
+       is the first attempt at trying to speed up the 
+      equation by forcing it more onto the C side*/
+      loc = indx[i];
+      if(iter != pos[loc])
+	{
+	  iter = pos[loc];
+	  voxel(fin, f, tempx0[loc], tempx1[loc], tempx2[loc], ix0, ix1, ix2);
+	  tricubic_get_coeff_stacked_nonreg(a, fin, &fx0[tempx0[loc]-1], &fx1[tempx1[loc]-1], &fx2[tempx2[loc]-1]);
+
+	  dx0gap = fx0[tempx0[loc]+1] - fx0[tempx0[loc]];
+	  dx1gap = fx1[tempx1[loc]+1] - fx1[tempx1[loc]];
+	  dx2gap = fx2[tempx2[loc]+1] - fx2[tempx2[loc]];
+	  multi = pow(pow(dx0gap, d0)*pow(dx1gap, d1)*pow(dx2gap, d2), -1);
+	}
+      
+      val[loc] = tricubic_eval_full(a,
+			       (x0[loc] - fx0[tempx0[loc]])/dx0gap,
+			       (x1[loc] - fx1[tempx1[loc]])/dx1gap,
+			       (x2[loc] - fx2[tempx2[loc]])/dx2gap,
+			       multi,
+			       d0,
+			       d1,
+			       d2);
+    }
+
+  /*generate pos and loc */
+
+  free(tempx0);
+  free(tempx1);
+  free(tempx2);
+  free(pos);
+  free(indx);
+
+}
+
+
+
 void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
 {
   int i, iter=-1, loc;
@@ -528,21 +621,21 @@ void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], dou
   dx1gap = fx1[1] - fx1[0];
   dx2gap = fx2[1] - fx2[0];
   
-  /*generate indicies*/
+  /*generate indices*/
   for(i=0;i<ix;i++)
     {
       temp = (x0[i] - fx0[0])/dx0gap;
-      dx0[i] = modf(temp,&tempx0[i]);
+      dx0[i] = modf(temp, &tempx0[i]);
       tempx0[i] = (double)clip((int)tempx0[i], ix0);
       dx0[i] = temp - tempx0[i];
       
       temp = (x1[i] - fx1[0])/dx1gap;
-      dx1[i] = modf(temp,&tempx1[i]);
+      dx1[i] = modf(temp, &tempx1[i]);
       tempx1[i] = (double)clip((int)tempx1[i], ix1);
       dx1[i] = temp - tempx1[i];
       
       temp = (x2[i] - fx2[0])/dx2gap;
-      dx2[i] = modf(temp,&tempx2[i]);
+      dx2[i] = modf(temp, &tempx2[i]);
       tempx2[i] = (double)clip((int)tempx2[i], ix2);
       dx2[i] = temp - tempx2[i];
 
@@ -566,7 +659,7 @@ void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], dou
 	  voxel(fin, f, (int)tempx0[i], (int)tempx1[i], (int)tempx2[i], ix0, ix1, ix2);
 	  tricubic_get_coeff_stacked(a,fin);
 	}
-      val[loc] = tricubic_eval(a,dx0[loc],dx1[loc],dx2[loc]);
+      val[loc] = tricubic_eval(a, dx0[loc], dx1[loc], dx2[loc]);
     }
  
   free(dx0);
@@ -578,6 +671,78 @@ void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], dou
   free(tempx1);
   free(tempx2);
 }
+
+
+void reg_ev_full(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix, int d0, int d1, int d2)
+{
+  int i, iter=-1, loc;
+  double dx0gap, dx1gap, dx2gap, temp, multi, a[64], fin[64];
+  double* dx0 = malloc(ix*sizeof(double));
+  double* dx1 = malloc(ix*sizeof(double));
+  double* dx2 = malloc(ix*sizeof(double));    
+  double* tempx0 = malloc(ix*sizeof(double));
+  double* tempx1 = malloc(ix*sizeof(double));
+  double* tempx2 = malloc(ix*sizeof(double));
+  int* pos = malloc(ix*sizeof(int));
+  int* indx = malloc(ix*sizeof(int));
+  
+  dx0gap = fx0[1] - fx0[0];
+  dx1gap = fx1[1] - fx1[0];
+  dx2gap = fx2[1] - fx2[0];
+  multi = pow(pow(dx0gap, d0)*pow(dx1gap, d1)*pow(dx2gap, d2), -1);
+
+  
+  /*generate indices*/
+  for(i=0;i<ix;i++)
+    {
+      temp = (x0[i] - fx0[0])/dx0gap;
+      dx0[i] = modf(temp, &tempx0[i]);
+      tempx0[i] = (double)clip((int)tempx0[i], ix0);
+      dx0[i] = temp - tempx0[i];
+      
+      temp = (x1[i] - fx1[0])/dx1gap;
+      dx1[i] = modf(temp, &tempx1[i]);
+      tempx1[i] = (double)clip((int)tempx1[i], ix1);
+      dx1[i] = temp - tempx1[i];
+      
+      temp = (x2[i] - fx2[0])/dx2gap;
+      dx2[i] = modf(temp, &tempx2[i]);
+      tempx2[i] = (double)clip((int)tempx2[i], ix2);
+      dx2[i] = temp - tempx2[i];
+
+      pos[i] = (int)tempx0[i] + ix0*((int)tempx1[i] + ix1*((int)tempx2[i]));
+      
+    }
+
+  // find the right order for the evaluation to try and save time
+  int_argsort(indx, pos, ix);
+
+  for(i=0;i < ix; i++)
+    {
+      
+      /* generate matrix for input into interp, this
+       is the first attempt at trying to speed up the 
+      equation by forcing it more onto the C side*/
+      loc = indx[i];
+      if(iter != pos[loc])
+	{
+	  iter = pos[loc];
+	  voxel(fin, f, (int)tempx0[i], (int)tempx1[i], (int)tempx2[i], ix0, ix1, ix2);
+	  tricubic_get_coeff_stacked(a,fin);
+	}
+      val[loc] = tricubic_eval_full(a, dx0[loc], dx1[loc], dx2[loc], multi, d0, d1, d2);
+    }
+ 
+  free(dx0);
+  free(dx1);
+  free(dx2);
+  free(pos);
+  free(indx);
+  free(tempx0);
+  free(tempx1);
+  free(tempx2);
+}
+
 
 
 void ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
