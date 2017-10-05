@@ -74,11 +74,11 @@ class Spline():
     
     """
     def __init__(self, x, y, z, f, boundary = 'natural', dx=0, dy=0, dz=0, bounds_error=True, fill_value=scipy.nan):
-        if dx != 0 or dy != 0 or dz != 0:
-            raise NotImplementedError(
-                "Trispline derivatives are not implemented, do not use tricubic "
-                "interpolation if you need to compute magnetic fields!"
-            )
+        #if dx != 0 or dy != 0 or dz != 0:
+        #    raise NotImplementedError(
+        #        "Trispline derivatives are not implemented, do not use tricubic "
+        #        "interpolation if you need to compute magnetic fields!"
+        #    )
 
         
         self._x = scipy.array(x,dtype=float)
