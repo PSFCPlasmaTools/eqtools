@@ -6802,7 +6802,7 @@ class Equilibrium(object):
         
         if self._tricubic:
             out_vals = scipy.reshape(
-                1.0 / R * self._getFluxTriSpline().ev(t, Z, R, dx=1, dy=0, dz=0),
+                1.0 / R * self._getFluxTriSpline().ev(t, Z, R, dx=0, dy=0, dz=1),
                 original_shape
             )
         else:
