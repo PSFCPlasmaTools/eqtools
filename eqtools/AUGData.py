@@ -1510,7 +1510,7 @@ class AUGDDData(Equilibrium):
                 
                 BR_mat = Eq_instance.rz2BR(R, Z, 0.2, make_grid=True)
         """
-        return super(AUGDDData, self).rz2BR(self, R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+        return super(AUGDDData, self).rz2BR(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
 
     def rz2BZ(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
         r"""Calculates the vertical component of the magnetic field at the given (R, Z, t) coordinates.
@@ -1618,7 +1618,7 @@ class AUGDDData(Equilibrium):
                 
                 BZ_mat = Eq_instance.rz2BZ(R, Z, 0.2, make_grid=True)
         """
-        return super(AUGDDData, self).rz2BZ(self, R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+        return super(AUGDDData, self).rz2BZ(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
     
     def rz2BT(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
         r"""Calculates the toroidal component of the magnetic field at the given (R, Z, t).
@@ -1730,7 +1730,7 @@ class AUGDDData(Equilibrium):
             
                 BT_mat = Eq_instance.rz2BT(R, Z, 0.2, make_grid=True)
         """
-        return super(AUGDDData, self).rz2BT(self, R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+        return super(AUGDDData, self).rz2BT(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
     
 
 class YGCAUGInterface(object):
