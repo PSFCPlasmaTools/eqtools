@@ -904,7 +904,10 @@ class AUGDDData(Equilibrium):
         if self._qpsi is None:
             try:
                 qpsiNode = self._MDSTree('Qpsi')
-                self._qpsi = qpsiNode.data[:self._timeidxend,:self._lpf]
+                self._qpsi = qpsiNode.data[:self._timeidxend,1:self._lpf][:,::-1]
+                # there has to be a better way for this, but it makes it work...
+                #the first value in the q is the edge value, and is supposed to be infinite
+                #which throws off the phi and q splines completely
                 self._defaultUnits['_qpsi'] = str(qpsiNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -1400,6 +1403,335 @@ class AUGDDData(Equilibrium):
             except KeyError:
                 raise ValueError('data retrieval failed.')
         return signal
+
+    def rz2BR(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
+        r"""Calculates the major radial component of the magnetic field at the given (R, Z, t) coordinates.
+        
+        Uses
+        
+        .. math::
+            
+            B_R = -\frac{1}{2 \pi R}\frac{\partial \psi}{\partial Z}
+        
+        Args:
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to radial field. If `R` and `Z` are both scalar values,
+                they are used as the coordinate pair for all of the values in
+                `t`. Must have the same shape as `Z` unless the `make_grid`
+                keyword is set. If the `make_grid` keyword is True, `R` must
+                have exactly one dimension.
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to radial field. If `R` and `Z` are both scalar values,
+                they are used as the coordinate pair for all of the values in
+                `t`. Must have the same shape as `R` unless the `make_grid`
+                keyword is set. If the `make_grid` keyword is True, `Z` must
+                have exactly one dimension.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `R`, `Z`. If the `each_t` keyword is True, then `t` must be
+                scalar or have exactly one dimension. If the `each_t` keyword is
+                False, `t` must have the same shape as `R` and `Z` (or their
+                meshgrid if `make_grid` is True).
+        
+        Keyword Args:
+            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `R` and
+                `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
+                EACH element in `t`).
+            make_grid (Boolean): Set to True to pass `R` and `Z` through
+                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                True, `R` and `Z` must each only have a single dimension, but
+                can have different lengths. Default is False (do not form
+                meshgrid).
+            length_unit (String or 1): Length unit that `R`, `Z` are given in.
+                If a string is given, it must be a valid unit specifier:
+                    
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (use meters).
+            return_t (Boolean): Set to True to return a tuple of (`BR`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `BR` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `BR`).
+        
+        Returns:
+            `BR` or (`BR`, `time_idxs`)
+        
+            * **BR** (`Array or scalar float`) - The major radial component of
+              the magnetic field. If all of the input arguments are scalar, then
+              a scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              and `Z` both have the same shape then `BR` has this shape as well,
+              unless the `make_grid` keyword was True, in which case `BR` has
+              shape (len(`Z`), len(`R`)).
+            * **time_idxs** (Array with same shape as `BR`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
+            
+            Find single BR value at R=0.6m, Z=0.0m, t=0.26s::
+                
+                BR_val = Eq_instance.rz2BR(0.6, 0, 0.26)
+            
+            Find BR values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+            single time t=0.26s. Note that the `Z` vector must be fully
+            specified, even if the values are all the same::
+                
+                BR_arr = Eq_instance.rz2BR([0.6, 0.8], [0, 0], 0.26)
+            
+            Find BR values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+                
+                BR_arr = Eq_instance.rz2BR(0.6, 0, [0.2, 0.3])
+            
+            Find BR values at (R, Z, t) points (0.6m, 0m, 0.2s) and
+            (0.5m, 0.2m, 0.3s)::
+                
+                BR_arr = Eq_instance.rz2BR([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
+            
+            Find BR values on grid defined by 1D vector of radial positions `R`
+            and 1D vector of vertical positions `Z` at time t=0.2s::
+                
+                BR_mat = Eq_instance.rz2BR(R, Z, 0.2, make_grid=True)
+        """
+        return super(AUGDDData, self).rz2BR(self, R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+
+    def rz2BZ(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
+         r"""Calculates the vertical component of the magnetic field at the given (R, Z, t) coordinates.
+        
+        Uses
+        
+        .. math::
+            
+            B_Z = \frac{1}{2 \pi R}\frac{\partial \psi}{\partial R}
+        
+        Args:
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to vertical field. If `R` and `Z` are both scalar values,
+                they are used as the coordinate pair for all of the values in
+                `t`. Must have the same shape as `Z` unless the `make_grid`
+                keyword is set. If the `make_grid` keyword is True, `R` must
+                have exactly one dimension.
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to vertical field. If `R` and `Z` are both scalar values,
+                they are used as the coordinate pair for all of the values in
+                `t`. Must have the same shape as `R` unless the `make_grid`
+                keyword is set. If the `make_grid` keyword is True, `Z` must
+                have exactly one dimension.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `R`, `Z`. If the `each_t` keyword is True, then `t` must be
+                scalar or have exactly one dimension. If the `each_t` keyword is
+                False, `t` must have the same shape as `R` and `Z` (or their
+                meshgrid if `make_grid` is True).
+        
+        Keyword Args:
+            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `R` and
+                `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
+                EACH element in `t`).
+            make_grid (Boolean): Set to True to pass `R` and `Z` through
+                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                True, `R` and `Z` must each only have a single dimension, but
+                can have different lengths. Default is False (do not form
+                meshgrid).
+            length_unit (String or 1): Length unit that `R`, `Z` are given in.
+                If a string is given, it must be a valid unit specifier:
+                    
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (use meters).
+            return_t (Boolean): Set to True to return a tuple of (`BZ`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `BZ` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `BZ`).
+        
+        Returns:
+            `BZ` or (`BZ`, `time_idxs`)
+            
+            * **BZ** (`Array or scalar float`) - The vertical component of the
+              magnetic field. If all of the input arguments are scalar, then a
+              scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              and `Z` both have the same shape then `BZ` has this shape as well,
+              unless the `make_grid` keyword was True, in which case `BZ` has
+              shape (len(`Z`), len(`R`)).
+            * **time_idxs** (Array with same shape as `BZ`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+        
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the appropriate
+            extension of the :py:class:`Equilibrium` abstract class.
+            
+            Find single BZ value at R=0.6m, Z=0.0m, t=0.26s::
+                
+                BZ_val = Eq_instance.rz2BZ(0.6, 0, 0.26)
+            
+            Find BZ values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+            single time t=0.26s. Note that the `Z` vector must be fully
+            specified, even if the values are all the same::
+                
+                BZ_arr = Eq_instance.rz2BZ([0.6, 0.8], [0, 0], 0.26)
+            
+            Find BZ values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+                
+                BZ_arr = Eq_instance.rz2BZ(0.6, 0, [0.2, 0.3])
+            
+            Find BZ values at (R, Z, t) points (0.6m, 0m, 0.2s) and
+            (0.5m, 0.2m, 0.3s)::
+                
+                BZ_arr = Eq_instance.rz2BZ([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
+            
+            Find BZ values on grid defined by 1D vector of radial positions `R`
+            and 1D vector of vertical positions `Z` at time t=0.2s::
+                
+                BZ_mat = Eq_instance.rz2BZ(R, Z, 0.2, make_grid=True)
+        """
+        return super(AUGDDData, self).rz2BZ(self, R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+    
+    def rz2BT(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
+        r"""Calculates the toroidal component of the magnetic field at the given (R, Z, t).
+        
+        Uses :math:`B_\phi = F / 2 \pi R`.
+        
+        By default, EFIT only computes this inside the LCFS. To approximate the
+        field outside of the LCFS, :math:`B_\phi \approx B_{t, vac} R_0 / R` is
+        used, where :math:`B_{t, vac}` is obtained with :py:meth:`getBtVac` and
+        :math:`R_0` is the major radius of the magnetic axis obtained from
+        :py:meth:`getMagR`.
+        
+        The coordinate system used is right-handed, such that "forward" field on
+        Alcator C-Mod (clockwise when seen from above) has negative BT.
+        
+        Args:
+            R (Array-like or scalar float): Values of the radial coordinate to
+                map to BT. If `R` and `Z` are both scalar values,
+                they are used as the coordinate pair for all of the values in
+                `t`. Must have the same shape as `Z` unless the `make_grid`
+                keyword is set. If the `make_grid` keyword is True, `R` must
+                have exactly one dimension.
+            Z (Array-like or scalar float): Values of the vertical coordinate to
+                map to BT. If `R` and `Z` are both scalar values,
+                they are used as the coordinate pair for all of the values in
+                `t`. Must have the same shape as `R` unless the `make_grid`
+                keyword is set. If the `make_grid` keyword is True, `Z` must
+                have exactly one dimension.
+            t (Array-like or scalar float): Times to perform the conversion at.
+                If `t` is a single value, it is used for all of the elements of
+                `R`, `Z`. If the `each_t` keyword is True, then `t` must be
+                scalar or have exactly one dimension. If the `each_t` keyword is
+                False, `t` must have the same shape as `R` and `Z` (or their
+                meshgrid if `make_grid` is True).
+        
+        Keyword Args:
+            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
+                at each value in `t`. If True, `t` must have only one dimension
+                (or be a scalar). If False, `t` must match the shape of `R` and
+                `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
+                EACH element in `t`).
+            make_grid (Boolean): Set to True to pass `R` and `Z` through
+                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                True, `R` and `Z` must each only have a single dimension, but
+                can have different lengths. Default is False (do not form
+                meshgrid).
+            length_unit (String or 1): Length unit that `R`, `Z` are given in.
+                If a string is given, it must be a valid unit specifier:
+                
+                    ===========  ===========
+                    'm'          meters
+                    'cm'         centimeters
+                    'mm'         millimeters
+                    'in'         inches
+                    'ft'         feet
+                    'yd'         yards
+                    'smoot'      smoots
+                    'cubit'      cubits
+                    'hand'       hands
+                    'default'    meters
+                    ===========  ===========
+                
+                If length_unit is 1 or None, meters are assumed. The default
+                value is 1 (use meters).
+            return_t (Boolean): Set to True to return a tuple of (`BT`,
+                `time_idxs`), where `time_idxs` is the array of time indices
+                actually used in evaluating `BT` with nearest-neighbor
+                interpolation. (This is mostly present as an internal helper.)
+                Default is False (only return `BT`).
+        
+        Returns:
+            `BT` or (`BT`, `time_idxs`)
+            
+            * **BT** (`Array or scalar float`) - The toroidal magnetic field.
+              If all of the input arguments are scalar, then a scalar is
+              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              both have the same shape then `BT` has this shape as well,
+              unless the `make_grid` keyword was True, in which case `BT`
+              has shape (len(`Z`), len(`R`)).
+            * **time_idxs** (Array with same shape as `BT`) - The indices 
+              (in :py:meth:`self.getTimeBase`) that were used for
+              nearest-neighbor interpolation. Only returned if `return_t` is
+              True.
+       
+        Examples:
+            All assume that `Eq_instance` is a valid instance of the
+            appropriate extension of the :py:class:`Equilibrium` abstract class.
+            
+            Find single BT value at R=0.6m, Z=0.0m, t=0.26s::
+            
+                BT_val = Eq_instance.rz2BT(0.6, 0, 0.26)
+            
+            Find BT values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
+            single time t=0.26s. Note that the `Z` vector must be fully specified,
+            even if the values are all the same::
+            
+                BT_arr = Eq_instance.rz2BT([0.6, 0.8], [0, 0], 0.26)
+            
+            Find BT values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
+            
+                BT_arr = Eq_instance.rz2BT(0.6, 0, [0.2, 0.3])
+            
+            Find BT values at (R, Z, t) points (0.6m, 0m, 0.2s) and (0.5m, 0.2m, 0.3s)::
+            
+                BT_arr = Eq_instance.rz2BT([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
+            
+            Find BT values on grid defined by 1D vector of radial positions `R`
+            and 1D vector of vertical positions `Z` at time t=0.2s::
+            
+                BT_mat = Eq_instance.rz2BT(R, Z, 0.2, make_grid=True)
+        """
+        return super(AUGDDData, self).rz2BT(self, R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+    
 
 class YGCAUGInterface(object):
 
