@@ -1513,7 +1513,7 @@ class AUGDDData(Equilibrium):
         return super(AUGDDData, self).rz2BR(self, R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
 
     def rz2BZ(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
-         r"""Calculates the vertical component of the magnetic field at the given (R, Z, t) coordinates.
+        r"""Calculates the vertical component of the magnetic field at the given (R, Z, t) coordinates.
         
         Uses
         
