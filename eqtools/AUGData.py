@@ -1008,7 +1008,8 @@ class AUGDDData(Equilibrium):
             try:
                 btaxvNode = self._MDSTree('Bave')
                 #technically Bave is the average over the volume, but for the core its a singular value
-                self._btaxv = btaxvNode.data[:self._timeidxend,scipy.sum(btaxvNode.data,0) != 0][:,-1] 
+                self._btaxv = btaxvNode.data[:self._timeidxend,scipy.sum(btaxvNode.data,0) != 0][:,-1]
+                self._btaxv *= scipy.sign(self.getBCentr())
                 self._defaultUnits['_btaxv'] = str(btaxvNode.unit)
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
