@@ -6978,7 +6978,7 @@ class Equilibrium(object):
             if self._tricubic:
                 B_T = B_T.ravel()
                 mask = scipy.isnan(B_T)
-                B_T[mask] = self.getBtVacSpline()(t) * self.getMagRSpline()(t) / R[mask]
+                B_T[mask] = self.getBtVacSpline()(t[mask]) * self.getMagRSpline()(t[mask]) / R[mask]
                 B_T = scipy.reshape(B_T, original_shape)
             else:
                 if single_time:
