@@ -1730,7 +1730,7 @@ class AUGDDData(Equilibrium):
             
                 BT_mat = Eq_instance.rz2BT(R, Z, 0.2, make_grid=True)
         """
-        return super(AUGDDData, self).rz2BT(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+        return super(AUGDDData, self).rz2BT(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)
     
 
 class YGCAUGInterface(object):
