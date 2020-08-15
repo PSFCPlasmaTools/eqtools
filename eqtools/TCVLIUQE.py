@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides classes inheriting :py:class:`eqtools.EFIT.EFITTree` for 
+"""This module provides classes inheriting :py:class:`eqtools.EFIT.EFITTree` for
 working with TCV LIUQE Equilibrium.
 """
 
@@ -62,10 +62,11 @@ except Exception:
 # see also http://stackoverflow.com/questions/18304722/python-find-contour-lines-from-matplotlib-pyplot-contour
 # for how to compute the contours without calling matplotlib contours
 
+
 def greenArea(vs):
     a = 0
-    x0,y0 = vs[0]
-    for [x1,y1] in vs[1:]:
+    x0, y0 = vs[0]
+    for [x1, y1] in vs[1:]:
         dx = x1-x0
         dy = y1-y0
         a += 0.5*(y0*dx - x0*dy)
@@ -82,21 +83,21 @@ class TCVLIUQETree(EFITTree):
     variables is recovered with a corresponding getter method. Essential data
     for LIUQUE mapping are pulled on initialization (e.g. psirz grid). Additional
     data are pulled at the first request and stored for subsequent usage.
-    
+
     Intializes TCV version of EFITTree object.  Pulls data from MDS tree for
-    storage in instance attributes.  Core attributes are populated from the MDS 
-    tree on initialization.  Additional attributes are initialized as None, 
+    storage in instance attributes.  Core attributes are populated from the MDS
+    tree on initialization.  Additional attributes are initialized as None,
     filled on the first request to the object.
 
     Args:
         shot (integer): TCV shot index.
-    
+
     Keyword Args:
         tree (string): Optional input for LIUQE tree, defaults to 'RESULTS'
             (i.e., LIUQE data are under \\results::).
         length_unit (string): Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
-                
+
                 ===========  ===========================================================================================
                 'm'          meters
                 'cm'         centimeters
@@ -109,13 +110,13 @@ class TCVLIUQETree(EFITTree):
                 'hand'       hands
                 'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
                 ===========  ===========================================================================================
-                
+
             Default is 'm' (all units taken and returned in meters).
-        gfile (string): Optional input for EFIT geqdsk location name, 
+        gfile (string): Optional input for EFIT geqdsk location name,
             defaults to 'g_eqdsk' (i.e., EFIT data are under
             \\tree::top.results.G_EQDSK)
         afile (string): Optional input for EFIT aeqdsk location name,
-            defaults to 'a_eqdsk' (i.e., EFIT data are under 
+            defaults to 'a_eqdsk' (i.e., EFIT data are under
             \\tree::top.results.A_EQDSK)
         tspline (Boolean): Sets whether or not interpolation in time is
             performed using a tricubic spline or nearest-neighbor
@@ -133,17 +134,19 @@ class TCVLIUQETree(EFITTree):
         # this is the root tree where all the LIUQE results are stored
         root = r'\results'
 
-        super(TCVLIUQETree, self).__init__(shot, tree, root, 
-                                           length_unit=length_unit, gfile=gfile, afile=afile, 
-                                           tspline=tspline, monotonic=monotonic)
+        super(TCVLIUQETree, self).__init__(
+            shot, tree, root,
+            length_unit=length_unit, gfile=gfile, afile=afile,
+            tspline=tspline, monotonic=monotonic
+        )
 
     # ---  1
     def getInfo(self):
         """returns namedtuple of shot information
-        
+
         Returns:
             namedtuple containing
-                
+
                 =====   ===============================
                 shot    TCV shot index (long)
                 tree    LIUQE tree (string)
@@ -158,10 +161,10 @@ class TCVLIUQETree(EFITTree):
             nz = len(self._zGrid)
         except TypeError:
             nt, nr, nz = 0, 0, 0
-            print 'tree has failed data load.'
+            print('tree has failed data load.')
 
-        data = namedtuple('Info',['shot','tree','nr','nz','nt'])
-        return data(shot=self._shot,tree=self._tree,nr=nr,nz=nz,nt=nt)
+        data = namedtuple('Info', ['shot', 'tree', 'nr', 'nz', 'nt'])
+        return data(shot=self._shot, tree=self._tree, nr=nr, nz=nz, nt=nt)
 
     # ---  2
     def getTimeBase(self):
@@ -218,10 +221,11 @@ class TCVLIUQETree(EFITTree):
         """
         if self._rGrid is None:
             raise ValueError('data retrieval failed.')
-        
+
         # Default units should be 'm'
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],
-                                                      length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_rGrid'], length_unit
+        )
         return unit_factor * self._rGrid.copy()
 
     # ---  5
@@ -236,12 +240,13 @@ class TCVLIUQETree(EFITTree):
         """
         if self._zGrid is None:
             raise ValueError('data retrieval failed.')
-        
+
         # Default units should be 'm'
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],
-                                                      length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_zGrid'], length_unit
+        )
         return unit_factor * self._zGrid.copy()
-    
+
     # ---  6
     def getFluxAxis(self):
         """returns psi on magnetic axis.
@@ -255,15 +260,15 @@ class TCVLIUQETree(EFITTree):
         if self._psiAxis is None:
             try:
                 psiAxisNode = self._MDSTree.getNode(self._root+'::psi_axis')
-                self._psiAxis =  psiAxisNode.data() / (2.*scipy.pi)
+                self._psiAxis = psiAxisNode.data() / (2.*scipy.pi)
                 self._defaultUnits['_psiAxis'] = str(psiAxisNode.units)
             except:
                 raise ValueError('data retrieval failed.')
         return self._psiAxis.copy()
-    
+
     # ---  7
     def getFluxLCFS(self):
-        """returns psi at separatrix. 
+        """returns psi at separatrix.
 
         Returns:
             psiLCFS (Array): [nt] array of psi at LCFS.
@@ -282,13 +287,12 @@ class TCVLIUQETree(EFITTree):
                 raise ValueError('data retrieval failed.')
         return self._psiLCFS.copy()
 
-    
     # ---  8
     def getFluxVol(self, length_unit=3):
         """returns volume within flux surface. This is not implemented in LIUQE
         as default output. So we use contour and GREEN theorem to get the area
         within a default grid of the PSI. Then we compute the volume by multipling
-        for 2pi * VolLCFS / AreaLCFS.  
+        for 2pi * VolLCFS / AreaLCFS.
 
         Keyword Args:
             length_unit (String or 3): unit for plasma volume.  Defaults to 3,
@@ -296,7 +300,7 @@ class TCVLIUQETree(EFITTree):
 
         Returns:
             fluxVol (Array): [nt,npsi] array of volume within flux surface.
-      
+
         Raises:
             ValueError: if module cannot retrieve data from MDS tree.
         """
@@ -324,7 +328,7 @@ class TCVLIUQETree(EFITTree):
                         nlist = c.trace(levels[j + 1])
                         segs = nlist[: len(nlist) // 2]
                         outArea[j + 1] = abs(greenArea(segs[0]))
-                    volumes[i,: ] = outArea *  rUsed[i]
+                    volumes[i, :] = outArea * rUsed[i]
                 # then the levels for the contours
                 self._fluxVol = volumes
                 # Units aren't properly stored in the tree for this one!
@@ -332,7 +336,9 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         # Default units are m^3, but aren't stored in the tree!
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_fluxVol'], length_unit
+        )
         return unit_factor * self._fluxVol.copy()
 
     # ---  9
@@ -340,7 +346,7 @@ class TCVLIUQETree(EFITTree):
         """returns volume within LCFS.
 
         Keyword Args:
-            length_unit (String or 3): unit for LCFS volume.  Defaults to 3, 
+            length_unit (String or 3): unit for LCFS volume.  Defaults to 3,
                 denoting default volumetric unit (typically m^3).
 
         Returns:
@@ -357,7 +363,9 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         # Default units should be 'cm^3':
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_volLCFS'], length_unit
+        )
         return unit_factor * self._volLCFS.copy()
 
     # ---  10
@@ -365,11 +373,11 @@ class TCVLIUQETree(EFITTree):
         """returns maximum major radius of each flux surface.
 
         Keyword Args:
-            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating 
+            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating
                 the default parameter unit (typically m).
 
         Returns:
-            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of 
+            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of
             flux surface psi.
 
         Raises:
@@ -386,7 +394,9 @@ class TCVLIUQETree(EFITTree):
                     self._defaultUnits['_RmidPsi'] = 'm'
             except:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidPsi'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_RmidPsi'], length_unit
+        )
         return unit_factor * self._RmidPsi.copy()
 
     # ---  11
@@ -406,7 +416,9 @@ class TCVLIUQETree(EFITTree):
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.units)
             except:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_RLCFS'], length_unit
+        )
         return unit_factor * self._RLCFS.copy()
 
     # ---  12
@@ -426,12 +438,14 @@ class TCVLIUQETree(EFITTree):
                 self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.units)
             except:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_ZLCFS'], length_unit
+        )
         return unit_factor * self._ZLCFS.copy()
 
     # ---  13
     def getF(self):
-        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov 
+        r"""returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov
         solutions. Not implemented on LIUQE
 
         Returns:
@@ -441,7 +455,7 @@ class TCVLIUQETree(EFITTree):
             ValueError: if module cannot retrieve data from MDS tree.
         """
         raise NotImplementedError()
-    
+
     # ---  14
     def getFluxPres(self):
         """returns pressure at flux surface. Not implemented. We have pressure
@@ -455,17 +469,21 @@ class TCVLIUQETree(EFITTree):
         """
         if self._fluxPres is None:
             try:
-                fluxPPresNode = self._MDSTree.getNode(self._root+'::ppr_coeffs')
+                fluxPPresNode = self._MDSTree.getNode(
+                    self._root+'::ppr_coeffs'
+                )
                 duData = fluxPPresNode.data()
-                # then we build an appropriate grid 
+                # then we build an appropriate grid
                 nPsi = self.getRmidPsi().shape[1]
-                psiV = scipy.linspace(1,0,nPsi)
+                psiV = scipy.linspace(1, 0, nPsi)
 
                 rad = [psiV]
                 for i in range(duData.shape[1]-1):
                     rad += [rad[-1]*psiV*(i+1)/(i+2)]
                 rad = scipy.vstack(rad)
-                self._fluxPres = scipy.reshape(self.getFluxAxis(),(self.getFluxAxis().size,1))*scipy.dot(duData,rad)/(2*scipy.pi)
+                self._fluxPres = scipy.reshape(
+                    self.getFluxAxis(), (self.getFluxAxis().size, 1)
+                ) * scipy.dot(duData, rad)/(2*scipy.pi)
 
                 self._defaultUnits['_fluxPres'] = 'Pa'
             except:
@@ -497,7 +515,7 @@ class TCVLIUQETree(EFITTree):
         """returns plasma pressure gradient as a function of psi.
 
         Returns:
-            pprime (Array): [nt,npsi] array of pressure gradient on flux surface 
+            pprime (Array): [nt,npsi] array of pressure gradient on flux surface
             psi from grad-shafranov solution.
 
         Raises:
@@ -510,10 +528,12 @@ class TCVLIUQETree(EFITTree):
         # But conventionally psi_edge on TCV = 0 -->  phi = psi / psi_axis
         if self._pprime is None:
             try:
-                fluxPPresNode = self._MDSTree.getNode(self._root+'::ppr_coeffs')
+                fluxPPresNode = self._MDSTree.getNode(
+                    self._root+'::ppr_coeffs'
+                )
                 duData = fluxPPresNode.data()
 
-                # then we build an appropriate grid 
+                # then we build an appropriate grid
                 nPsi = self.getRmidPsi().shape[1]
                 psiV = scipy.linspace(1, 0, nPsi)
 
@@ -567,7 +587,7 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         return self._dupper.copy()
-        
+
     # ---  19
     def getLowerTriangularity(self):
         """returns LCFS lower triangularity.
@@ -604,7 +624,9 @@ class TCVLIUQETree(EFITTree):
                 self._defaultUnits['_rmag'] = str(rmagNode.units)
             except:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rmag'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_rmag'], length_unit
+        )
         return unit_factor * self._rmag.copy()
 
     # ---  22
@@ -624,15 +646,17 @@ class TCVLIUQETree(EFITTree):
                 self._defaultUnits['_zmag'] = str(zmagNode.units)
             except:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zmag'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_zmag'], length_unit
+        )
         return unit_factor * self._zmag.copy()
-    
+
     # ---  23
     def getAreaLCFS(self, length_unit=2):
         """returns LCFS cross-sectional area.
 
         Keyword Args:
-            length_unit (String or 2): unit for LCFS area.  Defaults to 2, 
+            length_unit (String or 2): unit for LCFS area.  Defaults to 2,
                 denoting default areal unit (typically m^2).
 
         Returns:
@@ -649,7 +673,9 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         # Units should be cm^2:
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_areaLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_areaLCFS'], length_unit
+        )
         return unit_factor * self._areaLCFS.copy()
 
     # ---  24
@@ -658,7 +684,7 @@ class TCVLIUQETree(EFITTree):
         of \results::r_max_psi
 
         Keyword Args:
-            length_unit (String or 1): unit for minor radius.  Defaults to 1, 
+            length_unit (String or 1): unit for minor radius.  Defaults to 1,
                 denoting default length unit (typically m).
 
         Returns:
@@ -675,7 +701,9 @@ class TCVLIUQETree(EFITTree):
                 self._defaultUnits['_aLCFS']='m'
             except:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_aLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_aLCFS'], length_unit
+        )
         return unit_factor * self._aLCFS.copy()
 
     # ---  25
@@ -683,7 +711,7 @@ class TCVLIUQETree(EFITTree):
         """returns outboard-midplane major radius. It uses getA
 
         Keyword Args:
-            length_unit (String or 1): unit for major radius.  Defaults to 1, 
+            length_unit (String or 1): unit for major radius.  Defaults to 1,
                 denoting default length unit (typically m).
 
         Returns:
@@ -696,14 +724,16 @@ class TCVLIUQETree(EFITTree):
             try:
                 # this variable is not saved in the pulse file.
                 # we compute this by adding the Major radius of the machine to the computed AOut()
-                RMaj = 0.88/0.996 # almost 0.88
+                RMaj = 0.88/0.996  # almost 0.88
                 self._RmidLCFS = self.getAOut()+RMaj
                 # The units aren't properly stored in the tree for this one!
                 # Should be meters.
                 self._defaultUnits['_RmidLCFS'] = 'm'
             except:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RmidLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_RmidLCFS'], length_unit
+        )
         return unit_factor * self._RmidLCFS.copy()
 
     # ---  27
@@ -781,7 +811,7 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         return self._qLCFS.copy()
-    
+
     # ---  35
     def getBtVac(self):
         """Returns vacuum toroidal field on-axis. We use MDSplus.Connection
@@ -797,7 +827,7 @@ class TCVLIUQETree(EFITTree):
             try:
                 # constant is due to a detailed measurements on the vacuum vessel major radius
                 # introduce to be consistent with TDI function tcv_eq.fun
-                RMaj = 0.88/0.996 # almost 0.88 m
+                RMaj = 0.88/0.996  # almost 0.88 m
                 # open a connection
                 conn = MDSplus.Connection('tcvdata.epfl.ch')
                 conn.openTree('tcv_shot', self._shot)
@@ -830,7 +860,7 @@ class TCVLIUQETree(EFITTree):
         #     except:
         #         raise ValueError('data retrieval failed.')
         # return self._btaxp.copy()
-        
+
     # ---  39
     def getIpCalc(self):
         """returns EFIT-calculated plasma current.
@@ -849,7 +879,7 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         return self._IpCalc.copy()
-        
+
     # ---  40
     def getIpMeas(self):
         """returns magnetics-measured plasma current.
@@ -910,8 +940,7 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         return self._betap.copy()
-    
-        
+
     # ---  44
     def getLi(self):
         """returns LIUQE-calculated internal inductance.
@@ -930,7 +959,7 @@ class TCVLIUQETree(EFITTree):
             except:
                 raise ValueError('data retrieval failed.')
         return self._Li.copy()
-    
+
     # ---  50
     def getDiamagWp(self):
         """returns diamagnetic-loop plasma stored energy.
@@ -943,7 +972,9 @@ class TCVLIUQETree(EFITTree):
         """
         if self._WDiamag is None:
             try:
-                WDiamagNode = self._MDSTree.getNode(self._root+'::total_energy')
+                WDiamagNode = self._MDSTree.getNode(
+                    self._root+'::total_energy'
+                )
                 self._WDiamag = WDiamagNode.data()
                 self._defaultUnits['_WDiamag'] = str(WDiamagNode.units)
             except:
@@ -990,7 +1021,7 @@ class TCVLIUQETree(EFITTree):
         except:
             raise ValueError('data load failed.')
 
-        return (self._Rlimiter,self._Zlimiter)
+        return (self._Rlimiter, self._Zlimiter)
 
     # ---  60
     def getMachineCrossSectionPatch(self):
@@ -1035,25 +1066,25 @@ class TCVLIUQETree(EFITTree):
         tiles_patch = PathPatch(tiles_path, facecolor=(0.75, 0.75, 0.75),
                                 edgecolor='black')
 
-        return (tiles_patch , vessel_patch)
+        return (tiles_patch, vessel_patch)
 
     # ---  61
     def plotFlux(self, fill=True, mask=False):
         """Plots LIQUE TCV flux contours directly from psi grid.
-        
+
         Returns the Figure instance created and the time slider widget (in case
         you need to modify the callback). `f.axes` contains the contour plot as
         the first element and the time slice slider as the second element.
-        
+
         Keyword Args:
             fill (Boolean):
                 Set True to plot filled contours.  Set False (default) to plot white-background
                 color contours.
         """
-        
+
         try:
             psiRZ = self.getFluxGrid()
-            rGrid = self.getRGrid(length_unit = 'm')
+            rGrid = self.getRGrid(length_unit='m')
             zGrid = self.getZGrid(length_unit='m')
             t = self.getTimeBase()
 
@@ -1086,7 +1117,7 @@ class TCVLIUQETree(EFITTree):
         # make time-slice window
         fluxPlot = plt.figure(figsize=(6, 11))
         gs = mplgs.GridSpec(2, 1, height_ratios=[30, 1])
-        psi = fluxPlot.add_subplot(gs[0,0])
+        psi = fluxPlot.add_subplot(gs[0, 0])
         psi.set_aspect('equal')
         try:
             tilesP, vesselP = self.getMachineCrossSectionPatch()
@@ -1098,24 +1129,36 @@ class TCVLIUQETree(EFITTree):
         psi.set_xlim([0.6, 1.2])
         psi.set_ylim([-0.8, 0.8])
 
-        timeSliderSub = fluxPlot.add_subplot(gs[1,0])
+        timeSliderSub = fluxPlot.add_subplot(gs[1, 0])
         title = fluxPlot.suptitle('')
 
         # dummy plot to get x,ylims
-        psi.contour(rGrid,zGrid,psiRZ[0],10, colors='k')
+        psi.contour(rGrid, zGrid, psiRZ[0], 10, colors='k')
 
         # generate graphical mask for limiter wall
         if mask:
             xlim = psi.get_xlim()
             ylim = psi.get_ylim()
-            bound_verts = [(xlim[0],ylim[0]),(xlim[0],ylim[1]),(xlim[1],ylim[1]),(xlim[1],ylim[0]),(xlim[0],ylim[0])]
-            poly_verts = [(limx[i],limy[i]) for i in range(len(limx) - 1, -1, -1)]
+            bound_verts = [
+                (xlim[0], ylim[0]),
+                (xlim[0], ylim[1]),
+                (xlim[1], ylim[1]),
+                (xlim[1], ylim[0]),
+                (xlim[0], ylim[0])
+            ]
+            poly_verts = [
+                (limx[i], limy[i]) for i in range(len(limx) - 1, -1, -1)
+            ]
 
             bound_codes = [mpath.Path.MOVETO] + (len(bound_verts) - 1) * [mpath.Path.LINETO]
             poly_codes = [mpath.Path.MOVETO] + (len(poly_verts) - 1) * [mpath.Path.LINETO]
 
-            path = mpath.Path(bound_verts + poly_verts, bound_codes + poly_codes)
-            patch = mpatches.PathPatch(path,facecolor='white',edgecolor='none')
+            path = mpath.Path(
+                bound_verts + poly_verts, bound_codes + poly_codes
+            )
+            patch = mpatches.PathPatch(
+                path, facecolor='white', edgecolor='none'
+            )
 
         def updateTime(val):
             psi.clear()
@@ -1124,23 +1167,30 @@ class TCVLIUQETree(EFITTree):
             psi.set_xlim([0.5, 1.2])
             psi.set_ylim([-0.8, 0.8])
 
-            title.set_text('LIUQE Reconstruction, $t = %(t).2f$ s' % {'t':t[t_idx]})
+            title.set_text(
+                'LIUQE Reconstruction, $t = %(t).2f$ s' % {'t': t[t_idx]}
+            )
             psi.set_xlabel('$R$ [m]')
             psi.set_ylabel('$Z$ [m]')
             if macx is not None:
                 psi.plot(macx, macy, 'k', linewidth=3, zorder=5)
             elif limx is not None:
-                psi.plot(limx,limy,'k',linewidth=3,zorder=5)
+                psi.plot(limx, limy, 'k', linewidth=3, zorder=5)
             # catch NaNs separating disjoint sections of R,ZLCFS in mask
-            maskarr = scipy.where(scipy.logical_or(RLCFS[t_idx] > 0.0,scipy.isnan(RLCFS[t_idx])))
-            RLCFSframe = RLCFS[t_idx,maskarr[0]]
-            ZLCFSframe = ZLCFS[t_idx,maskarr[0]]
-            psi.plot(RLCFSframe,ZLCFSframe,'r',linewidth=3,zorder=3)
+            maskarr = scipy.where(
+                scipy.logical_or(RLCFS[t_idx] > 0.0, scipy.isnan(RLCFS[t_idx]))
+            )
+            RLCFSframe = RLCFS[t_idx, maskarr[0]]
+            ZLCFSframe = ZLCFS[t_idx, maskarr[0]]
+            psi.plot(RLCFSframe, ZLCFSframe, 'r', linewidth=3, zorder=3)
             if fill:
-                psi.contourf(rGrid,zGrid,psiRZ[t_idx],50,zorder=2)
-                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k',linestyles='solid',zorder=3)
+                psi.contourf(rGrid, zGrid, psiRZ[t_idx], 50, zorder=2)
+                psi.contour(
+                    rGrid, zGrid, psiRZ[t_idx], 50, colors='k',
+                    linestyles='solid', zorder=3
+                )
             else:
-                psi.contour(rGrid,zGrid,psiRZ[t_idx],50,colors='k')
+                psi.contour(rGrid, zGrid, psiRZ[t_idx], 50, colors='k')
             if mask:
                 patchdraw = psi.add_patch(patch)
                 patchdraw.set_zorder(4)
@@ -1152,7 +1202,9 @@ class TCVLIUQETree(EFITTree):
 
             fluxPlot.canvas.draw()
 
-        timeSlider = mplw.Slider(timeSliderSub,'t index',0,len(t)-1,valinit=0,valfmt="%d")
+        timeSlider = mplw.Slider(
+            timeSliderSub, 't index', 0, len(t)-1, valinit=0, valfmt="%d"
+        )
         timeSlider.on_changed(updateTime)
         updateTime(0)
 

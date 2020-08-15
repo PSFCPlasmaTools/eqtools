@@ -19,9 +19,13 @@ except:
         "consistency for your use case.",
         RuntimeWarning
     )
-    import cPickle as pkl
+    try:
+        import cPickle as pkl
+    except:
+        import pickle as pkl
+
     with open('test_data.pkl', 'rb') as f:
-        shot, e, et = pkl.load(f)
+        shot, e, et = pkl.load(f, encoding='bytes')
 
 # Convert psinorm = 0.5 to Rmid at t=[0.25, 0.5, 0.75, 1.0]:
 Rmid = e.psinorm2rmid(0.5, [0.25, 0.5, 0.75, 1.0])

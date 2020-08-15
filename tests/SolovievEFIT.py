@@ -38,6 +38,7 @@ except:
                   "use pyplot will not work.",ModuleWarning)
     _has_plt = False
 
+
 class CircSolovievEFIT(Equilibrium):
     """Equilibrium class working with analytic Soloviev equilibria, restricted
     to a circular cross-section.
@@ -55,7 +56,7 @@ class CircSolovievEFIT(Equilibrium):
     Keyword Args:
         length_unit (String): Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
-            
+
                 ===========  ===========================================================================================
                 'm'          meters
                 'cm'         centimeters
@@ -68,15 +69,17 @@ class CircSolovievEFIT(Equilibrium):
                 'hand'       hands
                 'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
                 ===========  ===========================================================================================
-            
+
             Default is 'm' (all units taken and returned in meters).
         npts (int): grid size of model equilibrium reconstruction.
             Default is npts=257 (257x257 RZ grid)
     """
-    def __init__(self,R,a,B0,Ip,betat,length_unit='m',npts=257):
+    def __init__(self, R, a, B0, Ip, betat, length_unit='m', npts=257):
         # instantiate superclass, forcing time splining to false (no time variation
         # in equilibrium)
-        super(CircSolovievEFIT,self).__init__(length_unit=length_unit, tspline=False, monotonic=False)
+        super(CircSolovievEFIT, self).__init__(
+            length_unit=length_unit, tspline=False, monotonic=False
+        )
 
         self._defaultUnits = {}
 
@@ -101,37 +104,44 @@ class CircSolovievEFIT(Equilibrium):
         self._psi0 = scipy.array([self._psi0])
 
         # RZ grid
-        self._rGrid = scipy.linspace(R-1.25*a,R+1.25*a,self._npts)
+        self._rGrid = scipy.linspace(R-1.25*a, R+1.25*a, self._npts)
         self._defaultUnits['_rGrid'] = length_unit
-        self._zGrid = scipy.linspace(-1.25*a,1.25*a,self._npts)
+        self._zGrid = scipy.linspace(-1.25*a, 1.25*a, self._npts)
         self._defaultUnits['_zGrid'] = length_unit
 
-        self._psiRZ = self.rz2psi_analytic(self._rGrid,self._zGrid,length_unit=length_unit,make_grid=True)
-        self._psiRZ = scipy.reshape(self._psiRZ,(1,npts,npts))
+        self._psiRZ = self.rz2psi_analytic(
+            self._rGrid, self._zGrid, length_unit=length_unit, make_grid=True
+        )
+        self._psiRZ = scipy.reshape(self._psiRZ, (1, npts, npts))
 
     def __str__(self):
         """string formatting for CircSolovievEFIT class.
         """
-        datadict = {'R':self._R,'a':self._a,'Ip':self._Ip,'Bt':self._B0,
-                    'betat':self._betat}
-        return ("Circular Soloviev equilibrium with R = %(R)s, a = %(a)s,"
-        " Ip = %(Ip)f, Bt = %(Bt)f, betat = %(betat)f" % datadict)
+        datadict = {'R': self._R, 'a': self._a, 'Ip': self._Ip, 'Bt': self._B0,
+                    'betat': self._betat}
+        return (
+            "Circular Soloviev equilibrium with R = %(R)s, a = %(a)s,"
+            " Ip = %(Ip)f, Bt = %(Bt)f, betat = %(betat)f" % datadict
+        )
 
     def getInfo(self):
         """returns namedtuple of equilibrium information
         """
-        data = namedtuple('Info',['R','a','Ip','B0','betat','npts'])
-        return data(R=self._R,a=self._a,Ip=self._Ip,B0=self._B0,betat=self._betat,npts=self._npts)
+        data = namedtuple('Info', ['R', 'a', 'Ip', 'B0', 'betat', 'npts'])
+        return data(
+            R=self._R, a=self._a, Ip=self._Ip, B0=self._B0, betat=self._betat,
+            npts=self._npts
+        )
 
     ####################
     # mapping routines #
     ####################
 
-    def _RZtortheta(self,R,Z,make_grid=False):
+    def _RZtortheta(self, R, Z, make_grid=False):
         """converts input RZ coordinates to polar cross-section coordinates.
 
         Args:
-            R (Array-like or scalar float): 
+            R (Array-like or scalar float):
                 Values of the radial coordinate.  If `R` and `Z` are both scalar
                 values, they are used as the coordinate pair for all of the
                 values in `t`. Must have the same shape as `Z` unless the
@@ -174,15 +184,15 @@ class CircSolovievEFIT(Equilibrium):
             each_t=True,
             check_space=False
         )
-        
+
         R = scipy.reshape(R, oshape)
         Z = scipy.reshape(Z, oshape)
-        
+
         r = scipy.sqrt((R - self._R)**2 + (Z)**2)
         theta = scipy.arctan2(Z, (R - self._R))
         return (r, theta)
 
-    def rz2psi_analytic(self,R,Z,length_unit='m',make_grid=False):
+    def rz2psi_analytic(self, R, Z, length_unit='m', make_grid=False):
         """analytic formulation for flux calculation in Soloviev equilibrium.
 
         Args:
@@ -193,9 +203,9 @@ class CircSolovievEFIT(Equilibrium):
 
         Keyword Args:
             length_unit: String or 1.
-                Length unit that R and Z are given in.  
+                Length unit that R and Z are given in.
                 If a string is given, it must be a valid unit specifier:
-                
+
                 ===========  ===========
                 'm'          meters
                 'cm'         centimeters
@@ -208,7 +218,7 @@ class CircSolovievEFIT(Equilibrium):
                 'hand'       hands
                 'default'    meters
                 ===========  ===========
-                
+
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters).
 
@@ -219,21 +229,24 @@ class CircSolovievEFIT(Equilibrium):
                 shape as well. If the make_grid keyword was True then psi has
                 shape (len(Z), len(R)).
         """
-        A = 2.* self._B0 / self._qstar
+        A = 2. * self._B0 / self._qstar
         C = 8. * self._R * self._B0**2 * self._betat / (self._a**2 * A)
 
-        (r,theta) = self._RZtortheta(R,Z,make_grid=make_grid)
+        (r, theta) = self._RZtortheta(R, Z, make_grid=make_grid)
 
-        psi = A/4. * (r**2 - self._a**2) + C/8. * (r**2 - self._a**2) * r * scipy.cos(theta)
+        psi = (
+            A / 4. * (r**2 - self._a**2) + C / 8. * (r**2 - self._a**2) * r *
+            scipy.cos(theta)
+        )
         return psi
 
-    def rz2psinorm_analytic(self,R,Z,length_unit='m',make_grid=False):
-        """Calculates normalized poloidal flux at given (R,Z)
+    def rz2psinorm_analytic(self, R, Z, length_unit='m', make_grid=False):
+        r"""Calculates normalized poloidal flux at given (R,Z)
 
         Uses the definition:
 
         .. math::
-        
+
             \texttt{psi\_norm} = \frac{\psi - \psi(0)}{\psi(a) - \psi(0)}
 
         Args:
@@ -245,7 +258,7 @@ class CircSolovievEFIT(Equilibrium):
         Keyword Args:
             length_unit (String or 1): Length unit that `R`, `Z` are given in.
                 If a string is given, it must be a valid unit specifier:
-                
+
                     ===========  ===========
                     'm'          meters
                     'cm'         centimeters
@@ -258,7 +271,7 @@ class CircSolovievEFIT(Equilibrium):
                     'hand'       hands
                     'default'    meters
                     ===========  ===========
-                
+
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
 
@@ -266,25 +279,27 @@ class CircSolovievEFIT(Equilibrium):
             psinorm: Array-like or scalar float.
                 normalized poloidal flux.
         """
-        psi = self.rz2psi_analytic(R,Z,length_unit=length_unit,make_grid=make_grid)
+        psi = self.rz2psi_analytic(
+            R, Z, length_unit=length_unit, make_grid=make_grid
+        )
         psinorm = (psi - self._psi0[0]) / (self._psiLCFS[0] - self._psi0[0])
 
         return psinorm
 
-    def rz2psi(self,R,Z,*args,**kwargs):
+    def rz2psi(self, R, Z, *args, **kwargs):
         """Converts passed, R,Z arrays to psi values.
-        
+
         Wrapper for Equilibrium.rz2psi masking out timebase dependence.
 
         Args:
             R: Array-like or scalar float.
                 Values of the radial coordinate to
-                map to poloidal flux. If the make_grid keyword is True, R must 
+                map to poloidal flux. If the make_grid keyword is True, R must
                 have shape (len_R,).
             Z: Array-like or scalar float.
                 Values of the vertical coordinate to
-                map to poloidal flux. Must have the same shape as R unless the 
-                make_grid keyword is set. If the make_grid keyword is True, Z 
+                map to poloidal flux. Must have the same shape as R unless the
+                make_grid keyword is set. If the make_grid keyword is True, Z
                 must have shape (len_Z,).
             *args:
                 Slot for time input for consistent syntax with Equilibrium.rz2psi.
@@ -299,7 +314,7 @@ class CircSolovievEFIT(Equilibrium):
             length_unit: String or 1.
                 Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
-                
+
                 ===========  ===========
                 'm'          meters
                 'cm'         centimeters
@@ -312,7 +327,7 @@ class CircSolovievEFIT(Equilibrium):
                 'hand'       hands
                 'default'    meters
                 ===========  ===========
-                
+
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters).
             **kwargs:
@@ -328,9 +343,9 @@ class CircSolovievEFIT(Equilibrium):
                 shape (len(Z), len(R)).
         """
         t = 0.0
-        return super(CircSolovievEFIT,self).rz2psi(R,Z,t,**kwargs)
+        return super(CircSolovievEFIT, self).rz2psi(R, Z, t, **kwargs)
 
-    def rz2psinorm(self,R,Z,*args,**kwargs):
+    def rz2psinorm(self, R, Z, *args, **kwargs):
         """Calculates the normalized poloidal flux at the given (R,Z).
         Wrapper for Equilibrium.rz2psinorm masking out timebase dependence.
 
@@ -371,7 +386,7 @@ class CircSolovievEFIT(Equilibrium):
             length_unit: String or 1.
                 Length unit that R and Z are being given
                 in. If a string is given, it must be a valid unit specifier:
-                
+
                 ===========  ===========
                 'm'          meters
                 'cm'         centimeters
@@ -384,7 +399,7 @@ class CircSolovievEFIT(Equilibrium):
                 'hand'       hands
                 'default'    meters
                 ===========  ===========
-                
+
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (R and Z given in meters).
             **kwargs:
@@ -402,117 +417,117 @@ class CircSolovievEFIT(Equilibrium):
             All assume that Eq_instance is a valid instance EqdskReader:
 
             Find single psinorm value at R=0.6m, Z=0.0m::
-            
+
                 psi_val = Eq_instance.rz2psinorm(0.6, 0)
 
             Find psinorm values at (R, Z) points (0.6m, 0m) and (0.8m, 0m).
             Note that the Z vector must be fully specified,
             even if the values are all the same::
-            
+
                 psi_arr = Eq_instance.rz2psinorm([0.6, 0.8], [0, 0])
 
             Find psinorm values on grid defined by 1D vector of radial positions R
             and 1D vector of vertical positions Z::
-            
+
                 psi_mat = Eq_instance.rz2psinorm(R, Z, make_grid=True)
         """
         t = 0.0
-        return super(CircSolovievEFIT,self).rz2psinorm(R,Z,t,**kwargs)
+        return super(CircSolovievEFIT, self).rz2psinorm(R, Z, t, **kwargs)
 
-    def rho2rho(self,*args,**kwargs):
+    def rho2rho(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rz2phinorm(self,*args,**kwargs):
+    def rz2phinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rz2volnorm(self,*args,**kwargs):
+    def rz2volnorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rz2rmid(self,*args,**kwargs):
+    def rz2rmid(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rz2roa(self,*args,**kwargs):
+    def rz2roa(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rz2rho(self,*args,**kwargs):
+    def rz2rho(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rmid2roa(self,*args,**kwargs):
+    def rmid2roa(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rmid2psinorm(self,*args,**kwargs):
+    def rmid2psinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rmid2phinorm(self,*args,**kwargs):
+    def rmid2phinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rmid2volnorm(self,*args,**kwargs):
+    def rmid2volnorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def rmid2rho(self,*args,**kwargs):
+    def rmid2rho(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def roa2rmid(self,*args,**kwargs):
+    def roa2rmid(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def roa2psinorm(self,*args,**kwargs):
+    def roa2psinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def roa2phinorm(self,*args,**kwargs):
+    def roa2phinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def roa2volnorm(self,*args,**kwargs):
+    def roa2volnorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def roa2rho(self,*args,**kwargs):
+    def roa2rho(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def psinorm2rmid(self,*args,**kwargs):
+    def psinorm2rmid(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def psinorm2roa(self,*args,**kwargs):
+    def psinorm2roa(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def psinorm2volnorm(self,*args,**kwargs):
+    def psinorm2volnorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def psinorm2phinorm(self,*args,**kwargs):
+    def psinorm2phinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def psinorm2rho(self,*args,**kwargs):
+    def psinorm2rho(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def phinorm2psinorm(self,*args,**kwargs):
+    def phinorm2psinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def phinorm2volnorm(self,*args,**kwargs):
+    def phinorm2volnorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def phinorm2rmid(self,*args,**kwargs):
+    def phinorm2rmid(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def phinorm2roa(self,*args,**kwargs):
+    def phinorm2roa(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def phinorm2rho(self,*args,**kwargs):
+    def phinorm2rho(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def volnorm2psinorm(self,*args,**kwargs):
+    def volnorm2psinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def volnorm2phinorm(self,*args,**kwargs):
+    def volnorm2phinorm(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def volnorm2rmid(self,*args,**kwargs):
+    def volnorm2rmid(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def volnorm2roa(self,*args,**kwargs):
+    def volnorm2roa(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def volnorm2rho(self,*args,**kwargs):
+    def volnorm2rho(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
-    def getNearestIdx(self,*args,**kwargs):
+    def getNearestIdx(self, *args, **kwargs):
         raise NotImplementedError("method not defined for Soloviev testing module")
 
     #################
@@ -530,16 +545,20 @@ class CircSolovievEFIT(Equilibrium):
     def getFluxGrid(self):
         return self._psiRZ.copy()
 
-    def getRGrid(self,length_unit=1):
+    def getRGrid(self, length_unit=1):
         """Returns model equilibrium grid R-axis [r]
         """
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_rGrid'], length_unit
+        )
         return unit_factor * self._rGrid.copy()
 
-    def getZGrid(self,length_unit=1):
+    def getZGrid(self, length_unit=1):
         """Returns model equilibrium grid Z-axis [z]
         """
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_zGrid'], length_unit
+        )
         return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
@@ -556,7 +575,7 @@ class CircSolovievEFIT(Equilibrium):
     # plot equilibrium #
     ####################
 
-    def plotFlux(self,fill=True):
+    def plotFlux(self, fill=True):
         """Plots flux contours directly from psi grid.
 
         Keyword Args:
@@ -564,28 +583,40 @@ class CircSolovievEFIT(Equilibrium):
                 Set True to plot filled contours.  Set False (default) to plot white-background color contours.
         """
         if not _has_plt:
-            raise ImportError("Cannot plot without matplotlib package installed.")
+            raise ImportError(
+                "Cannot plot without matplotlib package installed."
+            )
 
-        data = {'R':self._R,'eps':self._a/self._R,'Ip':self._Ip,'Bt':self._B0,'beta':self._betat,'npts':self._npts}
+        data = {
+            'R': self._R, 'eps': self._a/self._R, 'Ip': self._Ip,
+            'Bt': self._B0, 'beta': self._betat, 'npts': self._npts
+        }
 
         plt.ion()
 
-        psiRZ = self.getFluxGrid()[0,:,:]
+        psiRZ = self.getFluxGrid()[0, :, :]
         rGrid = self.getRGrid(length_unit='m')
         zGrid = self.getZGrid(length_unit='m')
 
-        fig = plt.figure(figsize=(8,8))
+        fig = plt.figure(figsize=(8, 8))
         ax = fig.add_subplot(111)
         ax.set_xlabel('$R$ (m)')
         ax.set_ylabel('$Z$ (m)')
-        ax.set_title("$R = $%(R).2f, $\\varepsilon = $%(eps).2f, $I_p = $%(Ip).2f, "
-                     "$B_T = $%(Bt).2f, $\\beta_t = $%(beta).2f, n = %(npts)i" % data)
+        ax.set_title(
+            "$R = $%(R).2f, $\\varepsilon = $%(eps).2f, $I_p = $%(Ip).2f, "
+            "$B_T = $%(Bt).2f, $\\beta_t = $%(beta).2f, n = %(npts)i" % data
+        )
 
         if fill:
-            ax.contourf(rGrid,zGrid,psiRZ,50,zorder=2)
+            ax.contourf(rGrid, zGrid, psiRZ, 50, zorder=2)
         else:
-            ax.contour(rGrid,zGrid,psiRZ,50,linestyles='solid',linewidth=2,zorder=2)
+            ax.contour(
+                rGrid, zGrid, psiRZ, 50, linestyles='solid', linewidth=2,
+                zorder=2
+            )
 
-        circ = plt.Circle((self._R,0.0),self._a,ec='r',fc='none',linewidth=3,zorder=3)
+        circ = plt.Circle(
+            (self._R, 0.0), self._a, ec='r', fc='none', linewidth=3, zorder=3
+        )
         ax.add_patch(circ)
-        ax.plot(self._R,0.0,'rx',markersize=10,zorder=3)
+        ax.plot(self._R, 0.0, 'rx', markersize=10, zorder=3)

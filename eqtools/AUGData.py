@@ -16,13 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module provides classes inheriting :py:class:`eqtools.Equilibrium` for 
+"""This module provides classes inheriting :py:class:`eqtools.Equilibrium` for
 working with ASDEX Upgrade experimental data.
 """
 
 import scipy
+from collections import namedtuple
 
-from .core import PropertyAccessMixin, ModuleWarning, Equilibrium
+from .core import PropertyAccessMixin, ModuleWarning, Equilibrium, inPolygon
 
 import warnings
 
@@ -33,23 +34,31 @@ try:
 
 except Exception as _e_dd:
     if isinstance(_e_dd, ImportError):
-        warnings.warn("dd module could not be loaded -- classes that use "
-                     "dd for data access will not work.",
-                      ModuleWarning)
+        warnings.warn(
+            "dd module could not be loaded -- classes that use "
+            "dd for data access will not work.",
+            ModuleWarning
+        )
     else:
-        warnings.warn("dd module could not be loaded -- classes that use "
-                      "dd for data access will not work. Exception raised "
-                      "was of type %s, message was '%s'."
-                      % (_e_dd.__class__, _e_dd.message),
-                      ModuleWarning)
+        warnings.warn(
+            "dd module could not be loaded -- classes that use "
+            "dd for data access will not work. Exception raised "
+            "was of type {:s}, message was '{:s}'.".format(
+                _e_dd.__class__, _e_dd.message
+            ),
+            ModuleWarning
+        )
     _has_dd = False
-    
+
 try:
     import matplotlib.pyplot as plt
     _has_plt = True
 except:
-    warnings.warn("Matplotlib.pyplot module could not be loaded -- classes that "
-                  "use pyplot will not work.",ModuleWarning)
+    warnings.warn(
+        "Matplotlib.pyplot module could not be loaded -- classes that "
+        "use pyplot will not work.",
+        ModuleWarning
+    )
     _has_plt = False
 
 
@@ -60,26 +69,26 @@ class AUGDDData(Equilibrium):
     variables is recovered with a corresponding getter method. Essential data
     for mapping are pulled on initialization (e.g. psirz grid). Additional
     data are pulled at the first request and stored for subsequent usage.
-    
-    Intializes ASDEX Upgrade version of the Equilibrium object.  Pulls data to 
-    storage in instance attributes.  Core attributes are populated from the AFS 
-    data on initialization.  Additional attributes are initialized as None, 
+
+    Intializes ASDEX Upgrade version of the Equilibrium object.  Pulls data to
+    storage in instance attributes.  Core attributes are populated from the AFS
+    data on initialization.  Additional attributes are initialized as None,
     filled on the first request to the object.
 
     Args:
         shot (integer): ASDEX Upgrade shot index.
-    
+
     Keyword Args:
         shotfile (string): Optional input for alternate shotfile, defaults to 'EQH'
             (i.e., CLISTE results are in EQH,EQI with other reconstructions
             Available (FPP, EQE, ect.).
         edition (integer): Describes the edition of the shotfile to be used
         shotfile2 (string): Describes companion 0D equilibrium data, will automatically
-            reference based off of shotfile, but can be manually specified for 
+            reference based off of shotfile, but can be manually specified for
             unique reconstructions, etc.
         length_unit (string): Sets the base unit used for any quantity whose
             dimensions are length to any power. Valid options are:
-                
+
                 ===========  ===========================================================================================
                 'm'          meters
                 'cm'         centimeters
@@ -92,7 +101,7 @@ class AUGDDData(Equilibrium):
                 'hand'       hands
                 'default'    whatever the default in the tree is (no conversion is performed, units may be inconsistent)
                 ===========  ===========================================================================================
-                
+
             Default is 'm' (all units taken and returned in meters).
         tspline (Boolean): Sets whether or not interpolation in time is
             performed using a tricubic spline or nearest-neighbor
@@ -106,161 +115,169 @@ class AUGDDData(Equilibrium):
             increasing. Default is False (use slower, safer method).
         experiment: Used to describe the work space that the shotfile is located
             It defaults to 'AUGD' but can be set to other values
-    """ 
+    """
 
     # its like relating g files to a files
-    _relatedSVFile = {'EQI':'GQI','EQH':'GQH','EQE':'GQE','FPP':'GPI'}
+    _relatedSVFile = {'EQI': 'GQI', 'EQH': 'GQH', 'EQE': 'GQE', 'FPP': 'GPI'}
 
-   
-    def __init__(self, shot, shotfile='EQH', edition = 0, shotfile2 = None, length_unit='m', tspline = False,
-                 monotonic=True, experiment='AUGD'):
+    def __init__(
+        self, shot, shotfile='EQH', edition=0, shotfile2=None, length_unit='m',
+        tspline=False, monotonic=True, experiment='AUGD'
+    ):
 
         if not _has_dd:
             print("dd module did not load properly")
-            print(
-                "Most functionality will not be available!"
-            )
+            print("Most functionality will not be available!")
 
-        super(AUGDDData, self).__init__(length_unit=length_unit, tspline=tspline, 
-                                        monotonic=monotonic)
-        
+        super(AUGDDData, self).__init__(
+            length_unit=length_unit, tspline=tspline, monotonic=monotonic
+        )
+
         self._shot = shot
         self._tree = shotfile
-        print(self._shot,self._tree,edition,experiment)
+        print(self._shot, self._tree, edition, experiment)
         self._MDSTree = dd.shotfile(self._tree,
                                     self._shot,
                                     edition=edition,
                                     experiment=experiment)
-            
+
         try:
             if shotfile2 is None:
                 shotfile2 = self._relatedSVFile[self._tree]
 
-            #Overwrite getSSQ with a shotfile with same capabilities
+            # Overwrite getSSQ with a shotfile with same capabilities
             self.getSSQ = dd.shotfile(shotfile2,
                                       self._shot,
                                       edition=edition,
                                       experiment=experiment)
-        except (KeyError,PyddError):
-            warnings.warn('Companion SV not valid, extracting from '+self._tree+':SSQ', RuntimeWarning)
+        except (KeyError, PyddError):
+            warnings.warn(
+                'Companion SV not valid, extracting from '
+                + self._tree + ':SSQ',
+                RuntimeWarning
+            )
 
         self._defaultUnits = {}
-        
-        #initialize None for non-essential data
 
-        #grad-shafranov related parameters
+        # initialize None for non-essential data
+
+        # grad-shafranov related parameters
         self._fpol = None
-        self._fluxPres = None                                                #pressure on flux surface (psi,t)
+        self._fluxPres = None                                                # pressure on flux surface (psi,t)
         self._ffprim = None
-        self._pprime = None                                                  #pressure derivative on flux surface (t,psi)
+        self._pprime = None                                                  # pressure derivative on flux surface (t,psi)
 
-        #fields
-        self._btaxp = None                                                   #Bt on-axis, with plasma (t)
-        self._btaxv = None                                                   #Bt on-axis, vacuum (t)
-        self._bpolav = None                                                  #avg poloidal field (t)
-        self._BCentr = None                                                  #Bt at RCentr, vacuum (for gfiles) (t)
+        # fields
+        self._btaxp = None                                                   # Bt on-axis, with plasma (t)
+        self._btaxv = None                                                   # Bt on-axis, vacuum (t)
+        self._bpolav = None                                                  # avg poloidal field (t)
+        self._BCentr = None                                                  # Bt at RCentr, vacuum (for gfiles) (t)
 
-        #plasma current
-        self._IpCalc = None                                                  #calculated plasma current (t)
-        self._IpMeas = None                                                  #measured plasma current (t)
-        self._Jp = None                                                      #grid of current density (r,z,t)
-        self._currentSign = None                                             #sign of current for entire shot (calculated in moderately kludgey manner)
+        # plasma current
+        self._IpCalc = None                                                  # calculated plasma current (t)
+        self._IpMeas = None                                                  # measured plasma current (t)
+        self._Jp = None                                                      # grid of current density (r,z,t)
+        self._currentSign = None                                             # sign of current for entire shot (calculated in moderately kludgey manner)
 
-        #safety factor parameters
-        self._q0 = None                                                      #q on-axis (t)
-        self._q95 = None                                                     #q at 95% flux (t)
-        self._qLCFS = None                                                   #q at LCFS (t)
-        self._rq1 = None                                                     #outboard-midplane minor radius of q=1 surface (t)
-        self._rq2 = None                                                     #outboard-midplane minor radius of q=2 surface (t)
-        self._rq3 = None                                                     #outboard-midplane minor radius of q=3 surface (t)
+        # safety factor parameters
+        self._q0 = None                                                      # q on-axis (t)
+        self._q95 = None                                                     # q at 95% flux (t)
+        self._qLCFS = None                                                   # q at LCFS (t)
+        self._rq1 = None                                                     # outboard-midplane minor radius of q=1 surface (t)
+        self._rq2 = None                                                     # outboard-midplane minor radius of q=2 surface (t)
+        self._rq3 = None                                                     # outboard-midplane minor radius of q=3 surface (t)
 
-        #shaping parameters
-        self._kappa = None                                                   #LCFS elongation (t)
-        self._dupper = None                                                  #LCFS upper triangularity (t)
-        self._dlower = None                                                  #LCFS lower triangularity (t)
+        # shaping parameters
+        self._kappa = None                                                   # LCFS elongation (t)
+        self._dupper = None                                                  # LCFS upper triangularity (t)
+        self._dlower = None                                                  # LCFS lower triangularity (t)
 
-        #(dimensional) geometry parameters
-        self._rmag = None                                                    #major radius, magnetic axis (t)
-        self._zmag = None                                                    #Z magnetic axis (t)
-        self._aLCFS = None                                                   #outboard-midplane minor radius (t)
-        self._RmidLCFS = None                                                #outboard-midplane major radius (t)
-        self._areaLCFS = None                                                #LCFS surface area (t)
-        self._RLCFS = None                                                   #R-positions of LCFS (t,n)
-        self._ZLCFS = None                                                   #Z-positions of LCFS (t,n)
-        self._RCentr = None                                                  #Radius for BCentr calculation (for gfiles) (t)
-        
-        #machine geometry parameters
-        self._Rlimiter = None                                                #R-positions of vacuum-vessel wall (t)
-        self._Zlimiter = None                                                #Z-positions of vacuum-vessel wall (t)
+        # (dimensional) geometry parameters
+        self._rmag = None                                                    # major radius, magnetic axis (t)
+        self._zmag = None                                                    # Z magnetic axis (t)
+        self._aLCFS = None                                                   # outboard-midplane minor radius (t)
+        self._RmidLCFS = None                                                # outboard-midplane major radius (t)
+        self._areaLCFS = None                                                # LCFS surface area (t)
+        self._RLCFS = None                                                   # R-positions of LCFS (t,n)
+        self._ZLCFS = None                                                   # Z-positions of LCFS (t,n)
+        self._RCentr = None                                                  # Radius for BCentr calculation (for gfiles) (t)
 
-        #calc. normalized-pressure values
-        self._betat = None                                                   #calc toroidal beta (t)
-        self._betap = None                                                   #calc avg. poloidal beta (t)
-        self._Li = None                                                      #calc internal inductance (t)
+        # machine geometry parameters
+        self._Rlimiter = None                                                # R-positions of vacuum-vessel wall (t)
+        self._Zlimiter = None                                                # Z-positions of vacuum-vessel wall (t)
 
-        #diamagnetic measurements
-        self._diamag = None                                                  #diamagnetic flux (t)
-        self._betatd = None                                                  #diamagnetic toroidal beta (t)
-        self._betapd = None                                                  #diamagnetic poloidal beta (t)
-        self._WDiamag = None                                                 #diamagnetic stored energy (t)
-        self._tauDiamag = None                                               #diamagnetic energy confinement time (t)
+        # calc. normalized-pressure values
+        self._betat = None                                                   # calc toroidal beta (t)
+        self._betap = None                                                   # calc avg. poloidal beta (t)
+        self._Li = None                                                      # calc internal inductance (t)
 
-        #energy calculations
+        # diamagnetic measurements
+        self._diamag = None                                                  # diamagnetic flux (t)
+        self._betatd = None                                                  # diamagnetic toroidal beta (t)
+        self._betapd = None                                                  # diamagnetic poloidal beta (t)
+        self._WDiamag = None                                                 # diamagnetic stored energy (t)
+        self._tauDiamag = None                                               # diamagnetic energy confinement time (t)
+
+        # energy calculations
         self._WMHD = None                                                    #calc stored energy (t)
         self._tauMHD = None                                                  #calc energy confinement time (t)
         self._Pinj = None                                                    #calc injected power (t)
         self._Wbdot = None                                                   #d/dt magnetic stored energy (t)
         self._Wpdot = None                                                   #d/dt plasma stored energy (t)
 
-        #load essential mapping data
+        # load essential mapping data
         # Set the variables to None first so the loading calls will work right:
-        self._time = None                                                    #timebase
-        self._psiRZ = None                                                   #flux grid (r,z,t)
-        self._rGrid = None                                                   #R-axis (t)
-        self._zGrid = None                                                   #Z-axis (t)
-        self._psiLCFS = None                                                 #flux at LCFS (t)
-        self._psiAxis = None                                                 #flux at magnetic axis (t)
-        self._fluxVol = None                                                 #volume within flux surface (t,psi)
-        self._volLCFS = None                                                 #volume within LCFS (t)
-        self._qpsi = None                                                    #q profile (psi,t)
-        self._RmidPsi = None                                                 #max major radius of flux surface (t,psi)
+        self._time = None                                                    # timebase
+        self._psiRZ = None                                                   # flux grid (r,z,t)
+        self._rGrid = None                                                   # R-axis (t)
+        self._zGrid = None                                                   # Z-axis (t)
+        self._psiLCFS = None                                                 # flux at LCFS (t)
+        self._psiAxis = None                                                 # flux at magnetic axis (t)
+        self._fluxVol = None                                                 # volume within flux surface (t,psi)
+        self._volLCFS = None                                                 # volume within LCFS (t)
+        self._qpsi = None                                                    # q profile (psi,t)
+        self._RmidPsi = None                                                 # max major radius of flux surface (t,psi)
 
-        #AUG SV file flag
+        # AUG SV file flag
         self._SSQ = None
-        
+
         # Call the get functions to preload the data. Add any other calls you
         # want to preload here.
-        self.getTimeBase() # check
+        self.getTimeBase()  # check
         self._timeidxend = self.getTimeBase().size
-        self.getFluxGrid() # loads _psiRZ, _rGrid and _zGrid at once. check
-        self.getFluxLCFS() # check
-        self.getFluxAxis() # check
-        self.getFluxVol() #check
+        self.getFluxGrid()  # loads _psiRZ, _rGrid and _zGrid at once. check
+        self.getFluxLCFS()  # check
+        self.getFluxAxis()  # check
+        self.getFluxVol()  #check
         self._lpf = self.getFluxVol().shape[1]
-        self.getVolLCFS() # check
-        self.getQProfile() #
-        
+        self.getVolLCFS()  # check
+        self.getQProfile()  #
+
     def __str__(self):
         """string formatting for ASDEX Upgrade Equilibrium class.
         """
         try:
             nt = len(self._time)
-            nr=  len(self._rGrid)
+            nr = len(self._rGrid)
             nz = len(self._zGrid)
 
-            mes = 'AUG data for shot '+str(self._shot)+' from shotfile '+str(self._tree.upper())+'\n'+\
-                  'timebase '+str(self._time[0])+'-'+str(self._time[-1])+'s in '+str(nt)+' points\n'+\
-                  str(nr)+'x'+str(nz)+' spatial grid'
+            mes = (
+                'AUG data for shot ' + str(self._shot) + ' from shotfile ' +
+                str(self._tree.upper()) + '\n' +
+                'timebase ' + str(self._time[0]) + '-' + str(self._time[-1]) +
+                's in ' + str(nt) + ' points\n' +
+                str(nr) + 'x' + str(nz) + ' spatial grid'
+            )
             return mes
         except TypeError:
             return 'tree has failed data load.'
-        
+
     def getInfo(self):
         """returns namedtuple of shot information
-        
+
         Returns:
             namedtuple containing
-                
+
                 =====   ===============================
                 shot    ASDEX Upgrage shot index (long)
                 tree    shotfile (string)
@@ -275,10 +292,10 @@ class AUGDDData(Equilibrium):
             nz = len(self._zGrid)
         except TypeError:
             nt, nr, nz = 0, 0, 0
-            print 'tree has failed data load.'
+            print('tree has failed data load.')
 
-        data = namedtuple('Info',['shot','tree','nr','nz','nt'])
-        return data(shot=self._shot,tree=self._tree,nr=nr,nz=nz,nt=nt)
+        data = namedtuple('Info', ['shot', 'tree', 'nr', 'nz', 'nt'])
+        return data(shot=self._shot, tree=self._tree, nr=nr, nz=nz, nt=nt)
 
     def getTimeBase(self):
         """returns time base vector.
@@ -300,9 +317,9 @@ class AUGDDData(Equilibrium):
 
     def getFluxGrid(self):
         """returns flux grid.
-        
+
         Note that this method preserves whatever sign convention is used in AFS.
-        
+
         Returns:
             psiRZ (Array): [nt,nz,nr] array of (non-normalized) flux on grid.
 
@@ -312,14 +329,18 @@ class AUGDDData(Equilibrium):
         if self._psiRZ is None:
             try:
                 psinode = self._MDSTree('Ri')
-                self._rGrid = psinode.data[0] #assumes data from first is correct (WHY IS IT EVEN DUPICATED???)
+                self._rGrid = psinode.data[0]  # assumes data from first is correct (WHY IS IT EVEN DUPICATED???)
                 self._defaultUnits['_rGrid'] = str(psinode.unit)
                 psinode = self._MDSTree('Zj')
                 self._zGrid = psinode.data[0]
                 self._defaultUnits['_zGrid'] = str(psinode.unit)
-                psinode = self._MDSTree('PFM',calibrated=False) #calibrated signal causes seg faults (SERIOUSLY WHAT THE FUCK ASDEX)
-                self._psiRZ = psinode.data[:self._timeidxend,:len(self._zGrid),:len(self._rGrid)]
-                self._defaultUnits['_psiRZ'] = 'Vs' #HARDCODED DUE TO CALIBRATED=FALSE
+                psinode = self._MDSTree('PFM', calibrated=False)  # calibrated signal causes seg faults (SERIOUSLY WHAT THE FUCK ASDEX)
+                self._psiRZ = psinode.data[
+                    :self._timeidxend,
+                    :len(self._zGrid),
+                    :len(self._rGrid)
+                ]
+                self._defaultUnits['_psiRZ'] = 'Vs'  # HARDCODED DUE TO CALIBRATED=FALSE
 
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -336,10 +357,12 @@ class AUGDDData(Equilibrium):
         """
         if self._rGrid is None:
             raise ValueError('data retrieval failed.')
-        
+
         # Default units should be 'm'
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rGrid'],
-                                                      length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_rGrid'],
+            length_unit
+        )
         return unit_factor * self._rGrid.copy()
 
     def getZGrid(self, length_unit=1):
@@ -353,10 +376,12 @@ class AUGDDData(Equilibrium):
         """
         if self._zGrid is None:
             raise ValueError('data retrieval failed.')
-        
+
         # Default units should be 'm'
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zGrid'],
-                                                      length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_zGrid'],
+            length_unit
+        )
         return unit_factor * self._zGrid.copy()
 
     def getFluxAxis(self):
@@ -371,7 +396,7 @@ class AUGDDData(Equilibrium):
         if self._psiAxis is None:
             try:
                 psiAxisNode = self._MDSTree('PFxx')
-                self._psiAxis = psiAxisNode.data[:self._timeidxend,0]
+                self._psiAxis = psiAxisNode.data[:self._timeidxend, 0]
                 self._defaultUnits['_psiAxis'] = str(psiAxisNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -389,7 +414,7 @@ class AUGDDData(Equilibrium):
         if self._psiLCFS is None:
             try:
                 psiLCFSNode = self._MDSTree('PFL')
-                self._psiLCFS = psiLCFSNode.data[:self._timeidxend,0]
+                self._psiLCFS = psiLCFSNode.data[:self._timeidxend, 0]
                 self._defaultUnits['_psiLCFS'] = str(psiLCFSNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -399,7 +424,7 @@ class AUGDDData(Equilibrium):
         """returns volume within flux surface.
 
         Keyword Args:
-            length_unit (String or 3): unit for plasma volume.  Defaults to 3, 
+            length_unit (String or 3): unit for plasma volume.  Defaults to 3,
                 indicating default volumetric unit (typically m^3).
 
         Returns:
@@ -410,10 +435,14 @@ class AUGDDData(Equilibrium):
         """
         if self._fluxVol is None:
             try:
-                fluxVolNode = self._MDSTree('Vol') #Lpf is unreliable so I have to do this trick....
-                temp = scipy.where(scipy.sum(fluxVolNode.data,axis=0)[::2] !=0)[0].max() + 1 #Find the where the volume is non-zero, give the maximum index and add one (for the core value)
-                
-                self._fluxVol = fluxVolNode.data[:self._timeidxend][:,:2*temp+1:2][:,::-1] #reverse it so that it is a monotonically increasing function
+                fluxVolNode = self._MDSTree('Vol')  # Lpf is unreliable so I have to do this trick....
+                temp = scipy.where(
+                    scipy.sum(fluxVolNode.data, axis=0)[::2] != 0
+                )[0].max() + 1  # Find the where the volume is non-zero, give the maximum index and add one (for the core value)
+
+                self._fluxVol = fluxVolNode.data[:self._timeidxend][
+                    :, :2 * temp + 1:2
+                ][:, ::-1]  # reverse it so that it is a monotonically increasing function
                 if fluxVolNode.unit != ' ':
                     self._defaultUnits['_fluxVol'] = str(fluxVolNode.unit)
                 else:
@@ -421,14 +450,16 @@ class AUGDDData(Equilibrium):
             except PyddError:
                 raise ValueError('data retrieval failed.')
         # Default units are m^3, but aren't stored in the tree!
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_fluxVol'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_fluxVol'], length_unit
+        )
         return unit_factor * self._fluxVol.copy()
 
     def getVolLCFS(self, length_unit=3):
         """returns volume within LCFS.
 
         Keyword Args:
-            length_unit (String or 3): unit for LCFS volume.  Defaults to 3, 
+            length_unit (String or 3): unit for LCFS volume.  Defaults to 3,
                 denoting default volumetric unit (typically m^3).
 
         Returns:
@@ -440,30 +471,31 @@ class AUGDDData(Equilibrium):
         if self._volLCFS is None:
             try:
                 volLCFSNode = self._MDSTree('Vol')
-                self._volLCFS = volLCFSNode.data[:self._timeidxend,0]
+                self._volLCFS = volLCFSNode.data[:self._timeidxend, 0]
                 self._defaultUnits['_volLCFS'] = str(volLCFSNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
         # Default units should be 'cm^3':
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_volLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_volLCFS'], length_unit
+        )
         return unit_factor * self._volLCFS.copy()
 
     def getRmidPsi(self, length_unit=1):
         """returns maximum major radius of each flux surface.
 
         Keyword Args:
-            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating 
+            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating
                 the default parameter unit (typically m).
 
         Returns:
-            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of 
+            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of
             flux surface psi.
-       
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getRmidPsi not implemented.")
-       
 
     def getRLCFS(self, length_unit=1):
         """returns R-values of LCFS position.
@@ -478,18 +510,31 @@ class AUGDDData(Equilibrium):
             try:
                 rgeo = self.getSSQ('Rgeo')
                 RLCFSNode = self.getSSQ('rays')
-                RLCFStemp = scipy.hstack((scipy.atleast_2d(RLCFSNode.data[:,-1]).T,RLCFSNode.data))
+                RLCFStemp = scipy.hstack(
+                    (scipy.atleast_2d(RLCFSNode.data[:, -1]).T, RLCFSNode.data)
+                )
                 templen = RLCFSNode.data.shape
-                
-                self._RLCFS = scipy.tile(rgeo.data,(templen[1]+1,1)).T + RLCFStemp*scipy.cos(scipy.tile((scipy.linspace(0,2*scipy.pi,templen[1]+1)),(templen[0],1))) #construct a 2d grid of angles, take cos, multiply by radius                
+
+                self._RLCFS = scipy.tile(
+                    rgeo.data, (templen[1] + 1, 1)
+                ).T + RLCFStemp * scipy.cos(
+                    scipy.tile(
+                        (
+                            scipy.linspace(0, 2 * scipy.pi, templen[1] + 1)
+                        ), (templen[0], 1)
+                    )
+                )  # construct a 2d grid of angles, take cos, multiply by radius
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.unit)
             except KeyError:
                 self.remapLCFS()
                 self._defaultUnits['_RLCFS'] = str('m')
-                self._defaultUnits['_ZLCFS'] = str('m')                
+                self._defaultUnits['_ZLCFS'] = str('m')
             except PyddError:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_RLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_RLCFS'],
+            length_unit
+        )
         return unit_factor * self._RLCFS.copy()
 
     def getZLCFS(self, length_unit=1):
@@ -505,10 +550,19 @@ class AUGDDData(Equilibrium):
             try:
                 zgeo = self.getSSQ('Zgeo')
                 ZLCFSNode = self.getSSQ('rays')
-                ZLCFStemp = scipy.hstack((scipy.atleast_2d(ZLCFSNode.data[:,-1]).T,ZLCFSNode.data))
+                ZLCFStemp = scipy.hstack(
+                    (scipy.atleast_2d(ZLCFSNode.data[:, -1]).T, ZLCFSNode.data)
+                )
                 templen = ZLCFSNode.data.shape
-                
-                self._ZLCFS =  scipy.tile(zgeo.data,(templen[1]+1,1)).T + ZLCFStemp*scipy.sin(scipy.tile((scipy.linspace(0,2*scipy.pi,templen[1]+1)),(templen[0],1))) #construct a 2d grid of angles, take sin, multiply by radius
+
+                self._ZLCFS = scipy.tile(
+                    zgeo.data, (templen[1] + 1, 1)
+                ).T + ZLCFStemp * scipy.sin(
+                    scipy.tile(
+                        (scipy.linspace(0, 2 * scipy.pi, templen[1] + 1)),
+                        (templen[0], 1)
+                    )
+                )  # construct a 2d grid of angles, take sin, multiply by radius
                 self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.unit)
             except KeyError:
                 self.remapLCFS()
@@ -516,18 +570,20 @@ class AUGDDData(Equilibrium):
                 self._defaultUnits['_ZLCFS'] = str('m')
             except PyddError:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_ZLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_ZLCFS'], length_unit
+        )
         return unit_factor * self._ZLCFS.copy()
-        
-    def remapLCFS(self,mask=False):
-        """Overwrites RLCFS, ZLCFS values pulled with explicitly-calculated 
+
+    def remapLCFS(self, mask=False):
+        """Overwrites RLCFS, ZLCFS values pulled with explicitly-calculated
         contour of psinorm=1 surface.  This is then masked down by the limiter
         array using core.inPolygon, restricting the contour to the closed
         plasma surface and the divertor legs.
 
         Keyword Args:
-            mask (Boolean): Default False.  Set True to mask LCFS path to 
-                limiter outline (using inPolygon).  Set False to draw full 
+            mask (Boolean): Default False.  Set True to mask LCFS path to
+                limiter outline (using inPolygon).  Set False to draw full
                 contour of psi = psiLCFS.
 
         Raises:
@@ -535,15 +591,20 @@ class AUGDDData(Equilibrium):
             ValueError: if limiter outline is not available.
         """
         if not _has_plt:
-            raise NotImplementedError("Requires matplotlib.pyplot for contour calculation.")
-            
+            raise NotImplementedError(
+                "Requires matplotlib.pyplot for contour calculation."
+            )
+
         try:
-            Rlim,Zlim = self.getMachineCrossSection()
+            Rlim, Zlim = self.getMachineCrossSection()
         except:
-            raise ValueError("Limiter outline (self.getMachineCrossSection) must be available.")
+            raise ValueError(
+                "Limiter outline (self.getMachineCrossSection) must be "
+                "available."
+            )
 
         plt.ioff()
-            
+
         psiRZ = self.getFluxGrid()  # [nt,nZ,nR]
         R = self.getRGrid()
         Z = self.getZGrid()
@@ -555,14 +616,14 @@ class AUGDDData(Equilibrium):
         nt = len(self.getTimeBase())
         fig = plt.figure()
         for i in range(nt):
-            cs = plt.contour(R,Z,psiRZ[i],[psiLCFS[i]])
+            cs = plt.contour(R, Z, psiRZ[i], [psiLCFS[i]])
             paths = cs.collections[0].get_paths()
             RLCFS_frame = []
             ZLCFS_frame = []
             for path in paths:
                 v = path.vertices
-                RLCFS_frame.extend(v[:,0])
-                ZLCFS_frame.extend(v[:,1])
+                RLCFS_frame.extend(v[:, 0])
+                ZLCFS_frame.extend(v[:, 1])
                 RLCFS_frame.append(scipy.nan)
                 ZLCFS_frame.append(scipy.nan)
             RLCFS_frame = scipy.array(RLCFS_frame)
@@ -573,7 +634,7 @@ class AUGDDData(Equilibrium):
                 maskarr = scipy.array([False for i in range(len(RLCFS_frame))])
                 for i,x in enumerate(RLCFS_frame):
                     y = ZLCFS_frame[i]
-                    maskarr[i] = inPolygon(Rlim,Zlim,x,y)
+                    maskarr[i] = inPolygon(Rlim, Zlim, x, y)
 
                 RLCFS_frame = RLCFS_frame[maskarr]
                 ZLCFS_frame = ZLCFS_frame[maskarr]
@@ -583,14 +644,14 @@ class AUGDDData(Equilibrium):
             RLCFS_stores.append(RLCFS_frame)
             ZLCFS_stores.append(ZLCFS_frame)
 
-        RLCFS = scipy.zeros((nt,maxlen))
-        ZLCFS = scipy.zeros((nt,maxlen))
+        RLCFS = scipy.zeros((nt, maxlen))
+        ZLCFS = scipy.zeros((nt, maxlen))
         for i in range(nt):
             RLCFS_frame = RLCFS_stores[i]
             ZLCFS_frame = ZLCFS_stores[i]
             ni = len(RLCFS_frame)
-            RLCFS[i,0:ni] = RLCFS_frame
-            ZLCFS[i,0:ni] = ZLCFS_frame
+            RLCFS[i, 0:ni] = RLCFS_frame
+            ZLCFS[i, 0:ni] = ZLCFS_frame
 
         # store final values
         self._RLCFS = RLCFS
@@ -609,9 +670,9 @@ class AUGDDData(Equilibrium):
         plt.ioff()
 
     def getF(self):
-        """returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov 
+        r"""returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov
         solutions.
-        
+
         Returns:
             F (Array): [nt,npsi] array of F=RB_{\Phi}(\Psi)
 
@@ -620,8 +681,10 @@ class AUGDDData(Equilibrium):
         """
         if self._fpol is None:
             try:
-                fNode = self._MDSTree('Jpol')#From definition of F with poloidal current
-                self._fpol = fNode.data[:self._timeidxend,:2*self._lpf:2][::-1]*2e-7
+                fNode = self._MDSTree('Jpol')  # From definition of F with poloidal current
+                self._fpol = fNode.data[
+                    :self._timeidxend, :2 * self._lpf:2
+                ][::-1] * 2e-7
                 self._defaultUnits['_fpol'] = str('T m')
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -639,14 +702,16 @@ class AUGDDData(Equilibrium):
         if self._fluxPres is None:
             try:
                 fluxPresNode = self._MDSTree('Pres')
-                self._fluxPres = fluxPresNode.data[:self._timeidxend][:,:2*self._lpf:2][:,::-1] #reverse it so that it is a monotonically increasing function
+                self._fluxPres = fluxPresNode.data[:self._timeidxend][
+                    :, :2 * self._lpf:2
+                ][:, ::-1]  # reverse it so that it is a monotonically increasing function
                 self._defaultUnits['_fluxPres'] = str(fluxPresNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
 
     def getFPrime(self):
-        """returns F', often calculated for grad-shafranov 
+        r"""returns F', often calculated for grad-shafranov
         solutions.
 
         Returns:
@@ -657,8 +722,10 @@ class AUGDDData(Equilibrium):
         """
         if self._fpol is None:
             try:
-                fNode = self._MDSTree('Jpol')#From definition of F with poloidal current
-                self._fpol = fNode.data[:self._timeidxend,1:2*self._lpf+1:2][::-1]*2e-7
+                fNode = self._MDSTree('Jpol')  # From definition of F with poloidal current
+                self._fpol = fNode.data[
+                    :self._timeidxend, 1:2 * self._lpf + 1:2
+                ][::-1] * 2e-7
                 self._defaultUnits['_fpol'] = str('T m')
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -676,7 +743,9 @@ class AUGDDData(Equilibrium):
         if self._ffprim is None:
             try:
                 FFPrimeNode = self._MDSTree('FFP')
-                self._ffprim = FFPrimeNode.data[:self._timeidxend,:self._lpf][::-1]
+                self._ffprim = FFPrimeNode.data[
+                    :self._timeidxend, :self._lpf
+                ][::-1]
                 self._defaultUnits['_ffprim'] = str(FFPrimeNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -686,7 +755,7 @@ class AUGDDData(Equilibrium):
         """returns plasma pressure gradient as a function of psi.
 
         Returns:
-            pprime (Array): [nt,npsi] array of pressure gradient on flux surface 
+            pprime (Array): [nt,npsi] array of pressure gradient on flux surface
             psi from grad-shafranov solution.
 
         Raises:
@@ -695,7 +764,9 @@ class AUGDDData(Equilibrium):
         if self._pprime is None:
             try:
                 pPrimeNode = self._MDSTree('Pres')
-                self._pprime = pPrimeNode.data[:self._timeidxend][:,1:2*self._lpf+1:2][:,::-1] #reverse it so that it is a monotonically increasing function
+                self._pprime = pPrimeNode.data[:self._timeidxend][
+                    :, 1:2 * self._lpf + 1:2
+                ][:, ::-1]  # reverse it so that it is a monotonically increasing function
                 self._defaultUnits['_pprime'] = str(pPrimeNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -750,14 +821,14 @@ class AUGDDData(Equilibrium):
             try:
                 dlowerNode = self.getSSQ('delRuntn')
                 self._dlower = dlowerNode.data
-                self._defaultUnits['_dlower']  = str(dlowerNode.unit)
+                self._defaultUnits['_dlower'] = str(dlowerNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
         return self._dlower.copy()
 
     def getShaping(self):
         """pulls LCFS elongation and upper/lower triangularity.
-        
+
         Returns:
             namedtuple containing (kappa, delta_u, delta_l)
 
@@ -768,8 +839,8 @@ class AUGDDData(Equilibrium):
             kap = self.getElongation()
             du = self.getUpperTriangularity()
             dl = self.getLowerTriangularity()
-            data = namedtuple('Shaping',['kappa','delta_u','delta_l'])
-            return data(kappa=kap,delta_u=du,delta_l=dl)
+            data = namedtuple('Shaping', ['kappa', 'delta_u', 'delta_l'])
+            return data(kappa=kap, delta_u=du, delta_l=dl)
         except ValueError:
             raise ValueError('data retrieval failed.')
 
@@ -787,9 +858,11 @@ class AUGDDData(Equilibrium):
                 rmagNode = self.getSSQ('Rmag')
                 self._rmag = rmagNode.data
                 self._defaultUnits['_rmag'] = str(rmagNode.unit)
-            except (PyddError,AttributeError):
+            except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_rmag'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_rmag'], length_unit
+        )
         return unit_factor * self._rmag.copy()
 
     def getMagZ(self, length_unit=1):
@@ -808,14 +881,16 @@ class AUGDDData(Equilibrium):
                 self._defaultUnits['_zmag'] = str(zmagNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_zmag'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_zmag'], length_unit
+        )
         return unit_factor * self._zmag.copy()
 
     def getAreaLCFS(self, length_unit=2):
         """returns LCFS cross-sectional area.
 
         Keyword Args:
-            length_unit (String or 2): unit for LCFS area.  Defaults to 2, 
+            length_unit (String or 2): unit for LCFS area.  Defaults to 2,
                 denoting default areal unit (typically m^2).
 
         Returns:
@@ -827,19 +902,21 @@ class AUGDDData(Equilibrium):
         if self._areaLCFS is None:
             try:
                 areaLCFSNode = self._MDSTree('Area')
-                self._areaLCFS = areaLCFSNode.data[:self._timeidxend,0]
+                self._areaLCFS = areaLCFSNode.data[:self._timeidxend, 0]
                 self._defaultUnits['_areaLCFS'] = str(areaLCFSNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
         # Units should be cm^2:
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_areaLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_areaLCFS'], length_unit
+        )
         return unit_factor * self._areaLCFS.copy()
 
     def getAOut(self, length_unit=1):
         """returns outboard-midplane minor radius at LCFS.
 
         Keyword Args:
-            length_unit (String or 1): unit for minor radius.  Defaults to 1, 
+            length_unit (String or 1): unit for minor radius.  Defaults to 1,
                 denoting default length unit (typically m).
 
         Returns:
@@ -855,26 +932,26 @@ class AUGDDData(Equilibrium):
                 self._defaultUnits['_aLCFS'] = str(aLCFSNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
-        unit_factor = self._getLengthConversionFactor(self._defaultUnits['_aLCFS'], length_unit)
+        unit_factor = self._getLengthConversionFactor(
+            self._defaultUnits['_aLCFS'], length_unit
+        )
         return unit_factor * self._aLCFS.copy()
 
     def getRmidOut(self, length_unit=1):
         """returns outboard-midplane major radius.
 
         Keyword Args:
-            length_unit (String or 1): unit for major radius.  Defaults to 1, 
+            length_unit (String or 1): unit for major radius.  Defaults to 1,
                 denoting default length unit (typically m).
-       
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getRmidOut not implemented.")
 
-
-
     def getGeometry(self, length_unit=None):
         """pulls dimensional geometry parameters.
-        
+
         Returns:
             namedtuple containing (magR,magZ,areaLCFS,aOut,RmidOut)
 
@@ -882,13 +959,28 @@ class AUGDDData(Equilibrium):
             ValueError: if module cannot retrieve data from the AUG AFS system.
         """
         try:
-            Rmag = self.getMagR(length_unit=(length_unit if length_unit is not None else 1))
-            Zmag = self.getMagZ(length_unit=(length_unit if length_unit is not None else 1))
-            AreaLCFS = self.getAreaLCFS(length_unit=(length_unit if length_unit is not None else 2))
-            aOut = self.getAOut(length_unit=(length_unit if length_unit is not None else 1))
-            RmidOut = self.getRmidOut(length_unit=(length_unit if length_unit is not None else 1))
-            data = namedtuple('Geometry',['Rmag','Zmag','AreaLCFS','aOut','RmidOut'])
-            return data(Rmag=Rmag,Zmag=Zmag,AreaLCFS=AreaLCFS,aOut=aOut,RmidOut=RmidOut)
+            Rmag = self.getMagR(
+                length_unit=(length_unit if length_unit is not None else 1)
+            )
+            Zmag = self.getMagZ(
+                length_unit=(length_unit if length_unit is not None else 1)
+            )
+            AreaLCFS = self.getAreaLCFS(
+                length_unit=(length_unit if length_unit is not None else 2)
+            )
+            aOut = self.getAOut(
+                length_unit=(length_unit if length_unit is not None else 1)
+            )
+            RmidOut = self.getRmidOut(
+                length_unit=(length_unit if length_unit is not None else 1)
+            )
+            data = namedtuple(
+                'Geometry', ['Rmag', 'Zmag', 'AreaLCFS', 'aOut', 'RmidOut']
+            )
+            return data(
+                Rmag=Rmag, Zmag=Zmag, AreaLCFS=AreaLCFS, aOut=aOut,
+                RmidOut=RmidOut
+            )
         except ValueError:
             raise ValueError('data retrieval failed.')
 
@@ -904,10 +996,12 @@ class AUGDDData(Equilibrium):
         if self._qpsi is None:
             try:
                 qpsiNode = self._MDSTree('Qpsi')
-                self._qpsi = qpsiNode.data[:self._timeidxend,1:self._lpf][:,::-1]
+                self._qpsi = qpsiNode.data[
+                    :self._timeidxend, 1:self._lpf
+                ][:, ::-1]
                 # there has to be a better way for this, but it makes it work...
-                #the first value in the q is the edge value, and is supposed to be infinite
-                #which throws off the phi and q splines completely
+                # the first value in the q is the edge value, and is supposed to be infinite
+                # which throws off the phi and q splines completely
                 self._defaultUnits['_qpsi'] = str(qpsiNode.unit)
             except PyddError:
                 raise ValueError('data retrieval failed.')
@@ -949,51 +1043,45 @@ class AUGDDData(Equilibrium):
                 raise ValueError('data retrieval failed.')
         return self._q95.copy()
 
-
     def getQLCFS(self):
         """returns q on LCFS (interpolated).
-       
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getQLCFS not implemented.")
 
-
     def getQ1Surf(self, length_unit=1):
         """returns outboard-midplane minor radius of q=1 surface.
-       
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getQ1Surf not implemented.")
 
-
     def getQ2Surf(self, length_unit=1):
         """returns outboard-midplane minor radius of q=2 surface.
-       
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getQ2Surf not implemented.")
 
-
     def getQ3Surf(self, length_unit=1):
         """returns outboard-midplane minor radius of q=3 surface.
-       
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getQ3Surf not implemented.")
-     
 
     def getQs(self, length_unit=1):
         """pulls q values.
-        
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getQs not implemented.")
-
 
     def getBtVac(self):
         """Returns vacuum toroidal field on-axis. THIS MAY BE INCORRECT
@@ -1007,14 +1095,15 @@ class AUGDDData(Equilibrium):
         if self._btaxv is None:
             try:
                 btaxvNode = self._MDSTree('Bave')
-                #technically Bave is the average over the volume, but for the core its a singular value
-                self._btaxv = btaxvNode.data[:self._timeidxend,scipy.sum(btaxvNode.data,0) != 0][:,-1]
+                # technically Bave is the average over the volume, but for the core its a singular value
+                self._btaxv = btaxvNode.data[
+                    :self._timeidxend, scipy.sum(btaxvNode.data, 0) != 0
+                ][:, -1]
                 self._btaxv *= scipy.sign(self.getBCentr())
                 self._defaultUnits['_btaxv'] = str(btaxvNode.unit)
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
         return self._btaxv.copy()
-
 
     def getBtPla(self):
         """returns on-axis plasma toroidal field.
@@ -1024,7 +1113,6 @@ class AUGDDData(Equilibrium):
         """
         raise NotImplementedError("self.getBtPla not implemented.")
 
-
     def getBpAvg(self):
         """returns average poloidal field.
 
@@ -1033,7 +1121,6 @@ class AUGDDData(Equilibrium):
         """
         raise NotImplementedError("self.getFields not implemented.")
 
-
     def getFields(self):
         """pulls vacuum and plasma toroidal field, avg poloidal field.
 
@@ -1041,7 +1128,6 @@ class AUGDDData(Equilibrium):
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getFields not implemented.")
- 
 
     def getIpCalc(self):
         """returns Plasma Current, is the same as getIpMeas.
@@ -1055,12 +1141,13 @@ class AUGDDData(Equilibrium):
         if self._IpCalc is None:
             try:
                 IpCalcNode = self._MDSTree('IpiPSI')
-                self._IpCalc = scipy.squeeze(IpCalcNode.data)[:self._timeidxend]
+                self._IpCalc = scipy.squeeze(IpCalcNode.data)[
+                    :self._timeidxend
+                ]
                 self._defaultUnits['_IpCalc'] = str(IpCalcNode.unit)
-            except (PyddError,AttributeError):
+            except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
         return self._IpCalc.copy()
-
 
     def getIpMeas(self):
         """returns magnetics-measured plasma current.
@@ -1084,13 +1171,12 @@ class AUGDDData(Equilibrium):
         """
         if self._Jp is None:
             try:
-                JpNode = self._MDSTree('CDM',calibrated=False)
+                JpNode = self._MDSTree('CDM', calibrated=False)
                 self._Jp = JpNode.data
                 self._defaultUnits['_Jp'] = str(JpNode.unit)
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
         return self._Jp.copy()
-
 
     def getBetaT(self):
         """returns the calculated toroidal beta.
@@ -1099,7 +1185,6 @@ class AUGDDData(Equilibrium):
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getBetaT not implemented.")
-
 
     def getBetaP(self):
         """returns the calculated poloidal beta.
@@ -1119,7 +1204,6 @@ class AUGDDData(Equilibrium):
                 raise ValueError('data retrieval failed.')
         return self._betap.copy()
 
-
     def getLi(self):
         """returns the calculated internal inductance.
 
@@ -1138,7 +1222,6 @@ class AUGDDData(Equilibrium):
                 raise ValueError('data retrieval failed.')
         return self._Li.copy()
 
-
     def getBetas(self):
         """pulls calculated betap, betat, internal inductance.
 
@@ -1147,7 +1230,6 @@ class AUGDDData(Equilibrium):
         """
         raise NotImplementedError("self.getBetas not implemented.")
 
-
     def getDiamagFlux(self):
         """returns the measured diamagnetic-loop flux.
 
@@ -1155,7 +1237,6 @@ class AUGDDData(Equilibrium):
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getDiamagFlux not implemented.")
-    
 
     def getDiamagBetaT(self):
         """returns diamagnetic-loop toroidal beta.
@@ -1173,7 +1254,6 @@ class AUGDDData(Equilibrium):
         """
         raise NotImplementedError("self.getDiamagBetaP not implemented.")
 
-
     def getDiamagTauE(self):
         """returns diamagnetic-loop energy confinement time.
 
@@ -1182,25 +1262,22 @@ class AUGDDData(Equilibrium):
         """
         raise NotImplementedError("self.getDiamagTauE not implemented.")
 
-
     def getDiamagWp(self):
         """returns diamagnetic-loop plasma stored energy.
-        
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getDiamagWp not implemented.")
 
-
     def getDiamag(self):
-        """pulls diamagnetic flux measurements, toroidal and poloidal beta, 
+        """pulls diamagnetic flux measurements, toroidal and poloidal beta,
         energy confinement time and stored energy.
-        
+
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getDiamag not implemented.")
-
 
     def getWMHD(self):
         """returns calculated MHD stored energy.
@@ -1220,7 +1297,6 @@ class AUGDDData(Equilibrium):
                 raise ValueError('data retrieval failed.')
         return self._WMHD.copy()
 
-
     def getTauMHD(self):
         """returns the calculated MHD energy confinement time.
 
@@ -1228,7 +1304,6 @@ class AUGDDData(Equilibrium):
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getTauMHD not implemented.")
-
 
     def getPinj(self):
         """returns the injected power.
@@ -1238,7 +1313,6 @@ class AUGDDData(Equilibrium):
             .
         """
         raise NotImplementedError("self.getPinj not implemented.")
- 
 
     def getWbdot(self):
         """returns the calculated d/dt of magnetic stored energy.
@@ -1248,7 +1322,6 @@ class AUGDDData(Equilibrium):
         """
         raise NotImplementedError("self.getWbdot not implemented.")
 
-
     def getWpdot(self):
         """returns the calculated d/dt of plasma stored energy.
 
@@ -1256,7 +1329,6 @@ class AUGDDData(Equilibrium):
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getWpdot not implemented.")
-
 
     def getBCentr(self):
         """returns Vacuum toroidal magnetic field at center of plasma
@@ -1270,14 +1342,22 @@ class AUGDDData(Equilibrium):
         if self._BCentr is None:
             try:
                 try:
-                    temp = dd.shotfile('MBI',self._shot)
+                    temp = dd.shotfile('MBI', self._shot)
                     BCentrNode = temp('BTFABB')
-                    self._BCentr = BCentrNode.data[self._getNearestIdx(self.getTimeBase(),BCentrNode.time)]
+                    self._BCentr = BCentrNode.data[
+                        self._getNearestIdx(
+                            self.getTimeBase(), BCentrNode.time
+                        )
+                    ]
                     self._defaultUnits['_BCentr'] = str(BCentrNode.unit)
                 except PyddError:
-                    temp = dd.shotfile('MBI',self._shot)
+                    temp = dd.shotfile('MBI', self._shot)
                     BCentrNode = temp('BTF')
-                    self._BCentr = BCentrNode.data[self._getNearestIdx(self.getTimeBase(),BCentrNode.time)]
+                    self._BCentr = BCentrNode.data[
+                        self._getNearestIdx(
+                            self.getTimeBase(), BCentrNode.time
+                        )
+                    ]
                     self._defaultUnits['_BCentr'] = str(BCentrNode.unit)
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
@@ -1291,23 +1371,23 @@ class AUGDDData(Equilibrium):
             R: Radial position where Bcent calculated [m]
         """
         if self._RCentr is None:
-            self._RCentr = 1.65 #Hardcoded from MAI file description of BTF
+            self._RCentr = 1.65  # Hardcoded from MAI file description of BTF
             self._defaultUnits['_RCentr'] = 'm'
         return self._RCentr
 
     def getEnergy(self):
-        """pulls the calculated energy parameters - stored energy, tau_E, 
+        """pulls the calculated energy parameters - stored energy, tau_E,
         injected power, d/dt of magnetic and plasma stored energy.
 
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
         """
         raise NotImplementedError("self.getEnergy not implemented.")
-            
+
     def getMachineCrossSection(self):
-        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting 
+        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting
         routines.
-        
+
         Returns:
             (`R_limiter`, `Z_limiter`)
 
@@ -1316,7 +1396,8 @@ class AUGDDData(Equilibrium):
         """
         if self._Rlimiter is None or self._Zlimiter is None:
             try:
-                self._Rlimiter, self._Zlimiter = AUGVessel.getMachineCrossSection(self._shot)
+                self._Rlimiter, self._Zlimiter = \
+                    AUGVessel.getMachineCrossSection(self._shot)
 
             except (PyddError, AttributeError):
                 raise ValueError("data retrieval failed.")
@@ -1324,18 +1405,17 @@ class AUGDDData(Equilibrium):
 
     def getMachineCrossSectionFull(self):
         """Returns R,Z coordinates of vacuum-vessel wall for plotting routines.
-        
+
         Absent additional vector-graphic data on machine cross-section, returns
         :py:meth:`getMachineCrossSection`.
-        
+
         Returns:
             result from getMachineCrossSection().
         """
         x, y = AUGVessel.getMachineCrossSectionFull(self._shot)
-        x[ x > self.getRGrid().max()] = self.getRGrid().max()
-        
-        return (x, y)
+        x[x > self.getRGrid().max()] = self.getRGrid().max()
 
+        return (x, y)
 
     def getCurrentSign(self):
         """Returns the sign of the current, based on the check in Steve Wolfe's 
@@ -1348,20 +1428,19 @@ class AUGDDData(Equilibrium):
             self._currentSign = -1 if scipy.mean(self.getIpMeas()) > 1e5 else 1
         return self._currentSign
 
-
     def getParam(self, path):
-        """Backup function, applying a direct path input for tree-like data 
-        storage access for parameters not typically found in 
-        :py:class:`Equilbrium <eqtools.core.Equilbrium>` object.  
+        """Backup function, applying a direct path input for tree-like data
+        storage access for parameters not typically found in
+        :py:class:`Equilbrium <eqtools.core.Equilbrium>` object.
         Directly calls attributes read from g/a-files in copy-safe manner.
 
         Args:
-            name (String): Parameter name for value stored in EqdskReader 
+            name (String): Parameter name for value stored in EqdskReader
                 instance.
 
         Raises:
             NotImplementedError: Not implemented on ASDEX-Upgrade reconstructions.
-        """ 
+        """
         raise NotImplementedError("self.getEnergy not implemented.")
 
     def getSSQ(self, inp, **kwargs):
@@ -1378,42 +1457,58 @@ class AUGDDData(Equilibrium):
         if self._SSQ is None:
             try:
                 SSQnameNode = self._MDSTree('SSQnam', calibrated=False)
-                #create a dict mapping the various quantities to positions in the in the data array
+                # create a dict mapping the various quantities to positions in the in the data array
                 self._SSQname = SSQnameNode.data
                 try:
-                    self._SSQname = scipy.char.strip(SSQnameNode.data.view('S'+str(SSQnameNode.data.shape[1]))) #concatenate and strip blanks
+                    self._SSQname = scipy.char.strip(
+                        SSQnameNode.data.view(
+                            'S' + str(SSQnameNode.data.shape[1])
+                        )
+                    )  # concatenate and strip blanks
                 except ValueError:
-                    self._SSQname = scipy.char.strip(SSQnameNode.data.T.view('S'+str(SSQnameNode.data.shape[0]))) #concatenate and strip blanks
+                    self._SSQname = scipy.char.strip(
+                        SSQnameNode.data.T.view(
+                            'S' + str(SSQnameNode.data.shape[0])
+                        )
+                    )  # concatenate and strip blanks
 
-                self._SSQname = self._SSQname[self._SSQname != ''] #remove empty entries
-                self._SSQname = dict(zip(self._SSQname,scipy.arange(self._SSQname.shape[0]))) #zip the dict together
+                self._SSQname = self._SSQname[self._SSQname != '']  # remove empty entries
+                self._SSQname = dict(
+                    zip(self._SSQname, scipy.arange(self._SSQname.shape[0]))
+                )  # zip the dict together
 
                 self._SSQ = self._MDSTree('SSQ').data
-                
-                
+
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
 
         if inp == 'rays':
-            data = self._SSQ[:self._timeidxend,self._SSQname['rays015']:self._SSQname['rays000']] #really hackish. This line might break at some point
+            data = self._SSQ[
+                :self._timeidxend,
+                self._SSQname['rays015']:self._SSQname['rays000']
+            ]  # really hackish. This line might break at some point
             signal = dd.signalGroup(inp, ' ', data)
         else:
             try:
-                signal = dd.signal(inp, ' ', self._SSQ[:self._timeidxend,self._SSQname[inp]])
-                
+                signal = dd.signal(
+                    inp, ' ', self._SSQ[:self._timeidxend, self._SSQname[inp]]
+                )
             except KeyError:
                 raise ValueError('data retrieval failed.')
         return signal
 
-    def rz2BR(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
+    def rz2BR(
+        self, R, Z, t, return_t=False, make_grid=False, each_t=True,
+        length_unit=1
+    ):
         r"""Calculates the major radial component of the magnetic field at the given (R, Z, t) coordinates.
-        
+
         Uses
-        
+
         .. math::
-            
+
             B_R = -\frac{1}{2 \pi R}\frac{\partial \psi}{\partial Z}
-        
+
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
                 map to radial field. If `R` and `Z` are both scalar values,
@@ -1433,9 +1528,9 @@ class AUGDDData(Equilibrium):
                 scalar or have exactly one dimension. If the `each_t` keyword is
                 False, `t` must have the same shape as `R` and `Z` (or their
                 meshgrid if `make_grid` is True).
-        
+
         Keyword Args:
-            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
+            each_t (Boolean): When True, the elements in `R`, `Z` are evaluated
                 at each value in `t`. If True, `t` must have only one dimension
                 (or be a scalar). If False, `t` must match the shape of `R` and
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
@@ -1447,7 +1542,7 @@ class AUGDDData(Equilibrium):
                 meshgrid).
             length_unit (String or 1): Length unit that `R`, `Z` are given in.
                 If a string is given, it must be a valid unit specifier:
-                    
+
                     ===========  ===========
                     'm'          meters
                     'cm'         centimeters
@@ -1460,7 +1555,7 @@ class AUGDDData(Equilibrium):
                     'hand'       hands
                     'default'    meters
                     ===========  ===========
-                
+
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
             return_t (Boolean): Set to True to return a tuple of (`BR`,
@@ -1468,10 +1563,10 @@ class AUGDDData(Equilibrium):
                 actually used in evaluating `BR` with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return `BR`).
-        
+
         Returns:
             `BR` or (`BR`, `time_idxs`)
-        
+
             * **BR** (`Array or scalar float`) - The major radial component of
               the magnetic field. If all of the input arguments are scalar, then
               a scalar is returned. Otherwise, a scipy Array is returned. If `R`
@@ -1482,46 +1577,52 @@ class AUGDDData(Equilibrium):
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
               True.
-        
+
         Examples:
             All assume that `Eq_instance` is a valid instance of the appropriate
             extension of the :py:class:`Equilibrium` abstract class.
-            
+
             Find single BR value at R=0.6m, Z=0.0m, t=0.26s::
-                
+
                 BR_val = Eq_instance.rz2BR(0.6, 0, 0.26)
-            
+
             Find BR values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
             single time t=0.26s. Note that the `Z` vector must be fully
             specified, even if the values are all the same::
-                
+
                 BR_arr = Eq_instance.rz2BR([0.6, 0.8], [0, 0], 0.26)
-            
+
             Find BR values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
-                
+
                 BR_arr = Eq_instance.rz2BR(0.6, 0, [0.2, 0.3])
-            
+
             Find BR values at (R, Z, t) points (0.6m, 0m, 0.2s) and
             (0.5m, 0.2m, 0.3s)::
-                
+
                 BR_arr = Eq_instance.rz2BR([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
-            
+
             Find BR values on grid defined by 1D vector of radial positions `R`
             and 1D vector of vertical positions `Z` at time t=0.2s::
-                
+
                 BR_mat = Eq_instance.rz2BR(R, Z, 0.2, make_grid=True)
         """
-        return super(AUGDDData, self).rz2BR(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+        return super(AUGDDData, self).rz2BR(
+            R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t,
+            length_unit=length_unit
+        ) / (2 * scipy.pi)
 
-    def rz2BZ(self, R, Z, t, return_t=False, make_grid=False, each_t=True, length_unit=1):
+    def rz2BZ(
+        self, R, Z, t, return_t=False, make_grid=False, each_t=True,
+        length_unit=1
+    ):
         r"""Calculates the vertical component of the magnetic field at the given (R, Z, t) coordinates.
-        
+
         Uses
-        
+
         .. math::
-            
+
             B_Z = \frac{1}{2 \pi R}\frac{\partial \psi}{\partial R}
-        
+
         Args:
             R (Array-like or scalar float): Values of the radial coordinate to
                 map to vertical field. If `R` and `Z` are both scalar values,
@@ -1541,7 +1642,7 @@ class AUGDDData(Equilibrium):
                 scalar or have exactly one dimension. If the `each_t` keyword is
                 False, `t` must have the same shape as `R` and `Z` (or their
                 meshgrid if `make_grid` is True).
-        
+
         Keyword Args:
             each_t (Boolean): When True, the elements in `R`, `Z` are evaluated 
                 at each value in `t`. If True, `t` must have only one dimension
@@ -1555,7 +1656,7 @@ class AUGDDData(Equilibrium):
                 meshgrid).
             length_unit (String or 1): Length unit that `R`, `Z` are given in.
                 If a string is given, it must be a valid unit specifier:
-                    
+
                     ===========  ===========
                     'm'          meters
                     'cm'         centimeters
@@ -1568,7 +1669,7 @@ class AUGDDData(Equilibrium):
                     'hand'       hands
                     'default'    meters
                     ===========  ===========
-                
+
                 If length_unit is 1 or None, meters are assumed. The default
                 value is 1 (use meters).
             return_t (Boolean): Set to True to return a tuple of (`BZ`,
@@ -1576,61 +1677,60 @@ class AUGDDData(Equilibrium):
                 actually used in evaluating `BZ` with nearest-neighbor
                 interpolation. (This is mostly present as an internal helper.)
                 Default is False (only return `BZ`).
-        
+
         Returns:
             `BZ` or (`BZ`, `time_idxs`)
-            
+
             * **BZ** (`Array or scalar float`) - The vertical component of the
               magnetic field. If all of the input arguments are scalar, then a
               scalar is returned. Otherwise, a scipy Array is returned. If `R`
               and `Z` both have the same shape then `BZ` has this shape as well,
               unless the `make_grid` keyword was True, in which case `BZ` has
               shape (len(`Z`), len(`R`)).
-            * **time_idxs** (Array with same shape as `BZ`) - The indices 
+            * **time_idxs** (Array with same shape as `BZ`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
               True.
-        
+
         Examples:
             All assume that `Eq_instance` is a valid instance of the appropriate
             extension of the :py:class:`Equilibrium` abstract class.
-            
+
             Find single BZ value at R=0.6m, Z=0.0m, t=0.26s::
-                
+
                 BZ_val = Eq_instance.rz2BZ(0.6, 0, 0.26)
-            
+
             Find BZ values at (R, Z) points (0.6m, 0m) and (0.8m, 0m) at the
             single time t=0.26s. Note that the `Z` vector must be fully
             specified, even if the values are all the same::
-                
+
                 BZ_arr = Eq_instance.rz2BZ([0.6, 0.8], [0, 0], 0.26)
-            
+
             Find BZ values at (R, Z) points (0.6m, 0m) at times t=[0.2s, 0.3s]::
-                
+
                 BZ_arr = Eq_instance.rz2BZ(0.6, 0, [0.2, 0.3])
-            
+
             Find BZ values at (R, Z, t) points (0.6m, 0m, 0.2s) and
             (0.5m, 0.2m, 0.3s)::
-                
+
                 BZ_arr = Eq_instance.rz2BZ([0.6, 0.5], [0, 0.2], [0.2, 0.3], each_t=False)
-            
+
             Find BZ values on grid defined by 1D vector of radial positions `R`
             and 1D vector of vertical positions `Z` at time t=0.2s::
-                
+
                 BZ_mat = Eq_instance.rz2BZ(R, Z, 0.2, make_grid=True)
         """
         return super(AUGDDData, self).rz2BZ(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
-    
+
 
 class YGCAUGInterface(object):
-
     #============================================================================================================
     #
     #                     VESSEL OUTLINE HARDCODE VALUES DUE TO ASDEX UPGRADE INCONSISTENCIES
     #
     #============================================================================================================
 
-    #Rather than use another dependency in code, this stores all the necessary interfacing from the data structure
+    # Rather than use another dependency in code, this stores all the necessary interfacing from the data structure
     # the only necessary implementation is the data handler (dd python package)
     _vessel_components = {0:(1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0),
                           948:(1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
@@ -1645,9 +1745,9 @@ class YGCAUGInterface(object):
                           21485:(1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1),
                           25891:(1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1),
                           30136:(1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1)
-                          } 
+                          }
 
-    #counter-clockwise from the inner wall order of components
+    # counter-clockwise from the inner wall order of components
     _order = {0:(9,8,7,5,2,1,14,13,12,0,4,6),
               948:(9,8,7,5,2,1,10,0,4,6),
               8650:(9,15,16,17,18,19,20,21,22,23,24,25,26,1,10,0,4,6),
@@ -1661,9 +1761,9 @@ class YGCAUGInterface(object):
               21485:(9,15,16,17,18,19,20,21,22,23,24,25,26,27,1,10,0,35,36,37,38,39,30,31,32,33,34),
               25891:(9,15,16,17,18,19,20,21,22,23,24,25,26,27,10,41,42,43,36,37,38,39,30,31,32,33,34),
               30136:(9,15,16,17,18,19,20,21,22,23,24,25,26,27,10,41,42,43,36,37,38,39,30,31,32,33,34)
-              } 
-    
-   #start location in array of values for given object closest to plasma
+              }
+
+    # start location in array of values for given object closest to plasma
     _start = {0:(21,0,3,3,1,4,2,3,3,9,0,1),
               948:(21,0,3,3,1,4,2,9,0,1),
               8650:(21,0,0,0,0,0,0,0,0,0,0,0,0,4,2,9,0,1),
@@ -1678,8 +1778,8 @@ class YGCAUGInterface(object):
               25891:(21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0,0,0,0,0,0,0,0),
               30136:(21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,1,0,0,0,0,0,0,0)
               }
-     
-   #end location in array of values for given object closest to plasma
+
+    # end location in array of values for given object closest to plasma
     _end = {0:(42,2,7,7,5,6,10,5,10,13,4,5),
             948:(42,2,7,7,5,6,34,13,4,5),
             8650:(42,4,26,25,32,2,9,8,3,35,22,28,3,5,34,13,4,5),
@@ -1695,7 +1795,7 @@ class YGCAUGInterface(object):
             30136:(42,6,5,15,6,6,6,7,6,9,2,18,4,2,57,2,2,17,7,2,2,2,2,2,2,2,7)
             }
 
-   #Which objects are stored reverse of the counter-clockwise motion as described in order
+    # Which objects are stored reverse of the counter-clockwise motion as described in order
     _rev = {0:(0,1,1,1,1,1,1,1,1,1,1,1),
             948:(0,1,1,1,1,1,1,1,1,1),
             8650:(0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1),
@@ -1711,89 +1811,87 @@ class YGCAUGInterface(object):
             30136:(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
             }
 
-
     # ONLY CERTAIN YGC FILES EXIST I MEAN CMON ITS NOT THAT MUCH MEMORY
     _ygc_shotfiles = scipy.array([0, 948, 8650, 9401, 12751, 14051, 14601, 16315, 18204, 19551, 21485, 25891, 30136])
-                  
-    def _getData(self,shot):
+
+    def _getData(self, shot):
         try:
 
-            self._ygc_shot = self._ygc_shotfiles[scipy.searchsorted(self._ygc_shotfiles, [shot], 'right') - 1][0] #find nearest shotfile which is the before it
+            self._ygc_shot = self._ygc_shotfiles[
+                scipy.searchsorted(self._ygc_shotfiles, [shot], 'right') - 1
+            ][0]  # find nearest shotfile which is the before it
 
             if self._ygc_shot < 8650:
-                ccT = dd.shotfile('YGC', self._ygc_shotfiles[2]) # This is because of shots <8650 not having RrGC zzGC or inxbeg
+                ccT = dd.shotfile('YGC', self._ygc_shotfiles[2])  # This is because of shots <8650 not having RrGC zzGC or inxbeg
             else:
                 ccT = dd.shotfile('YGC', self._ygc_shot)
             xvctr = ccT('RrGC')
             yvctr = ccT('zzGC')
             nvctr = ccT('inxbeg')
             nvctr = nvctr.data.astype(int)-1
-            
         except (PyddError, AttributeError):
             raise ValueError("data retrieval failed.")
-
         except:
             raise ValueError('data load failed.')
 
-        return xvctr.data,yvctr.data,nvctr
+        return xvctr.data, yvctr.data, nvctr
 
-  
-    def getMachineCrossSection(self,shot):
-        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting 
+    def getMachineCrossSection(self, shot):
+        """Returns R,Z coordinates of vacuum-vessel wall for masking, plotting
         routines.
-        
+
         Returns:
             (`R_limiter`, `Z_limiter`)
 
             * **R_limiter** (`Array`) - [n] array of x-values for machine cross-section.
             * **Z_limiter** (`Array`) - [n] array of y-values for machine cross-section.
         """
-        xvctr,yvctr,nvctr = self._getData(shot)
+        xvctr, yvctr, nvctr = self._getData(shot)
         x = []
         y = []
-        
-        #by reference to simplify coding
+
+        # by reference to simplify coding
         start = self._start[self._ygc_shot]
         end = self._end[self._ygc_shot]
         rev = self._rev[self._ygc_shot]
         order = self._order[self._ygc_shot]
 
-        for i in xrange(len(order)):
+        for i in range(len(order)):
             idx = nvctr[order[i]]
-            xseg = xvctr[idx+start[i]:idx+end[i]] 
+            xseg = xvctr[idx+start[i]:idx+end[i]]
             yseg = yvctr[idx+start[i]:idx+end[i]]
 
             if rev[i]:
                 xseg = xseg[::-1]
                 yseg = yseg[::-1]
-            
+
             x.extend(xseg)
             y.extend(yseg)
 
         x.extend([x[0]])
         y.extend([y[0]])
 
-        return (x[::-1], y[::-1])        
+        return (x[::-1], y[::-1])
 
     def getMachineCrossSectionFull(self, shot):
         """Returns R,Z coordinates of vacuum-vessel wall for plotting routines.
-        
+
         Absent additional vector-graphic data on machine cross-section, returns
         :py:meth:`getMachineCrossSection`.
-        
+
         Returns:
             result from getMachineCrossSection().
         """
 
-        xvctr,yvctr,nvctr = self._getData(shot)
-        
+        xvctr, yvctr, nvctr = self._getData(shot)
+
         # get valid components which is in the data structure for some shots, but not all and had to be hardcoded
         temp = self._vessel_components[self._ygc_shot]
-        
+
         x = []
         y = []
 
-        for i in xrange(len(nvctr)-1):
+        for i in range(len(nvctr)-1):
             if temp[i]:
                 xseg = xvctr[nvctr[i]:nvctr[i+1]]
                 yseg = yvctr[nvctr[i]:nvctr[i+1]]
@@ -1801,17 +1899,16 @@ class YGCAUGInterface(object):
                 y.extend(yseg)
                 x.append(None)
                 y.append(None)
-                    
+
         x = scipy.array(x[:-1])
         y = scipy.array(y[:-1])
         return (x, y)
 
 
 if _has_dd:
-    AUGVessel = YGCAUGInterface() #import setting necessary to get the vacuum vessel
+    AUGVessel = YGCAUGInterface()  # import setting necessary to get the vacuum vessel
 
- 
-        
+
 class AUGDDDataProp(AUGDDData, PropertyAccessMixin):
     """AUGDDData with the PropertyAccessMixin added to enable property-style
     access. This is good for interactive use, but may drag the performance down.
