@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>eqtools.D3DEFIT &#8212; eqtools 1.3.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for eqtools.D3DEFIT</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This program is distributed under the terms of the GNU General Purpose License (GPL).</span>
+<span class="c1"># Refer to http://www.gnu.org/licenses/gpl.txt</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of EqTools.</span>
+<span class="c1">#</span>
+<span class="c1"># EqTools is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># EqTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with EqTools.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;This module provides classes inheriting :py:class:`eqtools.EFIT.EFITTree` for</span>
+<span class="sd">working with DIII-D EFIT data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">scipy</span>
+
+<span class="kn">from</span> <span class="nn">.EFIT</span> <span class="k">import</span> <span class="n">EFITTree</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">PropertyAccessMixin</span><span class="p">,</span> <span class="n">ModuleWarning</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">MDSplus</span>
+    <span class="n">_has_MDS</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_e_MDS</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_e_MDS</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;MDSplus module could not be loaded -- classes that use &quot;</span>
+                      <span class="s2">&quot;MDSplus for data access will not work.&quot;</span><span class="p">,</span>
+                      <span class="n">ModuleWarning</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;MDSplus module could not be loaded -- classes that use &quot;</span>
+                      <span class="s2">&quot;MDSplus for data access will not work. Exception raised &quot;</span>
+                      <span class="s2">&quot;was of type </span><span class="si">%s</span><span class="s2">, message was &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+                      <span class="o">%</span> <span class="p">(</span><span class="n">_e_MDS</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">_e_MDS</span><span class="o">.</span><span class="n">message</span><span class="p">),</span>
+                      <span class="n">ModuleWarning</span><span class="p">)</span>
+    <span class="n">_has_MDS</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="D3DEFITTree"><a class="viewcode-back" href="../../eqtools.html#eqtools.D3DEFIT.D3DEFITTree">[docs]</a><span class="k">class</span> <span class="nc">D3DEFITTree</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inherits :py:class:`eqtools.EFIT.EFITTree` class. Machine-specific data</span>
+<span class="sd">    handling class for DIII-D. Pulls EFIT data from selected MDS tree</span>
+<span class="sd">    and shot, stores as object attributes. Each EFIT variable or set of</span>
+<span class="sd">    variables is recovered with a corresponding getter method. Essential data</span>
+<span class="sd">    for EFIT mapping are pulled on initialization (e.g. psirz grid). Additional</span>
+<span class="sd">    data are pulled at the first request and stored for subsequent usage.</span>
+
+<span class="sd">    Intializes DIII-D version of EFITTree object.  Pulls data from MDS tree for</span>
+<span class="sd">    storage in instance attributes.  Core attributes are populated from the MDS</span>
+<span class="sd">    tree on initialization.  Additional attributes are initialized as None,</span>
+<span class="sd">    filled on the first request to the object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shot (integer): DIII-D shot index.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        tree (string): Optional input for EFIT tree, defaults to &#39;EFIT01&#39;</span>
+<span class="sd">            (i.e., EFIT data are under \\EFIT01::top.results).</span>
+<span class="sd">        length_unit (string): Sets the base unit used for any quantity whose</span>
+<span class="sd">            dimensions are length to any power. Valid options are:</span>
+
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">                &#39;m&#39;          meters</span>
+<span class="sd">                &#39;cm&#39;         centimeters</span>
+<span class="sd">                &#39;mm&#39;         millimeters</span>
+<span class="sd">                &#39;in&#39;         inches</span>
+<span class="sd">                &#39;ft&#39;         feet</span>
+<span class="sd">                &#39;yd&#39;         yards</span>
+<span class="sd">                &#39;smoot&#39;      smoots</span>
+<span class="sd">                &#39;cubit&#39;      cubits</span>
+<span class="sd">                &#39;hand&#39;       hands</span>
+<span class="sd">                &#39;default&#39;    whatever the default in the tree is (no conversion is performed, units may be inconsistent)</span>
+<span class="sd">                ===========  ===========================================================================================</span>
+
+<span class="sd">            Default is &#39;m&#39; (all units taken and returned in meters).</span>
+<span class="sd">        gfile (string): Optional input for EFIT geqdsk location name,</span>
+<span class="sd">            defaults to &#39;geqdsk&#39; (i.e., EFIT data are under</span>
+<span class="sd">            \\tree::top.results.GEQDSK)</span>
+<span class="sd">        afile (string): Optional input for EFIT aeqdsk location name,</span>
+<span class="sd">            defaults to &#39;aeqdsk&#39; (i.e., EFIT data are under</span>
+<span class="sd">            \\tree::top.results.AEQDSK)</span>
+<span class="sd">        tspline (Boolean): Sets whether or not interpolation in time is</span>
+<span class="sd">            performed using a tricubic spline or nearest-neighbor</span>
+<span class="sd">            interpolation. Tricubic spline interpolation requires at least</span>
+<span class="sd">            four complete equilibria at different times. It is also assumed</span>
+<span class="sd">            that they are functionally correlated, and that parameters do</span>
+<span class="sd">            not vary out of their boundaries (derivative = 0 boundary</span>
+<span class="sd">            condition). Default is False (use nearest neighbor interpolation).</span>
+<span class="sd">        monotonic (Boolean): Sets whether or not the &quot;monotonic&quot; form of time</span>
+<span class="sd">            window finding is used. If True, the timebase must be monotonically</span>
+<span class="sd">            increasing. Default is False (use slower, safer method).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="s1">&#39;EFIT01&#39;</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">gfile</span><span class="o">=</span><span class="s1">&#39;geqdsk&#39;</span><span class="p">,</span>
+                 <span class="n">afile</span><span class="o">=</span><span class="s1">&#39;aeqdsk&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">tree</span><span class="o">+</span><span class="s1">&#39;::top.results.&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">D3DEFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shot</span><span class="p">,</span>
+                                          <span class="n">tree</span><span class="p">,</span>
+                                          <span class="n">root</span><span class="p">,</span>
+                                          <span class="n">length_unit</span><span class="o">=</span><span class="n">length_unit</span><span class="p">,</span>
+                                          <span class="n">gfile</span><span class="o">=</span><span class="n">gfile</span><span class="p">,</span>
+                                          <span class="n">afile</span><span class="o">=</span><span class="n">afile</span><span class="p">,</span>
+                                          <span class="n">tspline</span><span class="o">=</span><span class="n">tspline</span><span class="p">,</span>
+                                          <span class="n">monotonic</span><span class="o">=</span><span class="n">monotonic</span><span class="p">)</span>
+
+<div class="viewcode-block" id="D3DEFITTree.getFluxVol"><a class="viewcode-back" href="../../eqtools.html#eqtools.D3DEFIT.D3DEFITTree.getFluxVol">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxVol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not implemented in D3DEFIT tree.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            volume within flux surface [psi,t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getFluxVol</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="D3DEFITTree.getRmidPsi"><a class="viewcode-back" href="../../eqtools.html#eqtools.D3DEFIT.D3DEFITTree.getRmidPsi">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidPsi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns maximum major radius of each flux surface.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating</span>
+<span class="sd">                the default parameter unit (typically m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of</span>
+<span class="sd">            flux surface psi.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Value Error: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getRmidPsi</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="D3DEFITTreeProp"><a class="viewcode-back" href="../../eqtools.html#eqtools.D3DEFIT.D3DEFITTreeProp">[docs]</a><span class="k">class</span> <span class="nc">D3DEFITTreeProp</span><span class="p">(</span><span class="n">D3DEFITTree</span><span class="p">,</span> <span class="n">PropertyAccessMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;D3DEFITTree with the PropertyAccessMixin added to enable property-style</span>
+<span class="sd">    access. This is good for interactive use, but may drag the performance down.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

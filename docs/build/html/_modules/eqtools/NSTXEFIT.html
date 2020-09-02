@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>eqtools.NSTXEFIT &#8212; eqtools 1.3.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for eqtools.NSTXEFIT</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This program is distributed under the terms of the GNU General Purpose License (GPL).</span>
+<span class="c1"># Refer to http://www.gnu.org/licenses/gpl.txt</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of EqTools.</span>
+<span class="c1">#</span>
+<span class="c1"># EqTools is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># EqTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with EqTools.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;This module provides classes inheriting :py:class:`eqtools.EFIT.EFITTree` for</span>
+<span class="sd">working with NSTX EFIT data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">scipy</span>
+
+<span class="kn">from</span> <span class="nn">.EFIT</span> <span class="k">import</span> <span class="n">EFITTree</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">PropertyAccessMixin</span><span class="p">,</span> <span class="n">ModuleWarning</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">MDSplus</span>
+    <span class="n">_has_MDS</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_e_MDS</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_e_MDS</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;MDSplus module could not be loaded -- classes that use &quot;</span>
+                      <span class="s2">&quot;MDSplus for data access will not work.&quot;</span><span class="p">,</span>
+                      <span class="n">ModuleWarning</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;MDSplus module could not be loaded -- classes that use &quot;</span>
+                      <span class="s2">&quot;MDSplus for data access will not work. Exception raised &quot;</span>
+                      <span class="s2">&quot;was of type </span><span class="si">%s</span><span class="s2">, message was &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+                      <span class="o">%</span> <span class="p">(</span><span class="n">_e_MDS</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">_e_MDS</span><span class="o">.</span><span class="n">message</span><span class="p">),</span>
+                      <span class="n">ModuleWarning</span><span class="p">)</span>
+    <span class="n">_has_MDS</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="NSTXEFITTree"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree">[docs]</a><span class="k">class</span> <span class="nc">NSTXEFITTree</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inherits :py:class:`~gptools.EFIT.EFITTree` class. Machine-specific data</span>
+<span class="sd">    handling class for the National Spherical Torus Experiment (NSTX). Pulls EFIT</span>
+<span class="sd">    data from selected MDS tree and shot, stores as object attributes. Each EFIT</span>
+<span class="sd">    variable or set of variables is recovered with a corresponding getter method.</span>
+<span class="sd">    Essential data for EFIT mapping are pulled on initialization (e.g. psirz grid).</span>
+<span class="sd">    Additional data are pulled at the first request and stored for subsequent usage.</span>
+
+<span class="sd">    Intializes NSTX version of EFITTree object.  Pulls data from MDS tree for storage</span>
+<span class="sd">    in instance attributes.  Core attributes are populated from the MDS tree on initialization.</span>
+<span class="sd">    Additional attributes are initialized as None, filled on the first request to the object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shot (integer): NSTX shot index (long)</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        tree (string): Optional input for EFIT tree, defaults to &#39;EFIT01&#39;</span>
+<span class="sd">            (i.e., EFIT data are under \\EFIT01::top.results).</span>
+<span class="sd">        length_unit (string): Sets the base unit used for any quantity whose</span>
+<span class="sd">            dimensions are length to any power. Valid options are:</span>
+
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">                &#39;m&#39;          meters</span>
+<span class="sd">                &#39;cm&#39;         centimeters</span>
+<span class="sd">                &#39;mm&#39;         millimeters</span>
+<span class="sd">                &#39;in&#39;         inches</span>
+<span class="sd">                &#39;ft&#39;         feet</span>
+<span class="sd">                &#39;yd&#39;         yards</span>
+<span class="sd">                &#39;smoot&#39;      smoots</span>
+<span class="sd">                &#39;cubit&#39;      cubits</span>
+<span class="sd">                &#39;hand&#39;       hands</span>
+<span class="sd">                &#39;default&#39;    whatever the default in the tree is (no conversion is performed, units may be inconsistent)</span>
+<span class="sd">                ===========  ===========================================================================================</span>
+
+<span class="sd">            Default is &#39;m&#39; (all units taken and returned in meters).</span>
+<span class="sd">        gfile (string): Optional input for EFIT geqdsk location name,</span>
+<span class="sd">            defaults to &#39;geqdsk&#39; (i.e., EFIT data are under</span>
+<span class="sd">            \\tree::top.results.GEQDSK)</span>
+<span class="sd">        afile (string): Optional input for EFIT aeqdsk location name,</span>
+<span class="sd">            defaults to &#39;aeqdsk&#39; (i.e., EFIT data are under</span>
+<span class="sd">            \\tree::top.results.AEQDSK)</span>
+<span class="sd">        tspline (Boolean): Sets whether or not interpolation in time is</span>
+<span class="sd">            performed using a tricubic spline or nearest-neighbor</span>
+<span class="sd">            interpolation. Tricubic spline interpolation requires at least</span>
+<span class="sd">            four complete equilibria at different times. It is also assumed</span>
+<span class="sd">            that they are functionally correlated, and that parameters do</span>
+<span class="sd">            not vary out of their boundaries (derivative = 0 boundary</span>
+<span class="sd">            condition). Default is False (use nearest neighbor interpolation).</span>
+<span class="sd">        monotonic (Boolean): Sets whether or not the &quot;monotonic&quot; form of time</span>
+<span class="sd">            window finding is used. If True, the timebase must be monotonically</span>
+<span class="sd">            increasing. Default is False (use slower, safer method).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="s1">&#39;EFIT01&#39;</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">gfile</span><span class="o">=</span><span class="s1">&#39;geqdsk&#39;</span><span class="p">,</span> <span class="n">afile</span><span class="o">=</span><span class="s1">&#39;aeqdsk&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="n">root</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">tree</span><span class="o">+</span><span class="s1">&#39;::top.results.&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_MDS</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MDSplus module did not load properly. Exception is below:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">_e_MDS</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">_e_MDS</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Most functionality will not be available! (But pickled data &quot;</span>
+                <span class="s2">&quot;will still be accessible.)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NSTXEFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shot</span><span class="p">,</span>
+                                           <span class="n">tree</span><span class="p">,</span>
+                                           <span class="n">root</span><span class="p">,</span>
+                                           <span class="n">length_unit</span><span class="o">=</span><span class="n">length_unit</span><span class="p">,</span>
+                                           <span class="n">gfile</span><span class="o">=</span><span class="n">gfile</span><span class="p">,</span>
+                                           <span class="n">afile</span><span class="o">=</span><span class="n">afile</span><span class="p">,</span>
+                                           <span class="n">tspline</span><span class="o">=</span><span class="n">tspline</span><span class="p">,</span>
+                                           <span class="n">monotonic</span><span class="o">=</span><span class="n">monotonic</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NSTXEFITTree.getFluxGrid"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.getFluxGrid">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT flux grid.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            psiRZ (Array): [nt,nz,nr] array of (non-normalized) flux on grid.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">psinode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s1">&#39;:psirz&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_psiRZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">psinode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_rGrid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_zGrid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.getMachineCrossSection"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.getMachineCrossSection">[docs]</a>    <span class="k">def</span> <span class="nf">getMachineCrossSection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns R,Z coordinates of vacuum-vessel wall for masking, plotting routines.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The requested data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">limitr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s1">&#39;:limitr&#39;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">xlim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s1">&#39;:rlim&#39;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ylim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s1">&#39;:zlim&#39;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">npts</span> <span class="o">&lt;</span> <span class="n">limitr</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Dimensions inconsistent in limiter array lengths.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span> <span class="o">=</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">limitr</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">limitr</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data retrieval failed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.getFluxVol"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.getFluxVol">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxVol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not implemented in NSTXEFIT tree.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            volume within flux surface [psi,t]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getFluxVol</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.getRmidPsi"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.getRmidPsi">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidPsi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns maximum major radius of each flux surface.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating</span>
+<span class="sd">                the default parameter unit (typically m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of</span>
+<span class="sd">            flux surface psi.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Value Error: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">RmidPsiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;derived:psivsrz0&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="o">=</span> <span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="c1"># Units aren&#39;t properly stored in the tree for this one!</span>
+                <span class="k">if</span> <span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">units</span> <span class="o">!=</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidPsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidPsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidPsi&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;Wb/rad&#39;</span><span class="p">:</span>
+            <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidPsi&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">unit_factor</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.getIpCalc"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.getIpCalc">[docs]</a>    <span class="k">def</span> <span class="nf">getIpCalc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated plasma current.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            IpCalc (Array): [nt] array of EFIT-reconstructed plasma current.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">IpCalcNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_gfile</span><span class="o">+</span><span class="s1">&#39;:cpasma&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span> <span class="o">=</span> <span class="n">IpCalcNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_IpCalc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">IpCalcNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.getVolLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.getVolLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getVolLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns volume within LCFS.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 3): unit for LCFS volume.  Defaults to 3,</span>
+<span class="sd">                denoting default volumetric unit (typically m^3).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            volLCFS (Array): [nt] array of volume within LCFS.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">volLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span><span class="o">+</span><span class="s1">&#39;:volume&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span> <span class="o">=</span> <span class="n">volLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_volLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">volLCFSNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="c1"># Default units should be &#39;cm^3&#39;:</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_volLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.getJp"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.getJp">[docs]</a>    <span class="k">def</span> <span class="nf">getJp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not implemented in NSTXEFIT tree.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            EFIT-calculated plasma current density Jp on flux grid [t,r,z]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getJp</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.rz2volnorm"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.rz2volnorm">[docs]</a>    <span class="k">def</span> <span class="nf">rz2volnorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calculated normalized volume of flux surfaces not stored in NSTX EFIT.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            All mapping with Volnorm not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NSTXEFITTree.psinorm2volnorm"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTree.psinorm2volnorm">[docs]</a>    <span class="k">def</span> <span class="nf">psinorm2volnorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calculated normalized volume of flux surfaces not stored in NSTX EFIT.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            All maping with Volnorm not implemented</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="NSTXEFITTreeProp"><a class="viewcode-back" href="../../eqtools.html#eqtools.NSTXEFIT.NSTXEFITTreeProp">[docs]</a><span class="k">class</span> <span class="nc">NSTXEFITTreeProp</span><span class="p">(</span><span class="n">NSTXEFITTree</span><span class="p">,</span> <span class="n">PropertyAccessMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;NSTXEFITTree with the PropertyAccessMixin added to enable property-style</span>
+<span class="sd">    access. This is good for interactive use, but may drag the performance down.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

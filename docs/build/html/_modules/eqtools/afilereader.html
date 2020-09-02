@@ -1,33 +1,23 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>eqtools.afilereader &mdash; eqtools 1.1 documentation</title>
-    
-    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <meta charset="utf-8" />
+    <title>eqtools.afilereader &#8212; eqtools 1.3.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '1.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="eqtools 1.1 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
-  </head>
-  <body>
-    <div class="related">
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -36,15 +26,15 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 1.1 documentation</a> &raquo;</li>
-          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <h1>Source code for eqtools.afilereader</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This program is distributed under the terms of the GNU General Purpose License (GPL).</span>
@@ -70,35 +60,53 @@
 <span class="sd">handler for a-file (time-history) datasets.</span>
 
 <span class="sd">Classes:</span>
-<span class="sd">    AFileReader: Data-storage class for a-file data.  Reads</span>
+<span class="sd">    AFileReader:</span>
+<span class="sd">        Data-storage class for a-file data.  Reads</span>
 <span class="sd">        data from ASCII a-file, storing as copy-safe object</span>
 <span class="sd">        attributes.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
+
 <div class="viewcode-block" id="AFileReader"><a class="viewcode-back" href="../../eqtools.html#eqtools.afilereader.AFileReader">[docs]</a><span class="k">class</span> <span class="nc">AFileReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to read ASCII a-file (time-history data storage) into lightweight, </span>
+<span class="sd">    Class to read ASCII a-file (time-history data storage) into lightweight,</span>
 <span class="sd">    user-friendly data structure.</span>
 
-<span class="sd">    A-files store data blocks of scalar time-history data for EFIT </span>
-<span class="sd">    plasma equilibrium.  Each parameter is read into a pseudo-private object </span>
+<span class="sd">    A-files store data blocks of scalar time-history data for EFIT</span>
+<span class="sd">    plasma equilibrium.  Each parameter is read into a pseudo-private object</span>
 <span class="sd">    attribute (marked by a leading underscore), followed by the standard</span>
 <span class="sd">    EFIT variable names.</span>
-<span class="sd">    </span>
+
 <span class="sd">    initialize object, reading from file.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        afile (String): file path to a-file</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Load a-file data located at `file_path`::</span>
+
+<span class="sd">            afr = eqtools.AFileReader(file_path)</span>
+
+<span class="sd">        Recover a datapoint (for example, `shot`, stored as `afr._shot`),</span>
+<span class="sd">        using copy-protected __getattribute__ method::</span>
+
+<span class="sd">            shot = afr.shot</span>
+
+<span class="sd">        Assign a new attribute to afr -- note that this will raise an</span>
+<span class="sd">        AttributeError if attempting to overwrite a previously-stored</span>
+<span class="sd">        attribute::</span>
+
+<span class="sd">            afr.attribute = val</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">afile</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_afile</span> <span class="o">=</span> <span class="n">afile</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">readfile</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">afile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">readfile</span><span class="p">:</span>
             <span class="c1"># skip delimiter, return as single string let regex handle splitting </span>
             <span class="c1"># Use csv.reader for StopIteration error handling.</span>
             <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">readfile</span><span class="p">)</span>
@@ -109,14 +117,14 @@
             <span class="c1"># shot header line</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_shot</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># shot index</span>
-            
+
             <span class="c1"># time index line</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># time point in ms</span>
 
             <span class="c1"># header line</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;[\w.]+&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\w.]+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_jflag</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># error flag</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lflag</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># error flag</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_limloc</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>      <span class="c1"># limiter location (string)</span>
@@ -126,7 +134,7 @@
 
             <span class="c1"># read tsaisq(?), mag-axis R, bcentr, pasmat</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_tsaisq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># chi-squared for equilibrium solution</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rcencm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># nominal center (cm) - used for F=RB in vacuum</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_bcentr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>   <span class="c1"># Btor at rcentr</span>
@@ -134,7 +142,7 @@
 
             <span class="c1"># read cpasma, rout, zout, aout</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cpasma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># calculated plasma current</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># major radius of geometric center</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>     <span class="c1"># Z of LCFS (constructed)</span>
@@ -142,7 +150,7 @@
 
             <span class="c1"># read eout, doutu, doutl, vout</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_eout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># elongation of LCFS</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_doutu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># upper triangularity of LCFS</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_doutl</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># lower triangularity of LCFS</span>
@@ -150,7 +158,7 @@
 
             <span class="c1"># read rcurrt, zcurrt, qsta, betat</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rcurrt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># current-averaged major radius</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zcurrt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># current-averaged Z</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_qsta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>     <span class="c1"># q* (GA definition)</span>
@@ -158,7 +166,7 @@
 
             <span class="c1"># read betap, ali, oleft, oright</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_betap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># poloidal beta (calculated)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ali</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>      <span class="c1"># internal inductance</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_oleft</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># inner gap</span>
@@ -166,7 +174,7 @@
 
             <span class="c1"># read otop, obott, qpsib, vertn</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_otop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># top gap</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_obott</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># bottom gap</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_qpsib</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># q(psi) at 95% flux</span>
@@ -180,7 +188,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_rco2v</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_rco2v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rco2v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rco2v</span><span class="p">)</span>     <span class="c1"># chord length of vertical CO2 laser chords</span>
@@ -188,7 +196,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_dco2v</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_dco2v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dco2v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dco2v</span><span class="p">)</span>     <span class="c1"># line-averaged density along vertical CO2 chords</span>
@@ -201,7 +209,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_rco2r</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_rco2r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rco2r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rco2r</span><span class="p">)</span>     <span class="c1"># chord length of horizontal CO2 chords</span>
@@ -209,14 +217,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_dco2r</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_dco2r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dco2r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dco2r</span><span class="p">)</span>     <span class="c1"># line-averaged density along horizontal CO2 chords</span>
 
             <span class="c1"># read shearb, bpolav, s1, s2</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_shearb</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># shear parameter at boundary</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_bpolav</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># average poloidal field</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_s1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>       <span class="c1"># first Shafranov integral</span>
@@ -224,7 +232,7 @@
 
             <span class="c1"># read s3, qout, olefs, orighs</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_s3</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>       <span class="c1"># third Shafranov integral</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_qout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># q(psi) at LCFS</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_olefs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># inner gap to secondary separatrix</span>
@@ -232,7 +240,7 @@
 
             <span class="c1"># read otops, sibdry, areao, wplasm</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_otops</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># top gap to secondary separatrix</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sibdry</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># psi at boundary</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_areao</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># area of LCFS</span>
@@ -240,7 +248,7 @@
 
             <span class="c1"># read terror, elongm, qqmagx, cdflux</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_terror</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># convergence parameter - norm. change in flux at last iteration</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_elongm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># elongation at magnetic axis</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_qqmagx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>   <span class="c1"># q(psi) at psi=0 (q0)</span>
@@ -248,17 +256,17 @@
 
             <span class="c1"># read alpha, rttt, psiref, xndnt</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># Shafranov boundary line integral parameter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rttt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># Shafranov boundary line integral parameter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_psiref</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>   <span class="c1"># reference flux (flux on loop #0)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_xndnt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>    <span class="c1"># indentation</span>
 
             <span class="c1"># read rseps[0], zseps[0], rseps[1], zseps[1]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_rseps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>     <span class="c1"># radial positions of upper,lower x-points</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zseps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>     <span class="c1"># Z positions of upper,lower x-points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rseps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>     <span class="c1"># radial positions of upper,lower x-points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zseps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>     <span class="c1"># Z positions of upper,lower x-points</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rseps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zseps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rseps</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -266,7 +274,7 @@
 
             <span class="c1"># read sepexp, obots, btaxp, btaxv</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sepexp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># separatrix radial expansion</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_obots</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># bottom gap to secondary separatrix</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_btaxp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># Btor on-axis = F(0)/rmaxis</span>
@@ -274,7 +282,7 @@
 
             <span class="c1"># read aaq1, aaq2, aaq3, seplim</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_aaq1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># radius of q=1 surface</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_aaq2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># radius of q=2 surface</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_aaq3</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>     <span class="c1"># radius of q=3 surface</span>
@@ -282,7 +290,7 @@
 
             <span class="c1"># read rmagx, zmagx, simagx, taumhd</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rmagx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># major radius of magnetic axis</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmagx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># Z of magnetic axis</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_simagx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>   <span class="c1"># flux at magnetic axis</span>
@@ -290,7 +298,7 @@
 
             <span class="c1"># read betapd, betatd, wplasmd, fluxx</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_betapd</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>           <span class="c1"># diamagnetic-loop poloidal beta</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_betatd</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>           <span class="c1"># diamagnetic-loop toroidal beta</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_wplasmd</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>          <span class="c1"># diamagnetic-loop stored energy</span>
@@ -298,7 +306,7 @@
 
             <span class="c1"># read vloopt, taudia, cmerci, tavem</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_vloopt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># loop voltage</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_taudia</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># energy confinement time from diamagnetic measurements</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_qmerci</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>   <span class="c1"># Mercier stability criterion on axial q(0), q(0) &gt; QMERCI for stability</span>
@@ -321,7 +329,7 @@
             <span class="n">dat</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="n">dat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_csilop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dat</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">nsilop</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># calculated psi loop signals</span>
@@ -335,7 +343,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_ccbrsp</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_ccbrsp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ccbrsp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ccbrsp</span><span class="p">)</span>       <span class="c1"># calculated F-coil currents</span>
@@ -348,14 +356,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_eccurt</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrows</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_eccurt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_eccurt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eccurt</span><span class="p">)</span>       <span class="c1"># calculated E-coil currents</span>
 
             <span class="c1"># read pbinj, rvsin, zvsin, rvsout</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pbinj</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># injected power</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rvsin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># R of inner strike point</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zvsin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># Z of inner strike point</span>
@@ -363,7 +371,7 @@
 
             <span class="c1"># read zvsout, vsurfa, wpdot, wbdot</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zvsout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># Z of outer strike point</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_vsurfa</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># surface voltage</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_wpdot</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># time-derivative of plasma energy</span>
@@ -371,7 +379,7 @@
 
             <span class="c1"># read slantu, slantl, zuperts, chipre</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_slantu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># gap to upper outboard limiter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_slantl</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># gap to lower outboard limiter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zuperts</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># intersection of LCFS and TS laser chord</span>
@@ -379,7 +387,7 @@
 
             <span class="c1"># read cjor95, pp95, ssep, yyy2</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cjor95</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># flux-surface-averaged current density normalized to I/A at 95% flux</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pp95</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># p-prime at 95% flux</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ssep</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>     <span class="c1"># null position measurements (~1 are USN ,~-1 are LSN, ~0 are DN.  Defaults to 40 for limited shapes)</span>
@@ -387,7 +395,7 @@
 
             <span class="c1"># read xnnc, cprof, oring, cjor0</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_xnnc</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># vertical stability parameter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cprof</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># profile flag for edge current profile (for consistency with g-file)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_oring</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># gap to inner ring coil</span>
@@ -400,7 +408,7 @@
                 <span class="c1"># read fexpan, qqmin, chigamt, ssi01</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>     <span class="c1"># store previous line for next read - error handler will catch at empty read, last line retains footer</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fexpan</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># flux expansion at x-point</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_qqmin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># minimum safety factor qmin</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_chigamt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># total chi-squared of MSE</span>
@@ -409,7 +417,7 @@
                 <span class="c1"># read fexpvs, sepnose, ssi95, rqqmin</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fexpvs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># flux expansion at outer lower vessel strike point</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sepnose</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># radial distance between x-point and external field line at ZNOSE</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ssi95</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># magnetic shear at 95% poloidal flux</span>
@@ -418,7 +426,7 @@
                 <span class="c1"># read cjor99, cj1ave, rmidin, rmidout</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cjor99</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># flux-surface averaged current density normalized to I/A at 99% flux</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cj1ave</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># flux-surface averaged in plasma outer 5% poloidal flux</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rmidin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>   <span class="c1"># inboard major radius at Z=0.0 (LCFS position)</span>
@@ -427,7 +435,7 @@
                 <span class="c1"># read psurfa, peak, dminux, dminlx</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_psurfa</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># plasma boundary surface area in m^2</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># peak to average plasma pressure</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dminux</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>   <span class="c1"># distance between limiter and upper x-point</span>
@@ -436,7 +444,7 @@
                 <span class="c1"># read dolubaf, dolubafm, diludom, diludomm</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dolubaf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># distance from outer leg to upper baffle</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dolubafm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># distance at outboard midplane between LCFS and flux surf. intersecting upper baffle</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_diludom</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># distance from inner leg to upper dome</span>
@@ -445,7 +453,7 @@
                 <span class="c1"># read ratsol, rvsiu, zvsiu, rvsid</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ratsol</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># ratio of flux expansion at inner midplane vs outer midplane</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rvsiu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># major radius of inner upper strikepoint</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zvsiu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># Z of inner upper strikepoint</span>
@@ -454,7 +462,7 @@
                 <span class="c1"># read zvsid, rvsou, zvsou, rvsod</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zvsid</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># Z of inner lower strikepoint</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rvsou</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>    <span class="c1"># major radius of outer upper strikepoint</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zvsou</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>    <span class="c1"># Z of outer upper strike point</span>
@@ -463,7 +471,7 @@
                 <span class="c1"># read zvsod, condno, dollbaf, dollbafm</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zvsod</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>    <span class="c1"># Z of outer lower strikepoiunt</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_condno</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># condition number from least-squares fitting routine</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dollbaf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># distance from outer leg to lower baffle</span>
@@ -472,7 +480,7 @@
                 <span class="c1"># read dilldom, dilldomm, dummy vars</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">lastline</span> <span class="o">=</span> <span class="n">line</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;-?\d.\d*E[-+]\d*&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dilldom</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># distance from inner leg to lower dome</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dilldomm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># distance between inner midplane LCFS and surface intersecting lower dome</span>
 
@@ -481,83 +489,84 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_efittype</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>   <span class="c1"># tag for EFIT type (&#39;MAG&#39;,&#39;KINETIC&#39;,etc)</span>
 
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Old-style a-file.&#39;</span>
-                              <span class="s1">&#39;  Some parameters are depreciated.&#39;</span><span class="p">,</span>
-                              <span class="ne">UserWarning</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_fexpan</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_qqmin</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_chigamt</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ssi01</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_fexpvs</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_sepnose</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ssi95</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rqqmin</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cjor99</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cj1ave</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rmidin</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rmidout</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_psurfa</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dminux</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dminlx</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dolubaf</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dolubafm</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_diludom</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_diludomm</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ratsol</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsiu</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsiu</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsid</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsid</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsou</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsou</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsod</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsod</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_condno</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dollbaf</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dollbafm</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dilldom</span> <span class="o">=</span> <span class="bp">None</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_dilldomm</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s1">&#39;Old-style a-file. Some parameters are depreciated.&#39;</span><span class="p">,</span>
+                    <span class="ne">UserWarning</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fexpan</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_qqmin</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_chigamt</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ssi01</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fexpvs</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sepnose</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ssi95</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rqqmin</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cjor99</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cj1ave</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rmidin</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rmidout</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_psurfa</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_peak</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dminux</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dminlx</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dolubaf</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dolubafm</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_diludom</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_diludomm</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ratsol</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsiu</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsiu</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsid</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsid</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsou</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsou</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rvsod</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zvsod</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_condno</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dollbaf</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dollbafm</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dilldom</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dilldomm</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_efittype</span> <span class="o">=</span> <span class="n">lastline</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-<div class="viewcode-block" id="AFileReader.__str__"><a class="viewcode-back" href="../../eqtools.html#eqtools.afilereader.AFileReader.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;overrides default `__str__` method with more useful output.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;a-file data from &#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_afile</span>
-</div>
-<div class="viewcode-block" id="AFileReader.__getattribute__"><a class="viewcode-back" href="../../eqtools.html#eqtools.afilereader.AFileReader.__getattribute__">[docs]</a>    <span class="k">def</span> <span class="nf">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Copy-safe attribute retrieval method overriding default </span>
+<span class="sd">        Copy-safe attribute retrieval method overriding default</span>
 <span class="sd">        `object.__getattribute__`.</span>
 
-<span class="sd">        Tries to retrieve attribute as-written (first check for default object </span>
-<span class="sd">        attributes).  If that fails, looks for pseudo-private attributes, </span>
-<span class="sd">        marked by preceding underscore, to retrieve data values.  If this </span>
+<span class="sd">        Tries to retrieve attribute as-written (first check for default object</span>
+<span class="sd">        attributes).  If that fails, looks for pseudo-private attributes,</span>
+<span class="sd">        marked by preceding underscore, to retrieve data values.  If this</span>
 <span class="sd">        fails, raise AttributeError.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            name (String): Name (without leading underscore for data variables) </span>
+<span class="sd">            name (String): Name (without leading underscore for data variables)</span>
 <span class="sd">                of attribute.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            AttributeError: if no attribute can be found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">AFileReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getattribute__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">AFileReader</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">attr</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AFileReader</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__getattribute__</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">attr</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">AFileReader</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">attr</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;No attribute &quot;</span><span class="si">%s</span><span class="s1">&quot; found&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="AFileReader.__setattr__"><a class="viewcode-back" href="../../eqtools.html#eqtools.afilereader.AFileReader.__setattr__">[docs]</a>    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;No attribute &quot;</span><span class="si">{:s}</span><span class="s1">&quot; found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Copy-safe attribute setting method overriding default </span>
+<span class="sd">        Copy-safe attribute setting method overriding default</span>
 <span class="sd">        `object.__setattr__`.</span>
 
 <span class="sd">        Raises error if object already has attribute `_{name}` for input name,</span>
-<span class="sd">        as such an attribute would interfere with automatic property generation </span>
+<span class="sd">        as such an attribute would interfere with automatic property generation</span>
 <span class="sd">        in :py:meth:`__getattribute__`.</span>
 
 <span class="sd">        Args:</span>
@@ -568,37 +577,36 @@
 <span class="sd">                pseudo-private name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;AFileReader object already has data attribute&quot;</span>
-                                 <span class="s2">&quot; &#39;_</span><span class="si">%(n)s</span><span class="s2">&#39;, creating attribute &#39;</span><span class="si">%(n)s</span><span class="s2">&#39; will&quot;</span>
-                                 <span class="s2">&quot; conflict with automatic property generation.&quot;</span>
-                                 <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;AFileReader object already has data attribute&quot;</span>
+                <span class="s2">&quot; &#39;_</span><span class="si">%(n)s</span><span class="s2">&#39;, creating attribute &#39;</span><span class="si">%(n)s</span><span class="s2">&#39; will&quot;</span>
+                <span class="s2">&quot; conflict with automatic property generation.&quot;</span>
+                <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">AFileReader</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div></div>
+            <span class="nb">super</span><span class="p">(</span><span class="n">AFileReader</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -607,13 +615,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">eqtools 1.1 documentation</a> &raquo;</li>
-          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2014, Mark Chilenski, Ian Faust and John Walk.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
 </html>

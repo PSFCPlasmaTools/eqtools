@@ -1,300 +1,479 @@
-\indexentry{eqtools.CModEFIT (module)|hyperpage}{9}
-\indexentry{CModEFITTree (class in eqtools.CModEFIT)|hyperpage}{9}
-\indexentry{getFluxVol() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getRmidPsi() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getF() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getFluxPres() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getFFPrime() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getPPrime() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getQProfile() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getRLCFS() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getZLCFS() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{getMachineCrossSectionFull() (eqtools.CModEFIT.CModEFITTree method)|hyperpage}{10}
-\indexentry{CModEFITTreeProp (class in eqtools.CModEFIT)|hyperpage}{10}
-\indexentry{eqtools.EFIT (module)|hyperpage}{11}
-\indexentry{EFITTree (class in eqtools.EFIT)|hyperpage}{11}
-\indexentry{getInfo() (eqtools.EFIT.EFITTree method)|hyperpage}{11}
-\indexentry{getTimeBase() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getFluxGrid() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getRGrid() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getZGrid() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getFluxAxis() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getFluxLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getFluxVol() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getVolLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getRmidPsi() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getRLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getZLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{remapLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getF() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getFluxPres() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getFFPrime() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getPPrime() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getElongation() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getUpperTriangularity() (eqtools.EFIT.EFITTree method)|hyperpage}{12}
-\indexentry{getLowerTriangularity() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getSlhaping() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getMagR() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getMagZ() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getAreaLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getAOut() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getRmidOut() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getGeometry() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQProfile() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQ0() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQ95() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQLCFS() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQ1Surf() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQ2Surf() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQ3Surf() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getQs() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getBtVac() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getBtPla() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getBpAvg() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getFields() (eqtools.EFIT.EFITTree method)|hyperpage}{13}
-\indexentry{getIpCalc() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getIpMeas() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getJp() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getBetaT() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getBetaP() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getLi() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getBetas() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getDiamagFlux() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getDiamagBetaT() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getDiamagBetaP() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getDiamagTauE() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getDiamagWp() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getDiamag() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getWMHD() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getTauMHD() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getPinj() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getWbdot() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getWpdot() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getEnergy() (eqtools.EFIT.EFITTree method)|hyperpage}{14}
-\indexentry{getMachineCrossSection() (eqtools.EFIT.EFITTree method)|hyperpage}{15}
-\indexentry{getMachineCrossSectionFull() (eqtools.EFIT.EFITTree method)|hyperpage}{15}
-\indexentry{getCurrentSign() (eqtools.EFIT.EFITTree method)|hyperpage}{15}
-\indexentry{getParam() (eqtools.EFIT.EFITTree method)|hyperpage}{15}
-\indexentry{eqtools.FromArrays (module)|hyperpage}{15}
-\indexentry{ArrayEquilibrium (class in eqtools.FromArrays)|hyperpage}{15}
-\indexentry{getTimeBase() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getFluxGrid() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getRGrid() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getZGrid() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getQProfile() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getFluxVol() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getFluxLCFS() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getFluxAxis() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getMagR() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getMagZ() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getRmidOut() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{16}
-\indexentry{getRLCFS() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{17}
-\indexentry{getZLCFS() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{17}
-\indexentry{getCurrentSign() (eqtools.FromArrays.ArrayEquilibrium method)|hyperpage}{17}
-\indexentry{eqtools.NSTXEFIT (module)|hyperpage}{17}
-\indexentry{NSTXEFITTree (class in eqtools.NSTXEFIT)|hyperpage}{17}
-\indexentry{getFluxGrid() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{getMachineCrossSection() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{getFluxVol() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{getRmidPsi() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{getIpCalc() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{getVolLCFS() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{getJp() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{rz2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{psinorm2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)|hyperpage}{18}
-\indexentry{NSTXEFITTreeProp (class in eqtools.NSTXEFIT)|hyperpage}{18}
-\indexentry{eqtools.afilereader (module)|hyperpage}{18}
-\indexentry{AFileReader (class in eqtools.afilereader)|hyperpage}{18}
-\indexentry{eqtools.core (module)|hyperpage}{19}
-\indexentry{ModuleWarning|hyperpage}{19}
-\indexentry{PropertyAccessMixin (class in eqtools.core)|hyperpage}{19}
-\indexentry{inPolygon() (in module eqtools.core)|hyperpage}{19}
-\indexentry{Equilibrium (class in eqtools.core)|hyperpage}{19}
-\indexentry{rho2rho() (eqtools.core.Equilibrium method)|hyperpage}{20}
-\indexentry{rz2psi() (eqtools.core.Equilibrium method)|hyperpage}{22}
-\indexentry{rz2psinorm() (eqtools.core.Equilibrium method)|hyperpage}{24}
-\indexentry{rz2phinorm() (eqtools.core.Equilibrium method)|hyperpage}{26}
-\indexentry{rz2volnorm() (eqtools.core.Equilibrium method)|hyperpage}{28}
-\indexentry{rz2rmid() (eqtools.core.Equilibrium method)|hyperpage}{30}
-\indexentry{rz2roa() (eqtools.core.Equilibrium method)|hyperpage}{32}
-\indexentry{rz2rho() (eqtools.core.Equilibrium method)|hyperpage}{34}
-\indexentry{rmid2roa() (eqtools.core.Equilibrium method)|hyperpage}{36}
-\indexentry{rmid2psinorm() (eqtools.core.Equilibrium method)|hyperpage}{37}
-\indexentry{rmid2phinorm() (eqtools.core.Equilibrium method)|hyperpage}{39}
-\indexentry{rmid2volnorm() (eqtools.core.Equilibrium method)|hyperpage}{40}
-\indexentry{rmid2rho() (eqtools.core.Equilibrium method)|hyperpage}{42}
-\indexentry{roa2rmid() (eqtools.core.Equilibrium method)|hyperpage}{43}
-\indexentry{roa2psinorm() (eqtools.core.Equilibrium method)|hyperpage}{45}
-\indexentry{roa2phinorm() (eqtools.core.Equilibrium method)|hyperpage}{46}
-\indexentry{roa2volnorm() (eqtools.core.Equilibrium method)|hyperpage}{47}
-\indexentry{roa2rho() (eqtools.core.Equilibrium method)|hyperpage}{48}
-\indexentry{psinorm2rmid() (eqtools.core.Equilibrium method)|hyperpage}{50}
-\indexentry{psinorm2roa() (eqtools.core.Equilibrium method)|hyperpage}{51}
-\indexentry{psinorm2volnorm() (eqtools.core.Equilibrium method)|hyperpage}{52}
-\indexentry{psinorm2phinorm() (eqtools.core.Equilibrium method)|hyperpage}{54}
-\indexentry{psinorm2rho() (eqtools.core.Equilibrium method)|hyperpage}{55}
-\indexentry{phinorm2psinorm() (eqtools.core.Equilibrium method)|hyperpage}{57}
-\indexentry{phinorm2volnorm() (eqtools.core.Equilibrium method)|hyperpage}{58}
-\indexentry{phinorm2rmid() (eqtools.core.Equilibrium method)|hyperpage}{59}
-\indexentry{phinorm2roa() (eqtools.core.Equilibrium method)|hyperpage}{61}
-\indexentry{phinorm2rho() (eqtools.core.Equilibrium method)|hyperpage}{62}
-\indexentry{volnorm2psinorm() (eqtools.core.Equilibrium method)|hyperpage}{64}
-\indexentry{volnorm2phinorm() (eqtools.core.Equilibrium method)|hyperpage}{65}
-\indexentry{volnorm2rmid() (eqtools.core.Equilibrium method)|hyperpage}{66}
-\indexentry{volnorm2roa() (eqtools.core.Equilibrium method)|hyperpage}{68}
-\indexentry{volnorm2rho() (eqtools.core.Equilibrium method)|hyperpage}{69}
-\indexentry{getMagRSpline() (eqtools.core.Equilibrium method)|hyperpage}{71}
-\indexentry{getMagZSpline() (eqtools.core.Equilibrium method)|hyperpage}{71}
-\indexentry{getRmidOutSpline() (eqtools.core.Equilibrium method)|hyperpage}{72}
-\indexentry{getAOutSpline() (eqtools.core.Equilibrium method)|hyperpage}{72}
-\indexentry{getInfo() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getTimeBase() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getFluxGrid() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getRGrid() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getZGrid() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getFluxAxis() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getFluxLCFS() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getRLCFS() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getZLCFS() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{remapLCFS() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getFluxVol() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getVolLCFS() (eqtools.core.Equilibrium method)|hyperpage}{73}
-\indexentry{getRmidPsi() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getF() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getFluxPres() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getFFPrime() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getPPrime() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getElongation() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getUpperTriangularity() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getLowerTriangularity() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getShaping() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getMagR() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getMagZ() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getAreaLCFS() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getAOut() (eqtools.core.Equilibrium method)|hyperpage}{74}
-\indexentry{getRmidOut() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getGeometry() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQProfile() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQ0() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQ95() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQLCFS() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQ1Surf() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQ2Surf() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQ3Surf() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getQs() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getBtVac() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getBtPla() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getBpAvg() (eqtools.core.Equilibrium method)|hyperpage}{75}
-\indexentry{getFields() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getIpCalc() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getIpMeas() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getJp() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getBetaT() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getBetaP() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getLi() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getBetas() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getDiamagFlux() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getDiamagBetaT() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getDiamagBetaP() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getDiamagTauE() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getDiamagWp() (eqtools.core.Equilibrium method)|hyperpage}{76}
-\indexentry{getDiamag() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getWMHD() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getTauMHD() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getPinj() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getCurrentSign() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getWbdot() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getWpdot() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getEnergy() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getParam() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getMachineCrossSection() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{getMachineCrossSectionFull() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{gfile() (eqtools.core.Equilibrium method)|hyperpage}{77}
-\indexentry{plotFlux() (eqtools.core.Equilibrium method)|hyperpage}{78}
-\indexentry{eqtools.eqdskreader (module)|hyperpage}{78}
-\indexentry{EqdskReader (class in eqtools.eqdskreader)|hyperpage}{78}
-\indexentry{getInfo() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{78}
-\indexentry{readAFile() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{79}
-\indexentry{rz2psi() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{79}
-\indexentry{rz2psinorm() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{80}
-\indexentry{rz2phinorm() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{81}
-\indexentry{rz2volnorm() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{82}
-\indexentry{rz2rho() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{82}
-\indexentry{rz2rmid() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{84}
-\indexentry{psinorm2rmid() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{85}
-\indexentry{psinorm2volnorm() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{86}
-\indexentry{psinorm2phinorm() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{86}
-\indexentry{getTimeBase() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getCurrentSign() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getFluxGrid() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getRGrid() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getZGrid() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getFluxAxis() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getFluxLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getRLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getZLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{remapLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{87}
-\indexentry{getFluxVol() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getVolLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getRmidPsi() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getF() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getFluxPres() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getFFPrime() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getPPrime() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getElongation() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getUpperTriangularity() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getLowerTriangularity() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getShaping() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getMagR() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getMagZ() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getAreaLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getAOut() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{88}
-\indexentry{getRmidOut() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getGeometry() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQProfile() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQ0() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQ95() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQLCFS() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQ1Surf() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQ2Surf() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQ3Surf() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getQs() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getBtVac() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getBtPla() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{89}
-\indexentry{getBpAvg() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getFields() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getIpCalc() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getIpMeas() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getJp() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getBetaT() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getBetaP() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getLi() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getBetas() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getDiamagFlux() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getDiamagBetaT() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getDiamagBetaP() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getDiamagTauE() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{90}
-\indexentry{getDiamagWp() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getDiamag() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getWMHD() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getTauMHD() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getPinj() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getWbdot() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getWpdot() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getEnergy() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getParam() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getMachineCrossSection() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{getMachineCrossSectionFull() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{gfile() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{91}
-\indexentry{plotFlux() (eqtools.eqdskreader.EqdskReader method)|hyperpage}{92}
-\indexentry{eqtools.filewriter (module)|hyperpage}{92}
-\indexentry{gfile() (in module eqtools.filewriter)|hyperpage}{92}
-\indexentry{findLCFS() (in module eqtools.filewriter)|hyperpage}{92}
-\indexentry{eqtools.pfilereader (module)|hyperpage}{92}
-\indexentry{PFileReader (class in eqtools.pfilereader)|hyperpage}{92}
-\indexentry{eqtools.trispline (module)|hyperpage}{92}
-\indexentry{Spline (class in eqtools.trispline)|hyperpage}{92}
-\indexentry{ev() (eqtools.trispline.Spline method)|hyperpage}{93}
-\indexentry{RectBivariateSpline (class in eqtools.trispline)|hyperpage}{93}
-\indexentry{ev() (eqtools.trispline.RectBivariateSpline method)|hyperpage}{94}
-\indexentry{eqtools (module)|hyperpage}{94}
+\indexentry{eqtools.AUGData (module)@\spxentry{eqtools.AUGData}\spxextra{module}|hyperpage}{9}
+\indexentry{AUGDDData (class in eqtools.AUGData)@\spxentry{AUGDDData}\spxextra{class in eqtools.AUGData}|hyperpage}{9}
+\indexentry{getInfo() (eqtools.AUGData.AUGDDData method)@\spxentry{getInfo()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{10}
+\indexentry{getTimeBase() (eqtools.AUGData.AUGDDData method)@\spxentry{getTimeBase()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{10}
+\indexentry{getFluxGrid() (eqtools.AUGData.AUGDDData method)@\spxentry{getFluxGrid()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{10}
+\indexentry{getRGrid() (eqtools.AUGData.AUGDDData method)@\spxentry{getRGrid()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{10}
+\indexentry{getZGrid() (eqtools.AUGData.AUGDDData method)@\spxentry{getZGrid()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{11}
+\indexentry{getFluxAxis() (eqtools.AUGData.AUGDDData method)@\spxentry{getFluxAxis()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{11}
+\indexentry{getFluxLCFS() (eqtools.AUGData.AUGDDData method)@\spxentry{getFluxLCFS()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{11}
+\indexentry{getFluxVol() (eqtools.AUGData.AUGDDData method)@\spxentry{getFluxVol()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{11}
+\indexentry{getVolLCFS() (eqtools.AUGData.AUGDDData method)@\spxentry{getVolLCFS()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{11}
+\indexentry{getRmidPsi() (eqtools.AUGData.AUGDDData method)@\spxentry{getRmidPsi()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{11}
+\indexentry{getRLCFS() (eqtools.AUGData.AUGDDData method)@\spxentry{getRLCFS()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{12}
+\indexentry{getZLCFS() (eqtools.AUGData.AUGDDData method)@\spxentry{getZLCFS()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{12}
+\indexentry{remapLCFS() (eqtools.AUGData.AUGDDData method)@\spxentry{remapLCFS()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{12}
+\indexentry{getF() (eqtools.AUGData.AUGDDData method)@\spxentry{getF()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{12}
+\indexentry{getFluxPres() (eqtools.AUGData.AUGDDData method)@\spxentry{getFluxPres()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{12}
+\indexentry{getFPrime() (eqtools.AUGData.AUGDDData method)@\spxentry{getFPrime()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{12}
+\indexentry{getFFPrime() (eqtools.AUGData.AUGDDData method)@\spxentry{getFFPrime()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{12}
+\indexentry{getPPrime() (eqtools.AUGData.AUGDDData method)@\spxentry{getPPrime()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getElongation() (eqtools.AUGData.AUGDDData method)@\spxentry{getElongation()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getUpperTriangularity() (eqtools.AUGData.AUGDDData method)@\spxentry{getUpperTriangularity()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getLowerTriangularity() (eqtools.AUGData.AUGDDData method)@\spxentry{getLowerTriangularity()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getShaping() (eqtools.AUGData.AUGDDData method)@\spxentry{getShaping()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getMagR() (eqtools.AUGData.AUGDDData method)@\spxentry{getMagR()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getMagZ() (eqtools.AUGData.AUGDDData method)@\spxentry{getMagZ()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getAreaLCFS() (eqtools.AUGData.AUGDDData method)@\spxentry{getAreaLCFS()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{13}
+\indexentry{getAOut() (eqtools.AUGData.AUGDDData method)@\spxentry{getAOut()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getRmidOut() (eqtools.AUGData.AUGDDData method)@\spxentry{getRmidOut()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getGeometry() (eqtools.AUGData.AUGDDData method)@\spxentry{getGeometry()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getQProfile() (eqtools.AUGData.AUGDDData method)@\spxentry{getQProfile()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getQ0() (eqtools.AUGData.AUGDDData method)@\spxentry{getQ0()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getQ95() (eqtools.AUGData.AUGDDData method)@\spxentry{getQ95()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getQLCFS() (eqtools.AUGData.AUGDDData method)@\spxentry{getQLCFS()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getQ1Surf() (eqtools.AUGData.AUGDDData method)@\spxentry{getQ1Surf()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{14}
+\indexentry{getQ2Surf() (eqtools.AUGData.AUGDDData method)@\spxentry{getQ2Surf()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getQ3Surf() (eqtools.AUGData.AUGDDData method)@\spxentry{getQ3Surf()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getQs() (eqtools.AUGData.AUGDDData method)@\spxentry{getQs()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getBtVac() (eqtools.AUGData.AUGDDData method)@\spxentry{getBtVac()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getBtPla() (eqtools.AUGData.AUGDDData method)@\spxentry{getBtPla()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getBpAvg() (eqtools.AUGData.AUGDDData method)@\spxentry{getBpAvg()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getFields() (eqtools.AUGData.AUGDDData method)@\spxentry{getFields()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getIpCalc() (eqtools.AUGData.AUGDDData method)@\spxentry{getIpCalc()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getIpMeas() (eqtools.AUGData.AUGDDData method)@\spxentry{getIpMeas()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getJp() (eqtools.AUGData.AUGDDData method)@\spxentry{getJp()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{15}
+\indexentry{getBetaT() (eqtools.AUGData.AUGDDData method)@\spxentry{getBetaT()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getBetaP() (eqtools.AUGData.AUGDDData method)@\spxentry{getBetaP()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getLi() (eqtools.AUGData.AUGDDData method)@\spxentry{getLi()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getBetas() (eqtools.AUGData.AUGDDData method)@\spxentry{getBetas()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getDiamagFlux() (eqtools.AUGData.AUGDDData method)@\spxentry{getDiamagFlux()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getDiamagBetaT() (eqtools.AUGData.AUGDDData method)@\spxentry{getDiamagBetaT()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getDiamagBetaP() (eqtools.AUGData.AUGDDData method)@\spxentry{getDiamagBetaP()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getDiamagTauE() (eqtools.AUGData.AUGDDData method)@\spxentry{getDiamagTauE()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getDiamagWp() (eqtools.AUGData.AUGDDData method)@\spxentry{getDiamagWp()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getDiamag() (eqtools.AUGData.AUGDDData method)@\spxentry{getDiamag()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getWMHD() (eqtools.AUGData.AUGDDData method)@\spxentry{getWMHD()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{16}
+\indexentry{getTauMHD() (eqtools.AUGData.AUGDDData method)@\spxentry{getTauMHD()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getPinj() (eqtools.AUGData.AUGDDData method)@\spxentry{getPinj()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getWbdot() (eqtools.AUGData.AUGDDData method)@\spxentry{getWbdot()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getWpdot() (eqtools.AUGData.AUGDDData method)@\spxentry{getWpdot()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getBCentr() (eqtools.AUGData.AUGDDData method)@\spxentry{getBCentr()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getRCentr() (eqtools.AUGData.AUGDDData method)@\spxentry{getRCentr()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getEnergy() (eqtools.AUGData.AUGDDData method)@\spxentry{getEnergy()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getMachineCrossSection() (eqtools.AUGData.AUGDDData method)@\spxentry{getMachineCrossSection()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getMachineCrossSectionFull() (eqtools.AUGData.AUGDDData method)@\spxentry{getMachineCrossSectionFull()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getCurrentSign() (eqtools.AUGData.AUGDDData method)@\spxentry{getCurrentSign()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{17}
+\indexentry{getParam() (eqtools.AUGData.AUGDDData method)@\spxentry{getParam()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{18}
+\indexentry{getSSQ() (eqtools.AUGData.AUGDDData method)@\spxentry{getSSQ()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{18}
+\indexentry{rz2BR() (eqtools.AUGData.AUGDDData method)@\spxentry{rz2BR()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{18}
+\indexentry{rz2BZ() (eqtools.AUGData.AUGDDData method)@\spxentry{rz2BZ()}\spxextra{eqtools.AUGData.AUGDDData method}|hyperpage}{19}
+\indexentry{YGCAUGInterface (class in eqtools.AUGData)@\spxentry{YGCAUGInterface}\spxextra{class in eqtools.AUGData}|hyperpage}{21}
+\indexentry{getMachineCrossSection() (eqtools.AUGData.YGCAUGInterface method)@\spxentry{getMachineCrossSection()}\spxextra{eqtools.AUGData.YGCAUGInterface method}|hyperpage}{21}
+\indexentry{getMachineCrossSectionFull() (eqtools.AUGData.YGCAUGInterface method)@\spxentry{getMachineCrossSectionFull()}\spxextra{eqtools.AUGData.YGCAUGInterface method}|hyperpage}{21}
+\indexentry{AUGDDDataProp (class in eqtools.AUGData)@\spxentry{AUGDDDataProp}\spxextra{class in eqtools.AUGData}|hyperpage}{21}
+\indexentry{eqtools.CModEFIT (module)@\spxentry{eqtools.CModEFIT}\spxextra{module}|hyperpage}{22}
+\indexentry{CModEFITTree (class in eqtools.CModEFIT)@\spxentry{CModEFITTree}\spxextra{class in eqtools.CModEFIT}|hyperpage}{22}
+\indexentry{getFluxVol() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getFluxVol()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{23}
+\indexentry{getRmidPsi() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getRmidPsi()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{23}
+\indexentry{getF() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getF()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{23}
+\indexentry{getFluxPres() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getFluxPres()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{23}
+\indexentry{getFFPrime() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getFFPrime()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{23}
+\indexentry{getPPrime() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getPPrime()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{23}
+\indexentry{getQProfile() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getQProfile()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{23}
+\indexentry{getRLCFS() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getRLCFS()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{24}
+\indexentry{getZLCFS() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getZLCFS()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{24}
+\indexentry{getMachineCrossSectionFull() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getMachineCrossSectionFull()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{24}
+\indexentry{getRCentr() (eqtools.CModEFIT.CModEFITTree method)@\spxentry{getRCentr()}\spxextra{eqtools.CModEFIT.CModEFITTree method}|hyperpage}{24}
+\indexentry{CModEFITTreeProp (class in eqtools.CModEFIT)@\spxentry{CModEFITTreeProp}\spxextra{class in eqtools.CModEFIT}|hyperpage}{24}
+\indexentry{eqtools.D3DEFIT (module)@\spxentry{eqtools.D3DEFIT}\spxextra{module}|hyperpage}{24}
+\indexentry{D3DEFITTree (class in eqtools.D3DEFIT)@\spxentry{D3DEFITTree}\spxextra{class in eqtools.D3DEFIT}|hyperpage}{24}
+\indexentry{getFluxVol() (eqtools.D3DEFIT.D3DEFITTree method)@\spxentry{getFluxVol()}\spxextra{eqtools.D3DEFIT.D3DEFITTree method}|hyperpage}{25}
+\indexentry{getRmidPsi() (eqtools.D3DEFIT.D3DEFITTree method)@\spxentry{getRmidPsi()}\spxextra{eqtools.D3DEFIT.D3DEFITTree method}|hyperpage}{25}
+\indexentry{D3DEFITTreeProp (class in eqtools.D3DEFIT)@\spxentry{D3DEFITTreeProp}\spxextra{class in eqtools.D3DEFIT}|hyperpage}{25}
+\indexentry{eqtools.EFIT (module)@\spxentry{eqtools.EFIT}\spxextra{module}|hyperpage}{26}
+\indexentry{EFITTree (class in eqtools.EFIT)@\spxentry{EFITTree}\spxextra{class in eqtools.EFIT}|hyperpage}{26}
+\indexentry{getInfo() (eqtools.EFIT.EFITTree method)@\spxentry{getInfo()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{27}
+\indexentry{getTimeBase() (eqtools.EFIT.EFITTree method)@\spxentry{getTimeBase()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{27}
+\indexentry{getFluxGrid() (eqtools.EFIT.EFITTree method)@\spxentry{getFluxGrid()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{27}
+\indexentry{getRGrid() (eqtools.EFIT.EFITTree method)@\spxentry{getRGrid()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{27}
+\indexentry{getZGrid() (eqtools.EFIT.EFITTree method)@\spxentry{getZGrid()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{27}
+\indexentry{getFluxAxis() (eqtools.EFIT.EFITTree method)@\spxentry{getFluxAxis()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{27}
+\indexentry{getFluxLCFS() (eqtools.EFIT.EFITTree method)@\spxentry{getFluxLCFS()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{28}
+\indexentry{getFluxVol() (eqtools.EFIT.EFITTree method)@\spxentry{getFluxVol()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{28}
+\indexentry{getVolLCFS() (eqtools.EFIT.EFITTree method)@\spxentry{getVolLCFS()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{28}
+\indexentry{getRmidPsi() (eqtools.EFIT.EFITTree method)@\spxentry{getRmidPsi()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{28}
+\indexentry{getRLCFS() (eqtools.EFIT.EFITTree method)@\spxentry{getRLCFS()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{28}
+\indexentry{getZLCFS() (eqtools.EFIT.EFITTree method)@\spxentry{getZLCFS()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{28}
+\indexentry{remapLCFS() (eqtools.EFIT.EFITTree method)@\spxentry{remapLCFS()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{28}
+\indexentry{getF() (eqtools.EFIT.EFITTree method)@\spxentry{getF()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{29}
+\indexentry{getFluxPres() (eqtools.EFIT.EFITTree method)@\spxentry{getFluxPres()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{29}
+\indexentry{getFFPrime() (eqtools.EFIT.EFITTree method)@\spxentry{getFFPrime()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{29}
+\indexentry{getPPrime() (eqtools.EFIT.EFITTree method)@\spxentry{getPPrime()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{29}
+\indexentry{getElongation() (eqtools.EFIT.EFITTree method)@\spxentry{getElongation()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{29}
+\indexentry{getUpperTriangularity() (eqtools.EFIT.EFITTree method)@\spxentry{getUpperTriangularity()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{29}
+\indexentry{getLowerTriangularity() (eqtools.EFIT.EFITTree method)@\spxentry{getLowerTriangularity()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{29}
+\indexentry{getShaping() (eqtools.EFIT.EFITTree method)@\spxentry{getShaping()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{30}
+\indexentry{getMagR() (eqtools.EFIT.EFITTree method)@\spxentry{getMagR()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{30}
+\indexentry{getMagZ() (eqtools.EFIT.EFITTree method)@\spxentry{getMagZ()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{30}
+\indexentry{getAreaLCFS() (eqtools.EFIT.EFITTree method)@\spxentry{getAreaLCFS()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{30}
+\indexentry{getAOut() (eqtools.EFIT.EFITTree method)@\spxentry{getAOut()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{30}
+\indexentry{getRmidOut() (eqtools.EFIT.EFITTree method)@\spxentry{getRmidOut()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{30}
+\indexentry{getGeometry() (eqtools.EFIT.EFITTree method)@\spxentry{getGeometry()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQProfile() (eqtools.EFIT.EFITTree method)@\spxentry{getQProfile()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQ0() (eqtools.EFIT.EFITTree method)@\spxentry{getQ0()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQ95() (eqtools.EFIT.EFITTree method)@\spxentry{getQ95()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQLCFS() (eqtools.EFIT.EFITTree method)@\spxentry{getQLCFS()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQ1Surf() (eqtools.EFIT.EFITTree method)@\spxentry{getQ1Surf()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQ2Surf() (eqtools.EFIT.EFITTree method)@\spxentry{getQ2Surf()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQ3Surf() (eqtools.EFIT.EFITTree method)@\spxentry{getQ3Surf()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{31}
+\indexentry{getQs() (eqtools.EFIT.EFITTree method)@\spxentry{getQs()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{32}
+\indexentry{getBtVac() (eqtools.EFIT.EFITTree method)@\spxentry{getBtVac()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{32}
+\indexentry{getBtPla() (eqtools.EFIT.EFITTree method)@\spxentry{getBtPla()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{32}
+\indexentry{getBpAvg() (eqtools.EFIT.EFITTree method)@\spxentry{getBpAvg()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{32}
+\indexentry{getFields() (eqtools.EFIT.EFITTree method)@\spxentry{getFields()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{32}
+\indexentry{getIpCalc() (eqtools.EFIT.EFITTree method)@\spxentry{getIpCalc()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{32}
+\indexentry{getIpMeas() (eqtools.EFIT.EFITTree method)@\spxentry{getIpMeas()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{32}
+\indexentry{getJp() (eqtools.EFIT.EFITTree method)@\spxentry{getJp()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getBetaT() (eqtools.EFIT.EFITTree method)@\spxentry{getBetaT()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getBetaP() (eqtools.EFIT.EFITTree method)@\spxentry{getBetaP()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getLi() (eqtools.EFIT.EFITTree method)@\spxentry{getLi()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getBetas() (eqtools.EFIT.EFITTree method)@\spxentry{getBetas()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getDiamagFlux() (eqtools.EFIT.EFITTree method)@\spxentry{getDiamagFlux()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getDiamagBetaT() (eqtools.EFIT.EFITTree method)@\spxentry{getDiamagBetaT()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getDiamagBetaP() (eqtools.EFIT.EFITTree method)@\spxentry{getDiamagBetaP()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{33}
+\indexentry{getDiamagTauE() (eqtools.EFIT.EFITTree method)@\spxentry{getDiamagTauE()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getDiamagWp() (eqtools.EFIT.EFITTree method)@\spxentry{getDiamagWp()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getDiamag() (eqtools.EFIT.EFITTree method)@\spxentry{getDiamag()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getWMHD() (eqtools.EFIT.EFITTree method)@\spxentry{getWMHD()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getTauMHD() (eqtools.EFIT.EFITTree method)@\spxentry{getTauMHD()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getPinj() (eqtools.EFIT.EFITTree method)@\spxentry{getPinj()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getWbdot() (eqtools.EFIT.EFITTree method)@\spxentry{getWbdot()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getWpdot() (eqtools.EFIT.EFITTree method)@\spxentry{getWpdot()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{34}
+\indexentry{getBCentr() (eqtools.EFIT.EFITTree method)@\spxentry{getBCentr()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{35}
+\indexentry{getRCentr() (eqtools.EFIT.EFITTree method)@\spxentry{getRCentr()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{35}
+\indexentry{getEnergy() (eqtools.EFIT.EFITTree method)@\spxentry{getEnergy()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{35}
+\indexentry{getMachineCrossSection() (eqtools.EFIT.EFITTree method)@\spxentry{getMachineCrossSection()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{35}
+\indexentry{getMachineCrossSectionFull() (eqtools.EFIT.EFITTree method)@\spxentry{getMachineCrossSectionFull()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{35}
+\indexentry{getCurrentSign() (eqtools.EFIT.EFITTree method)@\spxentry{getCurrentSign()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{35}
+\indexentry{getParam() (eqtools.EFIT.EFITTree method)@\spxentry{getParam()}\spxextra{eqtools.EFIT.EFITTree method}|hyperpage}{35}
+\indexentry{eqtools.FromArrays (module)@\spxentry{eqtools.FromArrays}\spxextra{module}|hyperpage}{36}
+\indexentry{ArrayEquilibrium (class in eqtools.FromArrays)@\spxentry{ArrayEquilibrium}\spxextra{class in eqtools.FromArrays}|hyperpage}{36}
+\indexentry{getTimeBase() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getTimeBase()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getFluxGrid() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getFluxGrid()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getRGrid() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getRGrid()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getZGrid() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getZGrid()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getQProfile() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getQProfile()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getFluxVol() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getFluxVol()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getFluxLCFS() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getFluxLCFS()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getFluxAxis() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getFluxAxis()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getMagR() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getMagR()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getMagZ() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getMagZ()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getRmidOut() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getRmidOut()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getRLCFS() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getRLCFS()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getZLCFS() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getZLCFS()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{getCurrentSign() (eqtools.FromArrays.ArrayEquilibrium method)@\spxentry{getCurrentSign()}\spxextra{eqtools.FromArrays.ArrayEquilibrium method}|hyperpage}{37}
+\indexentry{eqtools.NSTXEFIT (module)@\spxentry{eqtools.NSTXEFIT}\spxextra{module}|hyperpage}{37}
+\indexentry{NSTXEFITTree (class in eqtools.NSTXEFIT)@\spxentry{NSTXEFITTree}\spxextra{class in eqtools.NSTXEFIT}|hyperpage}{37}
+\indexentry{getFluxGrid() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{getFluxGrid()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{38}
+\indexentry{getMachineCrossSection() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{getMachineCrossSection()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{getFluxVol() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{getFluxVol()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{getRmidPsi() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{getRmidPsi()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{getIpCalc() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{getIpCalc()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{getVolLCFS() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{getVolLCFS()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{getJp() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{getJp()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{rz2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{rz2volnorm()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{psinorm2volnorm() (eqtools.NSTXEFIT.NSTXEFITTree method)@\spxentry{psinorm2volnorm()}\spxextra{eqtools.NSTXEFIT.NSTXEFITTree method}|hyperpage}{39}
+\indexentry{NSTXEFITTreeProp (class in eqtools.NSTXEFIT)@\spxentry{NSTXEFITTreeProp}\spxextra{class in eqtools.NSTXEFIT}|hyperpage}{39}
+\indexentry{eqtools.TCVLIUQE (module)@\spxentry{eqtools.TCVLIUQE}\spxextra{module}|hyperpage}{40}
+\indexentry{greenArea() (in module eqtools.TCVLIUQE)@\spxentry{greenArea()}\spxextra{in module eqtools.TCVLIUQE}|hyperpage}{40}
+\indexentry{TCVLIUQETree (class in eqtools.TCVLIUQE)@\spxentry{TCVLIUQETree}\spxextra{class in eqtools.TCVLIUQE}|hyperpage}{40}
+\indexentry{getInfo() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getInfo()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{41}
+\indexentry{getTimeBase() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getTimeBase()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{41}
+\indexentry{getFluxGrid() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getFluxGrid()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{41}
+\indexentry{getRGrid() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getRGrid()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{41}
+\indexentry{getZGrid() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getZGrid()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{41}
+\indexentry{getFluxAxis() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getFluxAxis()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{41}
+\indexentry{getFluxLCFS() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getFluxLCFS()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{41}
+\indexentry{getFluxVol() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getFluxVol()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{42}
+\indexentry{getVolLCFS() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getVolLCFS()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{42}
+\indexentry{getRmidPsi() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getRmidPsi()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{42}
+\indexentry{getRLCFS() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getRLCFS()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{42}
+\indexentry{getZLCFS() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getZLCFS()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{42}
+\indexentry{getF() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getF()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{42}
+\indexentry{getFluxPres() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getFluxPres()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getFFPrime() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getFFPrime()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getPPrime() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getPPrime()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getElongation() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getElongation()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getUpperTriangularity() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getUpperTriangularity()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getLowerTriangularity() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getLowerTriangularity()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getMagR() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getMagR()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getMagZ() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getMagZ()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{43}
+\indexentry{getAreaLCFS() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getAreaLCFS()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{44}
+\indexentry{getAOut() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getAOut()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{44}
+\indexentry{getRmidOut() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getRmidOut()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{44}
+\indexentry{getQProfile() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getQProfile()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{44}
+\indexentry{getQ0() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getQ0()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{44}
+\indexentry{getQ95() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getQ95()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{44}
+\indexentry{getQLCFS() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getQLCFS()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getBtVac() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getBtVac()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getBtPla() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getBtPla()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getIpCalc() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getIpCalc()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getIpMeas() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getIpMeas()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getBetaT() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getBetaT()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getBetaP() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getBetaP()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getLi() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getLi()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{45}
+\indexentry{getDiamagWp() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getDiamagWp()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{46}
+\indexentry{getTauMHD() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getTauMHD()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{46}
+\indexentry{getMachineCrossSection() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getMachineCrossSection()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{46}
+\indexentry{getMachineCrossSectionPatch() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{getMachineCrossSectionPatch()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{46}
+\indexentry{plotFlux() (eqtools.TCVLIUQE.TCVLIUQETree method)@\spxentry{plotFlux()}\spxextra{eqtools.TCVLIUQE.TCVLIUQETree method}|hyperpage}{46}
+\indexentry{TCVLIUQETreeProp (class in eqtools.TCVLIUQE)@\spxentry{TCVLIUQETreeProp}\spxextra{class in eqtools.TCVLIUQE}|hyperpage}{46}
+\indexentry{eqtools.afilereader (module)@\spxentry{eqtools.afilereader}\spxextra{module}|hyperpage}{47}
+\indexentry{AFileReader (class in eqtools.afilereader)@\spxentry{AFileReader}\spxextra{class in eqtools.afilereader}|hyperpage}{47}
+\indexentry{eqtools.core (module)@\spxentry{eqtools.core}\spxextra{module}|hyperpage}{47}
+\indexentry{ModuleWarning@\spxentry{ModuleWarning}|hyperpage}{47}
+\indexentry{PropertyAccessMixin (class in eqtools.core)@\spxentry{PropertyAccessMixin}\spxextra{class in eqtools.core}|hyperpage}{47}
+\indexentry{inPolygon() (in module eqtools.core)@\spxentry{inPolygon()}\spxextra{in module eqtools.core}|hyperpage}{47}
+\indexentry{Equilibrium (class in eqtools.core)@\spxentry{Equilibrium}\spxextra{class in eqtools.core}|hyperpage}{48}
+\indexentry{rho2rho() (eqtools.core.Equilibrium method)@\spxentry{rho2rho()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{49}
+\indexentry{rz2psi() (eqtools.core.Equilibrium method)@\spxentry{rz2psi()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{51}
+\indexentry{rz2psinorm() (eqtools.core.Equilibrium method)@\spxentry{rz2psinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{53}
+\indexentry{rz2phinorm() (eqtools.core.Equilibrium method)@\spxentry{rz2phinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{54}
+\indexentry{rz2volnorm() (eqtools.core.Equilibrium method)@\spxentry{rz2volnorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{56}
+\indexentry{rz2rmid() (eqtools.core.Equilibrium method)@\spxentry{rz2rmid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{58}
+\indexentry{rz2roa() (eqtools.core.Equilibrium method)@\spxentry{rz2roa()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{60}
+\indexentry{rz2rho() (eqtools.core.Equilibrium method)@\spxentry{rz2rho()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{61}
+\indexentry{rmid2roa() (eqtools.core.Equilibrium method)@\spxentry{rmid2roa()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{64}
+\indexentry{rmid2psinorm() (eqtools.core.Equilibrium method)@\spxentry{rmid2psinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{65}
+\indexentry{rmid2phinorm() (eqtools.core.Equilibrium method)@\spxentry{rmid2phinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{66}
+\indexentry{rmid2volnorm() (eqtools.core.Equilibrium method)@\spxentry{rmid2volnorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{68}
+\indexentry{rmid2rho() (eqtools.core.Equilibrium method)@\spxentry{rmid2rho()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{69}
+\indexentry{roa2rmid() (eqtools.core.Equilibrium method)@\spxentry{roa2rmid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{71}
+\indexentry{roa2psinorm() (eqtools.core.Equilibrium method)@\spxentry{roa2psinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{72}
+\indexentry{roa2phinorm() (eqtools.core.Equilibrium method)@\spxentry{roa2phinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{73}
+\indexentry{roa2volnorm() (eqtools.core.Equilibrium method)@\spxentry{roa2volnorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{74}
+\indexentry{roa2rho() (eqtools.core.Equilibrium method)@\spxentry{roa2rho()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{75}
+\indexentry{psinorm2rmid() (eqtools.core.Equilibrium method)@\spxentry{psinorm2rmid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{77}
+\indexentry{psinorm2roa() (eqtools.core.Equilibrium method)@\spxentry{psinorm2roa()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{78}
+\indexentry{psinorm2volnorm() (eqtools.core.Equilibrium method)@\spxentry{psinorm2volnorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{79}
+\indexentry{psinorm2phinorm() (eqtools.core.Equilibrium method)@\spxentry{psinorm2phinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{80}
+\indexentry{psinorm2rho() (eqtools.core.Equilibrium method)@\spxentry{psinorm2rho()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{81}
+\indexentry{phinorm2psinorm() (eqtools.core.Equilibrium method)@\spxentry{phinorm2psinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{83}
+\indexentry{phinorm2volnorm() (eqtools.core.Equilibrium method)@\spxentry{phinorm2volnorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{84}
+\indexentry{phinorm2rmid() (eqtools.core.Equilibrium method)@\spxentry{phinorm2rmid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{85}
+\indexentry{phinorm2roa() (eqtools.core.Equilibrium method)@\spxentry{phinorm2roa()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{87}
+\indexentry{phinorm2rho() (eqtools.core.Equilibrium method)@\spxentry{phinorm2rho()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{88}
+\indexentry{volnorm2psinorm() (eqtools.core.Equilibrium method)@\spxentry{volnorm2psinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{90}
+\indexentry{volnorm2phinorm() (eqtools.core.Equilibrium method)@\spxentry{volnorm2phinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{91}
+\indexentry{volnorm2rmid() (eqtools.core.Equilibrium method)@\spxentry{volnorm2rmid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{92}
+\indexentry{volnorm2roa() (eqtools.core.Equilibrium method)@\spxentry{volnorm2roa()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{93}
+\indexentry{volnorm2rho() (eqtools.core.Equilibrium method)@\spxentry{volnorm2rho()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{94}
+\indexentry{rz2q() (eqtools.core.Equilibrium method)@\spxentry{rz2q()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{96}
+\indexentry{rmid2q() (eqtools.core.Equilibrium method)@\spxentry{rmid2q()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{98}
+\indexentry{roa2q() (eqtools.core.Equilibrium method)@\spxentry{roa2q()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{99}
+\indexentry{psinorm2q() (eqtools.core.Equilibrium method)@\spxentry{psinorm2q()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{100}
+\indexentry{phinorm2q() (eqtools.core.Equilibrium method)@\spxentry{phinorm2q()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{101}
+\indexentry{volnorm2q() (eqtools.core.Equilibrium method)@\spxentry{volnorm2q()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{103}
+\indexentry{rz2F() (eqtools.core.Equilibrium method)@\spxentry{rz2F()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{104}
+\indexentry{rmid2F() (eqtools.core.Equilibrium method)@\spxentry{rmid2F()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{105}
+\indexentry{roa2F() (eqtools.core.Equilibrium method)@\spxentry{roa2F()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{107}
+\indexentry{psinorm2F() (eqtools.core.Equilibrium method)@\spxentry{psinorm2F()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{108}
+\indexentry{phinorm2F() (eqtools.core.Equilibrium method)@\spxentry{phinorm2F()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{109}
+\indexentry{volnorm2F() (eqtools.core.Equilibrium method)@\spxentry{volnorm2F()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{110}
+\indexentry{Fnorm2psinorm() (eqtools.core.Equilibrium method)@\spxentry{Fnorm2psinorm()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{111}
+\indexentry{rz2FFPrime() (eqtools.core.Equilibrium method)@\spxentry{rz2FFPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{112}
+\indexentry{rmid2FFPrime() (eqtools.core.Equilibrium method)@\spxentry{rmid2FFPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{114}
+\indexentry{roa2FFPrime() (eqtools.core.Equilibrium method)@\spxentry{roa2FFPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{115}
+\indexentry{psinorm2FFPrime() (eqtools.core.Equilibrium method)@\spxentry{psinorm2FFPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{116}
+\indexentry{phinorm2FFPrime() (eqtools.core.Equilibrium method)@\spxentry{phinorm2FFPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{117}
+\indexentry{volnorm2FFPrime() (eqtools.core.Equilibrium method)@\spxentry{volnorm2FFPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{118}
+\indexentry{rz2p() (eqtools.core.Equilibrium method)@\spxentry{rz2p()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{119}
+\indexentry{rmid2p() (eqtools.core.Equilibrium method)@\spxentry{rmid2p()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{121}
+\indexentry{roa2p() (eqtools.core.Equilibrium method)@\spxentry{roa2p()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{122}
+\indexentry{psinorm2p() (eqtools.core.Equilibrium method)@\spxentry{psinorm2p()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{123}
+\indexentry{phinorm2p() (eqtools.core.Equilibrium method)@\spxentry{phinorm2p()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{124}
+\indexentry{volnorm2p() (eqtools.core.Equilibrium method)@\spxentry{volnorm2p()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{126}
+\indexentry{rz2pprime() (eqtools.core.Equilibrium method)@\spxentry{rz2pprime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{127}
+\indexentry{rmid2pprime() (eqtools.core.Equilibrium method)@\spxentry{rmid2pprime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{128}
+\indexentry{roa2pprime() (eqtools.core.Equilibrium method)@\spxentry{roa2pprime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{130}
+\indexentry{psinorm2pprime() (eqtools.core.Equilibrium method)@\spxentry{psinorm2pprime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{131}
+\indexentry{phinorm2pprime() (eqtools.core.Equilibrium method)@\spxentry{phinorm2pprime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{132}
+\indexentry{volnorm2pprime() (eqtools.core.Equilibrium method)@\spxentry{volnorm2pprime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{133}
+\indexentry{rz2v() (eqtools.core.Equilibrium method)@\spxentry{rz2v()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{134}
+\indexentry{rmid2v() (eqtools.core.Equilibrium method)@\spxentry{rmid2v()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{136}
+\indexentry{roa2v() (eqtools.core.Equilibrium method)@\spxentry{roa2v()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{137}
+\indexentry{psinorm2v() (eqtools.core.Equilibrium method)@\spxentry{psinorm2v()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{138}
+\indexentry{phinorm2v() (eqtools.core.Equilibrium method)@\spxentry{phinorm2v()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{139}
+\indexentry{volnorm2v() (eqtools.core.Equilibrium method)@\spxentry{volnorm2v()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{140}
+\indexentry{rz2BR() (eqtools.core.Equilibrium method)@\spxentry{rz2BR()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{141}
+\indexentry{rz2BZ() (eqtools.core.Equilibrium method)@\spxentry{rz2BZ()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{143}
+\indexentry{rz2BT() (eqtools.core.Equilibrium method)@\spxentry{rz2BT()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{145}
+\indexentry{rz2B() (eqtools.core.Equilibrium method)@\spxentry{rz2B()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{146}
+\indexentry{rz2jR() (eqtools.core.Equilibrium method)@\spxentry{rz2jR()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{148}
+\indexentry{rz2jZ() (eqtools.core.Equilibrium method)@\spxentry{rz2jZ()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{149}
+\indexentry{rz2jT() (eqtools.core.Equilibrium method)@\spxentry{rz2jT()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{151}
+\indexentry{rz2j() (eqtools.core.Equilibrium method)@\spxentry{rz2j()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{153}
+\indexentry{rz2FieldLineTrace() (eqtools.core.Equilibrium method)@\spxentry{rz2FieldLineTrace()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{154}
+\indexentry{rho2FieldLineTrace() (eqtools.core.Equilibrium method)@\spxentry{rho2FieldLineTrace()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{155}
+\indexentry{plotField() (eqtools.core.Equilibrium method)@\spxentry{plotField()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{155}
+\indexentry{getMagRSpline() (eqtools.core.Equilibrium method)@\spxentry{getMagRSpline()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{157}
+\indexentry{getMagZSpline() (eqtools.core.Equilibrium method)@\spxentry{getMagZSpline()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{157}
+\indexentry{getRmidOutSpline() (eqtools.core.Equilibrium method)@\spxentry{getRmidOutSpline()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{158}
+\indexentry{getAOutSpline() (eqtools.core.Equilibrium method)@\spxentry{getAOutSpline()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{159}
+\indexentry{getBtVacSpline() (eqtools.core.Equilibrium method)@\spxentry{getBtVacSpline()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{159}
+\indexentry{getInfo() (eqtools.core.Equilibrium method)@\spxentry{getInfo()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{159}
+\indexentry{getTimeBase() (eqtools.core.Equilibrium method)@\spxentry{getTimeBase()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{159}
+\indexentry{getFluxGrid() (eqtools.core.Equilibrium method)@\spxentry{getFluxGrid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getRGrid() (eqtools.core.Equilibrium method)@\spxentry{getRGrid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getZGrid() (eqtools.core.Equilibrium method)@\spxentry{getZGrid()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getFluxAxis() (eqtools.core.Equilibrium method)@\spxentry{getFluxAxis()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getFluxLCFS() (eqtools.core.Equilibrium method)@\spxentry{getFluxLCFS()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getRLCFS() (eqtools.core.Equilibrium method)@\spxentry{getRLCFS()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getZLCFS() (eqtools.core.Equilibrium method)@\spxentry{getZLCFS()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{remapLCFS() (eqtools.core.Equilibrium method)@\spxentry{remapLCFS()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getFluxVol() (eqtools.core.Equilibrium method)@\spxentry{getFluxVol()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getVolLCFS() (eqtools.core.Equilibrium method)@\spxentry{getVolLCFS()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getRmidPsi() (eqtools.core.Equilibrium method)@\spxentry{getRmidPsi()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getF() (eqtools.core.Equilibrium method)@\spxentry{getF()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{160}
+\indexentry{getFluxPres() (eqtools.core.Equilibrium method)@\spxentry{getFluxPres()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getFFPrime() (eqtools.core.Equilibrium method)@\spxentry{getFFPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getPPrime() (eqtools.core.Equilibrium method)@\spxentry{getPPrime()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getElongation() (eqtools.core.Equilibrium method)@\spxentry{getElongation()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getUpperTriangularity() (eqtools.core.Equilibrium method)@\spxentry{getUpperTriangularity()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getLowerTriangularity() (eqtools.core.Equilibrium method)@\spxentry{getLowerTriangularity()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getShaping() (eqtools.core.Equilibrium method)@\spxentry{getShaping()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getMagR() (eqtools.core.Equilibrium method)@\spxentry{getMagR()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getMagZ() (eqtools.core.Equilibrium method)@\spxentry{getMagZ()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getAreaLCFS() (eqtools.core.Equilibrium method)@\spxentry{getAreaLCFS()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getAOut() (eqtools.core.Equilibrium method)@\spxentry{getAOut()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getRmidOut() (eqtools.core.Equilibrium method)@\spxentry{getRmidOut()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getGeometry() (eqtools.core.Equilibrium method)@\spxentry{getGeometry()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{161}
+\indexentry{getQProfile() (eqtools.core.Equilibrium method)@\spxentry{getQProfile()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getQ0() (eqtools.core.Equilibrium method)@\spxentry{getQ0()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getQ95() (eqtools.core.Equilibrium method)@\spxentry{getQ95()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getQLCFS() (eqtools.core.Equilibrium method)@\spxentry{getQLCFS()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getQ1Surf() (eqtools.core.Equilibrium method)@\spxentry{getQ1Surf()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getQ2Surf() (eqtools.core.Equilibrium method)@\spxentry{getQ2Surf()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getQ3Surf() (eqtools.core.Equilibrium method)@\spxentry{getQ3Surf()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getQs() (eqtools.core.Equilibrium method)@\spxentry{getQs()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getBtVac() (eqtools.core.Equilibrium method)@\spxentry{getBtVac()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getBtPla() (eqtools.core.Equilibrium method)@\spxentry{getBtPla()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getBpAvg() (eqtools.core.Equilibrium method)@\spxentry{getBpAvg()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getFields() (eqtools.core.Equilibrium method)@\spxentry{getFields()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{162}
+\indexentry{getIpCalc() (eqtools.core.Equilibrium method)@\spxentry{getIpCalc()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getIpMeas() (eqtools.core.Equilibrium method)@\spxentry{getIpMeas()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getJp() (eqtools.core.Equilibrium method)@\spxentry{getJp()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getBetaT() (eqtools.core.Equilibrium method)@\spxentry{getBetaT()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getBetaP() (eqtools.core.Equilibrium method)@\spxentry{getBetaP()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getLi() (eqtools.core.Equilibrium method)@\spxentry{getLi()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getBetas() (eqtools.core.Equilibrium method)@\spxentry{getBetas()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getDiamagFlux() (eqtools.core.Equilibrium method)@\spxentry{getDiamagFlux()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getDiamagBetaT() (eqtools.core.Equilibrium method)@\spxentry{getDiamagBetaT()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getDiamagBetaP() (eqtools.core.Equilibrium method)@\spxentry{getDiamagBetaP()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getDiamagTauE() (eqtools.core.Equilibrium method)@\spxentry{getDiamagTauE()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getDiamagWp() (eqtools.core.Equilibrium method)@\spxentry{getDiamagWp()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getDiamag() (eqtools.core.Equilibrium method)@\spxentry{getDiamag()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{163}
+\indexentry{getWMHD() (eqtools.core.Equilibrium method)@\spxentry{getWMHD()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getTauMHD() (eqtools.core.Equilibrium method)@\spxentry{getTauMHD()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getPinj() (eqtools.core.Equilibrium method)@\spxentry{getPinj()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getCurrentSign() (eqtools.core.Equilibrium method)@\spxentry{getCurrentSign()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getWbdot() (eqtools.core.Equilibrium method)@\spxentry{getWbdot()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getWpdot() (eqtools.core.Equilibrium method)@\spxentry{getWpdot()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getBCentr() (eqtools.core.Equilibrium method)@\spxentry{getBCentr()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getRCentr() (eqtools.core.Equilibrium method)@\spxentry{getRCentr()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getEnergy() (eqtools.core.Equilibrium method)@\spxentry{getEnergy()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getParam() (eqtools.core.Equilibrium method)@\spxentry{getParam()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getMachineCrossSection() (eqtools.core.Equilibrium method)@\spxentry{getMachineCrossSection()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{getMachineCrossSectionFull() (eqtools.core.Equilibrium method)@\spxentry{getMachineCrossSectionFull()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{164}
+\indexentry{gfile() (eqtools.core.Equilibrium method)@\spxentry{gfile()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{165}
+\indexentry{plotFlux() (eqtools.core.Equilibrium method)@\spxentry{plotFlux()}\spxextra{eqtools.core.Equilibrium method}|hyperpage}{165}
+\indexentry{eqtools.eqdskreader (module)@\spxentry{eqtools.eqdskreader}\spxextra{module}|hyperpage}{166}
+\indexentry{EqdskReader (class in eqtools.eqdskreader)@\spxentry{EqdskReader}\spxextra{class in eqtools.eqdskreader}|hyperpage}{166}
+\indexentry{getInfo() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getInfo()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{167}
+\indexentry{readAFile() (eqtools.eqdskreader.EqdskReader method)@\spxentry{readAFile()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{167}
+\indexentry{rz2psi() (eqtools.eqdskreader.EqdskReader method)@\spxentry{rz2psi()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{167}
+\indexentry{rz2psinorm() (eqtools.eqdskreader.EqdskReader method)@\spxentry{rz2psinorm()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{168}
+\indexentry{rz2phinorm() (eqtools.eqdskreader.EqdskReader method)@\spxentry{rz2phinorm()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{168}
+\indexentry{rz2volnorm() (eqtools.eqdskreader.EqdskReader method)@\spxentry{rz2volnorm()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{169}
+\indexentry{rz2rho() (eqtools.eqdskreader.EqdskReader method)@\spxentry{rz2rho()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{169}
+\indexentry{rz2rmid() (eqtools.eqdskreader.EqdskReader method)@\spxentry{rz2rmid()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{171}
+\indexentry{psinorm2rmid() (eqtools.eqdskreader.EqdskReader method)@\spxentry{psinorm2rmid()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{172}
+\indexentry{psinorm2volnorm() (eqtools.eqdskreader.EqdskReader method)@\spxentry{psinorm2volnorm()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{173}
+\indexentry{psinorm2phinorm() (eqtools.eqdskreader.EqdskReader method)@\spxentry{psinorm2phinorm()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{173}
+\indexentry{getTimeBase() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getTimeBase()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{174}
+\indexentry{getCurrentSign() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getCurrentSign()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{174}
+\indexentry{getFluxGrid() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getFluxGrid()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{174}
+\indexentry{getRGrid() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getRGrid()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{174}
+\indexentry{getZGrid() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getZGrid()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{174}
+\indexentry{getFluxAxis() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getFluxAxis()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{174}
+\indexentry{getFluxLCFS() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getFluxLCFS()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{174}
+\indexentry{getRLCFS() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getRLCFS()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{getZLCFS() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getZLCFS()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{remapLCFS() (eqtools.eqdskreader.EqdskReader method)@\spxentry{remapLCFS()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{getFluxVol() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getFluxVol()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{getVolLCFS() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getVolLCFS()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{getRmidPsi() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getRmidPsi()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{getF() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getF()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{getFluxPres() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getFluxPres()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{175}
+\indexentry{getFFPrime() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getFFPrime()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{176}
+\indexentry{getPPrime() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getPPrime()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{176}
+\indexentry{getElongation() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getElongation()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{176}
+\indexentry{getUpperTriangularity() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getUpperTriangularity()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{176}
+\indexentry{getLowerTriangularity() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getLowerTriangularity()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{176}
+\indexentry{getShaping() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getShaping()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{176}
+\indexentry{getMagR() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getMagR()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{176}
+\indexentry{getMagZ() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getMagZ()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{177}
+\indexentry{getAreaLCFS() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getAreaLCFS()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{177}
+\indexentry{getAOut() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getAOut()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{177}
+\indexentry{getRmidOut() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getRmidOut()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{177}
+\indexentry{getGeometry() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getGeometry()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{177}
+\indexentry{getQProfile() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQProfile()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{177}
+\indexentry{getQ0() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQ0()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{178}
+\indexentry{getQ95() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQ95()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{178}
+\indexentry{getQLCFS() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQLCFS()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{178}
+\indexentry{getQ1Surf() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQ1Surf()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{178}
+\indexentry{getQ2Surf() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQ2Surf()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{178}
+\indexentry{getQ3Surf() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQ3Surf()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{178}
+\indexentry{getQs() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getQs()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{179}
+\indexentry{getBtVac() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getBtVac()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{179}
+\indexentry{getBtPla() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getBtPla()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{179}
+\indexentry{getBpAvg() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getBpAvg()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{179}
+\indexentry{getFields() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getFields()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{179}
+\indexentry{getIpCalc() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getIpCalc()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{179}
+\indexentry{getIpMeas() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getIpMeas()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{179}
+\indexentry{getJp() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getJp()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getBetaT() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getBetaT()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getBetaP() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getBetaP()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getLi() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getLi()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getBetas() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getBetas()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getDiamagFlux() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getDiamagFlux()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getDiamagBetaT() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getDiamagBetaT()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getDiamagBetaP() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getDiamagBetaP()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{180}
+\indexentry{getDiamagTauE() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getDiamagTauE()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{181}
+\indexentry{getDiamagWp() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getDiamagWp()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{181}
+\indexentry{getDiamag() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getDiamag()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{181}
+\indexentry{getWMHD() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getWMHD()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{181}
+\indexentry{getTauMHD() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getTauMHD()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{181}
+\indexentry{getPinj() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getPinj()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{181}
+\indexentry{getWbdot() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getWbdot()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{182}
+\indexentry{getWpdot() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getWpdot()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{182}
+\indexentry{getBCentr() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getBCentr()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{182}
+\indexentry{getRCentr() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getRCentr()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{182}
+\indexentry{getEnergy() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getEnergy()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{182}
+\indexentry{getParam() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getParam()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{182}
+\indexentry{getMachineCrossSection() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getMachineCrossSection()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{182}
+\indexentry{getMachineCrossSectionFull() (eqtools.eqdskreader.EqdskReader method)@\spxentry{getMachineCrossSectionFull()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{183}
+\indexentry{gfile() (eqtools.eqdskreader.EqdskReader method)@\spxentry{gfile()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{183}
+\indexentry{plotFlux() (eqtools.eqdskreader.EqdskReader method)@\spxentry{plotFlux()}\spxextra{eqtools.eqdskreader.EqdskReader method}|hyperpage}{183}
+\indexentry{eqtools.pfilereader (module)@\spxentry{eqtools.pfilereader}\spxextra{module}|hyperpage}{184}
+\indexentry{PFileReader (class in eqtools.pfilereader)@\spxentry{PFileReader}\spxextra{class in eqtools.pfilereader}|hyperpage}{184}
+\indexentry{eqtools.trispline (module)@\spxentry{eqtools.trispline}\spxextra{module}|hyperpage}{185}
+\indexentry{Spline (class in eqtools.trispline)@\spxentry{Spline}\spxextra{class in eqtools.trispline}|hyperpage}{185}
+\indexentry{ev() (eqtools.trispline.Spline method)@\spxentry{ev()}\spxextra{eqtools.trispline.Spline method}|hyperpage}{185}
+\indexentry{RectBivariateSpline (class in eqtools.trispline)@\spxentry{RectBivariateSpline}\spxextra{class in eqtools.trispline}|hyperpage}{186}
+\indexentry{ev() (eqtools.trispline.RectBivariateSpline method)@\spxentry{ev()}\spxextra{eqtools.trispline.RectBivariateSpline method}|hyperpage}{186}
+\indexentry{BivariateInterpolator (class in eqtools.trispline)@\spxentry{BivariateInterpolator}\spxextra{class in eqtools.trispline}|hyperpage}{186}
+\indexentry{ev() (eqtools.trispline.BivariateInterpolator method)@\spxentry{ev()}\spxextra{eqtools.trispline.BivariateInterpolator method}|hyperpage}{187}
+\indexentry{UnivariateInterpolator (class in eqtools.trispline)@\spxentry{UnivariateInterpolator}\spxextra{class in eqtools.trispline}|hyperpage}{187}
+\indexentry{eqtools (module)@\spxentry{eqtools}\spxextra{module}|hyperpage}{187}

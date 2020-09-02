@@ -1,0 +1,1298 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>eqtools.TCVLIUQE &#8212; eqtools 1.3.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for eqtools.TCVLIUQE</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This program is distributed under the terms of the GNU General Purpose License (GPL).</span>
+<span class="c1"># Refer to http://www.gnu.org/licenses/gpl.txt</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of EqTools.</span>
+<span class="c1">#</span>
+<span class="c1"># EqTools is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># EqTools is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with EqTools.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;This module provides classes inheriting :py:class:`eqtools.EFIT.EFITTree` for</span>
+<span class="sd">working with TCV LIUQE Equilibrium.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">.EFIT</span> <span class="k">import</span> <span class="n">EFITTree</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">PropertyAccessMixin</span><span class="p">,</span> <span class="n">ModuleWarning</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">MDSplus</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_e_MDS</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_e_MDS</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;MDSplus module could not be loaded -- classes that use &quot;</span>
+                      <span class="s2">&quot;MDSplus for data access will not work.&quot;</span><span class="p">,</span>
+                      <span class="n">ModuleWarning</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;MDSplus module could not be loaded -- classes that use &quot;</span>
+                      <span class="s2">&quot;MDSplus for data access will not work. Exception raised &quot;</span>
+                      <span class="s2">&quot;was of type </span><span class="si">%s</span><span class="s2">, message was &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span>
+                      <span class="o">%</span> <span class="p">(</span><span class="n">_e_MDS</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">_e_MDS</span><span class="o">.</span><span class="n">message</span><span class="p">),</span>
+                      <span class="n">ModuleWarning</span><span class="p">)</span>
+    <span class="n">_has_MDS</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.widgets</span> <span class="k">as</span> <span class="nn">mplw</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">mplgs</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mpatches</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.path</span> <span class="k">as</span> <span class="nn">mpath</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.path</span> <span class="k">import</span> <span class="n">Path</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="k">import</span> <span class="n">PathPatch</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="k">import</span> <span class="n">MaxNLocator</span>
+    <span class="kn">import</span> <span class="nn">matplotlib._cntr</span> <span class="k">as</span> <span class="nn">cntr</span>
+
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;matplotlib modules could not be loaded -- plotting and gfile&quot;</span>
+                  <span class="s2">&quot; writing will not be available.&quot;</span><span class="p">,</span>
+                  <span class="n">ModuleWarning</span><span class="p">)</span>
+
+<span class="c1"># we need to define the green function area from the polygon</span>
+<span class="c1"># see http://stackoverflow.com/questions/22678990/how-can-i-calculate-the-area-within-a-contour-in-python-using-the-matplotlib</span>
+<span class="c1"># see also http://stackoverflow.com/questions/18304722/python-find-contour-lines-from-matplotlib-pyplot-contour</span>
+<span class="c1"># for how to compute the contours without calling matplotlib contours</span>
+
+
+<div class="viewcode-block" id="greenArea"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.greenArea">[docs]</a><span class="k">def</span> <span class="nf">greenArea</span><span class="p">(</span><span class="n">vs</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">vs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">y1</span><span class="o">-</span><span class="n">y0</span>
+        <span class="n">a</span> <span class="o">+=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">y0</span><span class="o">*</span><span class="n">dx</span> <span class="o">-</span> <span class="n">x0</span><span class="o">*</span><span class="n">dy</span><span class="p">)</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">x1</span>
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">y1</span>
+    <span class="k">return</span> <span class="n">a</span></div>
+
+
+<div class="viewcode-block" id="TCVLIUQETree"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree">[docs]</a><span class="k">class</span> <span class="nc">TCVLIUQETree</span><span class="p">(</span><span class="n">EFITTree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inherits :py:class:`eqtools.EFIT.EFITTree` class. Machine-specific data</span>
+<span class="sd">    handling class for TCV Machine. Pulls LIUQUE data from selected MDS tree</span>
+<span class="sd">    and shot, stores as object attributes eventually transforming it in the</span>
+<span class="sd">    equivalent quantity for EFIT. Each  variable or set of</span>
+<span class="sd">    variables is recovered with a corresponding getter method. Essential data</span>
+<span class="sd">    for LIUQUE mapping are pulled on initialization (e.g. psirz grid). Additional</span>
+<span class="sd">    data are pulled at the first request and stored for subsequent usage.</span>
+
+<span class="sd">    Intializes TCV version of EFITTree object.  Pulls data from MDS tree for</span>
+<span class="sd">    storage in instance attributes.  Core attributes are populated from the MDS</span>
+<span class="sd">    tree on initialization.  Additional attributes are initialized as None,</span>
+<span class="sd">    filled on the first request to the object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        shot (integer): TCV shot index.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        tree (string): Optional input for LIUQE tree, defaults to &#39;RESULTS&#39;</span>
+<span class="sd">            (i.e., LIUQE data are under \\results::).</span>
+<span class="sd">        length_unit (string): Sets the base unit used for any quantity whose</span>
+<span class="sd">            dimensions are length to any power. Valid options are:</span>
+
+<span class="sd">                ===========  ===========================================================================================</span>
+<span class="sd">                &#39;m&#39;          meters</span>
+<span class="sd">                &#39;cm&#39;         centimeters</span>
+<span class="sd">                &#39;mm&#39;         millimeters</span>
+<span class="sd">                &#39;in&#39;         inches</span>
+<span class="sd">                &#39;ft&#39;         feet</span>
+<span class="sd">                &#39;yd&#39;         yards</span>
+<span class="sd">                &#39;smoot&#39;      smoots</span>
+<span class="sd">                &#39;cubit&#39;      cubits</span>
+<span class="sd">                &#39;hand&#39;       hands</span>
+<span class="sd">                &#39;default&#39;    whatever the default in the tree is (no conversion is performed, units may be inconsistent)</span>
+<span class="sd">                ===========  ===========================================================================================</span>
+
+<span class="sd">            Default is &#39;m&#39; (all units taken and returned in meters).</span>
+<span class="sd">        gfile (string): Optional input for EFIT geqdsk location name,</span>
+<span class="sd">            defaults to &#39;g_eqdsk&#39; (i.e., EFIT data are under</span>
+<span class="sd">            \\tree::top.results.G_EQDSK)</span>
+<span class="sd">        afile (string): Optional input for EFIT aeqdsk location name,</span>
+<span class="sd">            defaults to &#39;a_eqdsk&#39; (i.e., EFIT data are under</span>
+<span class="sd">            \\tree::top.results.A_EQDSK)</span>
+<span class="sd">        tspline (Boolean): Sets whether or not interpolation in time is</span>
+<span class="sd">            performed using a tricubic spline or nearest-neighbor</span>
+<span class="sd">            interpolation. Tricubic spline interpolation requires at least</span>
+<span class="sd">            four complete equilibria at different times. It is also assumed</span>
+<span class="sd">            that they are functionally correlated, and that parameters do</span>
+<span class="sd">            not vary out of their boundaries (derivative = 0 boundary</span>
+<span class="sd">            condition). Default is False (use nearest neighbor interpolation).</span>
+<span class="sd">        monotonic (Boolean): Sets whether or not the &quot;monotonic&quot; form of time</span>
+<span class="sd">            window finding is used. If True, the timebase must be monotonically</span>
+<span class="sd">            increasing. Default is False (use slower, safer method).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="s1">&#39;tcv_shot&#39;</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">gfile</span><span class="o">=</span><span class="s1">&#39;g_eqdsk&#39;</span><span class="p">,</span>
+                 <span class="n">afile</span><span class="o">=</span><span class="s1">&#39;a_eqdsk&#39;</span><span class="p">,</span> <span class="n">tspline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># this is the root tree where all the LIUQE results are stored</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;\results&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TCVLIUQETree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">shot</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span>
+            <span class="n">length_unit</span><span class="o">=</span><span class="n">length_unit</span><span class="p">,</span> <span class="n">gfile</span><span class="o">=</span><span class="n">gfile</span><span class="p">,</span> <span class="n">afile</span><span class="o">=</span><span class="n">afile</span><span class="p">,</span>
+            <span class="n">tspline</span><span class="o">=</span><span class="n">tspline</span><span class="p">,</span> <span class="n">monotonic</span><span class="o">=</span><span class="n">monotonic</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ---  1</span>
+<div class="viewcode-block" id="TCVLIUQETree.getInfo"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns namedtuple of shot information</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple containing</span>
+
+<span class="sd">                =====   ===============================</span>
+<span class="sd">                shot    TCV shot index (long)</span>
+<span class="sd">                tree    LIUQE tree (string)</span>
+<span class="sd">                nr      size of R-axis for spatial grid</span>
+<span class="sd">                nz      size of Z-axis for spatial grid</span>
+<span class="sd">                nt      size of timebase for flux grid</span>
+<span class="sd">                =====   ===============================</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">)</span>
+            <span class="n">nr</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span><span class="p">)</span>
+            <span class="n">nz</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">nt</span><span class="p">,</span> <span class="n">nr</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;tree has failed data load.&#39;</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Info&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;shot&#39;</span><span class="p">,</span> <span class="s1">&#39;tree&#39;</span><span class="p">,</span> <span class="s1">&#39;nr&#39;</span><span class="p">,</span> <span class="s1">&#39;nz&#39;</span><span class="p">,</span> <span class="s1">&#39;nt&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">(</span><span class="n">shot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shot</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">,</span> <span class="n">nr</span><span class="o">=</span><span class="n">nr</span><span class="p">,</span> <span class="n">nz</span><span class="o">=</span><span class="n">nz</span><span class="p">,</span> <span class="n">nt</span><span class="o">=</span><span class="n">nt</span><span class="p">)</span></div>
+
+    <span class="c1"># ---  2</span>
+<div class="viewcode-block" id="TCVLIUQETree.getTimeBase"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getTimeBase">[docs]</a>    <span class="k">def</span> <span class="nf">getTimeBase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE time base vector.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            time (array): [nt] array of time points.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">psinode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::psi&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">getDimensionAt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  3</span>
+<div class="viewcode-block" id="TCVLIUQETree.getFluxGrid"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getFluxGrid">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE flux grid.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            psiRZ (Array): [nt,nz,nr] array of (non-normalized) flux on grid.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">         &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">psinode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::psi&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">scipy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span> <span class="o">=</span> <span class="n">psinode</span><span class="o">.</span><span class="n">dim_of</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_psiRZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">psinode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_rGrid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_zGrid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="c1"># the transpose is needed as psi is saved as (R, Z, t) in the pulse file</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiRZ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  4</span>
+<div class="viewcode-block" id="TCVLIUQETree.getRGrid"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getRGrid">[docs]</a>    <span class="k">def</span> <span class="nf">getRGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE R-axis.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            rGrid (Array): [nr] array of R-axis of flux grid.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Default units should be &#39;m&#39;</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_rGrid&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rGrid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  5</span>
+<div class="viewcode-block" id="TCVLIUQETree.getZGrid"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getZGrid">[docs]</a>    <span class="k">def</span> <span class="nf">getZGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE Z-axis.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            zGrid (Array): [nz] array of Z-axis of flux grid.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Default units should be &#39;m&#39;</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_zGrid&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zGrid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  6</span>
+<div class="viewcode-block" id="TCVLIUQETree.getFluxAxis"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getFluxAxis">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxAxis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns psi on magnetic axis.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            psiAxis (Array): [nt] array of psi on magnetic axis.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">psiAxisNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::psi_axis&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span> <span class="o">=</span> <span class="n">psiAxisNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">scipy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_psiAxis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">psiAxisNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiAxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  7</span>
+<div class="viewcode-block" id="TCVLIUQETree.getFluxLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getFluxLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns psi at separatrix.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            psiLCFS (Array): [nt] array of psi at LCFS.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># psiLCFSNode = self._MDSTree.getNode(self._root+&#39;::surface_flux&#39;)</span>
+                <span class="c1"># self._psiLCFS = psiLCFSNode.data()</span>
+                <span class="c1"># self._defaultUnits[&#39;_psiLCFS&#39;] = str(psiLCFSNode.units)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_psiLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;T*m^2&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psiLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  8</span>
+<div class="viewcode-block" id="TCVLIUQETree.getFluxVol"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getFluxVol">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxVol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns volume within flux surface. This is not implemented in LIUQE</span>
+<span class="sd">        as default output. So we use contour and GREEN theorem to get the area</span>
+<span class="sd">        within a default grid of the PSI. Then we compute the volume by multipling</span>
+<span class="sd">        for 2pi * VolLCFS / AreaLCFS.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 3): unit for plasma volume.  Defaults to 3,</span>
+<span class="sd">                indicating default volumetric unit (typically m^3).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            fluxVol (Array): [nt,npsi] array of volume within flux surface.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="c1"># first determine npsi</span>
+                <span class="n">nPsi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRmidPsi</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="c1"># then the psi from psiGrid</span>
+                <span class="n">psiRZ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFluxGrid</span><span class="p">()</span>
+                <span class="c1"># the rGrid, zGrid in an appropriate mesh</span>
+                <span class="n">R</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getRGrid</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">getZGrid</span><span class="p">())</span>
+                <span class="c1"># read the LCFS Volume and Area and compute the appropriate twopi R</span>
+                <span class="n">rUsed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getVolLCFS</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAreaLCFS</span><span class="p">()</span>
+                <span class="c1"># define the output</span>
+                <span class="n">volumes</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">psiRZ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nPsi</span><span class="p">))</span>
+                <span class="n">outArea</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nPsi</span><span class="p">)</span>
+                <span class="c1"># now we start to iterate over the times</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">psiRZ</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">psi</span> <span class="o">=</span> <span class="n">psiRZ</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="c1"># define the levels</span>
+                    <span class="n">levels</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">psi</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nPsi</span><span class="p">)</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">cntr</span><span class="o">.</span><span class="n">Cntr</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">psi</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nPsi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">nlist</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">levels</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                        <span class="n">segs</span> <span class="o">=</span> <span class="n">nlist</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">nlist</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+                        <span class="n">outArea</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">greenArea</span><span class="p">(</span><span class="n">segs</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                    <span class="n">volumes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">outArea</span> <span class="o">*</span> <span class="n">rUsed</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="c1"># then the levels for the contours</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span> <span class="o">=</span> <span class="n">volumes</span>
+                <span class="c1"># Units aren&#39;t properly stored in the tree for this one!</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_fluxVol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;m^3&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="c1"># Default units are m^3, but aren&#39;t stored in the tree!</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_fluxVol&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxVol</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  9</span>
+<div class="viewcode-block" id="TCVLIUQETree.getVolLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getVolLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getVolLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns volume within LCFS.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 3): unit for LCFS volume.  Defaults to 3,</span>
+<span class="sd">                denoting default volumetric unit (typically m^3).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            volLCFS (Array): [nt] array of volume within LCFS.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">volLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::volume&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span> <span class="o">=</span> <span class="n">volLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_volLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">volLCFSNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="c1"># Default units should be &#39;cm^3&#39;:</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_volLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  10</span>
+<div class="viewcode-block" id="TCVLIUQETree.getRmidPsi"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getRmidPsi">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidPsi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns maximum major radius of each flux surface.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 1): unit of Rmid.  Defaults to 1, indicating</span>
+<span class="sd">                the default parameter unit (typically m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Rmid (Array): [nt,npsi] array of maximum (outboard) major radius of</span>
+<span class="sd">            flux surface psi.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Value Error: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">RmidPsiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::r_max_psi&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span> <span class="o">=</span> <span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="c1"># Units aren&#39;t properly stored in the tree for this one!</span>
+                <span class="k">if</span> <span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">units</span> <span class="o">!=</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidPsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">RmidPsiNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidPsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidPsi&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidPsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  11</span>
+<div class="viewcode-block" id="TCVLIUQETree.getRLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getRLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getRLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns R-values of LCFS position.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RLCFS (Array): [nt,n] array of R of LCFS points.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">RLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::r_contour&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span> <span class="o">=</span> <span class="n">RLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">RLCFSNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  12</span>
+<div class="viewcode-block" id="TCVLIUQETree.getZLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getZLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getZLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns Z-values of LCFS position.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ZLCFS (Array): [nt,n] array of Z of LCFS points.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ZLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::z_contour&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span> <span class="o">=</span> <span class="n">ZLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_ZLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ZLCFSNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_ZLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ZLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  13</span>
+<div class="viewcode-block" id="TCVLIUQETree.getF"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getF">[docs]</a>    <span class="k">def</span> <span class="nf">getF</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;returns F=RB_{\Phi}(\Psi), often calculated for grad-shafranov</span>
+<span class="sd">        solutions. Not implemented on LIUQE</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            F (Array): [nt,npsi] array of F=RB_{\Phi}(\Psi)</span>
+<span class="sd">            Not stored on LIUQE nodes</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  14</span>
+<div class="viewcode-block" id="TCVLIUQETree.getFluxPres"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getFluxPres">[docs]</a>    <span class="k">def</span> <span class="nf">getFluxPres</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns pressure at flux surface. Not implemented. We have pressure</span>
+<span class="sd">           saved on the same grid of psi</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            p (Array): [nt,npsi] array of pressure on flux surface psi.</span>
+<span class="sd">            Not implemented on LIUQE nodes. We have pressure on the grid use for psi</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fluxPPresNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::ppr_coeffs&#39;</span>
+                <span class="p">)</span>
+                <span class="n">duData</span> <span class="o">=</span> <span class="n">fluxPPresNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="c1"># then we build an appropriate grid</span>
+                <span class="n">nPsi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRmidPsi</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">psiV</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nPsi</span><span class="p">)</span>
+
+                <span class="n">rad</span> <span class="o">=</span> <span class="p">[</span><span class="n">psiV</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">duData</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">rad</span> <span class="o">+=</span> <span class="p">[</span><span class="n">rad</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">psiV</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">)]</span>
+                <span class="n">rad</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">getFluxAxis</span><span class="p">(),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getFluxAxis</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">duData</span><span class="p">,</span> <span class="n">rad</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">scipy</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_fluxPres&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Pa&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fluxPres</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  15</span>
+<div class="viewcode-block" id="TCVLIUQETree.getFFPrime"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getFFPrime">[docs]</a>    <span class="k">def</span> <span class="nf">getFFPrime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns FF&#39; function used for grad-shafranov solutions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            FFprime (Array): [nt,npsi] array of FF&#39; fromgrad-shafranov solution.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+        <span class="c1"># if self._ffprim is None:</span>
+        <span class="c1">#     try:</span>
+        <span class="c1">#         FFPrimeNode = self._MDSTree.getNode(self._root+self._gfile+&#39;:ffprim&#39;)</span>
+        <span class="c1">#         self._ffprim = FFPrimeNode.data()</span>
+        <span class="c1">#         self._defaultUnits[&#39;_ffprim&#39;] = str(FFPrimeNode.units)</span>
+        <span class="c1">#     except:</span>
+        <span class="c1">#         raise ValueError(&#39;data retrieval failed.&#39;)</span>
+        <span class="c1"># return self._ffprim.copy()</span>
+
+    <span class="c1"># ---  16</span>
+<div class="viewcode-block" id="TCVLIUQETree.getPPrime"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getPPrime">[docs]</a>    <span class="k">def</span> <span class="nf">getPPrime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns plasma pressure gradient as a function of psi.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pprime (Array): [nt,npsi] array of pressure gradient on flux surface</span>
+<span class="sd">            psi from grad-shafranov solution.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># raise NotImplementedError()</span>
+        <span class="c1"># in Liuqe pprime is not given in the appropriate flux surface but it is saved as coefficients</span>
+        <span class="c1"># ppr_coeffs. So we need to build the derivative as</span>
+        <span class="c1"># p&#39; = p0 + p1 * phi + p2 * phi^2 + p3 * phi^3 with phi = (psi - psi_edge) / (psi_axis - psi_edge)</span>
+        <span class="c1"># But conventionally psi_edge on TCV = 0 --&gt;  phi = psi / psi_axis</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fluxPPresNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::ppr_coeffs&#39;</span>
+                <span class="p">)</span>
+                <span class="n">duData</span> <span class="o">=</span> <span class="n">fluxPPresNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+
+                <span class="c1"># then we build an appropriate grid</span>
+                <span class="n">nPsi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRmidPsi</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">psiV</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nPsi</span><span class="p">)</span>
+
+                <span class="c1"># This should be faster through some vectorization /</span>
+                <span class="c1"># slowing down to fortran matrix multiplication subroutines</span>
+                <span class="n">rad</span> <span class="o">=</span> <span class="p">[</span><span class="n">scipy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">psiV</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">duData</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">rad</span> <span class="o">+=</span> <span class="p">[</span><span class="n">rad</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">psiV</span><span class="p">]</span>
+                <span class="n">rad</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">duData</span><span class="p">,</span> <span class="n">rad</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_fluxPres&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;A/m^3&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pprime</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  17</span>
+<div class="viewcode-block" id="TCVLIUQETree.getElongation"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getElongation">[docs]</a>    <span class="k">def</span> <span class="nf">getElongation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS elongation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            kappa (Array): [nt] array of LCFS elongation.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kappa</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">kappaNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::kappa_edge&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_kappa</span> <span class="o">=</span> <span class="n">kappaNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_kappa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kappa</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  18</span>
+<div class="viewcode-block" id="TCVLIUQETree.getUpperTriangularity"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getUpperTriangularity">[docs]</a>    <span class="k">def</span> <span class="nf">getUpperTriangularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS upper triangularity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            deltau (Array): [nt] array of LCFS upper triangularity.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dupper</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dupperNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::delta_ed_top&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dupper</span> <span class="o">=</span> <span class="n">dupperNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_dupper&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dupperNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dupper</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  19</span>
+<div class="viewcode-block" id="TCVLIUQETree.getLowerTriangularity"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getLowerTriangularity">[docs]</a>    <span class="k">def</span> <span class="nf">getLowerTriangularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS lower triangularity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            deltal (Array): [nt] array of LCFS lower triangularity.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dlower</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dlowerNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::delta_ed_bot&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dlower</span> <span class="o">=</span> <span class="n">dlowerNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_dlower&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dlowerNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dlower</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  21</span>
+<div class="viewcode-block" id="TCVLIUQETree.getMagR"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getMagR">[docs]</a>    <span class="k">def</span> <span class="nf">getMagR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetic-axis major radius.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            magR (Array): [nt] array of major radius of magnetic axis.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rmagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::r_axis&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span> <span class="o">=</span> <span class="n">rmagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_rmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rmagNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_rmag&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rmag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  22</span>
+<div class="viewcode-block" id="TCVLIUQETree.getMagZ"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getMagZ">[docs]</a>    <span class="k">def</span> <span class="nf">getMagZ</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetic-axis Z.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            magZ (Array): [nt] array of Z of magnetic axis.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">zmagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::z_axis&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span> <span class="o">=</span> <span class="n">zmagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_zmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">zmagNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_zmag&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  23</span>
+<div class="viewcode-block" id="TCVLIUQETree.getAreaLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getAreaLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getAreaLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LCFS cross-sectional area.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 2): unit for LCFS area.  Defaults to 2,</span>
+<span class="sd">                denoting default areal unit (typically m^2).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            areaLCFS (Array): [nt] array of LCFS area.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_areaLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">areaLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::area&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_areaLCFS</span> <span class="o">=</span> <span class="n">areaLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_areaLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">areaLCFSNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="c1"># Units should be cm^2:</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_areaLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_areaLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  24</span>
+<div class="viewcode-block" id="TCVLIUQETree.getAOut"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getAOut">[docs]</a>    <span class="k">def</span> <span class="nf">getAOut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane minor radius at LCFS. In LIUQE it is the last value</span>
+<span class="sd">        of \results::r_max_psi</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 1): unit for minor radius.  Defaults to 1,</span>
+<span class="sd">                denoting default length unit (typically m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            aOut (Array): [nt] array of LCFS outboard-midplane minor radius.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># defin a simple way to fin the closest index to zero</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_dummy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRmidPsi</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_aLCFS</span> <span class="o">=</span> <span class="n">_dummy</span><span class="p">[:,</span> <span class="n">_dummy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_aLCFS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;m&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_aLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  25</span>
+<div class="viewcode-block" id="TCVLIUQETree.getRmidOut"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getRmidOut">[docs]</a>    <span class="k">def</span> <span class="nf">getRmidOut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns outboard-midplane major radius. It uses getA</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            length_unit (String or 1): unit for major radius.  Defaults to 1,</span>
+<span class="sd">                denoting default length unit (typically m).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            RmidOut (Array): [nt] array of major radius of LCFS.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># this variable is not saved in the pulse file.</span>
+                <span class="c1"># we compute this by adding the Major radius of the machine to the computed AOut()</span>
+                <span class="n">RMaj</span> <span class="o">=</span> <span class="mf">0.88</span><span class="o">/</span><span class="mf">0.996</span>  <span class="c1"># almost 0.88</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAOut</span><span class="p">()</span><span class="o">+</span><span class="n">RMaj</span>
+                <span class="c1"># The units aren&#39;t properly stored in the tree for this one!</span>
+                <span class="c1"># Should be meters.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="n">unit_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLengthConversionFactor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_RmidLCFS&#39;</span><span class="p">],</span> <span class="n">length_unit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unit_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RmidLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  27</span>
+<div class="viewcode-block" id="TCVLIUQETree.getQProfile"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getQProfile">[docs]</a>    <span class="k">def</span> <span class="nf">getQProfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns profile of safety factor q.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            qpsi (Array): [nt,npsi] array of q on flux surface psi.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">qpsiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::q_psi&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span> <span class="o">=</span> <span class="n">qpsiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_qpsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">qpsiNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qpsi</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  28</span>
+<div class="viewcode-block" id="TCVLIUQETree.getQ0"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getQ0">[docs]</a>    <span class="k">def</span> <span class="nf">getQ0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns q on magnetic axis,q0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            q0 (Array): [nt] array of q(psi=0).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">q0Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::q_zero&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_q0</span> <span class="o">=</span> <span class="n">q0Node</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_q0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">q0Node</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  29</span>
+<div class="viewcode-block" id="TCVLIUQETree.getQ95"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getQ95">[docs]</a>    <span class="k">def</span> <span class="nf">getQ95</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns q at 95% flux surface.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            q95 (Array): [nt] array of q(psi=0.95).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q95</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">q95Node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::q_95&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_q95</span> <span class="o">=</span> <span class="n">q95Node</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_q95&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">q95Node</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q95</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  30</span>
+<div class="viewcode-block" id="TCVLIUQETree.getQLCFS"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getQLCFS">[docs]</a>    <span class="k">def</span> <span class="nf">getQLCFS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns q on LCFS (interpolated).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            qLCFS (Array): [nt] array of q* (interpolated).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qLCFS</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">qLCFSNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::q_edge&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_qLCFS</span> <span class="o">=</span> <span class="n">qLCFSNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_qLCFS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">qLCFSNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qLCFS</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  35</span>
+<div class="viewcode-block" id="TCVLIUQETree.getBtVac"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getBtVac">[docs]</a>    <span class="k">def</span> <span class="nf">getBtVac</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns vacuum toroidal field on-axis. We use MDSplus.Connection</span>
+<span class="sd">        for a proper use of the TDI function tcv_eq()</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BtVac (Array): [nt] array of vacuum toroidal field.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_btaxv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># constant is due to a detailed measurements on the vacuum vessel major radius</span>
+                <span class="c1"># introduce to be consistent with TDI function tcv_eq.fun</span>
+                <span class="n">RMaj</span> <span class="o">=</span> <span class="mf">0.88</span><span class="o">/</span><span class="mf">0.996</span>  <span class="c1"># almost 0.88 m</span>
+                <span class="c1"># open a connection</span>
+                <span class="n">conn</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s1">&#39;tcvdata.epfl.ch&#39;</span><span class="p">)</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">openTree</span><span class="p">(</span><span class="s1">&#39;tcv_shot&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot</span><span class="p">)</span>
+                <span class="n">bt</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tcv_eq(&quot;BZERO&quot;)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">RMaj</span>
+                <span class="n">btTime</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dim_of(tcv_eq(&quot;BZERO&quot;))&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">closeTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot</span><span class="p">)</span>
+                <span class="c1"># we need to interpolate on the time basis of LIUQE</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_btaxv</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">(),</span> <span class="n">btTime</span><span class="p">,</span> <span class="n">bt</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_btaxv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_btaxv</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  36</span>
+<div class="viewcode-block" id="TCVLIUQETree.getBtPla"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getBtPla">[docs]</a>    <span class="k">def</span> <span class="nf">getBtPla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns on-axis plasma toroidal field.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BtPla (Array): [nt] array of toroidal field including plasma effects.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+        <span class="c1"># if self._btaxp is None:</span>
+        <span class="c1">#     try:</span>
+        <span class="c1">#         btaxpNode = self._MDSTree.getNode(self._root+self._afile+&#39;:btaxp&#39;)</span>
+        <span class="c1">#         self._btaxp = btaxpNode.data()</span>
+        <span class="c1">#         self._defaultUnits[&#39;_btaxp&#39;] = str(btaxpNode.units)</span>
+        <span class="c1">#     except:</span>
+        <span class="c1">#         raise ValueError(&#39;data retrieval failed.&#39;)</span>
+        <span class="c1"># return self._btaxp.copy()</span>
+
+    <span class="c1"># ---  39</span>
+<div class="viewcode-block" id="TCVLIUQETree.getIpCalc"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getIpCalc">[docs]</a>    <span class="k">def</span> <span class="nf">getIpCalc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns EFIT-calculated plasma current.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            IpCalc (Array): [nt] array of EFIT-reconstructed plasma current.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">IpCalcNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">+</span> <span class="s1">&#39;::i_p&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span> <span class="o">=</span> <span class="n">IpCalcNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_IpCalc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">IpCalcNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpCalc</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  40</span>
+<div class="viewcode-block" id="TCVLIUQETree.getIpMeas"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getIpMeas">[docs]</a>    <span class="k">def</span> <span class="nf">getIpMeas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns magnetics-measured plasma current.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            IpMeas (Array): [nt] array of measured plasma current.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpMeas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">conn</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s1">&#39;tcvdata.epfl.ch&#39;</span><span class="p">)</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">openTree</span><span class="p">(</span><span class="s1">&#39;tcv_shot&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot</span><span class="p">)</span>
+                <span class="n">ip</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tcv_ip()&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="n">ipTime</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dim_of(tcv_ip())&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">closeTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_IpMeas</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">(),</span> <span class="n">ipTime</span><span class="p">,</span> <span class="n">ip</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_IpMeas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_IpMeas</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  42</span>
+<div class="viewcode-block" id="TCVLIUQETree.getBetaT"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getBetaT">[docs]</a>    <span class="k">def</span> <span class="nf">getBetaT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE-calculated toroidal beta.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BetaT (Array): [nt] array of LIUQE-calculated average toroidal beta.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">betatNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::beta_tor&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_betat</span> <span class="o">=</span> <span class="n">betatNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_betat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">betatNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  43</span>
+<div class="viewcode-block" id="TCVLIUQETree.getBetaP"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getBetaP">[docs]</a>    <span class="k">def</span> <span class="nf">getBetaP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE-calculated poloidal beta.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BetaP (Array): [nt] array of LIUQE-calculated average poloidal beta.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">betapNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::beta_pol&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_betap</span> <span class="o">=</span> <span class="n">betapNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_betap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">betapNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_betap</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  44</span>
+<div class="viewcode-block" id="TCVLIUQETree.getLi"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getLi">[docs]</a>    <span class="k">def</span> <span class="nf">getLi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE-calculated internal inductance.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Li (Array): [nt] array of LIUQE-calculated internal inductance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Li</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">LiNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::l_i&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_Li</span> <span class="o">=</span> <span class="n">LiNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_Li&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">LiNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Li</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  50</span>
+<div class="viewcode-block" id="TCVLIUQETree.getDiamagWp"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getDiamagWp">[docs]</a>    <span class="k">def</span> <span class="nf">getDiamagWp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns diamagnetic-loop plasma stored energy.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Wp (Array): [nt] array of measured plasma stored energy.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WDiamag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">WDiamagNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::total_energy&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_WDiamag</span> <span class="o">=</span> <span class="n">WDiamagNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_WDiamag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">WDiamagNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_WDiamag</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  53</span>
+<div class="viewcode-block" id="TCVLIUQETree.getTauMHD"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getTauMHD">[docs]</a>    <span class="k">def</span> <span class="nf">getTauMHD</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns LIUQE-calculated MHD energy confinement time.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tauMHD (Array): [nt] array of LIUQE-calculated energy confinement time.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tauMHD</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tauMHDNode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MDSTree</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">+</span><span class="s1">&#39;::tau_e&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tauMHD</span> <span class="o">=</span> <span class="n">tauMHDNode</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_defaultUnits</span><span class="p">[</span><span class="s1">&#39;_tauMHD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tauMHDNode</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data retrieval failed.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tauMHD</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="c1"># ---  59</span>
+<div class="viewcode-block" id="TCVLIUQETree.getMachineCrossSection"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getMachineCrossSection">[docs]</a>    <span class="k">def</span> <span class="nf">getMachineCrossSection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pulls TCV cross-section data from tree, converts to plottable</span>
+<span class="sd">        vector format for use in other plotting routines</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (`x`, `y`)</span>
+
+<span class="sd">            * **x** (`Array`) - [n] array of x-values for machine cross-section.</span>
+<span class="sd">            * **y** (`Array`) - [n] array of y-values for machine cross-section.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pull cross-section from tree</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;static(&quot;r_t&quot;)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;static(&quot;z_t&quot;)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data load failed.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_Rlimiter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Zlimiter</span><span class="p">)</span></div>
+
+    <span class="c1"># ---  60</span>
+<div class="viewcode-block" id="TCVLIUQETree.getMachineCrossSectionPatch"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.getMachineCrossSectionPatch">[docs]</a>    <span class="k">def</span> <span class="nf">getMachineCrossSectionPatch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pulls TCV cross-section data from tree, converts it directly to</span>
+<span class="sd">        a matplotlib patch which can be simply added to the approriate axes</span>
+<span class="sd">        call in plotFlux()</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tiles matplotlib Patch, vessel matplotlib Patch</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if module cannot retrieve data from MDS tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pull cross-section from tree</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Rv_in</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;static(&quot;r_v:in&quot;)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+            <span class="n">Rv_out</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;static(&quot;r_v:out&quot;)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+            <span class="n">Zv_in</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;static(&quot;z_v:in&quot;)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+            <span class="n">Zv_out</span> <span class="o">=</span> <span class="n">MDSplus</span><span class="o">.</span><span class="n">Data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;static(&quot;z_v:out&quot;)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">getValue</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;data load failed.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># this is for the vessel</span>
+        <span class="n">verticesIn</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Rv_in</span><span class="p">,</span> <span class="n">Zv_in</span><span class="p">)]</span>
+        <span class="n">verticesIn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">verticesIn</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">codesIn</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">verticesIn</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">LINETO</span><span class="p">]</span>
+        <span class="n">verticesOut</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Rv_out</span><span class="p">,</span> <span class="n">Zv_out</span><span class="p">)][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">verticesOut</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">verticesOut</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">codesOut</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">verticesOut</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">LINETO</span><span class="p">]</span>
+        <span class="n">vessel_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">verticesIn</span> <span class="o">+</span> <span class="n">verticesOut</span><span class="p">,</span> <span class="n">codesIn</span> <span class="o">+</span> <span class="n">codesOut</span><span class="p">)</span>
+        <span class="n">vessel_patch</span> <span class="o">=</span> <span class="n">PathPatch</span><span class="p">(</span><span class="n">vessel_path</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">),</span>
+                                 <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="c1"># this is for the tiles</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMachineCrossSection</span><span class="p">()</span>
+        <span class="n">verticesIn</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)][::</span><span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">verticesIn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">verticesIn</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">codesIn</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">verticesIn</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">LINETO</span><span class="p">]</span>
+        <span class="n">verticesOut</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Rv_in</span><span class="p">,</span> <span class="n">Zv_in</span><span class="p">)]</span>
+        <span class="n">verticesOut</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">verticesOut</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">codesOut</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">verticesOut</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">Path</span><span class="o">.</span><span class="n">LINETO</span><span class="p">]</span>
+        <span class="n">tiles_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">verticesIn</span> <span class="o">+</span> <span class="n">verticesOut</span><span class="p">,</span> <span class="n">codesIn</span> <span class="o">+</span> <span class="n">codesOut</span><span class="p">)</span>
+        <span class="n">tiles_patch</span> <span class="o">=</span> <span class="n">PathPatch</span><span class="p">(</span><span class="n">tiles_path</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span>
+                                <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">tiles_patch</span><span class="p">,</span> <span class="n">vessel_patch</span><span class="p">)</span></div>
+
+    <span class="c1"># ---  61</span>
+<div class="viewcode-block" id="TCVLIUQETree.plotFlux"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETree.plotFlux">[docs]</a>    <span class="k">def</span> <span class="nf">plotFlux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots LIQUE TCV flux contours directly from psi grid.</span>
+
+<span class="sd">        Returns the Figure instance created and the time slider widget (in case</span>
+<span class="sd">        you need to modify the callback). `f.axes` contains the contour plot as</span>
+<span class="sd">        the first element and the time slice slider as the second element.</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            fill (Boolean):</span>
+<span class="sd">                Set True to plot filled contours.  Set False (default) to plot white-background</span>
+<span class="sd">                color contours.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">psiRZ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getFluxGrid</span><span class="p">()</span>
+            <span class="n">rGrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRGrid</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+            <span class="n">zGrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getZGrid</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTimeBase</span><span class="p">()</span>
+
+            <span class="n">RLCFS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRLCFS</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+            <span class="n">ZLCFS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getZLCFS</span><span class="p">(</span><span class="n">length_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;cannot plot EFIT flux map.&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">limx</span><span class="p">,</span> <span class="n">limy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMachineCrossSection</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No machine cross-section implemented!&#39;</span><span class="p">)</span>
+            <span class="n">limx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">limy</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">macx</span><span class="p">,</span> <span class="n">macy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMachineCrossSectionFull</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">macx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">macy</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># event handler for arrow key events in plot windows.  Pass slider object</span>
+        <span class="c1"># to update as masked argument using lambda function</span>
+        <span class="c1"># lambda evt: arrow_respond(my_slider,evt)</span>
+        <span class="k">def</span> <span class="nf">arrowRespond</span><span class="p">(</span><span class="n">slider</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;right&#39;</span><span class="p">:</span>
+                <span class="n">slider</span><span class="o">.</span><span class="n">set_val</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">slider</span><span class="o">.</span><span class="n">val</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">slider</span><span class="o">.</span><span class="n">valmax</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;left&#39;</span><span class="p">:</span>
+                <span class="n">slider</span><span class="o">.</span><span class="n">set_val</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">slider</span><span class="o">.</span><span class="n">val</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">slider</span><span class="o">.</span><span class="n">valmin</span><span class="p">))</span>
+
+        <span class="c1"># make time-slice window</span>
+        <span class="n">fluxPlot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">mplgs</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">psi</span> <span class="o">=</span> <span class="n">fluxPlot</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">psi</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tilesP</span><span class="p">,</span> <span class="n">vesselP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMachineCrossSectionPatch</span><span class="p">()</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">tilesP</span><span class="p">)</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">vesselP</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No machine cross-section implemented!&#39;</span><span class="p">)</span>
+        <span class="n">psi</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">])</span>
+        <span class="n">psi</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+
+        <span class="n">timeSliderSub</span> <span class="o">=</span> <span class="n">fluxPlot</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">fluxPlot</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># dummy plot to get x,ylims</span>
+        <span class="n">psi</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">rGrid</span><span class="p">,</span> <span class="n">zGrid</span><span class="p">,</span> <span class="n">psiRZ</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">10</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+
+        <span class="c1"># generate graphical mask for limiter wall</span>
+        <span class="k">if</span> <span class="n">mask</span><span class="p">:</span>
+            <span class="n">xlim</span> <span class="o">=</span> <span class="n">psi</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+            <span class="n">ylim</span> <span class="o">=</span> <span class="n">psi</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+            <span class="n">bound_verts</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="p">]</span>
+            <span class="n">poly_verts</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">limx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">limy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">limx</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="p">]</span>
+
+            <span class="n">bound_codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">mpath</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bound_verts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">mpath</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">LINETO</span><span class="p">]</span>
+            <span class="n">poly_codes</span> <span class="o">=</span> <span class="p">[</span><span class="n">mpath</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">MOVETO</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">poly_verts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">mpath</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">LINETO</span><span class="p">]</span>
+
+            <span class="n">path</span> <span class="o">=</span> <span class="n">mpath</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
+                <span class="n">bound_verts</span> <span class="o">+</span> <span class="n">poly_verts</span><span class="p">,</span> <span class="n">bound_codes</span> <span class="o">+</span> <span class="n">poly_codes</span>
+            <span class="p">)</span>
+            <span class="n">patch</span> <span class="o">=</span> <span class="n">mpatches</span><span class="o">.</span><span class="n">PathPatch</span><span class="p">(</span>
+                <span class="n">path</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">updateTime</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">t_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">timeSlider</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+
+            <span class="n">psi</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">])</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+
+            <span class="n">title</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span>
+                <span class="s1">&#39;LIUQE Reconstruction, $t = </span><span class="si">%(t).2f</span><span class="s1">$ s&#39;</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;t&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]}</span>
+            <span class="p">)</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$R$ [m]&#39;</span><span class="p">)</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$Z$ [m]&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">macx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">psi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">macx</span><span class="p">,</span> <span class="n">macy</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">limx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">psi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">limx</span><span class="p">,</span> <span class="n">limy</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="c1"># catch NaNs separating disjoint sections of R,ZLCFS in mask</span>
+            <span class="n">maskarr</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">scipy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">RLCFS</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">scipy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">RLCFS</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]))</span>
+            <span class="p">)</span>
+            <span class="n">RLCFSframe</span> <span class="o">=</span> <span class="n">RLCFS</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="n">maskarr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">ZLCFSframe</span> <span class="o">=</span> <span class="n">ZLCFS</span><span class="p">[</span><span class="n">t_idx</span><span class="p">,</span> <span class="n">maskarr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">RLCFSframe</span><span class="p">,</span> <span class="n">ZLCFSframe</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fill</span><span class="p">:</span>
+                <span class="n">psi</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">rGrid</span><span class="p">,</span> <span class="n">zGrid</span><span class="p">,</span> <span class="n">psiRZ</span><span class="p">[</span><span class="n">t_idx</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">psi</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span>
+                    <span class="n">rGrid</span><span class="p">,</span> <span class="n">zGrid</span><span class="p">,</span> <span class="n">psiRZ</span><span class="p">[</span><span class="n">t_idx</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+                    <span class="n">linestyles</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">psi</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">rGrid</span><span class="p">,</span> <span class="n">zGrid</span><span class="p">,</span> <span class="n">psiRZ</span><span class="p">[</span><span class="n">t_idx</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mask</span><span class="p">:</span>
+                <span class="n">patchdraw</span> <span class="o">=</span> <span class="n">psi</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+                <span class="n">patchdraw</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+            <span class="n">psi</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">tilesP</span><span class="p">)</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">vesselP</span><span class="p">)</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">])</span>
+            <span class="n">psi</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+
+            <span class="n">fluxPlot</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="n">timeSlider</span> <span class="o">=</span> <span class="n">mplw</span><span class="o">.</span><span class="n">Slider</span><span class="p">(</span>
+            <span class="n">timeSliderSub</span><span class="p">,</span> <span class="s1">&#39;t index&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">valinit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">valfmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">timeSlider</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">updateTime</span><span class="p">)</span>
+        <span class="n">updateTime</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+        <span class="n">fluxPlot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TCVLIUQETreeProp"><a class="viewcode-back" href="../../eqtools.html#eqtools.TCVLIUQE.TCVLIUQETreeProp">[docs]</a><span class="k">class</span> <span class="nc">TCVLIUQETreeProp</span><span class="p">(</span><span class="n">TCVLIUQETree</span><span class="p">,</span> <span class="n">PropertyAccessMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;TCVLIUQETree with the PropertyAccessMixin added to enable property-style</span>
+<span class="sd">    access. This is good for interactive use, but may drag the performance down.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">eqtools 1.3.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2016, Mark Chilenski, Ian Faust and John Walk.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>
