@@ -325,8 +325,13 @@ class Equilibrium(object):
     def __init__(
         self, length_unit='m', tspline=False, monotonic=True, verbose=True
     ):
-        if length_unit != 'default' and not (length_unit in _length_conversion):
-            raise ValueError("Unit '%s' not a valid unit specifier!" % length_unit)
+        if (
+            (length_unit != 'default') and
+            (not (length_unit in _length_conversion))
+        ):
+            raise ValueError(
+                "Unit '%s' not a valid unit specifier!" % length_unit
+            )
         else:
             self._length_unit = length_unit
 
@@ -2035,7 +2040,7 @@ class Equilibrium(object):
         elif method == 'v':
             return self.rmid2v(R_mid, t, **kwargs)
         else:
-            # Default back to the old kuldge that wastes time in rz2psi:
+            # Default back to the old kludge that wastes time in rz2psi:
             # TODO: This doesn't handle length units properly!
             Z_mid = self.getMagZSpline()(t)
 
@@ -11108,7 +11113,7 @@ class Equilibrium(object):
             limy = None
         try:
             macx, macy = self.getMachineCrossSectionFull()
-        except:
+        except Exception:
             macx = None
             macy = None
 

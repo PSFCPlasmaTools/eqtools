@@ -139,7 +139,7 @@ class NSTXEFITTree(EFITTree):
                 self._defaultUnits['_psiRZ'] = str(psinode.units)
                 self._defaultUnits['_rGrid'] = str(psinode.dim_of(1).units)
                 self._defaultUnits['_zGrid'] = str(psinode.dim_of(2).units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         return self._psiRZ.copy()
 
@@ -169,7 +169,7 @@ class NSTXEFITTree(EFITTree):
 
                 self._Rlimiter = xlim[0:limitr]
                 self._Zlimiter = ylim[0:limitr]
-            except:
+            except Exception:
                 raise ValueError("data retrieval failed.")
         return (self._Rlimiter, self._Zlimiter)
 
@@ -207,7 +207,7 @@ class NSTXEFITTree(EFITTree):
                     self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
 
         if self._defaultUnits['_RmidPsi'] != 'Wb/rad':
@@ -238,7 +238,7 @@ class NSTXEFITTree(EFITTree):
                 )
                 self._IpCalc = IpCalcNode.data()
                 self._defaultUnits['_IpCalc'] = str(IpCalcNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         return self._IpCalc.copy()
 
@@ -263,7 +263,7 @@ class NSTXEFITTree(EFITTree):
                 )
                 self._volLCFS = volLCFSNode.data()
                 self._defaultUnits['_volLCFS'] = str(volLCFSNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         # Default units should be 'cm^3':
         unit_factor = self._getLengthConversionFactor(

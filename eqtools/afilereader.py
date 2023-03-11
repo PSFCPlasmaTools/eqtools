@@ -449,7 +449,7 @@ class AFileReader(object):
                 line = next(reader)[0].split()
                 self._efittype = line[-1]   # tag for EFIT type ('MAG','KINETIC',etc)
 
-            except:
+            except Exception:
                 warnings.warn(
                     'Old-style a-file. Some parameters are depreciated.',
                     UserWarning

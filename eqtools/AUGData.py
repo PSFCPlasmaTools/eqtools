@@ -53,7 +53,7 @@ except Exception as _e_dd:
 try:
     import matplotlib.pyplot as plt
     _has_plt = True
-except:
+except Exception:
     warnings.warn(
         "Matplotlib.pyplot module could not be loaded -- classes that "
         "use pyplot will not work.",
@@ -248,7 +248,7 @@ class AUGDDData(Equilibrium):
         self.getFluxGrid()  # loads _psiRZ, _rGrid and _zGrid at once. check
         self.getFluxLCFS()  # check
         self.getFluxAxis()  # check
-        self.getFluxVol()  #check
+        self.getFluxVol()  # check
         self._lpf = self.getFluxVol().shape[1]
         self.getVolLCFS()  # check
         self.getQProfile()  #
@@ -597,7 +597,7 @@ class AUGDDData(Equilibrium):
 
         try:
             Rlim, Zlim = self.getMachineCrossSection()
-        except:
+        except Exception:
             raise ValueError(
                 "Limiter outline (self.getMachineCrossSection) must be "
                 "available."
@@ -632,7 +632,7 @@ class AUGDDData(Equilibrium):
             # generate masking array to vessel
             if mask:
                 maskarr = scipy.array([False for i in range(len(RLCFS_frame))])
-                for i,x in enumerate(RLCFS_frame):
+                for i, x in enumerate(RLCFS_frame):
                     y = ZLCFS_frame[i]
                     maskarr[i] = inPolygon(Rlim, Zlim, x, y)
 
@@ -1831,7 +1831,7 @@ class YGCAUGInterface(object):
             nvctr = nvctr.data.astype(int)-1
         except (PyddError, AttributeError):
             raise ValueError("data retrieval failed.")
-        except:
+        except Exception:
             raise ValueError('data load failed.')
 
         return xvctr.data, yvctr.data, nvctr

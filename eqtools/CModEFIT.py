@@ -141,7 +141,7 @@ class CModEFITTree(EFITTree):
                     self._defaultUnits['_fluxVol'] = str(fluxVolNode.units)
                 else:
                     self._defaultUnits['_fluxVol'] = 'm^3'
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         # Default units are m^3, but aren't stored in the tree!
         unit_factor = self._getLengthConversionFactor(
@@ -172,7 +172,7 @@ class CModEFITTree(EFITTree):
                     self._defaultUnits['_RmidPsi'] = str(RmidPsiNode.units)
                 else:
                     self._defaultUnits['_RmidPsi'] = 'm'
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(
             self._defaultUnits['_RmidPsi'], length_unit
@@ -194,7 +194,7 @@ class CModEFITTree(EFITTree):
                 fNode = self._MDSTree.getNode(self._root+self._gfile+':fpol')
                 self._fpol = fNode.data().T
                 self._defaultUnits['_fpol'] = str(fNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         return self._fpol.copy()
 
@@ -214,7 +214,7 @@ class CModEFITTree(EFITTree):
                 )
                 self._fluxPres = fluxPresNode.data().T
                 self._defaultUnits['_fluxPres'] = str(fluxPresNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         return self._fluxPres.copy()
 
@@ -234,7 +234,7 @@ class CModEFITTree(EFITTree):
                 )
                 self._ffprim = FFPrimeNode.data().T
                 self._defaultUnits['_ffprim'] = str(FFPrimeNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         return self._ffprim.copy()
 
@@ -255,7 +255,7 @@ class CModEFITTree(EFITTree):
                 )
                 self._pprime = pPrimeNode.data().T
                 self._defaultUnits['_pprime'] = str(pPrimeNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         return self._pprime.copy()
 
@@ -275,7 +275,7 @@ class CModEFITTree(EFITTree):
                 )
                 self._qpsi = qpsiNode.data().T
                 self._defaultUnits['_qpsi'] = str(qpsiNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         return self._qpsi.copy()
 
@@ -295,7 +295,7 @@ class CModEFITTree(EFITTree):
                 )
                 self._RLCFS = RLCFSNode.data().T
                 self._defaultUnits['_RLCFS'] = str(RLCFSNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(
             self._defaultUnits['_RLCFS'], length_unit
@@ -318,7 +318,7 @@ class CModEFITTree(EFITTree):
                 )
                 self._ZLCFS = ZLCFSNode.data().T
                 self._defaultUnits['_ZLCFS'] = str(ZLCFSNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
         unit_factor = self._getLengthConversionFactor(
             self._defaultUnits['_ZLCFS'], length_unit
@@ -346,7 +346,7 @@ class CModEFITTree(EFITTree):
             yvctr = ccT.getNode(path+'YTILE').data()
             nvctr = ccT.getNode(path+'NSEG').data()
             lvctr = ccT.getNode(path+'PTS_PER_SEG').data()
-        except:
+        except Exception:
             raise ValueError('data load failed.')
 
         # xvctr, yvctr stored as [nvctr,npts] ndarray.  Each of [nvctr] rows
@@ -387,7 +387,7 @@ class CModEFITTree(EFITTree):
                 )
                 self._RCentr = RCentrNode.data()
                 self._defaultUnits['_RCentr'] = str(RCentrNode.units)
-            except:
+            except Exception:
                 raise ValueError('data retrieval failed.')
 
         unit_factor = self._getLengthConversionFactor(

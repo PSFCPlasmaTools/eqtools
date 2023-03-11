@@ -473,7 +473,7 @@ class EqdskReader(Equilibrium):
                     self._workk = scipy.array(self._workk).reshape((1, nw))
                 else:
                     self._workk = scipy.atleast_2d(scipy.array([0]))
-            except:
+            except Exception:
                 self._presw = scipy.atleast_2d(scipy.array([0]))
                 self._preswp = scipy.atleast_2d(scipy.array([0]))
                 self._rhovn = scipy.atleast_2d(scipy.array([0]))
@@ -486,7 +486,7 @@ class EqdskReader(Equilibrium):
                 for row in reader:
                     r = row[0]
                 self._efittype = r.split()[-1]
-            except:
+            except Exception:
                 self._efittype = None
 
         # toroidal current density on (r,z,t) grid typically not
@@ -1284,7 +1284,7 @@ class EqdskReader(Equilibrium):
 
         try:
             Rlim, Zlim = self.getMachineCrossSection()
-        except:
+        except Exception:
             raise ValueError(
                 "Limiter outline in self.getMachineCrossSection must be available."
             )
