@@ -22,12 +22,12 @@
 __version__ = '1.4.0'
 
 from .core import *
-from .EFIT import *
-from .CModEFIT import *
-from .AUGData import *
-from .NSTXEFIT import *
-from .D3DEFIT import *
-from .eqdskreader import *
-from .pfilereader import *
-from .FromArrays import *
-from .TCVLIUQE import *
+# from .EFIT import *
+# from .CModEFIT import *
+# from .AUGData import *
+# from .NSTXEFIT import *
+# from .D3DEFIT import *
+# from .eqdskreader import *
+# from .pfilereader import *
+# from .FromArrays import *
+# from .TCVLIUQE import *

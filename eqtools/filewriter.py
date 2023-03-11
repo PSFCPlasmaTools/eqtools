@@ -23,7 +23,7 @@ import time
 import core
 import matplotlib.pyplot as plt
 try:
-    import trispline
+    from . import trispline
     _has_trispline = True
 except ImportError:
     warnings.warn("trispline module could not be loaded -- tricubic spline "

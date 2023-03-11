@@ -25,7 +25,7 @@ contains an enhanced bivariate spline which generates bounds errors.
 import scipy
 import scipy.interpolate
 try:
-    import _tricub
+    from . import _tricub
 except Exception:
     # Won't be able to use actual trispline, but still can use other routines.
     pass

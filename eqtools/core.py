@@ -42,7 +42,7 @@ class ModuleWarning(Warning):
 
 
 try:
-    import trispline
+    from . import trispline
     _has_trispline = True
 except ImportError:
     warnings.warn("trispline module could not be loaded -- tricubic spline "
