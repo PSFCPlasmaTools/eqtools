@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "numpy"]
+
+[project]
+name = "eqtools"
+version = "1.4.0"
+authors = [
+    { name="Mark Chilenski" },
+    { name="Ian Faust" },
+    { name="John Walk" }
+]
+description = "Python tools for magnetic equilibria in tokamak plasmas"
+readme = "README.md"
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/PSFCPlasmaTools/eqtools/"
