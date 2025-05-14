@@ -20,7 +20,7 @@
 working with ASDEX Upgrade experimental data.
 """
 
-import scipy
+import numpy
 from collections import namedtuple
 
 from .core import PropertyAccessMixin, ModuleWarning, Equilibrium, inPolygon
@@ -436,8 +436,8 @@ class AUGDDData(Equilibrium):
         if self._fluxVol is None:
             try:
                 fluxVolNode = self._MDSTree('Vol')  # Lpf is unreliable so I have to do this trick....
-                temp = scipy.where(
-                    scipy.sum(fluxVolNode.data, axis=0)[::2] != 0
+                temp = numpy.where(
+                    numpy.sum(fluxVolNode.data, axis=0)[::2] != 0
                 )[0].max() + 1  # Find the where the volume is non-zero, give the maximum index and add one (for the core value)
 
                 self._fluxVol = fluxVolNode.data[:self._timeidxend][
@@ -510,17 +510,17 @@ class AUGDDData(Equilibrium):
             try:
                 rgeo = self.getSSQ('Rgeo')
                 RLCFSNode = self.getSSQ('rays')
-                RLCFStemp = scipy.hstack(
-                    (scipy.atleast_2d(RLCFSNode.data[:, -1]).T, RLCFSNode.data)
+                RLCFStemp = numpy.hstack(
+                    (numpy.atleast_2d(RLCFSNode.data[:, -1]).T, RLCFSNode.data)
                 )
                 templen = RLCFSNode.data.shape
 
-                self._RLCFS = scipy.tile(
+                self._RLCFS = numpy.tile(
                     rgeo.data, (templen[1] + 1, 1)
-                ).T + RLCFStemp * scipy.cos(
-                    scipy.tile(
+                ).T + RLCFStemp * numpy.cos(
+                    numpy.tile(
                         (
-                            scipy.linspace(0, 2 * scipy.pi, templen[1] + 1)
+                            numpy.linspace(0, 2 * numpy.pi, templen[1] + 1)
                         ), (templen[0], 1)
                     )
                 )  # construct a 2d grid of angles, take cos, multiply by radius
@@ -550,16 +550,16 @@ class AUGDDData(Equilibrium):
             try:
                 zgeo = self.getSSQ('Zgeo')
                 ZLCFSNode = self.getSSQ('rays')
-                ZLCFStemp = scipy.hstack(
-                    (scipy.atleast_2d(ZLCFSNode.data[:, -1]).T, ZLCFSNode.data)
+                ZLCFStemp = numpy.hstack(
+                    (numpy.atleast_2d(ZLCFSNode.data[:, -1]).T, ZLCFSNode.data)
                 )
                 templen = ZLCFSNode.data.shape
 
-                self._ZLCFS = scipy.tile(
+                self._ZLCFS = numpy.tile(
                     zgeo.data, (templen[1] + 1, 1)
-                ).T + ZLCFStemp * scipy.sin(
-                    scipy.tile(
-                        (scipy.linspace(0, 2 * scipy.pi, templen[1] + 1)),
+                ).T + ZLCFStemp * numpy.sin(
+                    numpy.tile(
+                        (numpy.linspace(0, 2 * numpy.pi, templen[1] + 1)),
                         (templen[0], 1)
                     )
                 )  # construct a 2d grid of angles, take sin, multiply by radius
@@ -624,14 +624,14 @@ class AUGDDData(Equilibrium):
                 v = path.vertices
                 RLCFS_frame.extend(v[:, 0])
                 ZLCFS_frame.extend(v[:, 1])
-                RLCFS_frame.append(scipy.nan)
-                ZLCFS_frame.append(scipy.nan)
-            RLCFS_frame = scipy.array(RLCFS_frame)
-            ZLCFS_frame = scipy.array(ZLCFS_frame)
+                RLCFS_frame.append(numpy.nan)
+                ZLCFS_frame.append(numpy.nan)
+            RLCFS_frame = numpy.array(RLCFS_frame)
+            ZLCFS_frame = numpy.array(ZLCFS_frame)
 
             # generate masking array to vessel
             if mask:
-                maskarr = scipy.array([False for i in range(len(RLCFS_frame))])
+                maskarr = numpy.array([False for i in range(len(RLCFS_frame))])
                 for i, x in enumerate(RLCFS_frame):
                     y = ZLCFS_frame[i]
                     maskarr[i] = inPolygon(Rlim, Zlim, x, y)
@@ -644,8 +644,8 @@ class AUGDDData(Equilibrium):
             RLCFS_stores.append(RLCFS_frame)
             ZLCFS_stores.append(ZLCFS_frame)
 
-        RLCFS = scipy.zeros((nt, maxlen))
-        ZLCFS = scipy.zeros((nt, maxlen))
+        RLCFS = numpy.zeros((nt, maxlen))
+        ZLCFS = numpy.zeros((nt, maxlen))
         for i in range(nt):
             RLCFS_frame = RLCFS_stores[i]
             ZLCFS_frame = ZLCFS_stores[i]
@@ -1097,9 +1097,9 @@ class AUGDDData(Equilibrium):
                 btaxvNode = self._MDSTree('Bave')
                 # technically Bave is the average over the volume, but for the core its a singular value
                 self._btaxv = btaxvNode.data[
-                    :self._timeidxend, scipy.sum(btaxvNode.data, 0) != 0
+                    :self._timeidxend, numpy.sum(btaxvNode.data, 0) != 0
                 ][:, -1]
-                self._btaxv *= scipy.sign(self.getBCentr())
+                self._btaxv *= numpy.sign(self.getBCentr())
                 self._defaultUnits['_btaxv'] = str(btaxvNode.unit)
             except (PyddError, AttributeError):
                 raise ValueError('data retrieval failed.')
@@ -1141,7 +1141,7 @@ class AUGDDData(Equilibrium):
         if self._IpCalc is None:
             try:
                 IpCalcNode = self._MDSTree('IpiPSI')
-                self._IpCalc = scipy.squeeze(IpCalcNode.data)[
+                self._IpCalc = numpy.squeeze(IpCalcNode.data)[
                     :self._timeidxend
                 ]
                 self._defaultUnits['_IpCalc'] = str(IpCalcNode.unit)
@@ -1425,7 +1425,7 @@ class AUGDDData(Equilibrium):
             currentSign (Integer): 1 for positive-direction current, -1 for negative.
         """
         if self._currentSign is None:
-            self._currentSign = -1 if scipy.mean(self.getIpMeas()) > 1e5 else 1
+            self._currentSign = -1 if numpy.mean(self.getIpMeas()) > 1e5 else 1
         return self._currentSign
 
     def getParam(self, path):
@@ -1460,13 +1460,13 @@ class AUGDDData(Equilibrium):
                 # create a dict mapping the various quantities to positions in the in the data array
                 self._SSQname = SSQnameNode.data
                 try:
-                    self._SSQname = scipy.char.strip(
+                    self._SSQname = numpy.char.strip(
                         SSQnameNode.data.view(
                             'S' + str(SSQnameNode.data.shape[1])
                         )
                     )  # concatenate and strip blanks
                 except ValueError:
-                    self._SSQname = scipy.char.strip(
+                    self._SSQname = numpy.char.strip(
                         SSQnameNode.data.T.view(
                             'S' + str(SSQnameNode.data.shape[0])
                         )
@@ -1474,7 +1474,7 @@ class AUGDDData(Equilibrium):
 
                 self._SSQname = self._SSQname[self._SSQname != '']  # remove empty entries
                 self._SSQname = dict(
-                    zip(self._SSQname, scipy.arange(self._SSQname.shape[0]))
+                    zip(self._SSQname, numpy.arange(self._SSQname.shape[0]))
                 )  # zip the dict together
 
                 self._SSQ = self._MDSTree('SSQ').data
@@ -1536,7 +1536,7 @@ class AUGDDData(Equilibrium):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -1569,7 +1569,7 @@ class AUGDDData(Equilibrium):
 
             * **BR** (`Array or scalar float`) - The major radial component of
               the magnetic field. If all of the input arguments are scalar, then
-              a scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              a scalar is returned. Otherwise, a numpy Array is returned. If `R`
               and `Z` both have the same shape then `BR` has this shape as well,
               unless the `make_grid` keyword was True, in which case `BR` has
               shape (len(`Z`), len(`R`)).
@@ -1609,7 +1609,7 @@ class AUGDDData(Equilibrium):
         return super(AUGDDData, self).rz2BR(
             R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t,
             length_unit=length_unit
-        ) / (2 * scipy.pi)
+        ) / (2 * numpy.pi)
 
     def rz2BZ(
         self, R, Z, t, return_t=False, make_grid=False, each_t=True,
@@ -1650,7 +1650,7 @@ class AUGDDData(Equilibrium):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -1683,7 +1683,7 @@ class AUGDDData(Equilibrium):
 
             * **BZ** (`Array or scalar float`) - The vertical component of the
               magnetic field. If all of the input arguments are scalar, then a
-              scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              scalar is returned. Otherwise, a numpy Array is returned. If `R`
               and `Z` both have the same shape then `BZ` has this shape as well,
               unless the `make_grid` keyword was True, in which case `BZ` has
               shape (len(`Z`), len(`R`)).
@@ -1720,7 +1720,7 @@ class AUGDDData(Equilibrium):
 
                 BZ_mat = Eq_instance.rz2BZ(R, Z, 0.2, make_grid=True)
         """
-        return super(AUGDDData, self).rz2BZ(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*scipy.pi)
+        return super(AUGDDData, self).rz2BZ(R, Z, t, return_t=return_t, make_grid=make_grid, each_t=each_t, length_unit=length_unit)/(2*numpy.pi)
 
 
 class YGCAUGInterface(object):
@@ -1812,13 +1812,13 @@ class YGCAUGInterface(object):
             }
 
     # ONLY CERTAIN YGC FILES EXIST I MEAN CMON ITS NOT THAT MUCH MEMORY
-    _ygc_shotfiles = scipy.array([0, 948, 8650, 9401, 12751, 14051, 14601, 16315, 18204, 19551, 21485, 25891, 30136])
+    _ygc_shotfiles = numpy.array([0, 948, 8650, 9401, 12751, 14051, 14601, 16315, 18204, 19551, 21485, 25891, 30136])
 
     def _getData(self, shot):
         try:
 
             self._ygc_shot = self._ygc_shotfiles[
-                scipy.searchsorted(self._ygc_shotfiles, [shot], 'right') - 1
+                numpy.searchsorted(self._ygc_shotfiles, [shot], 'right') - 1
             ][0]  # find nearest shotfile which is the before it
 
             if self._ygc_shot < 8650:
@@ -1900,8 +1900,8 @@ class YGCAUGInterface(object):
                 x.append(None)
                 y.append(None)
 
-        x = scipy.array(x[:-1])
-        y = scipy.array(y[:-1])
+        x = numpy.array(x[:-1])
+        y = numpy.array(y[:-1])
         return (x, y)
 
 

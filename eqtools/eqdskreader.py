@@ -25,7 +25,7 @@ Classes:
         equilibrium data.
 """
 
-import scipy
+import numpy
 import glob
 import re
 import csv
@@ -234,7 +234,7 @@ class EqdskReader(Equilibrium):
                 time = re.findall(r'\d+', timestring)[0]
                 tunits = timestring.split(time)[1]
                 timeConvertDict = {'ms': 1./1000., 's': 1.}
-                self._time = scipy.array([float(time)*timeConvertDict[tunits]]) # returns time in seconds as array
+                self._time = numpy.array([float(time)*timeConvertDict[tunits]]) # returns time in seconds as array
 
             except KeyError:
                 tunits = None
@@ -250,14 +250,14 @@ class EqdskReader(Equilibrium):
             line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)     # regex magic!
             xdim = float(line[0])     # width of R-axis in grid
             zdim = float(line[1])     # height of Z-axis in grid
-            self._RCentr = scipy.array(float(line[2]))    # rcentr for Bcentr
+            self._RCentr = numpy.array(float(line[2]))    # rcentr for Bcentr
             self._defaultUnits['_RCentr'] = 'm'
             rgrid0 = float(line[3])   # start point of R grid
             zmid = float(line[4])     # midpoint of Z grid
 
             # construct EFIT grid
-            self._rGrid = scipy.linspace(rgrid0, rgrid0 + xdim, nw)
-            self._zGrid = scipy.linspace(zmid - zdim/2.0, zmid + zdim/2.0, nh)
+            self._rGrid = numpy.linspace(rgrid0, rgrid0 + xdim, nw)
+            self._zGrid = numpy.linspace(zmid - zdim/2.0, zmid + zdim/2.0, nh)
             # drefit = (self._rGrid[-1] - self._rGrid[0])/(nw-1)
             # dzefit = (self._zGrid[-1] - self._zGrid[0])/(nh-1)
             self._defaultUnits['_rGrid'] = 'm'
@@ -266,13 +266,13 @@ class EqdskReader(Equilibrium):
             # read R,Z of magnetic axis, psi at magnetic axis and LCFS, and bzero
             line = next(reader)[0]
             line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
-            self._rmag = scipy.array([float(line[0])])
-            self._zmag = scipy.array([float(line[1])])
+            self._rmag = numpy.array([float(line[0])])
+            self._zmag = numpy.array([float(line[1])])
             self._defaultUnits['_rmag'] = 'm'
             self._defaultUnits['_zmag'] = 'm'
-            self._psiAxis = scipy.array([float(line[2])])
-            self._psiLCFS = scipy.array([float(line[3])])
-            self._BCentr = scipy.array([float(line[4])])
+            self._psiAxis = numpy.array([float(line[2])])
+            self._psiLCFS = numpy.array([float(line[3])])
+            self._BCentr = numpy.array([float(line[4])])
             self._defaultUnits['_psiAxis'] = 'Wb/rad'
             self._defaultUnits['_psiLCFS'] = 'Wb/rad'
 
@@ -280,7 +280,7 @@ class EqdskReader(Equilibrium):
             # dummy, R of magnetic axis (duplicate), dummy
             line = next(reader)[0]
             line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
-            self._IpCalc = scipy.array([float(line[0])])
+            self._IpCalc = numpy.array([float(line[0])])
             self._defaultUnits['_IpCalc'] = 'A'
 
             # read Z of magnetic axis (duplicate), dummy, psi at LCFS (duplicate), dummy, dummy
@@ -298,7 +298,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     self._fpol.append(float(val))
-            self._fpol = scipy.array(self._fpol).reshape((1, nw))
+            self._fpol = numpy.array(self._fpol).reshape((1, nw))
             self._defaultUnits['_fpol'] = 'T m'
 
             # and likewise for pressure
@@ -308,7 +308,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     self._fluxPres.append(float(val))
-            self._fluxPres = scipy.array(self._fluxPres).reshape((1, nw))
+            self._fluxPres = numpy.array(self._fluxPres).reshape((1, nw))
             self._defaultUnits['_fluxPres'] = 'Pa'
 
             # geqdsk written as negative for positive plasma current
@@ -319,7 +319,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     self._ffprim.append(float(val))
-            self._ffprim = scipy.array(self._ffprim).reshape((1, nw))
+            self._ffprim = numpy.array(self._ffprim).reshape((1, nw))
             self._defaultUnits['_ffprim'] = 'T^2 m'
 
             self._pprime = []
@@ -328,7 +328,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     self._pprime.append(float(val))
-            self._pprime = scipy.array(self._pprime).reshape((1, nw))
+            self._pprime = numpy.array(self._pprime).reshape((1, nw))
             self._defaultUnits['_pprime'] = 'J/m^2'
 
             # read the 2d [nw,nh] array for psiRZ
@@ -345,7 +345,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     psis.append(float(val))
-            self._psiRZ = scipy.array(psis).reshape((1, nh, nw), order='C')
+            self._psiRZ = numpy.array(psis).reshape((1, nh, nw), order='C')
             self._defaultUnits['_psiRZ'] = 'Wb/rad'
 
             # read q(psi) profile, nw points (same basis as fpol, pres, etc.)
@@ -359,7 +359,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     self._qpsi.append(float(val))
-            self._qpsi = scipy.array(self._qpsi).reshape((1, nw))
+            self._qpsi = numpy.array(self._qpsi).reshape((1, nw))
 
             # read nbbbs, limitr
             line = next(reader)[0].split()
@@ -378,7 +378,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     bbbs.append(float(val))
-            bbbs = scipy.array(bbbs).reshape((2, nbbbs), order='F')
+            bbbs = numpy.array(bbbs).reshape((2, nbbbs), order='F')
             self._RLCFS = bbbs[0].reshape((1, nbbbs))
             self._ZLCFS = bbbs[1].reshape((1, nbbbs))
             self._defaultUnits['_RLCFS'] = 'm'
@@ -396,7 +396,7 @@ class EqdskReader(Equilibrium):
                 line = re.findall(r'-?\d\.\d*[eE][-+]\d*', line)
                 for val in line:
                     lim.append(float(val))
-            lim = scipy.array(lim).reshape((2, limitr), order='F')
+            lim = numpy.array(lim).reshape((2, limitr), order='F')
             self._xlim = lim[0, :]
             self._ylim = lim[1, :]
 
@@ -421,17 +421,17 @@ class EqdskReader(Equilibrium):
                         line = re.findall(r'-?\d.\d*[eE][-+]\d*', line)
                         for val in line:
                             self._presw.append(float(val))
-                    self._presw = scipy.array(self._presw).reshape((nw, 1))
+                    self._presw = numpy.array(self._presw).reshape((nw, 1))
                     self._preswp = []
                     for i in range(nrows):
                         line = next(reader)[0]
                         line = re.findall(r'-?\d.\d*[eE][-+]\d*', line)
                         for val in line:
                             self._preswp.append(float(val))
-                    self._preswp = scipy.array(self._preswp).reshape((1, nw))
+                    self._preswp = numpy.array(self._preswp).reshape((1, nw))
                 else:
-                    self._presw = scipy.atleast_2d(scipy.array([0]))
-                    self._preswp = scipy.atleast_2d(scipy.array([0]))
+                    self._presw = numpy.atleast_2d(numpy.array([0]))
+                    self._preswp = numpy.atleast_2d(numpy.array([0]))
 
                 # read ion mass density if present
                 if nmass > 0:
@@ -444,9 +444,9 @@ class EqdskReader(Equilibrium):
                         line = re.findall(r'-?\d.\d*[eE][-+]\d*', line)
                         for val in line:
                             self._dmion.append(float(val))
-                    self._dmion = scipy.array(self._dmion).reshape((1, nw))
+                    self._dmion = numpy.array(self._dmion).reshape((1, nw))
                 else:
-                    self._dmion = scipy.atleast_2d(scipy.array([0]))
+                    self._dmion = numpy.atleast_2d(numpy.array([0]))
 
                 # read rhovn
                 nrows = nw/5
@@ -458,7 +458,7 @@ class EqdskReader(Equilibrium):
                     line = re.findall(r'-?\d.\d*[eE][-+]\d*', line)
                     for val in line:
                         self._rhovn.append(float(val))
-                self._rhovn = scipy.array(self._rhovn).reshape((1, nw))
+                self._rhovn = numpy.array(self._rhovn).reshape((1, nw))
 
                 # read keecur; if >0 read workk
                 line = gfile.readline.split()
@@ -470,15 +470,15 @@ class EqdskReader(Equilibrium):
                         line = re.findall(r'-?\d.\d*[eE][-+]\d*', line)
                         for val in line:
                             self._workk.append(float(val))
-                    self._workk = scipy.array(self._workk).reshape((1, nw))
+                    self._workk = numpy.array(self._workk).reshape((1, nw))
                 else:
-                    self._workk = scipy.atleast_2d(scipy.array([0]))
+                    self._workk = numpy.atleast_2d(numpy.array([0]))
             except Exception:
-                self._presw = scipy.atleast_2d(scipy.array([0]))
-                self._preswp = scipy.atleast_2d(scipy.array([0]))
-                self._rhovn = scipy.atleast_2d(scipy.array([0]))
-                self._dmion = scipy.atleast_2d(scipy.array([0]))
-                self._workk = scipy.atleast_2d(scipy.array([0]))
+                self._presw = numpy.atleast_2d(numpy.array([0]))
+                self._preswp = numpy.atleast_2d(numpy.array([0]))
+                self._rhovn = numpy.atleast_2d(numpy.array([0]))
+                self._dmion = numpy.atleast_2d(numpy.array([0]))
+                self._workk = numpy.atleast_2d(numpy.array([0]))
 
             # read through to end of file to get footer line
             try:
@@ -630,52 +630,52 @@ class EqdskReader(Equilibrium):
             afr = AFileReader(afile)
 
             # fields
-            self._btaxp = scipy.array([afr.btaxp])
-            self._btaxv = scipy.array([afr.btaxv])
-            self._bpolav = scipy.array([afr.bpolav])
+            self._btaxp = numpy.array([afr.btaxp])
+            self._btaxv = numpy.array([afr.btaxv])
+            self._bpolav = numpy.array([afr.bpolav])
 
             # currents
-            self._IpMeas = scipy.array([afr.pasmat])
+            self._IpMeas = numpy.array([afr.pasmat])
 
             # safety factor parameters
-            self._q0 = scipy.array([afr.qqmin])
-            self._q95 = scipy.array([afr.qpsib])
-            self._qLCFS = scipy.array([afr.qout])
-            self._rq1 = scipy.array([afr.aaq1])
-            self._rq2 = scipy.array([afr.aaq2])
-            self._rq3 = scipy.array([afr.aaq3])
+            self._q0 = numpy.array([afr.qqmin])
+            self._q95 = numpy.array([afr.qpsib])
+            self._qLCFS = numpy.array([afr.qout])
+            self._rq1 = numpy.array([afr.aaq1])
+            self._rq2 = numpy.array([afr.aaq2])
+            self._rq3 = numpy.array([afr.aaq3])
 
             # shaping parameters
-            self._kappa = scipy.array([afr.eout])
-            self._dupper = scipy.array([afr.doutu])
-            self._dlower = scipy.array([afr.doutl])
+            self._kappa = numpy.array([afr.eout])
+            self._dupper = numpy.array([afr.doutu])
+            self._dlower = numpy.array([afr.doutl])
 
             # dimensional geometry parameters
-            self._aLCFS = scipy.array([afr.aout])
-            self._areaLCFS = scipy.array([afr.areao])
-            self._RmidLCFS = scipy.array([afr.rmidout])
+            self._aLCFS = numpy.array([afr.aout])
+            self._areaLCFS = numpy.array([afr.areao])
+            self._RmidLCFS = numpy.array([afr.rmidout])
 
             # calc. normalized pressure values
-            self._betat = scipy.array([afr.betat])
-            self._betap = scipy.array([afr.betap])
-            self._Li = scipy.array([afr.ali])
+            self._betat = numpy.array([afr.betat])
+            self._betap = numpy.array([afr.betap])
+            self._Li = numpy.array([afr.ali])
 
             # diamagnetic measurements
-            self._diamag = scipy.array([afr.diamag])
-            self._betatd = scipy.array([afr.betatd])
-            self._betapd = scipy.array([afr.betapd])
-            self._WDiamag = scipy.array([afr.wplasmd])
-            self._tauDiamag = scipy.array([afr.taudia])
+            self._diamag = numpy.array([afr.diamag])
+            self._betatd = numpy.array([afr.betatd])
+            self._betapd = numpy.array([afr.betapd])
+            self._WDiamag = numpy.array([afr.wplasmd])
+            self._tauDiamag = numpy.array([afr.taudia])
 
             # calculated energy
-            self._WMHD = scipy.array([afr.wplasm])
-            self._tauMHD = scipy.array([afr.taumhd])
-            self._Pinj = scipy.array([afr.pbinj])
-            self._Wbdot = scipy.array([afr.wbdot])
-            self._Wpdot = scipy.array([afr.wpdot])
+            self._WMHD = numpy.array([afr.wplasm])
+            self._tauMHD = numpy.array([afr.taumhd])
+            self._Pinj = numpy.array([afr.pbinj])
+            self._Wbdot = numpy.array([afr.wbdot])
+            self._Wpdot = numpy.array([afr.wpdot])
 
             # fitting parameters
-            self._volLCFS = scipy.array([afr.vout])
+            self._volLCFS = numpy.array([afr.vout])
             self._fluxVol = None    # not written in g- or a-file; disable volnorm mapping routine
             self._RmidPsi = None    # not written in g- or a-file, not used by fitting parameters
 
@@ -915,7 +915,7 @@ class EqdskReader(Equilibrium):
 
         Returns:
             rho (Array-like or scalar float): If all of the input arguments are
-            scalar, then a scalar is returned. Otherwise, a scipy Array
+            scalar, then a scalar is returned. Otherwise, a numpy Array
             instance is returned. If R and Z both have the same shape then
             rho has this shape as well. If the make_grid keyword was True
             then rho has shape (len(Z), len(R)).
@@ -1018,7 +1018,7 @@ class EqdskReader(Equilibrium):
 
         Returns:
             R_mid (Array or scalar float): If all of the input arguments are
-            scalar, then a scalar is returned. Otherwise, a scipy Array
+            scalar, then a scalar is returned. Otherwise, a numpy Array
             instance is returned. If `R` and `Z` both have the same shape
             then `R_mid` has this shape as well. If the make_grid keyword
             was True then `R_mid` has shape (`len(Z)`, `len(R)`).
@@ -1086,7 +1086,7 @@ class EqdskReader(Equilibrium):
 
         Returns:
             R_mid (Array-like or scalar float): If all of the input arguments
-            are scalar, then a scalar is returned. Otherwise, a scipy Array
+            are scalar, then a scalar is returned. Otherwise, a numpy Array
             instance is returned.
 
         Examples:
@@ -1139,7 +1139,7 @@ class EqdskReader(Equilibrium):
 
         Returns:
             phinorm (Array-like or scalar float): If all of the input arguments
-            are scalar, then a scalar is returned. Otherwise, a scipy Array
+            are scalar, then a scalar is returned. Otherwise, a numpy Array
             instance is returned.
 
         Examples:
@@ -1182,7 +1182,7 @@ class EqdskReader(Equilibrium):
             currentSign (Int): 1 for positive current, -1 for reversed.
         """
         if self._currentSign is None:
-            self._currentSign = 1 if scipy.mean(self.getIpCalc()) > 1e5 else -1
+            self._currentSign = 1 if numpy.mean(self.getIpCalc()) > 1e5 else -1
         return self._currentSign
 
     def getFluxGrid(self):
@@ -1227,7 +1227,7 @@ class EqdskReader(Equilibrium):
             implementations with time variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
-        return -1. * self.getCurrentSign() * scipy.array(self._psiAxis)
+        return -1. * self.getCurrentSign() * numpy.array(self._psiAxis)
 
     def getFluxLCFS(self):
         """Returns psi at separatrix.
@@ -1238,7 +1238,7 @@ class EqdskReader(Equilibrium):
             implementations with time variation.
         """
         # scale by current sign for consistency with sign of psiRZ.
-        return -1 * self.getCurrentSign() * scipy.array(self._psiLCFS)
+        return -1 * self.getCurrentSign() * numpy.array(self._psiLCFS)
 
     def getRLCFS(self, length_unit=1):
         """Returns array of R-values of LCFS.
@@ -1306,14 +1306,14 @@ class EqdskReader(Equilibrium):
             v = path.vertices
             RLCFS.extend(v[:, 0])
             ZLCFS.extend(v[:, 1])
-            RLCFS.append(scipy.nan)
-            ZLCFS.append(scipy.nan)
-        RLCFS = scipy.array(RLCFS)
-        ZLCFS = scipy.array(ZLCFS)
+            RLCFS.append(numpy.nan)
+            ZLCFS.append(numpy.nan)
+        RLCFS = numpy.array(RLCFS)
+        ZLCFS = numpy.array(ZLCFS)
 
         # generate masking array
         if mask:
-            maskarr = scipy.array([False for i in range(len(RLCFS))])
+            maskarr = numpy.array([False for i in range(len(RLCFS))])
             for i, x in enumerate(RLCFS):
                 y = ZLCFS[i]
                 maskarr[i] = inPolygon(Rlim, Zlim, x, y)
@@ -2242,7 +2242,7 @@ class EqdskReader(Equilibrium):
         except AttributeError:
             try:
                 attr = self.__getattribute__('_'+name)
-                if type(attr) is scipy.array:
+                if type(attr) is numpy.array:
                     return attr.copy()
                 else:
                     return attr

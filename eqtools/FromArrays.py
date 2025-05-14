@@ -18,7 +18,7 @@
 
 from .core import Equilibrium
 
-import scipy
+import numpy
 
 
 class ArrayEquilibrium(Equilibrium):
@@ -91,17 +91,17 @@ class ArrayEquilibrium(Equilibrium):
     """
     def __init__(self, psiRZ, rGrid, zGrid, time, q, fluxVol, psiLCFS, psiAxis,
                  rmag, zmag, Rout, **kwargs):
-        self._psiRZ = scipy.asarray(psiRZ, dtype=float)
-        self._rGrid = scipy.asarray(rGrid, dtype=float)
-        self._zGrid = scipy.asarray(zGrid, dtype=float)
-        self._time = scipy.asarray(time, dtype=float)
-        self._qpsi = scipy.asarray(q, dtype=float)
-        self._fluxVol = scipy.asarray(fluxVol, dtype=float)
-        self._psiLCFS = scipy.asarray(psiLCFS, dtype=float)
-        self._psiAxis = scipy.asarray(psiAxis, dtype=float)
-        self._rmag = scipy.asarray(rmag, dtype=float)
-        self._zmag = scipy.asarray(zmag, dtype=float)
-        self._RmidLCFS = scipy.asarray(Rout, dtype=float)
+        self._psiRZ = numpy.asarray(psiRZ, dtype=float)
+        self._rGrid = numpy.asarray(rGrid, dtype=float)
+        self._zGrid = numpy.asarray(zGrid, dtype=float)
+        self._time = numpy.asarray(time, dtype=float)
+        self._qpsi = numpy.asarray(q, dtype=float)
+        self._fluxVol = numpy.asarray(fluxVol, dtype=float)
+        self._psiLCFS = numpy.asarray(psiLCFS, dtype=float)
+        self._psiAxis = numpy.asarray(psiAxis, dtype=float)
+        self._rmag = numpy.asarray(rmag, dtype=float)
+        self._zmag = numpy.asarray(zmag, dtype=float)
+        self._RmidLCFS = numpy.asarray(Rout, dtype=float)
 
         self._defaultUnits = {}
         self._defaultUnits['_psiRZ'] = 'Wb/rad'

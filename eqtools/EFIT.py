@@ -20,6 +20,7 @@
 with EFIT data.
 """
 
+import numpy
 import scipy
 from collections import namedtuple
 
@@ -601,12 +602,12 @@ class EFITTree(Equilibrium):
                 ZLCFS_frame.extend(v[:, 1])
                 RLCFS_frame.append(scipy.nan)
                 ZLCFS_frame.append(scipy.nan)
-            RLCFS_frame = scipy.array(RLCFS_frame)
-            ZLCFS_frame = scipy.array(ZLCFS_frame)
+            RLCFS_frame = numpy.array(RLCFS_frame)
+            ZLCFS_frame = numpy.array(ZLCFS_frame)
 
             # generate masking array to vessel
             if mask:
-                maskarr = scipy.array([False for i in range(len(RLCFS_frame))])
+                maskarr = numpy.array([False for i in range(len(RLCFS_frame))])
                 for i, x in enumerate(RLCFS_frame):
                     y = ZLCFS_frame[i]
                     maskarr[i] = inPolygon(Rlim, Zlim, x, y)

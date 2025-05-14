@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "_tricub.h"
 
 /*****************************************************************
  
@@ -156,17 +157,18 @@ int A_v2[64][64] = {
 
 double factorial[4] = {1.0,1.0,2.0,6.0}; /* value needed for derivatives, and a lookup table is the easiest/fastest method */
 
-int clip(int x, int a)
+inline int clip(int x, int a)
 { /* use of a set of ternary operators to bound a value x between 0 and a */
   return x > a - 1 ? a - 1 : (x < 0 ? 0 : x);
 }
 
 
-int ismonotonic(double val[], int ix)
+long ismonotonic(double val[], int ix)
 {   /* while loop based check of monotonicity,
        so on very large bases that fail, it 
        stops early. Starts at end.  */
-  int counter = ix - 1,output = 1;
+  int counter = ix - 1;
+  long output = 1;
   
   while( counter )
     { counter--;  
@@ -180,11 +182,12 @@ int ismonotonic(double val[], int ix)
 }
 
 
-int isregular(double val[], int ix)
+long isregular(double val[], int ix)
 {   /* while loop based check of monotonicity,
        so on very large bases that fail, it 
        stops early. Starts at end.  */
-  int counter = ix - 2,output = 1;
+  int counter = ix - 2;
+  long output = 1;
   double eps = 1e-6; /* Difference between values within .001%  */
   double temp = val[counter] - val[counter + 1];
   while( counter )
@@ -199,7 +202,7 @@ int isregular(double val[], int ix)
 }
 
 
-int ijk2n(int i, int j, int k)
+inline int ijk2n(int i, int j, int k)
 {
   return(i+4*j+16*k);
 }
@@ -534,7 +537,6 @@ void nonreg_ev(double val[], double x0[], double x1[], double x2[], double f[], 
   free(tempx2);
   free(pos);
   free(indx);
-
 }
 
 
@@ -599,9 +601,7 @@ void nonreg_ev_full(double val[], double x0[], double x1[], double x2[], double 
   free(tempx2);
   free(pos);
   free(indx);
-
 }
-
 
 
 void reg_ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)
@@ -742,7 +742,6 @@ void reg_ev_full(double val[], double x0[], double x1[], double x2[], double f[]
   free(tempx1);
   free(tempx2);
 }
-
 
 
 void ev(double val[], double x0[], double x1[], double x2[], double f[], double fx0[], double fx1[], double fx2[], int ix0, int ix1, int ix2, int ix)

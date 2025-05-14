@@ -1,0 +1,43 @@
+name: CI
+on:
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref_name }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [
+          { name: arm Ubuntu-24.04, label: ubuntu-24.04-arm },
+          { name: x86 Ubuntu-latest, label: ubuntu-latest },
+          { name: x86 Windows-latest, label: windows-latest },          
+        ]
+
+    name: CI-${{ matrix.os.name }}
+    runs-on: ${{ matrix.os.label }}
+    steps:
+      - name: Checkout EqTools
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install EqTools
+        run: python -m pip install .
+      - name: Run tests
+        run: python tests/test.py
+      - name: Run unittests
+        # Windows cannot properly load the python2 test data pickle file
+        if: runner.os != 'Windows'
+        run: python tests/unittests.py || true
