@@ -20,7 +20,7 @@
 working with C-Mod EFIT data.
 """
 
-import scipy
+import numpy as np
 
 from .EFIT import EFITTree
 from .core import PropertyAccessMixin, ModuleWarning
@@ -367,8 +367,8 @@ class CModEFITTree(EFITTree):
                 x.append(None)
                 y.append(None)
 
-        x = scipy.array(x)
-        y = scipy.array(y)
+        x = np.array(x)
+        y = np.array(y)
         return (x, y)
 
     def getRCentr(self, length_unit=1):

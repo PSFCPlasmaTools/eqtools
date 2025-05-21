@@ -19,7 +19,7 @@
 """This module provides the core classes for :py:mod:`eqtools`, including the
 base :py:class:`Equilibrium` class.
 """
-import scipy
+import numpy
 import scipy.interpolate
 import scipy.integrate
 import scipy.constants
@@ -29,6 +29,9 @@ import warnings
 import sys
 if sys.version_info.major >= 3:
     long = int
+# gracefully handle scipy cumtrapz deprecation
+if hasattr(scipy.integrate, "cumulative_trapezoid"):
+    scipy.integrate.cumtrapz = scipy.integrate.cumulative_trapezoid
 
 # Constants to determine how plot labels are formatted:
 B_LABEL = '$B$ [T]'
@@ -460,7 +463,7 @@ class Equilibrium(object):
                 a scalar. Default is True (evaluate ALL `rho` at EACH element in
                 `t`).
             make_grid (Boolean): Only applicable if `origin` is 'RZ'. Set to
-                True to pass `R` and `Z` through :py:func:`scipy.meshgrid`
+                True to pass `R` and `Z` through :py:func:`numpy.meshgrid`
                 before evaluating. If this is set to True, `R` and `Z` must each
                 only have a single dimension, but can have different lengths.
                 Default is False (do not form meshgrid).
@@ -499,7 +502,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -531,7 +534,7 @@ class Equilibrium(object):
         """
         if origin.startswith('sqrt'):
             args = list(args)
-            args[0] = scipy.asarray(args[0])**2
+            args[0] = numpy.asarray(args[0])**2
             origin = origin[4:]
 
         if destination.startswith('sqrt'):
@@ -591,7 +594,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -624,7 +627,7 @@ class Equilibrium(object):
 
             * **psi** (`Array or scalar float`) - The unnormalized poloidal
               flux. If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `psi` has this shape as well,
               unless the `make_grid` keyword was True, in which case `psi` has
               shape (len(`Z`), len(`R`)).
@@ -676,7 +679,7 @@ class Equilibrium(object):
         )
 
         if self._tricubic:
-            out_vals = scipy.reshape(
+            out_vals = numpy.reshape(
                 self._getFluxTriSpline().ev(t, Z, R),
                 original_shape
             )
@@ -686,10 +689,10 @@ class Equilibrium(object):
                 if single_val:
                     out_vals = out_vals[0]
                 else:
-                    out_vals = scipy.reshape(out_vals, original_shape)
+                    out_vals = numpy.reshape(out_vals, original_shape)
             elif each_t:
-                out_vals = scipy.zeros(
-                    scipy.concatenate(
+                out_vals = numpy.zeros(
+                    numpy.concatenate(
                         ([len(time_idxs), ], original_shape)
                     ).astype(int)
                 )
@@ -698,13 +701,13 @@ class Equilibrium(object):
                         t_idx
                     ).ev(Z, R).reshape(original_shape)
             else:
-                out_vals = scipy.zeros_like(t, dtype=float)
+                out_vals = numpy.zeros_like(t, dtype=float)
                 for t_idx in unique_idxs:
                     t_mask = (time_idxs == t_idx)
                     out_vals[t_mask] = self._getFluxBiSpline(
                         t_idx
                     ).ev(Z[t_mask], R[t_mask])
-                out_vals = scipy.reshape(out_vals, original_shape)
+                out_vals = numpy.reshape(out_vals, original_shape)
 
         # Correct for current sign:
         out_vals = -1.0 * out_vals * self.getCurrentSign()
@@ -761,7 +764,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -794,7 +797,7 @@ class Equilibrium(object):
 
             * **psinorm** (`Array or scalar float`) - The normalized poloidal
               flux. If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `psinorm` has this shape as well,
               unless the `make_grid` keyword was True, in which case `psinorm`
               has shape (len(`Z`), len(`R`)).
@@ -852,8 +855,8 @@ class Equilibrium(object):
             if not blob[-3]:
                 if each_t:
                     for k in range(0, len(blob[-1])):
-                        psi_boundary = scipy.expand_dims(psi_boundary, -1)
-                        psi_0 = scipy.expand_dims(psi_0, -1)
+                        psi_boundary = numpy.expand_dims(psi_boundary, -1)
+                        psi_0 = numpy.expand_dims(psi_0, -1)
                 else:
                     psi_boundary = psi_boundary.reshape(blob[-1])
                     psi_0 = psi_0.reshape(blob[-1])
@@ -865,8 +868,8 @@ class Equilibrium(object):
                 if psi_norm < 0.0:
                     psi_norm = 0.0
             else:
-                scipy.place(psi_norm, psi_norm < 0, 0)
-            out = scipy.sqrt(psi_norm)
+                numpy.place(psi_norm, psi_norm < 0, 0)
+            out = numpy.sqrt(psi_norm)
         else:
             out = psi_norm
 
@@ -922,7 +925,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -957,7 +960,7 @@ class Equilibrium(object):
 
             * **phinorm** (`Array or scalar float`) - The normalized toroidal
               flux. If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `phinorm` has this shape as well,
               unless the `make_grid` keyword was True, in which case `phinorm`
               has shape (len(`Z`), len(`R`)).
@@ -1032,7 +1035,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -1067,7 +1070,7 @@ class Equilibrium(object):
 
             * **volnorm** (`Array or scalar float`) - The normalized volume.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `volnorm` has this shape as well,
               unless the `make_grid` keyword was True, in which case `volnorm`
               has shape (len(`Z`), len(`R`)).
@@ -1141,7 +1144,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -1179,7 +1182,7 @@ class Equilibrium(object):
 
             * **Rmid** (`Array or scalar float`) - The outboard midplan major
               radius. If all of the input arguments are scalar, then a scalar
-              is returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              is returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `Rmid` has this shape as well,
               unless the `make_grid` keyword was True, in which case `Rmid`
               has shape (len(`Z`), len(`R`)).
@@ -1269,7 +1272,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -1304,7 +1307,7 @@ class Equilibrium(object):
 
             * **roa** (`Array or scalar float`) - The normalized minor radius.
               If all of the input arguments are scalar, then a scalar
-              is returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              is returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `roa` has this shape as well,
               unless the `make_grid` keyword was True, in which case `roa`
               has shape (len(`Z`), len(`R`)).
@@ -1400,7 +1403,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -1439,7 +1442,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -1562,7 +1565,7 @@ class Equilibrium(object):
 
             * **roa** (`Array or scalar float`) - Normalized midplane minor
               radius. If all of the input arguments are scalar, then a scalar
-              is returned. Otherwise, a scipy Array is returned.
+              is returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `roa`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -1627,8 +1630,8 @@ class Equilibrium(object):
                 else:
                     roa = roa.reshape(original_shape)
             elif each_t:
-                roa = scipy.zeros(
-                    scipy.concatenate(
+                roa = numpy.zeros(
+                    numpy.concatenate(
                         ([len(time_idxs), ], original_shape)
                     ).astype(int)
                 )
@@ -1644,8 +1647,8 @@ class Equilibrium(object):
                 if roa < 0:
                     roa = 0.0
             else:
-                scipy.place(roa, roa < 0, 0.0)
-            roa = scipy.sqrt(roa)
+                numpy.place(roa, roa < 0, 0.0)
+            roa = numpy.sqrt(roa)
 
         if return_t:
             if self._tricubic:
@@ -1711,7 +1714,7 @@ class Equilibrium(object):
 
             * **psinorm** (`Array or scalar float`) - Normalized poloidal flux.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `psinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -1805,7 +1808,7 @@ class Equilibrium(object):
 
             * **phinorm** (`Array or scalar float`) - Normalized toroidal flux.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `phinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -1889,7 +1892,7 @@ class Equilibrium(object):
 
             * **volnorm** (`Array or scalar float`) - Normalized volume.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `volnorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -1988,7 +1991,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2055,31 +2058,31 @@ class Equilibrium(object):
                     # we only need to make it have the same shape as R_mid. Note
                     # that ones_like appears to be clever enough to handle the case
                     # of a scalar R_mid.
-                    Z_mid = Z_mid * scipy.ones_like(R_mid, dtype=float)
+                    Z_mid = Z_mid * numpy.ones_like(R_mid, dtype=float)
                 else:
                     # For multiple t, we need to repeat R_mid for every t, then
                     # repeat the corresponding Z_mid that many times for each such
                     # entry.
-                    t = scipy.asarray(t)
+                    t = numpy.asarray(t)
                     if t.ndim != 1:
                         raise ValueError(
                             "rmid2rho: When using the each_t keyword, "
                             "t must have only one dimension."
                         )
-                    R_mid = scipy.tile(
+                    R_mid = numpy.tile(
                         R_mid,
-                        scipy.concatenate(
+                        numpy.concatenate(
                             (
                                 [len(t), ],
-                                scipy.ones_like(
-                                    scipy.shape(R_mid), dtype=float
+                                numpy.ones_like(
+                                    numpy.shape(R_mid), dtype=float
                                 )
                             )
                         )  # may need to be declared as ints
                     )
                     # TODO: Is there a clever way to do this without a loop?
-                    Z_mid_temp = scipy.ones_like(R_mid, dtype=float)
-                    t_temp = scipy.ones_like(R_mid, dtype=float)
+                    Z_mid_temp = numpy.ones_like(R_mid, dtype=float)
+                    t_temp = numpy.ones_like(R_mid, dtype=float)
                     for k in range(0, len(Z_mid)):
                         Z_mid_temp[k] *= Z_mid[k]
                         t_temp[k] *= t[k]
@@ -2137,7 +2140,7 @@ class Equilibrium(object):
 
             * **Rmid** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `Rmid`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2200,8 +2203,8 @@ class Equilibrium(object):
                 else:
                     R_mid = R_mid.reshape(original_shape)
             elif each_t:
-                R_mid = scipy.zeros(
-                    scipy.concatenate(
+                R_mid = numpy.zeros(
+                    numpy.concatenate(
                         ([len(time_idxs), ], original_shape)
                     ).astype(int)
                 )
@@ -2260,7 +2263,7 @@ class Equilibrium(object):
 
             * **psinorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `psinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2324,7 +2327,7 @@ class Equilibrium(object):
 
             * **phinorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `phinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2388,7 +2391,7 @@ class Equilibrium(object):
 
             * **volnorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `volnorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2488,7 +2491,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2576,7 +2579,7 @@ class Equilibrium(object):
 
             * **Rmid** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `Rmid`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2654,7 +2657,7 @@ class Equilibrium(object):
 
             * **roa** (`Array or scalar float`) - Normalized midplane minor
               radius. If all of the input arguments are scalar, then a scalar
-              is returned. Otherwise, a scipy Array is returned.
+              is returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `roa`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2719,7 +2722,7 @@ class Equilibrium(object):
 
             * **volnorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `volnorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2785,7 +2788,7 @@ class Equilibrium(object):
 
             * **phinorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `phinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2887,7 +2890,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -2983,7 +2986,7 @@ class Equilibrium(object):
 
             * **psinorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `psinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3049,7 +3052,7 @@ class Equilibrium(object):
 
             * **volnorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `volnorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3133,7 +3136,7 @@ class Equilibrium(object):
 
             * **Rmid** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `Rmid`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3210,7 +3213,7 @@ class Equilibrium(object):
 
             * **roa** (`Array or scalar float`) - Normalized midplane minor
               radius. If all of the input arguments are scalar, then a scalar
-              is returned. Otherwise, a scipy Array is returned.
+              is returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `roa`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3313,7 +3316,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3408,7 +3411,7 @@ class Equilibrium(object):
 
             * **psinorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `psinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3474,7 +3477,7 @@ class Equilibrium(object):
 
             * **phinorm** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `phinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3558,7 +3561,7 @@ class Equilibrium(object):
 
             * **Rmid** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `Rmid`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3633,7 +3636,7 @@ class Equilibrium(object):
 
             * **roa** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `roa`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3736,7 +3739,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted coordinates. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -3838,7 +3841,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -3871,7 +3874,7 @@ class Equilibrium(object):
 
             * **q** (`Array or scalar float`) - The safety factor ("q"). If all
               of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `q` has this shape as well,
               unless the `make_grid` keyword was True, in which case `q`
               has shape (len(`Z`), len(`R`)).
@@ -3964,7 +3967,7 @@ class Equilibrium(object):
 
             * **q** (`Array or scalar float`) - The safety factor ("q").
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `q`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4030,7 +4033,7 @@ class Equilibrium(object):
 
             * **q** (`Array or scalar float`) - The safety factor ("q"). If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `q`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4096,7 +4099,7 @@ class Equilibrium(object):
 
             * **q** (`Array or scalar float`) - The safety factor ("q"). If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `q`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4162,7 +4165,7 @@ class Equilibrium(object):
 
             * **q** (`Array or scalar float`) - The safety factor ("q"). If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `q`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4228,7 +4231,7 @@ class Equilibrium(object):
 
             * **q** (`Array or scalar float`) - The safety factor ("q"). If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `q`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4295,7 +4298,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -4328,7 +4331,7 @@ class Equilibrium(object):
 
             * **F** (`Array or scalar float`) - The flux function :math:`F=RB_{\phi}`.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `F` has this shape as well,
               unless the `make_grid` keyword was True, in which case `F`
               has shape (len(`Z`), len(`R`)).
@@ -4421,7 +4424,7 @@ class Equilibrium(object):
 
             * **F** (`Array or scalar float`) - The flux function :math:`F=RB_{\phi}`.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `F`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4487,7 +4490,7 @@ class Equilibrium(object):
 
             * **F** (`Array or scalar float`) - The flux function :math:`F=RB_{\phi}`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `F`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4553,7 +4556,7 @@ class Equilibrium(object):
 
             * **F** (`Array or scalar float`) - The flux function :math:`F=RB_{\phi}`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `F`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4619,7 +4622,7 @@ class Equilibrium(object):
 
             * **F** (`Array or scalar float`) - The flux function :math:`F=RB_{\phi}`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `F`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4685,7 +4688,7 @@ class Equilibrium(object):
 
             * **F** (`Array or scalar float`) - The flux function :math:`F=RB_{\phi}`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `F`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4755,7 +4758,7 @@ class Equilibrium(object):
 
             * **psinorm** (`Array or scalar float`) - The normalized poloidal
               flux. If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `psinorm`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -4824,7 +4827,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -4857,7 +4860,7 @@ class Equilibrium(object):
 
             * **FFPrime** (`Array or scalar float`) - The flux function :math:`FF'`.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `FFPrime` has this shape as well,
               unless the `make_grid` keyword was True, in which case `FFPrime`
               has shape (len(`Z`), len(`R`)).
@@ -4950,7 +4953,7 @@ class Equilibrium(object):
 
             * **FFPrime** (`Array or scalar float`) - The flux function :math:`FF'`.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `FFPrime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5016,7 +5019,7 @@ class Equilibrium(object):
 
             * **FFPrime** (`Array or scalar float`) - The flux function :math:`FF'`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `FFPrime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5082,7 +5085,7 @@ class Equilibrium(object):
 
             * **FFPrime** (`Array or scalar float`) - The flux function :math:`FF'`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `FFPrime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5148,7 +5151,7 @@ class Equilibrium(object):
 
             * **FFPrime** (`Array or scalar float`) - The flux function :math:`FF'`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `FFPrime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5214,7 +5217,7 @@ class Equilibrium(object):
 
             * **FFPrime** (`Array or scalar float`) - The flux function :math:`FF'`.
               If all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `FFPrime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5281,7 +5284,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -5314,7 +5317,7 @@ class Equilibrium(object):
 
             * **p** (`Array or scalar float`) - The pressure. If all
               of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `p` has this shape as well,
               unless the `make_grid` keyword was True, in which case `p`
               has shape (len(`Z`), len(`R`)).
@@ -5407,7 +5410,7 @@ class Equilibrium(object):
 
             * **p** (`Array or scalar float`) - The pressure.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `p`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5473,7 +5476,7 @@ class Equilibrium(object):
 
             * **p** (`Array or scalar float`) - The pressure. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `p`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5539,7 +5542,7 @@ class Equilibrium(object):
 
             * **p** (`Array or scalar float`) - The pressure. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `p`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5605,7 +5608,7 @@ class Equilibrium(object):
 
             * **p** (`Array or scalar float`) - The pressure. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `p`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5671,7 +5674,7 @@ class Equilibrium(object):
 
             * **p** (`Array or scalar float`) - The pressure. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `p`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5738,7 +5741,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -5771,7 +5774,7 @@ class Equilibrium(object):
 
             * **pprime** (`Array or scalar float`) - The pressure gradient. If
               all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `p` has this shape as well,
               unless the `make_grid` keyword was True, in which case `p`
               has shape (len(`Z`), len(`R`)).
@@ -5864,7 +5867,7 @@ class Equilibrium(object):
 
             * **pprime** (`Array or scalar float`) - The pressure gradient.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `pprime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5930,7 +5933,7 @@ class Equilibrium(object):
 
             * **pprime** (`Array or scalar float`) - The pressure gradient. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `pprime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -5996,7 +5999,7 @@ class Equilibrium(object):
 
             * **pprime** (`Array or scalar float`) - The pressure gradient. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `pprime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6062,7 +6065,7 @@ class Equilibrium(object):
 
             * **pprime** (`Array or scalar float`) - The pressure gradient. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `pprime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6128,7 +6131,7 @@ class Equilibrium(object):
 
             * **pprime** (`Array or scalar float`) - The pressure gradient. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `pprime`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6195,7 +6198,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -6228,7 +6231,7 @@ class Equilibrium(object):
 
             * **v** (`Array or scalar float`) - The flux surface volume. If all
               of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `v` has this shape as well,
               unless the `make_grid` keyword was True, in which case `v`
               has shape (len(`Z`), len(`R`)).
@@ -6321,7 +6324,7 @@ class Equilibrium(object):
 
             * **v** (`Array or scalar float`) - The flux surface volume.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned.
+              returned. Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `v`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6387,7 +6390,7 @@ class Equilibrium(object):
 
             * **v** (`Array or scalar float`) - The flux surface volume. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `v`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6453,7 +6456,7 @@ class Equilibrium(object):
 
             * **v** (`Array or scalar float`) - The pressure. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `v`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6519,7 +6522,7 @@ class Equilibrium(object):
 
             * **v** (`Array or scalar float`) - The flux surface volume. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `v`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6585,7 +6588,7 @@ class Equilibrium(object):
 
             * **v** (`Array or scalar float`) - The flux surface volume. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `v`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -6657,7 +6660,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -6690,7 +6693,7 @@ class Equilibrium(object):
 
             * **BR** (`Array or scalar float`) - The major radial component of
               the magnetic field. If all of the input arguments are scalar, then
-              a scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              a scalar is returned. Otherwise, a numpy Array is returned. If `R`
               and `Z` both have the same shape then `BR` has this shape as well,
               unless the `make_grid` keyword was True, in which case `BR` has
               shape (len(`Z`), len(`R`)).
@@ -6743,7 +6746,7 @@ class Equilibrium(object):
         )
 
         if self._tricubic:
-            out_vals = scipy.reshape(
+            out_vals = numpy.reshape(
                 -1.0 / R * self._getFluxTriSpline().ev(
                     t, Z, R, dx=0, dy=1, dz=0
                 ),
@@ -6757,22 +6760,22 @@ class Equilibrium(object):
                 if single_val:
                     out_vals = out_vals[0]
                 else:
-                    out_vals = scipy.reshape(out_vals, original_shape)
+                    out_vals = numpy.reshape(out_vals, original_shape)
             elif each_t:
-                out_vals = scipy.zeros(
-                    scipy.concatenate(
+                out_vals = numpy.zeros(
+                    numpy.concatenate(
                         ([len(time_idxs), ], original_shape)
                     ).astype(int)
                 )
                 for idx, t_idx in enumerate(time_idxs):
-                    out_vals[idx] = scipy.reshape(
+                    out_vals[idx] = numpy.reshape(
                         -1.0 / R * self._getFluxBiSpline(t_idx).ev(
                             Z, R, dx=1, dy=0
                         ),
                         original_shape
                     )
             else:
-                out_vals = scipy.zeros_like(t, dtype=float)
+                out_vals = numpy.zeros_like(t, dtype=float)
                 for t_idx in unique_idxs:
                     t_mask = (time_idxs == t_idx)
                     out_vals[t_mask] = (
@@ -6780,7 +6783,7 @@ class Equilibrium(object):
                             Z[t_mask], R[t_mask], dx=1, dy=0
                         )
                     )
-                out_vals = scipy.reshape(out_vals, original_shape)
+                out_vals = numpy.reshape(out_vals, original_shape)
 
         # Correct for current sign:
         out_vals = -1.0 * out_vals * self.getCurrentSign()
@@ -6835,7 +6838,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -6868,7 +6871,7 @@ class Equilibrium(object):
 
             * **BZ** (`Array or scalar float`) - The vertical component of the
               magnetic field. If all of the input arguments are scalar, then a
-              scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              scalar is returned. Otherwise, a numpy Array is returned. If `R`
               and `Z` both have the same shape then `BZ` has this shape as well,
               unless the `make_grid` keyword was True, in which case `BZ` has
               shape (len(`Z`), len(`R`)).
@@ -6921,7 +6924,7 @@ class Equilibrium(object):
         )
 
         if self._tricubic:
-            out_vals = scipy.reshape(
+            out_vals = numpy.reshape(
                 1.0 / R * self._getFluxTriSpline().ev(
                     t, Z, R, dx=0, dy=0, dz=1
                 ),
@@ -6935,28 +6938,28 @@ class Equilibrium(object):
                 if single_val:
                     out_vals = out_vals[0]
                 else:
-                    out_vals = scipy.reshape(out_vals, original_shape)
+                    out_vals = numpy.reshape(out_vals, original_shape)
             elif each_t:
-                out_vals = scipy.zeros(
-                    scipy.concatenate(
+                out_vals = numpy.zeros(
+                    numpy.concatenate(
                         ([len(time_idxs), ], original_shape)
                     ).astype(int)
                 )
                 for idx, t_idx in enumerate(time_idxs):
-                    out_vals[idx] = scipy.reshape(
+                    out_vals[idx] = numpy.reshape(
                         1.0 / R * self._getFluxBiSpline(t_idx).ev(
                             Z, R, dx=0, dy=1
                         ),
                         original_shape
                     )
             else:
-                out_vals = scipy.zeros_like(t, dtype=float)
+                out_vals = numpy.zeros_like(t, dtype=float)
                 for t_idx in unique_idxs:
                     t_mask = (time_idxs == t_idx)
                     out_vals[t_mask] = 1.0 / R[t_mask] * self._getFluxBiSpline(
                         t_idx
                     ).ev(Z[t_mask], R[t_mask], dx=0, dy=1)
-                out_vals = scipy.reshape(out_vals, original_shape)
+                out_vals = numpy.reshape(out_vals, original_shape)
 
         # Correct for current sign:
         out_vals = -1.0 * out_vals * self.getCurrentSign()
@@ -7013,7 +7016,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -7046,7 +7049,7 @@ class Equilibrium(object):
 
             * **BT** (`Array or scalar float`) - The toroidal magnetic field.
               If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `BT` has this shape as well,
               unless the `make_grid` keyword was True, in which case `BT`
               has shape (len(`Z`), len(`R`)).
@@ -7096,7 +7099,7 @@ class Equilibrium(object):
 
         # This will have NaN anywhere outside of the LCFS. Only handle if we
         # we need to.
-        if scipy.isnan(B_T).any():
+        if numpy.isnan(B_T).any():
             warnings.warn(
                 "Flux function F not provided outside of LCFS, assuming field "
                 "goes like 1/R there to compute BT! This may be inaccurate!",
@@ -7115,16 +7118,16 @@ class Equilibrium(object):
             )
             if self._tricubic:
                 B_T = B_T.ravel()
-                mask = scipy.isnan(B_T)
+                mask = numpy.isnan(B_T)
                 B_T[mask] = (
                     self.getBtVacSpline()(t[mask]) *
                     self.getMagRSpline()(t[mask]) / R[mask]
                 )
-                B_T = scipy.reshape(B_T, original_shape)
+                B_T = numpy.reshape(B_T, original_shape)
             else:
                 if single_time:
                     B_T = B_T.ravel()
-                    mask = scipy.isnan(B_T)
+                    mask = numpy.isnan(B_T)
                     B_T[mask] = (
                         self.getBtVac()[time_idxs] *
                         self.getMagR()[time_idxs] / R[mask]
@@ -7132,28 +7135,28 @@ class Equilibrium(object):
                     if single_val:
                         B_T = B_T[0]
                     else:
-                        B_T = scipy.reshape(B_T, original_shape)
+                        B_T = numpy.reshape(B_T, original_shape)
                 elif kwargs.get('each_t', True):
                     for idx, t_idx in enumerate(time_idxs):
                         tmp_out = B_T[idx].ravel()
-                        mask = scipy.isnan(tmp_out)
+                        mask = numpy.isnan(tmp_out)
                         tmp_out[mask] = (
                             self.getBtVac()[t_idx] *
                             self.getMagR()[t_idx] / R[mask]
                         )
-                        B_T[idx] = scipy.reshape(tmp_out, original_shape)
+                        B_T[idx] = numpy.reshape(tmp_out, original_shape)
                 else:
                     B_T = B_T.ravel()
                     for t_idx in unique_idxs:
                         t_mask = (time_idxs == t_idx)
                         tmp_out = B_T[t_mask]
-                        mask = scipy.isnan(tmp_out)
+                        mask = numpy.isnan(tmp_out)
                         tmp_out[mask] = (
                             self.getBtVac()[t_idx] *
                             self.getMagR()[t_idx] / R[t_mask][mask]
                         )
                         B_T[t_mask] = tmp_out
-                    B_T = scipy.reshape(B_T, original_shape)
+                    B_T = numpy.reshape(B_T, original_shape)
 
         if return_t:
             return unit_factor * B_T, blob
@@ -7190,7 +7193,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -7223,7 +7226,7 @@ class Equilibrium(object):
 
             * **B** (`Array or scalar float`) - The magnitude of the magnetic
               field. If all of the input arguments are scalar, then a scalar is
-              returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `B` has this shape as well, unless
               the `make_grid` keyword was True, in which case `B` has shape
               (len(`Z`), len(`R`)).
@@ -7263,7 +7266,7 @@ class Equilibrium(object):
         BR = self.rz2BR(R, Z, t, **kwargs)
         BZ = self.rz2BZ(R, Z, t, **kwargs)
         BT = self.rz2BT(R, Z, t, **kwargs)
-        return scipy.sqrt(BR**2.0 + BZ**2.0 + BT**2.0)
+        return numpy.sqrt(BR**2.0 + BZ**2.0 + BT**2.0)
 
     ############################
     # Current density routines #
@@ -7303,7 +7306,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -7336,7 +7339,7 @@ class Equilibrium(object):
 
             * **jR** (`Array or scalar float`) - The major radial component of
               the current density. If all of the input arguments are scalar, then
-              a scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              a scalar is returned. Otherwise, a numpy Array is returned. If `R`
               and `Z` both have the same shape then `jR` has this shape as well,
               unless the `make_grid` keyword was True, in which case `jR` has
               shape (len(`Z`), len(`R`)).
@@ -7421,7 +7424,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -7454,7 +7457,7 @@ class Equilibrium(object):
 
             * **jZ** (`Array or scalar float`) - The vertical component of the
               current density. If all of the input arguments are scalar, then a
-              scalar is returned. Otherwise, a scipy Array is returned. If `R`
+              scalar is returned. Otherwise, a numpy Array is returned. If `R`
               and `Z` both have the same shape then `jZ` has this shape as well,
               unless the `make_grid` keyword was True, in which case `jZ` has
               shape (len(`Z`), len(`R`)).
@@ -7538,7 +7541,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -7571,7 +7574,7 @@ class Equilibrium(object):
 
             * **jT** (`Array or scalar float`) - The major radial component of
               the current density. If all of the input arguments are scalar,
-              then a scalar is returned. Otherwise, a scipy Array is returned.
+              then a scalar is returned. Otherwise, a numpy Array is returned.
               If `R` and `Z` both have the same shape then `jT` has this shape
               as well, unless the `make_grid` keyword was True, in which case
               `jT` has shape (len(`Z`), len(`R`)).
@@ -7651,7 +7654,7 @@ class Equilibrium(object):
                 `Z` or be a scalar. Default is True (evaluate ALL `R`, `Z` at
                 EACH element in `t`).
             make_grid (Boolean): Set to True to pass `R` and `Z` through
-                :py:func:`scipy.meshgrid` before evaluating. If this is set to
+                :py:func:`numpy.meshgrid` before evaluating. If this is set to
                 True, `R` and `Z` must each only have a single dimension, but
                 can have different lengths. Default is False (do not form
                 meshgrid).
@@ -7684,7 +7687,7 @@ class Equilibrium(object):
 
             * **j** (`Array or scalar float`) - The magnitude of the current
               density. If all of the input arguments are scalar, then a scalar
-              is returned. Otherwise, a scipy Array is returned. If `R` and `Z`
+              is returned. Otherwise, a numpy Array is returned. If `R` and `Z`
               both have the same shape then `j` has this shape as well, unless
               the `make_grid` keyword was True, in which case `j` has shape
               (len(`Z`), len(`R`)).
@@ -7725,7 +7728,7 @@ class Equilibrium(object):
         jR = self.rz2jR(R, Z, t, **kwargs)
         jZ = self.rz2jZ(R, Z, t, **kwargs)
         jT = self.rz2jT(R, Z, t, **kwargs)
-        return scipy.sqrt(jR**2.0 + jZ**2.0 + jT**2.0)
+        return numpy.sqrt(jR**2.0 + jZ**2.0 + jT**2.0)
 
     ##########################
     # Field mapping routines #
@@ -7765,7 +7768,7 @@ class Equilibrium(object):
         return [uR * R / uT, uZ * R / uT]
 
     def rz2FieldLineTrace(self, R0, Z0, t, phi0=0.0, field='B', num_rev=1.0,
-                          rev_method='toroidal', dphi=2.0 * scipy.pi / 100.0,
+                          rev_method='toroidal', dphi=2.0 * numpy.pi / 100.0,
                           integrator='dopri5'):
         """Trace a field line starting from a given (R, phi, Z) point.
 
@@ -7807,7 +7810,7 @@ class Equilibrium(object):
             q = self.rz2q(R0, Z0, t)
             num_rev = num_rev * q
         nsteps = int(
-            scipy.absolute(scipy.ceil(num_rev * 2.0 * scipy.pi / dphi))
+            numpy.absolute(numpy.ceil(num_rev * 2.0 * numpy.pi / dphi))
         )
 
         if isinstance(integrator, scipy.integrate.ode):
@@ -7817,7 +7820,7 @@ class Equilibrium(object):
             r.set_integrator(integrator)
         r.set_f_params(t, field)
         r.set_initial_value([R0, Z0], phi0)
-        out = scipy.zeros((nsteps + 1, 3))  # R, Z, Phi
+        out = numpy.zeros((nsteps + 1, 3))  # R, Z, Phi
         out[0, :] = [R0, Z0, phi0]
         for i in range(1, nsteps + 1):
             out[i, 0:2] = r.integrate(r.t + dphi)
@@ -7945,9 +7948,9 @@ class Equilibrium(object):
         Returns:
             (figure, axis): The figure and axis which the field lines were plotted in.
         """
-        rhovals = scipy.asarray(rhovals, dtype=float)
+        rhovals = numpy.asarray(rhovals, dtype=float)
         if rhovals.ndim == 0:
-            rhovals = scipy.linspace(rhomin, rhomax, int(rhovals))
+            rhovals = numpy.linspace(rhomin, rhomax, int(rhovals))
 
         rzt = []
         for rho in rhovals:
@@ -7970,7 +7973,7 @@ class Equilibrium(object):
         # Need to do this ahead of time to get the right scaling for all lines:
         if color == 'magnitude':
             mag_max = 0.0
-            mag_min = scipy.inf
+            mag_min = numpy.inf
             mag = []
             for v in rzt:
                 if kwargs.get('field', 'B') == 'B':
@@ -7993,8 +7996,8 @@ class Equilibrium(object):
                 )
 
         v_ext = max(
-            scipy.absolute(self.getRGrid()).max(),
-            scipy.absolute(self.getZGrid()).max()
+            numpy.absolute(self.getRGrid()).max(),
+            numpy.absolute(self.getZGrid()).max()
         )
 
         for j, v in enumerate(rzt):
@@ -8003,7 +8006,7 @@ class Equilibrium(object):
                 for i in range(0, v.shape[0] - 1):
                     c = plt.get_cmap(cmap)(
                         int(
-                            scipy.around(
+                            numpy.around(
                                 255 * (
                                     (mag[j][i] + mag[j][i + 1]) / 2.0 - mag_min
                                 ) / (mag_max - mag_min)
@@ -8011,8 +8014,8 @@ class Equilibrium(object):
                         )
                     )[:3]
                     a.plot(
-                        v[i:i + 2, 0] * scipy.cos(v[i:i + 2, 2]),
-                        v[i:i + 2, 0] * scipy.sin(v[i:i + 2, 2]),
+                        v[i:i + 2, 0] * numpy.cos(v[i:i + 2, 2]),
+                        v[i:i + 2, 0] * numpy.sin(v[i:i + 2, 2]),
                         v[i:i + 2, 1],
                         color=c,
                         alpha=alpha,
@@ -8020,8 +8023,8 @@ class Equilibrium(object):
                     )
             else:
                 l, = a.plot(
-                    v[:, 0] * scipy.cos(v[:, 2]),
-                    v[:, 0] * scipy.sin(v[:, 2]),
+                    v[:, 0] * numpy.cos(v[:, 2]),
+                    v[:, 0] * numpy.sin(v[:, 2]),
                     v[:, 1],
                     color=None if color == 'sequential' else color,
                     alpha=alpha,
@@ -8038,13 +8041,13 @@ class Equilibrium(object):
                     uR = self.rz2jR(v[0, 0], v[0, 1], t)
                     uZ = self.rz2jZ(v[0, 0], v[0, 1], t)
                     uT = self.rz2jT(v[0, 0], v[0, 1], t)
-                u = scipy.sqrt(uR**2.0 + uZ**2.0 + uT**2.0)
+                u = numpy.sqrt(uR**2.0 + uZ**2.0 + uT**2.0)
                 a.quiver(
-                    v[0, 0] * scipy.cos(v[0, 2]),
-                    v[0, 0] * scipy.sin(v[0, 2]),
+                    v[0, 0] * numpy.cos(v[0, 2]),
+                    v[0, 0] * numpy.sin(v[0, 2]),
                     v[0, 1],
-                    (uR * scipy.cos(v[0, 2]) - uT * scipy.sin(v[0, 2])) / u,
-                    (uR * scipy.sin(v[0, 2]) + uT * scipy.cos(v[0, 2])) / u,
+                    (uR * numpy.cos(v[0, 2]) - uT * numpy.sin(v[0, 2])) / u,
+                    (uR * numpy.sin(v[0, 2]) + uT * numpy.cos(v[0, 2])) / u,
                     uZ / u,
                     color=c,
                     alpha=alpha,
@@ -8125,7 +8128,7 @@ class Equilibrium(object):
 
             * **rho** (`Array or scalar float`) - The converted quantity. If
               all of the input arguments are scalar, then a scalar is returned.
-              Otherwise, a scipy Array is returned.
+              Otherwise, a numpy Array is returned.
             * **time_idxs** (Array with same shape as `rho`) - The indices
               (in :py:meth:`self.getTimeBase`) that were used for
               nearest-neighbor interpolation. Only returned if `return_t` is
@@ -8172,10 +8175,10 @@ class Equilibrium(object):
                     if single_val:
                         quan_norm = quan_norm[0]
                     else:
-                        quan_norm = scipy.reshape(quan_norm, original_shape)
+                        quan_norm = numpy.reshape(quan_norm, original_shape)
                 elif each_t:
-                    quan_norm = scipy.zeros(
-                        scipy.concatenate(
+                    quan_norm = numpy.zeros(
+                        numpy.concatenate(
                             ([len(time_idxs), ], original_shape)
                         ).astype(int)
                     )
@@ -8191,7 +8194,7 @@ class Equilibrium(object):
                 else:
                     if convert_roa:
                         psi_norm = self._roa2rmid(psi_norm, time_idxs)
-                    quan_norm = scipy.zeros_like(t, dtype=float)
+                    quan_norm = numpy.zeros_like(t, dtype=float)
                     for t_idx in unique_idxs:
                         t_mask = (time_idxs == t_idx)
                         tmp = spline_func(t_idx, k=k)(psi_norm[t_mask])
@@ -8204,8 +8207,8 @@ class Equilibrium(object):
                     if quan_norm < 0.0:
                         quan_norm = 0.0
                 else:
-                    scipy.place(quan_norm, quan_norm < 0, 0.0)
-                quan_norm = scipy.sqrt(quan_norm)
+                    numpy.place(quan_norm, quan_norm < 0, 0.0)
+                quan_norm = numpy.sqrt(quan_norm)
 
             if return_t:
                 if self._tricubic:
@@ -8252,10 +8255,10 @@ class Equilibrium(object):
                     if single_val:
                         quan_norm = quan_norm[0]
                     else:
-                        quan_norm = scipy.reshape(quan_norm, original_shape)
+                        quan_norm = numpy.reshape(quan_norm, original_shape)
                 elif each_t:
-                    quan_norm = scipy.zeros(
-                        scipy.concatenate(
+                    quan_norm = numpy.zeros(
+                        numpy.concatenate(
                             ([len(time_idxs),], original_shape)
                         ).astype(int)
                     )
@@ -8267,7 +8270,7 @@ class Equilibrium(object):
                             tmp = self._rmid2roa(tmp, t_idx)
                         quan_norm[idx] = tmp.reshape(original_shape)
                 else:
-                    quan_norm = scipy.zeros_like(time_idxs, dtype=float)
+                    quan_norm = numpy.zeros_like(time_idxs, dtype=float)
                     for t_idx in unique_idxs:
                         t_mask = (time_idxs == t_idx)
                         tmp = spline_func(t_idx, k=k)(psi_norm_flat[t_mask])
@@ -8281,8 +8284,8 @@ class Equilibrium(object):
                     if quan_norm < 0:
                         quan_norm = 0.0
                 else:
-                    scipy.place(quan_norm, quan_norm < 0, 0.0)
-                quan_norm = scipy.sqrt(quan_norm)
+                    numpy.place(quan_norm, quan_norm < 0, 0.0)
+                quan_norm = numpy.sqrt(quan_norm)
 
             if return_t:
                 return quan_norm, blob
@@ -8451,7 +8454,7 @@ class Equilibrium(object):
 
         Returns:
             Quan: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
+                scalar, then a scalar is returned. Otherwise, a numpy Array
                 instance is returned. If R and Z both have the same shape then
                 Quand has this shape as well. If the make_grid keyword was True
                 then R_mid has shape (len(Z), len(R)).
@@ -8555,7 +8558,7 @@ class Equilibrium(object):
 
         Returns:
             Quan: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
+                scalar, then a scalar is returned. Otherwise, a numpy Array
                 instance is returned. Has the same shape as R_mid.
             time_idxs: Array with same shape as Quan. The indices (in
                 self.getTimeBase()) that were used for nearest-neighbor
@@ -8641,7 +8644,7 @@ class Equilibrium(object):
 
         Returns:
             Quan: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
+                scalar, then a scalar is returned. Otherwise, a numpy Array
                 instance is returned. Has the same shape as `phinorm`.
             time_idxs: Array with same shape as `Quan`. The indices (in
                 self.getTimeBase()) that were used for nearest-neighbor
@@ -8723,7 +8726,7 @@ class Equilibrium(object):
 
         Returns:
             Quan: Array or scalar float. If all of the input arguments are
-                scalar, then a scalar is returned. Otherwise, a scipy Array
+                scalar, then a scalar is returned. Otherwise, a numpy Array
                 instance is returned. Has the same shape as `volnorm`.
             time_idxs: Array with same shape as `Quan`. The indices (in
                 self.getTimeBase()) that were used for nearest-neighbor
@@ -8919,7 +8922,7 @@ class Equilibrium(object):
     ):
         """Input checker/processor.
 
-        Takes R, Z and t. Appropriately packages them into scipy arrays. Checks
+        Takes R, Z and t. Appropriately packages them into numpy.arrays. Checks
         the validity of the R, Z ranges. If there is a single time value but
         multiple R, Z values, creates matching time vector. If there is a single
         R, Z value but multiple t values, creates matching R and Z vectors.
@@ -9005,9 +9008,9 @@ class Equilibrium(object):
 
         # Get everything into sensical datatypes. Must force it to be float to
         # keep scipy.interpolate happy.
-        R = scipy.asarray(R, dtype=float)
-        Z = scipy.asarray(Z, dtype=float)
-        t = scipy.asarray(t, dtype=float)
+        R = numpy.asarray(R, dtype=float)
+        Z = numpy.asarray(Z, dtype=float)
+        t = numpy.asarray(t, dtype=float)
         single_time = (t.ndim == 0)
         single_val = (R.ndim == 0) and (Z.ndim == 0)
 
@@ -9025,7 +9028,7 @@ class Equilibrium(object):
                     "_processRZt: When using the make_grid keyword, the number "
                     "of dimensions of R and Z must both be one!"
                 )
-            R, Z = scipy.meshgrid(R, Z)
+            R, Z = numpy.meshgrid(R, Z)
         else:
             if R.shape != Z.shape:
                 raise ValueError(
@@ -9058,34 +9061,34 @@ class Equilibrium(object):
                 # Handle bug in older scipy:
                 if R.ndim == 0:
                     if not good_points:
-                        R = scipy.nan
+                        R = numpy.nan
                 else:
-                    scipy.place(R, ~good_points, scipy.nan)
+                    numpy.place(R, ~good_points, numpy.nan)
                 if Z.ndim == 0:
                     if not good_points:
-                        Z = scipy.nan
+                        Z = numpy.nan
                 else:
-                    scipy.place(Z, ~good_points, scipy.nan)
+                    numpy.place(Z, ~good_points, numpy.nan)
 
         if self._tricubic:
             # When using tricubic spline interpolation, the arrays must be
             # replicated when using the each_t keyword.
             if single_time:
-                t = t * scipy.ones_like(R, dtype=float)
+                t = t * numpy.ones_like(R, dtype=float)
             elif each_t:
-                R = scipy.tile(R, [len(t), ] + [1, ] * R.ndim)
-                Z = scipy.tile(Z, [len(t), ] + [1, ] * Z.ndim)
-                t = t[scipy.indices(R.shape)[0]]
+                R = numpy.tile(R, [len(t), ] + [1, ] * R.ndim)
+                Z = numpy.tile(Z, [len(t), ] + [1, ] * Z.ndim)
+                t = t[numpy.indices(R.shape)[0]]
             time_idxs = None
             unique_idxs = None
-            t = scipy.reshape(t, -1)
+            t = numpy.reshape(t, -1)
         else:
-            t = scipy.reshape(t, -1)
+            t = numpy.reshape(t, -1)
             timebase = self.getTimeBase()
             # Get nearest-neighbor points:
             time_idxs = self._getNearestIdx(t, timebase)
             # Check errors and warn if needed:
-            t_errs = scipy.absolute(t - timebase[time_idxs])
+            t_errs = numpy.absolute(t - timebase[time_idxs])
             # Assume a constant sampling rate to save time:
             if (
                 len(time_idxs) > 1 and
@@ -9099,13 +9102,13 @@ class Equilibrium(object):
                     RuntimeWarning
                 )
             if compute_unique and not single_time and not each_t:
-                unique_idxs = scipy.unique(time_idxs)
+                unique_idxs = numpy.unique(time_idxs)
             else:
                 unique_idxs = None
 
         original_shape = R.shape
-        R = scipy.reshape(R, -1)
-        Z = scipy.reshape(Z, -1)
+        R = numpy.reshape(R, -1)
+        Z = numpy.reshape(Z, -1)
 
         return (
             R, Z, t, time_idxs, unique_idxs, single_time, single_val,
@@ -9139,8 +9142,8 @@ class Equilibrium(object):
                        (Z >= self.getZGrid(length_unit='m')[0]))
         # Gracefully handle single-value versus array inputs, returning in the
         # corresponding type.
-        num_good = scipy.sum(good_points)
-        test = scipy.array(R)
+        num_good = numpy.sum(good_points)
+        test = numpy.array(R)
         if len(test.shape) > 0:
             num_pts = test.size
         else:
@@ -9161,7 +9164,7 @@ class Equilibrium(object):
         """Returns the array of indices of the nearest value in a corresponding to each value in v.
 
         If the monotonic keyword in the instance is True, then this is done using
-        scipy.digitize under the assumption that a is monotonic. Otherwise,
+        numpy.digitize under the assumption that a is monotonic. Otherwise,
         this is done in a general manner by looking for the minimum distance
         between the points in v and a.
 
@@ -9179,17 +9182,17 @@ class Equilibrium(object):
         # corresponding type.
         if not self._monotonic:
             try:
-                return scipy.array(
-                    [(scipy.absolute(a - val)).argmin() for val in v]
+                return numpy.array(
+                    [(numpy.absolute(a - val)).argmin() for val in v]
                 )
             except TypeError:
-                return (scipy.absolute(a - v)).argmin()
+                return (numpy.absolute(a - v)).argmin()
         else:
             try:
-                return scipy.digitize(v, (a[1:] + a[:-1]) / 2.0)
+                return numpy.digitize(v, (a[1:] + a[:-1]) / 2.0)
             except ValueError:
-                return scipy.digitize(
-                    scipy.atleast_1d(v), (a[1:] + a[:-1]) / 2.0
+                return numpy.digitize(
+                    numpy.atleast_1d(v), (a[1:] + a[:-1]) / 2.0
                 ).reshape(())
 
     def _getFluxBiSpline(self, idx):
@@ -9272,17 +9275,17 @@ class Equilibrium(object):
                 # zero:
                 # we need to add the psi axis
                 x = (
-                    scipy.linspace(0, 1, num=self.getQProfile()[idx].size) *
+                    numpy.linspace(0, 1, num=self.getQProfile()[idx].size) *
                     (self.getFluxLCFS()[idx] - self.getFluxAxis()[idx])
                 )
-                phi_norm_meas = scipy.insert(
+                phi_norm_meas = numpy.insert(
                     scipy.integrate.cumtrapz(self.getQProfile()[idx], x=x),
                     0, 0
                 )
                 phi_norm_meas = phi_norm_meas / phi_norm_meas[-1]
 
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0.0, 1.0, len(phi_norm_meas)),
+                    numpy.linspace(0.0, 1.0, len(phi_norm_meas)),
                     phi_norm_meas,
                     k=k
                 )
@@ -9299,14 +9302,14 @@ class Equilibrium(object):
                 # Insert zero at beginning because older versions of cumtrapz
                 # don't support the initial keyword to make the initial value
                 # zero:
-                phi_norm_meas = scipy.insert(
+                phi_norm_meas = numpy.insert(
                     scipy.integrate.cumtrapz(self.getQProfile(), axis=1),
                     0, 0, axis=1
                 )
-                phi_norm_meas = phi_norm_meas / phi_norm_meas[:, -1, scipy.newaxis]
+                phi_norm_meas = phi_norm_meas / phi_norm_meas[:, -1, numpy.newaxis]
                 self._phiNormSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0, 1, len(phi_norm_meas[0, :])),
+                    numpy.linspace(0, 1, len(phi_norm_meas[0, :])),
                     phi_norm_meas,
                     bounds_error=False,
                     s=0
@@ -9342,10 +9345,10 @@ class Equilibrium(object):
                 # don't support the initial keyword to make the initial value
                 # zero:
                 x = (
-                    scipy.linspace(0, 1, num=self.getQProfile()[idx].size) *
+                    numpy.linspace(0, 1, num=self.getQProfile()[idx].size) *
                     (self.getFluxLCFS()[idx] - self.getFluxAxis()[idx])
                 )
-                phi_norm_meas = scipy.insert(
+                phi_norm_meas = numpy.insert(
                     scipy.integrate.cumtrapz(self.getQProfile()[idx], x=x),
                     0, 0
                 )
@@ -9353,7 +9356,7 @@ class Equilibrium(object):
 
                 spline = trispline.UnivariateInterpolator(
                     phi_norm_meas,
-                    scipy.linspace(0.0, 1.0, len(phi_norm_meas)),
+                    numpy.linspace(0.0, 1.0, len(phi_norm_meas)),
                     k=k
                 )
 
@@ -9369,15 +9372,15 @@ class Equilibrium(object):
                 # Insert zero at beginning because older versions of cumtrapz
                 # don't support the initial keyword to make the initial value
                 # zero:
-                phi_norm_meas = scipy.insert(
+                phi_norm_meas = numpy.insert(
                     scipy.integrate.cumtrapz(self.getQProfile(), axis=1),
                     0,
                     0,
                     axis=1
                 )
-                phi_norm_meas = phi_norm_meas / phi_norm_meas[:, -1, scipy.newaxis]
-                psinorm_grid, t_grid = scipy.meshgrid(
-                    scipy.linspace(0, 1, phi_norm_meas.shape[1]),
+                phi_norm_meas = phi_norm_meas / phi_norm_meas[:, -1, numpy.newaxis]
+                psinorm_grid, t_grid = numpy.meshgrid(
+                    numpy.linspace(0, 1, phi_norm_meas.shape[1]),
                     self.getTimeBase()
                 )
                 self._phiNormToPsiNormSpline = trispline.BivariateInterpolator(
@@ -9416,7 +9419,7 @@ class Equilibrium(object):
                 vol_norm_meas = vol_norm_meas / vol_norm_meas[-1]
 
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0, 1, len(vol_norm_meas)),
+                    numpy.linspace(0, 1, len(vol_norm_meas)),
                     vol_norm_meas,
                     k=k
                 )
@@ -9431,10 +9434,10 @@ class Equilibrium(object):
                 return self._volNormSpline
             else:
                 vol_norm_meas = self.getFluxVol()
-                vol_norm_meas = vol_norm_meas / vol_norm_meas[:, -1, scipy.newaxis]
+                vol_norm_meas = vol_norm_meas / vol_norm_meas[:, -1, numpy.newaxis]
                 self._volNormSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0, 1, len(vol_norm_meas[0, :])),
+                    numpy.linspace(0, 1, len(vol_norm_meas[0, :])),
                     vol_norm_meas,
                     bounds_error=False,
                     s=0
@@ -9471,7 +9474,7 @@ class Equilibrium(object):
 
                 spline = trispline.UnivariateInterpolator(
                     vol_norm_meas,
-                    scipy.linspace(0.0, 1.0, len(vol_norm_meas)),
+                    numpy.linspace(0.0, 1.0, len(vol_norm_meas)),
                     k=k
                 )
                 try:
@@ -9485,10 +9488,10 @@ class Equilibrium(object):
                 return self._volNormToPsiNormSpline
             else:
                 vol_norm_meas = self.getFluxVol()
-                vol_norm_meas = vol_norm_meas / vol_norm_meas[:, -1, scipy.newaxis]
+                vol_norm_meas = vol_norm_meas / vol_norm_meas[:, -1, numpy.newaxis]
 
-                psinorm_grid, t_grid = scipy.meshgrid(
-                    scipy.linspace(0, 1, len(vol_norm_meas[0, :])),
+                psinorm_grid, t_grid = numpy.meshgrid(
+                    numpy.linspace(0, 1, len(vol_norm_meas[0, :])),
                     self.getTimeBase()
                 )
                 self._volNormToPsiNormSpline = trispline.BivariateInterpolator(
@@ -9539,7 +9542,7 @@ class Equilibrium(object):
                 # core. The bivariate spline seems to be a little more robust
                 # in this respect.
                 resample_factor = 3
-                R_grid = scipy.linspace(
+                R_grid = numpy.linspace(
                     self.getMagR(length_unit='m')[idx],
                     self.getRGrid(length_unit='m')[-1],
                     resample_factor * len(self.getRGrid(length_unit='m'))
@@ -9547,14 +9550,14 @@ class Equilibrium(object):
 
                 psi_norm_on_grid = self.rz2psinorm(
                     R_grid,
-                    self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
+                    self.getMagZ(length_unit='m')[idx] * numpy.ones(R_grid.shape),
                     self.getTimeBase()[idx]
                 )
                 # Correct for the slight issues at the magnetic axis:
                 psi_norm_on_grid[0] = 0.0
                 # Find if it ever goes non-monotonic: psinorm is assumed to be
                 # strictly INCREASING from the magnetic axis out.
-                decr_idx, = scipy.where(
+                decr_idx, = numpy.where(
                     (psi_norm_on_grid[1:] - psi_norm_on_grid[:-1]) < 0
                 )
                 if len(decr_idx) > 0:
@@ -9576,17 +9579,17 @@ class Equilibrium(object):
                 resample_factor = 3 * len(self.getRGrid(length_unit='m'))
 
                 # generate timebase and R_grid through a meshgrid
-                t, R_grid = scipy.meshgrid(
+                t, R_grid = numpy.meshgrid(
                     self.getTimeBase(),
-                    scipy.zeros((resample_factor,))
+                    numpy.zeros((resample_factor,))
                 )
-                Z_grid = scipy.dot(
-                    scipy.ones((resample_factor, 1)),
-                    scipy.atleast_2d(self.getMagZ(length_unit='m'))
+                Z_grid = numpy.dot(
+                    numpy.ones((resample_factor, 1)),
+                    numpy.atleast_2d(self.getMagZ(length_unit='m'))
                 )
 
-                for idx in scipy.arange(self.getTimeBase().size):
-                    R_grid[:, idx] = scipy.linspace(
+                for idx in numpy.arange(self.getTimeBase().size):
+                    R_grid[:, idx] = numpy.linspace(
                         self.getMagR(length_unit='m')[idx],
                         self.getRGrid(length_unit='m')[-1],
                         resample_factor
@@ -9651,7 +9654,7 @@ class Equilibrium(object):
                 # flux grid to avoid 1d interpolation problems in the core. The
                 # bivariate spline seems to be a little more robust in this respect.
                 resample_factor = 3
-                R_grid = scipy.linspace(
+                R_grid = numpy.linspace(
                     # self.getMagR(length_unit='m')[idx],
                     self.getRGrid(length_unit='m')[0],
                     self.getRGrid(length_unit='m')[-1],
@@ -9660,7 +9663,7 @@ class Equilibrium(object):
 
                 psi_norm_on_grid = self.rz2psinorm(
                     R_grid,
-                    self.getMagZ(length_unit='m')[idx] * scipy.ones(R_grid.shape),
+                    self.getMagZ(length_unit='m')[idx] * numpy.ones(R_grid.shape),
                     self.getTimeBase()[idx]
                 )
 
@@ -9679,18 +9682,18 @@ class Equilibrium(object):
                 resample_factor = 3 * len(self.getRGrid(length_unit='m'))
 
                 # generate timebase and R_grid through a meshgrid
-                t, R_grid = scipy.meshgrid(
+                t, R_grid = numpy.meshgrid(
                     self.getTimeBase(),
-                    scipy.zeros((resample_factor,))
+                    numpy.zeros((resample_factor,))
                 )
-                Z_grid = scipy.dot(
-                    scipy.ones((resample_factor, 1)),
-                    scipy.atleast_2d(self.getMagZ(length_unit='m'))
+                Z_grid = numpy.dot(
+                    numpy.ones((resample_factor, 1)),
+                    numpy.atleast_2d(self.getMagZ(length_unit='m'))
                 )
 
-                for idx in scipy.arange(self.getTimeBase().size):
+                for idx in numpy.arange(self.getTimeBase().size):
                     # TODO: This can be done much more efficiently!
-                    R_grid[:, idx] = scipy.linspace(
+                    R_grid[:, idx] = numpy.linspace(
                         self.getRGrid(length_unit='m')[0],
                         self.getRGrid(length_unit='m')[-1],
                         resample_factor
@@ -9735,7 +9738,7 @@ class Equilibrium(object):
             except KeyError:
                 q = self.getQProfile()[idx]
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0.0, 1.0, len(q)),
+                    numpy.linspace(0.0, 1.0, len(q)),
                     q,
                     k=k
                 )
@@ -9751,7 +9754,7 @@ class Equilibrium(object):
                 q = self.getQProfile()
                 self._qSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0.0, 1.0, q.shape[1]),
+                    numpy.linspace(0.0, 1.0, q.shape[1]),
                     q,
                     bounds_error=False,
                     s=0
@@ -9785,7 +9788,7 @@ class Equilibrium(object):
             except KeyError:
                 F = self.getF()[idx]
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0.0, 1.0, len(F)),
+                    numpy.linspace(0.0, 1.0, len(F)),
                     F,
                     k=k
                 )
@@ -9801,7 +9804,7 @@ class Equilibrium(object):
                 F = self.getF()
                 self._FSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0.0, 1.0, F.shape[1]),
+                    numpy.linspace(0.0, 1.0, F.shape[1]),
                     F,
                     bounds_error=False,
                     s=0
@@ -9837,11 +9840,11 @@ class Equilibrium(object):
             except KeyError:
                 F = self.getF()[idx]
                 F = (F - F.min()) / (F.max() - F.min())
-                psinorm_grid = scipy.linspace(0.0, 1.0, len(F))
+                psinorm_grid = numpy.linspace(0.0, 1.0, len(F))
                 # Find if it ever goes non-monotonic: F hacked to be
                 # strictly INCREASING from the magnetic axis out.
                 if self.getCurrentSign() == 1.0:
-                    incr_idx, = scipy.where((F[1:] - F[:-1]) > 0)
+                    incr_idx, = numpy.where((F[1:] - F[:-1]) > 0)
                     if len(incr_idx) > 0:
                         F = F[:incr_idx[0] + 1]
                         psinorm_grid = psinorm_grid[:incr_idx[0] + 1]
@@ -9849,7 +9852,7 @@ class Equilibrium(object):
                     F = F[::-1]
                     psinorm_grid = psinorm_grid[::-1]
                 else:
-                    decr_idx, = scipy.where((F[1:] - F[:-1]) < 0)
+                    decr_idx, = numpy.where((F[1:] - F[:-1]) < 0)
                     if len(decr_idx) > 0:
                         F = F[:decr_idx[0] + 1]
                         psinorm_grid = psinorm_grid[:decr_idx[0] + 1]
@@ -9869,7 +9872,7 @@ class Equilibrium(object):
                 self._FToPsinormSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
                     F,
-                    scipy.linspace(0.0, 1.0, F.shape[1]),
+                    numpy.linspace(0.0, 1.0, F.shape[1]),
                     bounds_error=False,
                     s=0
                 )
@@ -9902,7 +9905,7 @@ class Equilibrium(object):
             except KeyError:
                 FFPrime = self.getFFPrime()[idx]
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0.0, 1.0, len(FFPrime)),
+                    numpy.linspace(0.0, 1.0, len(FFPrime)),
                     FFPrime,
                     k=k
                 )
@@ -9918,7 +9921,7 @@ class Equilibrium(object):
                 FFPrime = self.getFFPrime()
                 self._FFPrimeSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0.0, 1.0, FFPrime.shape[1]),
+                    numpy.linspace(0.0, 1.0, FFPrime.shape[1]),
                     FFPrime,
                     bounds_error=False,
                     s=0
@@ -9952,7 +9955,7 @@ class Equilibrium(object):
             except KeyError:
                 p = self.getFluxPres()[idx]
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0.0, 1.0, len(p)),
+                    numpy.linspace(0.0, 1.0, len(p)),
                     p,
                     k=k
                 )
@@ -9968,7 +9971,7 @@ class Equilibrium(object):
                 p = self.getFluxPres()
                 self._pSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0.0, 1.0, p.shape[1]),
+                    numpy.linspace(0.0, 1.0, p.shape[1]),
                     p,
                     bounds_error=False,
                     s=0
@@ -10002,7 +10005,7 @@ class Equilibrium(object):
             except KeyError:
                 pprime = self.getPPrime()[idx]
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0.0, 1.0, len(pprime)),
+                    numpy.linspace(0.0, 1.0, len(pprime)),
                     pprime,
                     k=k
                 )
@@ -10018,7 +10021,7 @@ class Equilibrium(object):
                 pprime = self.getPPrime()
                 self._pPrimeSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0.0, 1.0, pprime.shape[1]),
+                    numpy.linspace(0.0, 1.0, pprime.shape[1]),
                     pprime,
                     bounds_error=False,
                     s=0
@@ -10052,7 +10055,7 @@ class Equilibrium(object):
             except KeyError:
                 v = self.getFluxVol()[idx]
                 spline = trispline.UnivariateInterpolator(
-                    scipy.linspace(0.0, 1.0, len(v)),
+                    numpy.linspace(0.0, 1.0, len(v)),
                     v,
                     k=k
                 )
@@ -10068,7 +10071,7 @@ class Equilibrium(object):
                 v = self.getFluxVol()
                 self._vSpline = trispline.RectBivariateSpline(
                     self.getTimeBase(),
-                    scipy.linspace(0.0, 1.0, v.shape[1]),
+                    numpy.linspace(0.0, 1.0, v.shape[1]),
                     v,
                     bounds_error=False,
                     s=0
@@ -11179,8 +11182,8 @@ class Equilibrium(object):
             elif limx is not None:
                 psi.plot(limx, limy, 'k', linewidth=lw, zorder=5)
             # catch NaNs separating disjoint sections of R,ZLCFS in mask
-            maskarr = scipy.where(
-                scipy.logical_or(RLCFS[t_idx] > 0.0, scipy.isnan(RLCFS[t_idx]))
+            maskarr = numpy.where(
+                numpy.logical_or(RLCFS[t_idx] > 0.0, numpy.isnan(RLCFS[t_idx]))
             )
             RLCFSframe = RLCFS[t_idx, maskarr[0]]
             ZLCFSframe = ZLCFS[t_idx, maskarr[0]]

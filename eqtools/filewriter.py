@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with EqTools.  If not, see <http://www.gnu.org/licenses/>.
 
-import scipy
+import numpy
 import scipy.interpolate
 import warnings
 import time
@@ -119,9 +119,9 @@ def gfile(
         '\n'
     )
 
-    rgrid = scipy.linspace(obj.getRGrid()[0], obj.getRGrid()[-1], nw)
-    zgrid = scipy.linspace(obj.getZGrid()[0], obj.getZGrid()[-1], nh)
-    rgrid2, zgrid2 = scipy.meshgrid(rgrid, zgrid)
+    rgrid = numpy.linspace(obj.getRGrid()[0], obj.getRGrid()[-1], nw)
+    zgrid = numpy.linspace(obj.getZGrid()[0], obj.getZGrid()[-1], nh)
+    rgrid2, zgrid2 = numpy.meshgrid(rgrid, zgrid)
     print(header)
 
     gfiler = open(name, 'wb')
@@ -182,7 +182,7 @@ def gfile(
                        0.,
                        0.]))
 
-    pts1 = scipy.linspace(0., 1., nw)
+    pts1 = numpy.linspace(0., 1., nw)
     # this needs to be time mapped (sigh)
     if not obj._tricubic:
         for i in [obj.getF(),
@@ -190,24 +190,24 @@ def gfile(
                   obj.getFFPrime(),
                   obj.getPPrime()]:
 
-            pts0 = scipy.linspace(0., 1., i.shape[-1])  # find original nw
+            pts0 = numpy.linspace(0., 1., i.shape[-1])  # find original nw
             temp = scipy.interpolate.interp1d(pts0,
-                                              scipy.atleast_2d(i)[idx],
+                                              numpy.atleast_2d(i)[idx],
                                               kind='nearest',
                                               bounds_error=False)
             gfiler.write(_fmt(temp(pts1).ravel()))
 
     else:
-        tempt = tin*scipy.ones(pts1.shape)
+        tempt = tin*numpy.ones(pts1.shape)
         for i in [obj.getF(),
                   obj.getFluxPres(),
                   obj.getFFPrime(),
                   obj.getPPrime()]:
 
-            pts0 = scipy.linspace(0., 1., i.shape[-1])  # find original nw
+            pts0 = numpy.linspace(0., 1., i.shape[-1])  # find original nw
             temp = scipy.interpolate.RectBivariateSpline(obj.getTimeBase(),
                                                          pts0,
-                                                         scipy.atleast_2d(i))
+                                                         numpy.atleast_2d(i))
             gfiler.write(_fmt(temp.ev(tempt, pts1).ravel()))
 
     psiRZ = -1*obj.getCurrentSign()*obj.rz2psi(rgrid2,
@@ -218,7 +218,7 @@ def gfile(
     if not obj._tricubic:
         temp = scipy.interpolate.interp1d(
             pts0,
-            scipy.atleast_2d(obj.getQProfile())[idx],
+            numpy.atleast_2d(obj.getQProfile())[idx],
             kind='nearest',
             bounds_error=False
         )
@@ -229,7 +229,7 @@ def gfile(
         temp = scipy.interpolate.RectBivariateSpline(
             obj.getTimeBase(),
             pts0,
-            scipy.atleast_2d(obj.getQProfile())
+            numpy.atleast_2d(obj.getQProfile())
         )
 
         gfiler.write(_fmt(temp.ev(tempt, pts1).ravel()))
@@ -244,7 +244,7 @@ def gfile(
                     nbbbs=nbbbs)
 
     # write boundary
-    lim = scipy.array(obj.getMachineCrossSection()).T
+    lim = numpy.array(obj.getMachineCrossSection()).T
 
     gfiler.write('  '+str(int(len(out)))+'   '+str(int(len(lim)))+'\n')
 
@@ -259,63 +259,63 @@ def _findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
     """ internal function for finding the last closed flux surface
     based off of a Equilibrium instance"""
 
-    ang = scipy.linspace(-scipy.pi, scipy.pi, nbbbs)
+    ang = numpy.linspace(-numpy.pi, numpy.pi, nbbbs)
 
     plt.ioff()
     fig = plt.figure()
     cs = plt.contour(rgrid,
                      zgrid,
-                     scipy.squeeze(psiRZ),
-                     scipy.atleast_1d(psiLCFS))
+                     numpy.squeeze(psiRZ),
+                     numpy.atleast_1d(psiLCFS))
 
     splines = []
     for i in cs.collections[0].get_paths():
         temp = i.vertices
         # turn points into polar coordinates about the plasma center
-        rvals = scipy.sqrt((temp[:, 0] - rcent)**2 + (temp[:, 1] - zcent)**2)
-        thetvals = scipy.arctan2(temp[:, 1] - zcent, temp[:, 0] - rcent)
+        rvals = numpy.sqrt((temp[:, 0] - rcent)**2 + (temp[:, 1] - zcent)**2)
+        thetvals = numpy.arctan2(temp[:, 1] - zcent, temp[:, 0] - rcent)
 
         # find all monotonic sections of contour line in r,theta space
-        temp = scipy.diff(thetvals)
+        temp = numpy.diff(thetvals)
         idx = 0
-        sign = scipy.sign(temp[0])
+        sign = numpy.sign(temp[0])
         for j in range(len(temp)-1):
 
-            if (scipy.sign(temp[j+1]) != sign):
-                sign = scipy.sign(temp[j+1])
+            if (numpy.sign(temp[j+1]) != sign):
+                sign = numpy.sign(temp[j+1])
                 # only write data if the jump at the last point is well resolved
 
-                if (j+2-idx > 2):  # abs(thetvals[idx]-thetvals[j+1]) < 7*scipy.pi/4) and
+                if (j+2-idx > 2):  # abs(thetvals[idx]-thetvals[j+1]) < 7*numpy.pi/4) and
                     plt.plot(thetvals[idx:j+2], rvals[idx:j+2], 'o')
-                    sortang = scipy.argsort(thetvals[idx:j+2])
+                    sortang = numpy.argsort(thetvals[idx:j+2])
                     splines += [
                         scipy.interpolate.interp1d(
                             thetvals[sortang+idx],
                             rvals[sortang+idx],
                             kind='linear',
                             bounds_error=False,
-                            fill_value=scipy.inf
+                            fill_value=numpy.inf
                         )
                     ]
                 idx = j+1
 
         if (len(thetvals) - idx > 2):
             plt.plot(thetvals[idx:], rvals[idx:], 'o')
-            sortang = scipy.argsort(thetvals[idx:])
+            sortang = numpy.argsort(thetvals[idx:])
             splines += [scipy.interpolate.interp1d(thetvals[sortang+idx],
                                                    rvals[sortang+idx],
                                                    kind='linear',
                                                    bounds_error=False,
-                                                   fill_value=scipy.inf)]
+                                                   fill_value=numpy.inf)]
 
     # construct a set of angles about the center, and use the splines
     # to find the closest part of the contour to the center at that
     # angle, this is the LCFS, store value. If no value is found, store
     # an infite value, which is then tossed out.
-    outr = scipy.empty((nbbbs,))
+    outr = numpy.empty((nbbbs,))
 
     for i in range(nbbbs):
-        temp = scipy.inf
+        temp = numpy.inf
         for j in splines:
             pos = j(ang[i])
             if pos < temp:
@@ -323,13 +323,13 @@ def _findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
         outr[i] = temp
 
     # remove infinites
-    ang = ang[scipy.isfinite(outr)]
-    outr = outr[scipy.isfinite(outr)]
+    ang = ang[numpy.isfinite(outr)]
+    outr = outr[numpy.isfinite(outr)]
 
     # move back to r,z space
-    output = scipy.empty((2, len(ang) + 1))
-    output[0, :-1] = outr*scipy.cos(ang) + rcent
-    output[1, :-1] = outr*scipy.sin(ang) + zcent
+    output = numpy.empty((2, len(ang) + 1))
+    output[0, :-1] = outr*numpy.cos(ang) + rcent
+    output[1, :-1] = outr*numpy.sin(ang) + zcent
     output[0, -1] = output[0, 0]
     output[1, -1] = output[1, 0]
 

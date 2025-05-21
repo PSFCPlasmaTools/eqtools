@@ -20,7 +20,7 @@
 working with TCV LIUQE Equilibrium.
 """
 
-import scipy
+import numpy
 from collections import namedtuple
 from .EFIT import EFITTree
 from .core import PropertyAccessMixin, ModuleWarning
@@ -198,7 +198,7 @@ class TCVLIUQETree(EFITTree):
         if self._psiRZ is None:
             try:
                 psinode = self._MDSTree.getNode(self._root+'::psi')
-                self._psiRZ = psinode.data() / (2.*scipy.pi)
+                self._psiRZ = psinode.data() / (2.*numpy.pi)
                 self._rGrid = psinode.dim_of(0).data()
                 self._zGrid = psinode.dim_of(1).data()
                 self._defaultUnits['_psiRZ'] = str(psinode.units)
@@ -260,7 +260,7 @@ class TCVLIUQETree(EFITTree):
         if self._psiAxis is None:
             try:
                 psiAxisNode = self._MDSTree.getNode(self._root+'::psi_axis')
-                self._psiAxis = psiAxisNode.data() / (2.*scipy.pi)
+                self._psiAxis = psiAxisNode.data() / (2.*numpy.pi)
                 self._defaultUnits['_psiAxis'] = str(psiAxisNode.units)
             except Exception:
                 raise ValueError('data retrieval failed.')
@@ -281,7 +281,7 @@ class TCVLIUQETree(EFITTree):
                 # psiLCFSNode = self._MDSTree.getNode(self._root+'::surface_flux')
                 # self._psiLCFS = psiLCFSNode.data()
                 # self._defaultUnits['_psiLCFS'] = str(psiLCFSNode.units)
-                self._psiLCFS = scipy.zeros(self.getTimeBase().size)
+                self._psiLCFS = numpy.zeros(self.getTimeBase().size)
                 self._defaultUnits['_psiLCFS'] = 'T*m^2'
             except Exception:
                 raise ValueError('data retrieval failed.')
@@ -312,17 +312,17 @@ class TCVLIUQETree(EFITTree):
                 # then the psi from psiGrid
                 psiRZ = self.getFluxGrid()
                 # the rGrid, zGrid in an appropriate mesh
-                R, Z = scipy.meshgrid(self.getRGrid(), self.getZGrid())
+                R, Z = numpy.meshgrid(self.getRGrid(), self.getZGrid())
                 # read the LCFS Volume and Area and compute the appropriate twopi R
                 rUsed = self.getVolLCFS() / self.getAreaLCFS()
                 # define the output
-                volumes = scipy.zeros((psiRZ.shape[0], nPsi))
-                outArea = scipy.zeros(nPsi)
+                volumes = numpy.zeros((psiRZ.shape[0], nPsi))
+                outArea = numpy.zeros(nPsi)
                 # now we start to iterate over the times
                 for i in range(psiRZ.shape[0]):
                     psi = psiRZ[i]
                     # define the levels
-                    levels = scipy.linspace(psi.max(), 0, nPsi)
+                    levels = numpy.linspace(psi.max(), 0, nPsi)
                     c = cntr.Cntr(R, Z, psi)
                     for j in range(nPsi - 1):
                         nlist = c.trace(levels[j + 1])
@@ -475,15 +475,15 @@ class TCVLIUQETree(EFITTree):
                 duData = fluxPPresNode.data()
                 # then we build an appropriate grid
                 nPsi = self.getRmidPsi().shape[1]
-                psiV = scipy.linspace(1, 0, nPsi)
+                psiV = numpy.linspace(1, 0, nPsi)
 
                 rad = [psiV]
                 for i in range(duData.shape[1]-1):
                     rad += [rad[-1]*psiV*(i+1)/(i+2)]
-                rad = scipy.vstack(rad)
-                self._fluxPres = scipy.reshape(
+                rad = numpy.vstack(rad)
+                self._fluxPres = numpy.reshape(
                     self.getFluxAxis(), (self.getFluxAxis().size, 1)
-                ) * scipy.dot(duData, rad)/(2*scipy.pi)
+                ) * numpy.dot(duData, rad)/(2*numpy.pi)
 
                 self._defaultUnits['_fluxPres'] = 'Pa'
             except Exception:
@@ -535,16 +535,16 @@ class TCVLIUQETree(EFITTree):
 
                 # then we build an appropriate grid
                 nPsi = self.getRmidPsi().shape[1]
-                psiV = scipy.linspace(1, 0, nPsi)
+                psiV = numpy.linspace(1, 0, nPsi)
 
                 # This should be faster through some vectorization /
                 # slowing down to fortran matrix multiplication subroutines
-                rad = [scipy.ones(psiV.size)]
+                rad = [numpy.ones(psiV.size)]
                 for i in range(duData.shape[1]-1):
                     rad += [rad[-1]*psiV]
-                rad = scipy.vstack(rad)
+                rad = numpy.vstack(rad)
 
-                self._pprime = scipy.dot(duData, rad)
+                self._pprime = numpy.dot(duData, rad)
                 self._defaultUnits['_fluxPres'] = 'A/m^3'
             except Exception:
                 raise ValueError('data retrieval failed.')
@@ -835,7 +835,7 @@ class TCVLIUQETree(EFITTree):
                 btTime = conn.get('dim_of(tcv_eq("BZERO"))').data()
                 conn.closeTree(self._tree, self._shot)
                 # we need to interpolate on the time basis of LIUQE
-                self._btaxv = scipy.interp(self.getTimeBase(), btTime, bt)
+                self._btaxv = numpy.interp(self.getTimeBase(), btTime, bt)
                 self._defaultUnits['_btaxv'] = 'T'
             except Exception:
                 raise ValueError('data retrieval failed.')
@@ -897,7 +897,7 @@ class TCVLIUQETree(EFITTree):
                 ip = conn.get('tcv_ip()').data()
                 ipTime = conn.get('dim_of(tcv_ip())').data()
                 conn.closeTree(self._tree, self._shot)
-                self._IpMeas = scipy.interp(self.getTimeBase(), ipTime, ip)
+                self._IpMeas = numpy.interp(self.getTimeBase(), ipTime, ip)
                 self._defaultUnits['_IpMeas'] = 'A'
             except Exception:
                 raise ValueError('data retrieval failed.')
@@ -1177,8 +1177,8 @@ class TCVLIUQETree(EFITTree):
             elif limx is not None:
                 psi.plot(limx, limy, 'k', linewidth=3, zorder=5)
             # catch NaNs separating disjoint sections of R,ZLCFS in mask
-            maskarr = scipy.where(
-                scipy.logical_or(RLCFS[t_idx] > 0.0, scipy.isnan(RLCFS[t_idx]))
+            maskarr = numpy.where(
+                numpy.logical_or(RLCFS[t_idx] > 0.0, numpy.isnan(RLCFS[t_idx]))
             )
             RLCFSframe = RLCFS[t_idx, maskarr[0]]
             ZLCFSframe = ZLCFS[t_idx, maskarr[0]]

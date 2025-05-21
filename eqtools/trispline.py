@@ -21,8 +21,7 @@
 contains an enhanced bivariate spline which generates bounds errors.
 """
 
-
-import scipy
+import numpy
 import scipy.interpolate
 try:
     from . import _tricub
@@ -75,7 +74,7 @@ class Spline():
     """
     def __init__(
         self, x, y, z, f, boundary='natural', dx=0, dy=0, dz=0,
-        bounds_error=True, fill_value=scipy.nan
+        bounds_error=True, fill_value=numpy.nan
     ):
         #if dx != 0 or dy != 0 or dz != 0:
         #    raise NotImplementedError(
@@ -83,17 +82,17 @@ class Spline():
         #        "interpolation if you need to compute magnetic fields!"
         #    )
 
-        self._x = scipy.array(x, dtype=float)
-        self._y = scipy.array(y, dtype=float)
-        self._z = scipy.array(z, dtype=float)
+        self._x = numpy.array(x, dtype=float)
+        self._y = numpy.array(y, dtype=float)
+        self._z = numpy.array(z, dtype=float)
 
-        self._xlim = scipy.array((x.min(), x.max()))
-        self._ylim = scipy.array((y.min(), y.max()))
-        self._zlim = scipy.array((z.min(), z.max()))
+        self._xlim = numpy.array((x.min(), x.max()))
+        self._ylim = numpy.array((y.min(), y.max()))
+        self._zlim = numpy.array((z.min(), z.max()))
 
-        self._dx = scipy.array(dx, dtype=int)
-        self._dy = scipy.array(dy, dtype=int)
-        self._dz = scipy.array(dz, dtype=int)
+        self._dx = numpy.array(dx, dtype=int)
+        self._dy = numpy.array(dy, dtype=int)
+        self._dz = numpy.array(dz, dtype=int)
 
         self.bounds_error = bounds_error
         self.fill_value = fill_value
@@ -106,15 +105,15 @@ class Spline():
             _tricub.ismonotonic(self._y) and
             _tricub.ismonotonic(self._z)
         ):
-            self._x = scipy.insert(self._x, 0, 2*self._x[0]-self._x[1])
-            self._x = scipy.append(self._x, 2*self._x[-1]-self._x[-2])
-            self._y = scipy.insert(self._y, 0, 2*self._y[0]-self._y[1])
-            self._y = scipy.append(self._y, 2*self._y[-1]-self._y[-2])
-            self._z = scipy.insert(self._z, 0, 2*self._z[0]-self._z[1])
-            self._z = scipy.append(self._z, 2*self._z[-1]-self._z[-2])
+            self._x = numpy.insert(self._x, 0, 2*self._x[0]-self._x[1])
+            self._x = numpy.append(self._x, 2*self._x[-1]-self._x[-2])
+            self._y = numpy.insert(self._y, 0, 2*self._y[0]-self._y[1])
+            self._y = numpy.append(self._y, 2*self._y[-1]-self._y[-2])
+            self._z = numpy.insert(self._z, 0, 2*self._z[0]-self._z[1])
+            self._z = numpy.append(self._z, 2*self._z[-1]-self._z[-2])
 
-        self._f = scipy.zeros(scipy.array(f.shape)+(2, 2, 2))
-        self._f[1:-1, 1:-1, 1:-1] = scipy.array(f)  # place f in center, so that it is padded by unfilled values on all sides
+        self._f = numpy.zeros(numpy.array(f.shape)+(2, 2, 2))
+        self._f[1:-1, 1:-1, 1:-1] = numpy.array(f)  # place f in center, so that it is padded by unfilled values on all sides
 
         if boundary == 'clamped':
             # faces
@@ -264,13 +263,13 @@ class Spline():
                 "A value in z is above the interpolation range."
             )
 
-        out_of_bounds = scipy.logical_not(
-            scipy.logical_or(
-                scipy.logical_or(
-                    scipy.logical_or(below_bounds_x, above_bounds_x),
-                    scipy.logical_or(below_bounds_y, above_bounds_y)
+        out_of_bounds = numpy.logical_not(
+            numpy.logical_or(
+                numpy.logical_or(
+                    numpy.logical_or(below_bounds_x, above_bounds_x),
+                    numpy.logical_or(below_bounds_y, above_bounds_y)
                 ),
-                scipy.logical_or(below_bounds_z, above_bounds_z)
+                numpy.logical_or(below_bounds_z, above_bounds_z)
             )
         )
         return out_of_bounds
@@ -294,11 +293,11 @@ class Spline():
                 of the grid
 
         """
-        x = scipy.atleast_1d(xi)
-        y = scipy.atleast_1d(yi)
-        z = scipy.atleast_1d(zi)  # This will not modify x1,y1,z1.
+        x = numpy.atleast_1d(xi)
+        y = numpy.atleast_1d(yi)
+        z = numpy.atleast_1d(zi)  # This will not modify x1,y1,z1.
 
-        val = self.fill_value*scipy.ones(x.shape)
+        val = self.fill_value*numpy.ones(x.shape)
         idx = self._check_bounds(x, y, z)
 
         if dx == 0:
@@ -368,14 +367,14 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
 
     def __init__(
         self, x, y, z, bbox=[None] * 4, kx=3, ky=3, s=0, bounds_error=True,
-        fill_value=scipy.nan
+        fill_value=numpy.nan
     ):
 
         super(RectBivariateSpline, self).__init__(
             x, y, z, bbox=bbox, kx=kx, ky=ky, s=s
         )
-        self._xlim = scipy.array((x.min(), x.max()))
-        self._ylim = scipy.array((y.min(), y.max()))
+        self._xlim = numpy.array((x.min(), x.max()))
+        self._ylim = numpy.array((y.min(), y.max()))
         self.bounds_error = bounds_error
         self.fill_value = fill_value
 
@@ -415,10 +414,10 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
                 "A value in y is above the interpolation range."
             )
 
-        out_of_bounds = scipy.logical_not(
-            scipy.logical_or(
-                scipy.logical_or(below_bounds_x, above_bounds_x),
-                scipy.logical_or(below_bounds_y, above_bounds_y)
+        out_of_bounds = numpy.logical_not(
+            numpy.logical_or(
+                numpy.logical_or(below_bounds_x, above_bounds_x),
+                numpy.logical_or(below_bounds_y, above_bounds_y)
             )
         )
         return out_of_bounds
@@ -436,9 +435,9 @@ class RectBivariateSpline(scipy.interpolate.RectBivariateSpline):
         """
         idx = self._check_bounds(xi, yi)
         # print(idx)
-        zi = self.fill_value*scipy.ones(xi.shape)
+        zi = self.fill_value*numpy.ones(xi.shape)
         zi[idx] = super(RectBivariateSpline, self).ev(
-            scipy.atleast_1d(xi)[idx], scipy.atleast_1d(yi)[idx]
+            numpy.atleast_1d(xi)[idx], numpy.atleast_1d(yi)[idx]
         )
         return zi
 
@@ -451,13 +450,13 @@ class BivariateInterpolator(object):
     """
     def __init__(self, x, y, z):
         self._ct_interp = scipy.interpolate.CloughTocher2DInterpolator(
-            scipy.hstack((scipy.atleast_2d(x).T, scipy.atleast_2d(y).T)),
+            numpy.hstack((numpy.atleast_2d(x).T, numpy.atleast_2d(y).T)),
             z
         )
 
     def ev(self, xi, yi):
         return self._ct_interp(
-            scipy.hstack((scipy.atleast_2d(xi).T, scipy.atleast_2d(yi).T))
+            numpy.hstack((numpy.atleast_2d(xi).T, numpy.atleast_2d(yi).T))
         )
 
 
@@ -477,12 +476,12 @@ class UnivariateInterpolator(scipy.interpolate.InterpolatedUnivariateSpline):
         super(UnivariateInterpolator, self).__init__(*args, **kwargs)
 
     def __call__(self, x, *args, **kwargs):
-        x = scipy.asarray(x, dtype=float)
+        x = numpy.asarray(x, dtype=float)
         out = super(UnivariateInterpolator, self).__call__(x, *args, **kwargs)
         if self.min_val is not None:
             out[out < self.min_val] = self.min_val
         if self.max_val is not None:
             out[out > self.max_val] = self.max_val
         out[(x < self.get_knots().min()) | (x > self.get_knots().max())] = \
-            scipy.nan
+            numpy.nan
         return out

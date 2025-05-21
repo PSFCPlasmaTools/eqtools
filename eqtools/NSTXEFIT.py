@@ -20,7 +20,7 @@
 working with NSTX EFIT data.
 """
 
-import scipy
+import numpy
 
 from .EFIT import EFITTree
 from .core import PropertyAccessMixin, ModuleWarning
@@ -215,7 +215,7 @@ class NSTXEFITTree(EFITTree):
                 self._defaultUnits['_RmidPsi'], length_unit
             )
         else:
-            unit_factor = scipy.array([1.])
+            unit_factor = numpy.array([1.])
 
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=RuntimeWarning)
