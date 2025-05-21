@@ -73,7 +73,8 @@ The package contents itself are in the `eqtools` directory:
 - `FromArrays.py`: Contains classes to construct equilibria from arrays of data.
 - `trispline.py`: Contains Python wrappers for the functions defined in `_tricub.pyf`.
 - `_tricub.c`: C implementation of tricubic spline interpolation.
-- `_tricub.pyf`: F2PY wrapper for `_tricub.c`.
+- `_tricub.h`: C header for `_tricub.c` functions.
+- `_tricubmodule.c`: Python C-API interface to `_tricub.c`.
 - `afilereader.py`: Contains classes to read the data from EFIT "a" files.
 - `pfilereader.py`: Contains classes to read EFIT "p" files.
 - `eqdskreader.py`: Contains classes to read EFIT eqdsk files.
