@@ -20,8 +20,20 @@ import numpy
 import scipy.interpolate
 import warnings
 import time
-import core
-import matplotlib.pyplot as plt
+
+from . import core
+
+try:
+    import matplotlib.pyplot as plt
+    _has_plt = False
+except Exception:
+    warnings.warn(
+        "Matplotlib.pyplot module could not be loaded -- classes that use "
+        "pyplot will not work.",
+        ModuleWarning
+    )
+    _has_plt = False
+
 try:
     from . import trispline
     _has_trispline = True
@@ -258,6 +270,9 @@ def gfile(
 def _findLCFS(rgrid, zgrid, psiRZ, rcent, zcent, psiLCFS, nbbbs=100):
     """ internal function for finding the last closed flux surface
     based off of a Equilibrium instance"""
+
+    if not _has_plt:
+        raise RuntimeError('Need matplotlib to run _findLCFS!')
 
     ang = numpy.linspace(-numpy.pi, numpy.pi, nbbbs)
 
