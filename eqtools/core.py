@@ -4718,7 +4718,7 @@ class Equilibrium(object):
         return self._volnorm2Quan(self._getFSpline, volnorm, t, **kwargs)
 
     def Fnorm2psinorm(self, F, t, **kwargs):
-        """Calculates the psinorm (normalized poloidal flux) corresponding to the passed normalized flux function :math:`F=RB_{\phi}` values.
+        r"""Calculates the psinorm (normalized poloidal flux) corresponding to the passed normalized flux function :math:`F=RB_{\phi}` values.
 
         This is provided as a convenience method to plot current lines with the
         correct spacing: current lines launched from a grid uniformly-spaced in
