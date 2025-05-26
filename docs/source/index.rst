@@ -35,15 +35,15 @@ Tutorial: Performing Coordinate Transforms on Alcator C-Mod Data
 
 The basic class for manipulating EFIT results stored in the Alcator C-Mod MDSplus tree is :py:class:`~eqtools.CModEFIT.CModEFITTree`. To load the data from a specific shot, simply create the :py:class:`~eqtools.CModEFIT.CModEFITTree` object with the shot number as the argument::
 
-    e = eqtools.CModEFITTree(1140729030)
+    e = CModEFIT.CModEFITTree(1140729030)
 
 The default EFIT to use is "ANALYSIS." If you want to use a different tree, such as "EFIT20," then you simply set this with the `tree` keyword::
     
-    e = eqtools.CModEFITTree(1140729030, tree='EFIT20')
+    e = CModEFIT.CModEFITTree(1140729030, tree='EFIT20')
 
 :py:mod:`eqtools` understands units. The default is to convert all lengths to meters (whereas quantities in the tree are inconsistent -- some are meters, some centimeters). If you want to specify a different default unit, use the `length_unit` keyword::
 
-    e = eqtools.CModEFITTree(1140729030, length_unit='cm')
+    e = CModEFIT.CModEFITTree(1140729030, length_unit='cm')
 
 Once this is loaded, you can access the data you would normally have to pull from specific nodes in the tree using convenient getter methods. For instance, to get the elongation as a function of time, you can run::
 
