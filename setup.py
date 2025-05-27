@@ -9,7 +9,7 @@ tricub = Extension(
 
 setup(
     name='eqtools',
-    version='1.4.0',
+    version='1.5.0',
     packages=['eqtools'],
     install_requires=['scipy', 'numpy', 'matplotlib'],
     author=['Mark Chilenski', 'Ian Faust', 'John Walk'],
