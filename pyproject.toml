@@ -11,6 +11,7 @@ authors = [
 ]
 description = "Python tools for magnetic equilibria in tokamak plasmas"
 readme = "README.md"
+license = {file = "LICENSE.md"}
 dependencies = [
     "numpy",
     "scipy",
