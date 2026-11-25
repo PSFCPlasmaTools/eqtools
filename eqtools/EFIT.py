@@ -1725,7 +1725,7 @@ class EFITTree(Equilibrium):
             currentSign (Integer): 1 for positive-direction current, -1 for negative.
         """
         if self._currentSign is None:
-            self._currentSign = 1 if scipy.mean(self.getIpMeas()) > 1e5 else -1
+            self._currentSign = 1 if numpy.mean(self.getIpMeas()) > 1e5 else -1
         return self._currentSign
 
     def getParam(self, path):
