@@ -600,8 +600,8 @@ class EFITTree(Equilibrium):
                 v = path.vertices
                 RLCFS_frame.extend(v[:, 0])
                 ZLCFS_frame.extend(v[:, 1])
-                RLCFS_frame.append(scipy.nan)
-                ZLCFS_frame.append(scipy.nan)
+                RLCFS_frame.append(numpy.nan)
+                ZLCFS_frame.append(numpy.nan)
             RLCFS_frame = numpy.array(RLCFS_frame)
             ZLCFS_frame = numpy.array(ZLCFS_frame)
 
@@ -620,8 +620,8 @@ class EFITTree(Equilibrium):
             RLCFS_stores.append(RLCFS_frame)
             ZLCFS_stores.append(ZLCFS_frame)
 
-        RLCFS = scipy.zeros((nt, maxlen))
-        ZLCFS = scipy.zeros((nt, maxlen))
+        RLCFS = numpy.zeros((nt, maxlen))
+        ZLCFS = numpy.zeros((nt, maxlen))
         for i in range(nt):
             RLCFS_frame = RLCFS_stores[i]
             ZLCFS_frame = ZLCFS_stores[i]
