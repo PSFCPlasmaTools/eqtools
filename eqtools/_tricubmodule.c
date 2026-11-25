@@ -74,7 +74,7 @@ to_array(PyObject **obj) { /* Check in numpy array, dtype is double, and if the
   }
 
   if (!PyArray_ISCARRAY_RO(array))
-    array = PyArray_GETCONTIGUOUS(*obj);
+    array = (PyArrayObject *)PyArray_GETCONTIGUOUS((PyArrayObject *)*obj);
     *obj = (PyObject*) array;
 
   return 0;
